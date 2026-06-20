@@ -35,6 +35,7 @@
     "expo-clipboard": "*",
     "expo-linear-gradient": "*",
     "expo-localization": "*",
+    "nativewind": ">=4",
     "react": "*",
     "react-hook-form": ">=7",
     "react-native": "*",

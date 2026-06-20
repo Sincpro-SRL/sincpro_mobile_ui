@@ -15,7 +15,7 @@ interface TabNavigatorLayoutProps {
   persistentRoutePath?: string;
 }
 
-interface TabProps {
+export interface TabProps {
   path: string;
   label: string;
   Icon: any;

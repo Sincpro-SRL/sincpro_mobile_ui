@@ -4,7 +4,7 @@ import { theme } from "@sincpro/mobile-ui/theme";
 import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
 import ScreenHeader, { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
 import React, { ReactNode } from "react";
-import { RefreshControl, View } from "react-native";
+import { type ImageSourcePropType, RefreshControl, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 interface FormViewProps<T> {
@@ -64,9 +64,11 @@ function FormViewRoot<T>({
 
 function Header({
   variant = EVariantScreenHeader.FLAT_HEADER,
+  logoSource,
   children,
 }: {
   variant?: EVariantScreenHeader;
+  logoSource?: ImageSourcePropType;
   children?: ReactNode;
 }) {
   const { name, description, onBack } = useFormView();
@@ -74,6 +76,7 @@ function Header({
   return (
     <>
       <ScreenHeader
+        logoSource={logoSource}
         onBack={onBack}
         subtitle={description ? description : `Seleccionar ${name}`}
         title={name}

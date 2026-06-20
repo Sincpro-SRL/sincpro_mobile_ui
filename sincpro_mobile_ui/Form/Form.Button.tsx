@@ -1,14 +1,13 @@
+import { useConfirmationContext } from "@sincpro/mobile-ui/Dialog/Confirmation.context";
+import { Display } from "@sincpro/mobile-ui/Display";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { LinearGradient } from "expo-linear-gradient";
 import type React from "react";
 import { FC, useCallback } from "react";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { runOnJS } from "react-native-reanimated";
-
-import { useConfirmationContext } from "../Dialog/Confirmation.context";
-import { Display } from "../Display";
-import { theme } from "../theme";
-import { tv, type VariantProps } from "../theme/tw";
-import { Typography } from "../Typography";
 
 // ============================================================================
 // STYLE VARIANTS

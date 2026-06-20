@@ -1,7 +1,6 @@
+import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { Path, Rect } from "react-native-svg";
-
-import { CustomIconProps } from "./props";
 
 const PrinterIcon: React.FC<CustomIconProps> = ({ size = 24, color = "#000000" }) => (
   <Svg fill="none" height={size} viewBox="0 0 24 24" width={size}>

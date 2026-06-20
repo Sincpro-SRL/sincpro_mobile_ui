@@ -1,8 +1,7 @@
+import { typographyVariants } from "@sincpro/mobile-ui/theme/typography";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { formatTwoDecimals } from "@sincpro/mobile-ui/utils/monetary";
 import type { StyleProp, TextStyle } from "react-native";
-
-import { formatTwoDecimals } from "../lib/monetary";
-import { typographyVariants } from "../theme/typography";
-import { Typography } from "../Typography";
 
 interface MonetaryFieldProps {
   value: number | string | null | undefined;

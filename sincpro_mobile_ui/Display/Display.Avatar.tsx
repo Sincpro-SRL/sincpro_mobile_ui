@@ -1,8 +1,7 @@
+import { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { FC } from "react";
 import { View } from "react-native";
-
-import { cn, tv, type VariantProps } from "../theme/tw";
-import { Typography } from "../Typography";
 
 const avatar = tv({
   base: "justify-center items-center rounded-full shadow-sm",

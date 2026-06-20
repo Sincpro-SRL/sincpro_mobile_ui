@@ -1,3 +1,7 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
 import {
   Dimensions,
@@ -8,11 +12,6 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import { Display } from "../Display";
-import { theme } from "../theme";
-import { cn } from "../theme/tw";
-import GradientContainer from "./GradientContainer";
 
 interface AuthContainerProps {
   header: ReactNode;

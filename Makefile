@@ -8,23 +8,28 @@ init: prepare-environment
 	@yarn install
 
 format:
+	@echo "🔤 Ordenando imports (eslint)..."
+	@npx eslint . --fix
+	@echo "🎨 Formateando (prettier)..."
 	@npx prettier --write "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
 
 format-check:
 	@npx prettier --check "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
 
 lint:
-	@yarn lint
+	@npx eslint .
 
 typecheck:
-	@yarn typecheck
+	@npx tsc --noEmit
 
 check: lint typecheck
 
 build:
-	@echo "🏗️  Building @sincpro/mobile_ui (ESM + types)..."
-	@yarn bob build
-	@echo "✓ Build artifacts ready in ./lib"
+	@echo "🏗️  Compilando @sincpro/mobile-ui -> lib (tsc + tsc-alias)..."
+	@rm -rf lib
+	@npx tsc -p tsconfig.build.json
+	@npx tsc-alias -p tsconfig.build.json
+	@echo "✓ Build listo en ./lib (JS + .d.ts, alias @ resuelto a relativo)"
 
 verify-format: format
 	@if ! git diff --quiet; then \
@@ -48,7 +53,7 @@ endif
 	fi
 
 publish: build
-	@echo "📦 Publishing to NPM..."
+	@echo "📦 Publishing @sincpro/mobile-ui to NPM (source)..."
 	@if [ -n "$$NPM_TOKEN" ]; then \
 		echo "//registry.npmjs.org/:_authToken=$$NPM_TOKEN" > .npmrc.tmp; \
 		chmod 600 .npmrc.tmp; \
@@ -68,4 +73,4 @@ clean:
 test:
 	@echo "Running tests..."
 
-.PHONY: prepare-environment init format format-check lint typecheck check build verify-format update-version publish clean
+.PHONY: prepare-environment init format format-check lint typecheck check build verify-format update-version publish clean test

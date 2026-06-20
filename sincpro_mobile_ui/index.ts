@@ -1,16 +1,16 @@
 // Design System - Compound Components
-export { Dialog } from "./Dialog";
-export { Display } from "./Display";
-export { Feedback } from "./Feedback";
-export { Form } from "./Form";
-export { Navigation } from "./Navigation";
-export { Typography } from "./Typography";
+export { Dialog } from "@sincpro/mobile-ui/Dialog";
+export { Display } from "@sincpro/mobile-ui/Display";
+export { Feedback } from "@sincpro/mobile-ui/Feedback";
+export { Form } from "@sincpro/mobile-ui/Form";
+export { Navigation } from "@sincpro/mobile-ui/Navigation";
+export { Typography } from "@sincpro/mobile-ui/Typography";
 
 // Primitives (NativeWind-based - Layout utilities)
-export { Box, Row, Stack } from "./primitives";
+export { Box, Row, Stack } from "@sincpro/mobile-ui/primitives";
 
 // Theme
-export { cn, tv, type VariantProps } from "./theme/tw";
+export { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 export {
   fontFamilies,
   fontSizes,
@@ -18,21 +18,21 @@ export {
   letterSpacing,
   lineHeights,
   typographyVariants,
-} from "./theme/typography";
+} from "@sincpro/mobile-ui/theme/typography";
 
 // Layouts
-export { default as Container } from "./layouts/Container";
-export { default as GradientContainer } from "./layouts/GradientContainer";
-export { default as PlainLayout } from "./layouts/PlainLayout";
-export { default as ScrollContainer } from "./layouts/ScrollContainer";
-export { default as TabNavigatorLayout } from "./layouts/TabNavigatorLayout";
+export { default as Container } from "@sincpro/mobile-ui/layouts/Container";
+export { default as GradientContainer } from "@sincpro/mobile-ui/layouts/GradientContainer";
+export { default as PlainLayout } from "@sincpro/mobile-ui/layouts/PlainLayout";
+export { default as ScrollContainer } from "@sincpro/mobile-ui/layouts/ScrollContainer";
+export { default as TabNavigatorLayout } from "@sincpro/mobile-ui/layouts/TabNavigatorLayout";
 
 // Views
-export { default as AuthFormView } from "./views/AuthFormView";
-export { default as FormViewV2 } from "./views/FormViewV2";
-export { default as ListViewV2 } from "./views/ListViewV2";
+export { default as AuthFormView } from "@sincpro/mobile-ui/views/AuthFormView";
+export { default as FormViewV2 } from "@sincpro/mobile-ui/views/FormViewV2";
+export { default as ListViewV2 } from "@sincpro/mobile-ui/views/ListViewV2";
 
 // Widgets
-export { default as JSONViewer } from "./widgets/JSONViewer";
-export { default as ScreenHeader } from "./widgets/ScreenHeader";
-export * from "./widgets/ScreenHeader";
+export { default as JSONViewer } from "@sincpro/mobile-ui/widgets/JSONViewer";
+export { default as ScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
+export * from "@sincpro/mobile-ui/widgets/ScreenHeader";

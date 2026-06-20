@@ -1,9 +1,8 @@
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import React, { FC, ReactNode } from "react";
 import { StatusBar, ViewStyle } from "react-native";
 import { Edge, SafeAreaView } from "react-native-safe-area-context";
-
-import { theme } from "../theme";
-import { cn } from "../theme/tw";
 
 type ContainerProps = {
   children: ReactNode;

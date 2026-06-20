@@ -1,8 +1,7 @@
+import { IconType } from "@sincpro/mobile-ui/utils/icon";
+import { MenuCard } from "@sincpro/mobile-ui/widgets/MenuCard";
 import React, { ComponentType } from "react";
 import { View } from "react-native";
-
-import { IconType } from "../lib/icon";
-import { MenuCard } from "./MenuCard";
 
 export interface MenuItem {
   id: string;

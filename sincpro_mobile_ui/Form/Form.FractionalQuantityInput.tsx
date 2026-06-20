@@ -1,11 +1,10 @@
+import { Dialog, type EditableValueModalChip } from "@sincpro/mobile-ui/Dialog";
+import { Display } from "@sincpro/mobile-ui/Display";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { normalizeQuantity, roundTo } from "@sincpro/mobile-ui/utils/quantity";
 import { useCallback, useMemo, useState } from "react";
 import { StyleProp, TouchableOpacity, View, ViewStyle } from "react-native";
 import { tv } from "tailwind-variants";
-
-import { Dialog, type EditableValueModalChip } from "../Dialog";
-import { Display } from "../Display";
-import { normalizeQuantity, roundTo } from "../lib/quantity";
-import { Typography } from "../Typography";
 
 const fractionalQuantityInput = tv({
   slots: {

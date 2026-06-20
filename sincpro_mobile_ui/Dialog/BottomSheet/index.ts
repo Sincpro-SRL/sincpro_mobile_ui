@@ -1,1 +1,1 @@
-export { BottomSheet } from "./BottomSheet.Root";
+export { BottomSheet } from "@sincpro/mobile-ui/Dialog/BottomSheet/BottomSheet.Root";

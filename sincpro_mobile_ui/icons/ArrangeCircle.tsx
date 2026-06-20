@@ -1,7 +1,6 @@
+import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { Path } from "react-native-svg";
-
-import { CustomIconProps } from "./props";
 
 const ArrangeCircleIcon: React.FC<CustomIconProps> = ({ size = 25 }) => (
   <Svg fill="none" height={size} viewBox="0 0 24 24" width={size}>

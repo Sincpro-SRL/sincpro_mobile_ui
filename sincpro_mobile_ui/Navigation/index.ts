@@ -1,8 +1,8 @@
-import Header from "./Navigation.Header";
-import HeaderToolbar from "./Navigation.HeaderToolbar";
-import RowItem from "./Navigation.RowItem";
-import TabIcon from "./Navigation.TabIcon";
-import TabItem from "./Navigation.TabItem";
+import Header from "@sincpro/mobile-ui/Navigation/Navigation.Header";
+import HeaderToolbar from "@sincpro/mobile-ui/Navigation/Navigation.HeaderToolbar";
+import RowItem from "@sincpro/mobile-ui/Navigation/Navigation.RowItem";
+import TabIcon from "@sincpro/mobile-ui/Navigation/Navigation.TabIcon";
+import TabItem from "@sincpro/mobile-ui/Navigation/Navigation.TabItem";
 
 export const Navigation = {
   Header,

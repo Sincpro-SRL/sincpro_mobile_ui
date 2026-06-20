@@ -1,11 +1,10 @@
+import { Display, Form } from "@sincpro/mobile-ui/index";
+import { theme } from "@sincpro/mobile-ui/theme/useTheme";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { TimezoneLocale } from "@sincpro/mobile-ui/utils/timezone";
+import { TimeZoneSelectorModal } from "@sincpro/mobile-ui/widgets/TimeZoneSelectorModal";
 import { useState } from "react";
 import { View } from "react-native";
-
-import { Display, Form } from "../index";
-import { TimezoneLocale } from "../lib/timezone";
-import { theme } from "../theme/useTheme";
-import { Typography } from "../Typography";
-import { TimeZoneSelectorModal } from "./TimeZoneSelectorModal";
 
 interface TimeZoneSelectorProps {
   onSelect?: (tz: TimezoneLocale) => void;

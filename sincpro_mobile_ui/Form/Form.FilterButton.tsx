@@ -1,8 +1,7 @@
+import { tv } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { FC } from "react";
 import { TouchableOpacity, View } from "react-native";
-
-import { tv } from "../theme/tw";
-import { Typography } from "../Typography";
 
 const filterButton = tv({
   base: "rounded-lg items-center justify-center py-2 px-3 min-h-[36px]",

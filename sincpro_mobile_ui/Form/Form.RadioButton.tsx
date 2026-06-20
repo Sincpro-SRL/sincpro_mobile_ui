@@ -1,7 +1,6 @@
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { TouchableOpacity, View } from "react-native";
 import { tv } from "tailwind-variants";
-
-import { Typography } from "../Typography";
 
 const radioButton = tv({
   slots: {

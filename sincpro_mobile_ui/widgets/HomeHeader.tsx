@@ -1,9 +1,8 @@
+import { Display, Typography } from "@sincpro/mobile-ui/index";
+import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import { theme } from "@sincpro/mobile-ui/theme";
 import React, { ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
-
-import { Display, Typography } from "../index";
-import GradientContainer from "../layouts/GradientContainer";
-import { theme } from "../theme";
 
 interface HomeHeaderProps {
   readonly title?: string;

@@ -1,10 +1,9 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import Container from "@sincpro/mobile-ui/layouts/Container";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { Children, isValidElement, ReactElement, ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { Display } from "../Display";
-import { Typography } from "../Typography";
-import Container from "./Container";
 
 interface TabNavigatorLayoutProps {
   className?: string;

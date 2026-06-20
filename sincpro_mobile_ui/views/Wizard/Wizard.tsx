@@ -1,9 +1,12 @@
+import type {
+  WizardContextValue,
+  WizardProviderProps,
+  WizardStepId,
+} from "@sincpro/mobile-ui/views/Wizard/Wizard.context";
+import { useWizard, WizardProvider } from "@sincpro/mobile-ui/views/Wizard/Wizard.context";
 import type { FC, ReactNode } from "react";
 import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
-
-import type { WizardContextValue, WizardProviderProps, WizardStepId } from "./Wizard.context";
-import { useWizard, WizardProvider } from "./Wizard.context";
 
 export interface WizardStepGuard {
   canEnter?: () => boolean | Promise<boolean>;

@@ -1,3 +1,6 @@
+import { BottomSheet } from "@sincpro/mobile-ui/Dialog/BottomSheet";
+import ConfirmationDialog from "@sincpro/mobile-ui/Dialog/Dialog.Confirmation";
+import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
 import {
   createContext,
   type ReactNode,
@@ -6,10 +9,6 @@ import {
   useMemo,
   useState,
 } from "react";
-
-import { BaseButton } from "../primitives/BaseButton";
-import { BottomSheet } from "./BottomSheet";
-import ConfirmationDialog from "./Dialog.Confirmation";
 
 type ConfirmationVariant = "dialog" | "bottomSheet";
 

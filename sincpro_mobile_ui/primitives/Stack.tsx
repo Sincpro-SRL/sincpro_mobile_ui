@@ -1,6 +1,5 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { View, ViewProps } from "react-native";
-
-import { cn } from "../theme/tw";
 
 interface StackProps extends ViewProps {
   spacing?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12;

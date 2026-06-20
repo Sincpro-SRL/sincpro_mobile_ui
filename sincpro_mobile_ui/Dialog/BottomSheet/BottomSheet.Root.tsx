@@ -1,3 +1,4 @@
+import { theme } from "@sincpro/mobile-ui/theme";
 import { createContext, type ReactNode, useContext, useEffect, useRef } from "react";
 import {
   Animated,
@@ -11,8 +12,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { theme } from "../../theme";
 
 /**
  * Available sizes for the BottomSheet.

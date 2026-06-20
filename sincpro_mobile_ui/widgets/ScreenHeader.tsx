@@ -1,7 +1,6 @@
+import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import { View } from "react-native";
-
-import GradientContainer from "../layouts/GradientContainer";
-import { Navigation } from "../Navigation";
 
 const Header = Navigation.Header;
 const HeaderToolbar = Navigation.HeaderToolbar;

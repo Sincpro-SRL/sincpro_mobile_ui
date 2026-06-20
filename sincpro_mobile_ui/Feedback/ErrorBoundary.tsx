@@ -1,6 +1,5 @@
+import FeedbackError from "@sincpro/mobile-ui/Feedback/Feedback.Error";
 import React, { Component, ReactNode } from "react";
-
-import FeedbackError from "./Feedback.Error";
 
 interface ErrorBoundaryProps {
   children: ReactNode;

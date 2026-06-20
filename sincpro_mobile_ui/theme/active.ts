@@ -1,5 +1,5 @@
-import { DEFAULT_THEME } from "./default";
-import type { ThemeTokens } from "./types";
+import { DEFAULT_THEME } from "@sincpro/mobile-ui/theme/default";
+import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
 const activeTheme: ThemeTokens = { ...DEFAULT_THEME };
 

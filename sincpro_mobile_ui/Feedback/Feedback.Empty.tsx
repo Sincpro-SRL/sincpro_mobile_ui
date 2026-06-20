@@ -1,8 +1,7 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
-
-import { Display } from "../Display";
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
 
 interface EmptyProps {
   handleGoHome?: () => void;

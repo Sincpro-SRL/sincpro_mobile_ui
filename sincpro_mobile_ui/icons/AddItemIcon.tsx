@@ -1,7 +1,6 @@
+import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
-
-import { CustomIconProps } from "./props";
 
 const AddItemIcon: React.FC<CustomIconProps> = ({ size = 25 }) => (
   <Svg fill="none" height={size} viewBox="0 0 25 24" width={size}>

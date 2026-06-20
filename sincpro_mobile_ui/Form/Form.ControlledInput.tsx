@@ -1,6 +1,5 @@
+import Input from "@sincpro/mobile-ui/Form/Form.Input";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
-
-import Input from "./Form.Input";
 
 interface ControlledInputProps<T extends FieldValues> {
   control: Control<T>;

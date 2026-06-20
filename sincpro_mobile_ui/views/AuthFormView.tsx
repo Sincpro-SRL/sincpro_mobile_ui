@@ -1,9 +1,8 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ReactNode } from "react";
 import { View } from "react-native";
-
-import { Display } from "../Display";
-import AuthContainer from "../layouts/AuthContainer";
-import { Typography } from "../Typography";
 
 const Logo = Display.Logo;
 const Text = Typography.Text;

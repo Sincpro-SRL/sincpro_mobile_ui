@@ -1,10 +1,9 @@
+import { tv } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { parseToMonetaryNumber } from "@sincpro/mobile-ui/utils/monetary";
 import { useState } from "react";
 import { View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
-
-import { parseToMonetaryNumber } from "../lib/monetary";
-import { tv } from "../theme/tw";
-import { Typography } from "../Typography";
 
 const monetaryBox = tv({
   base: "justify-center items-center bg-bg-card rounded-lg",

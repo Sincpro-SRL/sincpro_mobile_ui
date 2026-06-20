@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "outDir": "./lib",
+    "rootDir": "./sincpro_mobile_ui",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "sourceMap": false,
+    "declarationMap": false
+  },
+  "include": ["sincpro_mobile_ui/**/*.ts", "sincpro_mobile_ui/**/*.tsx"],
+  "exclude": ["node_modules", "lib", "**/__tests__", "**/*.test.*"]
+}

@@ -1,6 +1,5 @@
+import { UICollectionItem, UIItem } from "@sincpro/mobile-ui/views/types/UIItem";
 import { ReactNode } from "react";
-
-import { UICollectionItem, UIItem } from "./UIItem";
 
 export type IRowItem<T> = T &
   UIItem & {

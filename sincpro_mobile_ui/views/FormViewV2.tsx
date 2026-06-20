@@ -1,12 +1,11 @@
+import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
+import Container from "@sincpro/mobile-ui/layouts/Container";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
+import ScreenHeader, { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
 import React, { ReactNode } from "react";
 import { RefreshControl, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-
-import { ErrorBoundary, Feedback } from "../Feedback";
-import Container from "../layouts/Container";
-import { theme } from "../theme";
-import ScreenHeader, { EVariantScreenHeader } from "../widgets/ScreenHeader";
-import { FormViewProvider, useFormView } from "./FormViewV2.context";
 
 interface FormViewProps<T> {
   name: string;

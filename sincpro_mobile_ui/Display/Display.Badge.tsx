@@ -1,6 +1,5 @@
+import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Text, View } from "react-native";
-
-import { tv, type VariantProps } from "../theme/tw";
 
 const badge = tv({
   slots: {

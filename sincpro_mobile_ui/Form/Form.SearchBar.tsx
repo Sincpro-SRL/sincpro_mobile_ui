@@ -1,10 +1,9 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import type React from "react";
 import { useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
-
-import { Display } from "../Display";
-import { theme } from "../theme";
-import { cn, tv } from "../theme/tw";
 
 const Icon = Display.Icon;
 

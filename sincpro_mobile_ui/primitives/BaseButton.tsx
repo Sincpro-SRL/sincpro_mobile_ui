@@ -1,12 +1,11 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { LinearGradient } from "expo-linear-gradient";
 import type React from "react";
 import { FC } from "react";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
-
-import { Display } from "../Display";
-import { theme } from "../theme";
-import { tv, type VariantProps } from "../theme/tw";
-import { Typography } from "../Typography";
 
 // ============================================================================
 // STYLE VARIANTS

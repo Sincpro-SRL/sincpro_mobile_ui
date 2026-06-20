@@ -1,10 +1,9 @@
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { useState } from "react";
 import { TextInput, type TextInputProps, View } from "react-native";
-
-import { theme } from "../theme";
-import { cn, tv } from "../theme/tw";
-import { Typography } from "../Typography";
 
 const inputContainer = tv({
   base: "rounded-lg bg-bg-card shadow-sm",

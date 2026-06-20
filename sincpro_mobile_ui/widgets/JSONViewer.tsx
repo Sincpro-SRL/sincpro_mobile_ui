@@ -1,7 +1,6 @@
+import { ThemedActivityIndicator } from "@sincpro/mobile-ui/theme";
 import React, { useMemo, useState } from "react";
 import { Platform, Text, View } from "react-native";
-
-import { ThemedActivityIndicator } from "../theme";
 
 const parseDeepJson = (value: any): any => {
   if (typeof value === "string") {

@@ -1,7 +1,6 @@
+import { theme } from "@sincpro/mobile-ui/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
-
-import { theme } from "../theme";
 
 interface GradientContainerProps {
   children: ReactNode;

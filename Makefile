@@ -25,9 +25,11 @@ typecheck:
 check: lint typecheck
 
 build:
-	@echo "🏗️  Validando @sincpro/mobile-ui (typecheck, sin artefactos)..."
-	@npx tsc --noEmit
-	@echo "✓ Fuente válida — se publica tal cual (la app que la importa la compila)"
+	@echo "🏗️  Compilando @sincpro/mobile-ui -> lib (tsc + tsc-alias)..."
+	@rm -rf lib
+	@npx tsc -p tsconfig.build.json
+	@npx tsc-alias -p tsconfig.build.json
+	@echo "✓ Build listo en ./lib (JS + .d.ts, alias @ resuelto a relativo)"
 
 verify-format: format
 	@if ! git diff --quiet; then \
@@ -65,7 +67,7 @@ publish: build
 	@echo "✓ Published successfully"
 
 clean:
-	@rm -rf node_modules
+	@rm -rf lib node_modules
 	@echo "✓ Cleaned"
 
 test:

@@ -1,8 +1,7 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { IRowItemProps } from "@sincpro/mobile-ui/views/types/IListView";
 import { TouchableOpacity, View } from "react-native";
-
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
-import { IRowItemProps } from "../views/types/IListView";
 
 function RowItem({ item, className }: IRowItemProps<any> & { className?: string }) {
   function rowContent() {

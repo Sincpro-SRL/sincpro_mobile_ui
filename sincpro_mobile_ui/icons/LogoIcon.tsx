@@ -1,7 +1,6 @@
+import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { Path } from "react-native-svg";
-
-import { CustomIconProps } from "./props";
 
 const LogoIcon: React.FC<CustomIconProps> = ({ size = 56, color = "#FFFFFF" }) => (
   <Svg fill="none" height={size} viewBox="0 0 48 48" width={size}>

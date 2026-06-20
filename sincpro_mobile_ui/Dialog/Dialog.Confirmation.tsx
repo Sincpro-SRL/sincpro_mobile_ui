@@ -1,9 +1,8 @@
+import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
+import { theme } from "@sincpro/mobile-ui/theme";
+import Typography from "@sincpro/mobile-ui/Typography/Typography.Text";
 import React from "react";
 import { Modal, TouchableWithoutFeedback, View } from "react-native";
-
-import { BaseButton } from "../primitives/BaseButton";
-import { theme } from "../theme";
-import Typography from "../Typography/Typography.Text";
 
 export interface Props {
   auxTitle?: string;

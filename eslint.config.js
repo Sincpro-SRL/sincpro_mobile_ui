@@ -6,7 +6,7 @@ const reactPlugin = require("eslint-plugin-react");
 
 module.exports = defineConfig([
   {
-    ignores: ["dist/**", "node_modules/**"],
+    ignores: ["lib/**", "dist/**", "node_modules/**"],
   },
   expoConfig,
   eslintPluginPrettierRecommended,

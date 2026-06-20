@@ -1,8 +1,11 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import {
+  fontFamilies,
+  Typography,
+  typographyVariants,
+} from "@sincpro/mobile-ui/theme/typography";
 import type React from "react";
 import { Text, type TextProps, type TextStyle } from "react-native";
-
-import { cn } from "../theme/tw";
-import { fontFamilies, Typography, typographyVariants } from "../theme/typography";
 
 /**
  * Typography.Text - Hybrid component (NativeWind + Style)

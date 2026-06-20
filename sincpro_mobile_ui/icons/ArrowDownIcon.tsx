@@ -1,7 +1,6 @@
+import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { Path } from "react-native-svg";
-
-import { CustomIconProps } from "./props";
 
 function ArrowDownIcon({ size = 56, color = "#FFFFFF" }: CustomIconProps) {
   return (

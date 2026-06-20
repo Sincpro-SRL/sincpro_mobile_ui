@@ -1,8 +1,7 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import React, { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import { cn } from "../theme/tw";
 
 type ScrollContainerProps = {
   children: ReactNode;

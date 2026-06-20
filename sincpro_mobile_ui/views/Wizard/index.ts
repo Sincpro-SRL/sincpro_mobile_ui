@@ -5,7 +5,11 @@ export type {
   WizardStepGuard,
   WizardStepLifecycle,
   WizardStepProps,
-} from "./Wizard";
-export { Wizard } from "./Wizard";
-export type { WizardContextValue, WizardProviderProps, WizardStepId } from "./Wizard.context";
-export { useWizard } from "./Wizard.context";
+} from "@sincpro/mobile-ui/views/Wizard/Wizard";
+export { Wizard } from "@sincpro/mobile-ui/views/Wizard/Wizard";
+export type {
+  WizardContextValue,
+  WizardProviderProps,
+  WizardStepId,
+} from "@sincpro/mobile-ui/views/Wizard/Wizard.context";
+export { useWizard } from "@sincpro/mobile-ui/views/Wizard/Wizard.context";

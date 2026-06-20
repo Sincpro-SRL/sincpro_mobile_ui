@@ -1,3 +1,3 @@
-export { Box } from "./Box";
-export { Row } from "./Row";
-export { Stack } from "./Stack";
+export { Box } from "@sincpro/mobile-ui/primitives/Box";
+export { Row } from "@sincpro/mobile-ui/primitives/Row";
+export { Stack } from "@sincpro/mobile-ui/primitives/Stack";

@@ -1,9 +1,8 @@
+import Loading from "@sincpro/mobile-ui/Feedback/Feedback.Loading";
+import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Image, type ImageSourcePropType, View } from "react-native";
-
-import GradientContainer from "../layouts/GradientContainer";
-import Loading from "./Feedback.Loading";
 
 interface SplashScreenProps {
   isReady: boolean;

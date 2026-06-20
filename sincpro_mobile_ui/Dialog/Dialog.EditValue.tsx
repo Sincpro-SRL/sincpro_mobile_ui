@@ -1,8 +1,7 @@
+import { theme } from "@sincpro/mobile-ui/theme";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { useEffect, useRef } from "react";
 import { FlatList, Modal, TextInput, TouchableOpacity, View } from "react-native";
-
-import { theme } from "../theme";
-import { Typography } from "../Typography";
 
 export interface EditableValueModalChip {
   key?: string;

@@ -1,7 +1,6 @@
+import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { FC } from "react";
 import { Image, type ImageSourcePropType, View } from "react-native";
-
-import { tv, type VariantProps } from "../theme/tw";
 
 const logo = tv({
   slots: {

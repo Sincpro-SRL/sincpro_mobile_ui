@@ -1,8 +1,7 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { ActivityIndicator, View, type ViewStyle } from "react-native";
-
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
 
 export interface SpinnerProps {
   size?: "small" | "large";

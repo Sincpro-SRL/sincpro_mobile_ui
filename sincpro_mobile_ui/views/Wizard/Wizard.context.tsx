@@ -1,8 +1,7 @@
+import { ErrorBoundary } from "@sincpro/mobile-ui/Feedback";
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-
-import { ErrorBoundary } from "../../Feedback";
 
 export type WizardStepId = string;
 

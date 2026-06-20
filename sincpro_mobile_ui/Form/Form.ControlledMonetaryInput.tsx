@@ -1,6 +1,5 @@
+import MonetaryInput from "@sincpro/mobile-ui/Form/Form.MonetaryInput";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
-
-import MonetaryInput from "./Form.MonetaryInput";
 
 interface ControlledMonetaryInputProps<T extends FieldValues> {
   control: Control<T>;

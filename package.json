@@ -2,19 +2,16 @@
   "name": "@sincpro/mobile-ui",
   "version": "0.1.2",
   "description": "Sincpro Mobile design system: generic, presentational React Native components (no domain logic)",
-  "main": "./sincpro_mobile_ui/index.ts",
-  "module": "./sincpro_mobile_ui/index.ts",
-  "types": "./sincpro_mobile_ui/index.ts",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "react-native": "./lib/index.js",
   "source": "./sincpro_mobile_ui/index.ts",
-  "react-native": "./sincpro_mobile_ui/index.ts",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "sincpro_mobile_ui",
-    "!**/__tests__",
-    "!**/*.test.*",
-    "!**/nativewind-env.d.ts",
+    "lib",
     "README.md"
   ],
   "prettier": {
@@ -81,6 +78,7 @@
     "react-native-safe-area-context": "~5.6.0",
     "react-native-svg": "15.12.1",
     "react-native-worklets": "0.5.1",
+    "tsc-alias": "^1.8.17",
     "typescript": "~5.9.2"
   }
 }

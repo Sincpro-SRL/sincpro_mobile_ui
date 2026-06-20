@@ -1,6 +1,5 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { View, ViewProps } from "react-native";
-
-import { cn } from "../theme/tw";
 
 interface BoxProps extends ViewProps {
   className?: string;

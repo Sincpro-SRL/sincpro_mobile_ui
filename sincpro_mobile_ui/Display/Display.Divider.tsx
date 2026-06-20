@@ -1,6 +1,5 @@
+import { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { View } from "react-native";
-
-import { cn, tv, type VariantProps } from "../theme/tw";
 
 const divider = tv({
   base: "w-full bg-border-divider",

@@ -1,8 +1,7 @@
+import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import type React from "react";
 import { View } from "react-native";
-
-import { cn } from "../theme/tw";
-import Spinner from "./Feedback.Spinner";
 
 interface LoadingStateProps {
   message?: string;

@@ -1,7 +1,6 @@
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import * as Clipboard from "expo-clipboard";
 import { TouchableOpacity } from "react-native";
-
-import { Typography } from "../Typography";
 
 type CopyableTextProps =
   | {

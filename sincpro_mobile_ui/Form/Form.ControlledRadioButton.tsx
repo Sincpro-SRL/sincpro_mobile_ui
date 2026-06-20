@@ -1,6 +1,5 @@
+import RadioButton from "@sincpro/mobile-ui/Form/Form.RadioButton";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
-
-import RadioButton from "./Form.RadioButton";
 
 interface ControlledRadioButtonProps<T extends FieldValues> {
   control: Control<T>;

@@ -1,10 +1,13 @@
-import { BottomSheet } from "./BottomSheet";
-import { ConfirmationProvider, useConfirmationContext } from "./Confirmation.context";
-import Confirmation from "./Dialog.Confirmation";
+import { BottomSheet } from "@sincpro/mobile-ui/Dialog/BottomSheet";
+import {
+  ConfirmationProvider,
+  useConfirmationContext,
+} from "@sincpro/mobile-ui/Dialog/Confirmation.context";
+import Confirmation from "@sincpro/mobile-ui/Dialog/Dialog.Confirmation";
 import EditValue, {
   type EditableValueModalChip,
   type EditableValueModalProps,
-} from "./Dialog.EditValue";
+} from "@sincpro/mobile-ui/Dialog/Dialog.EditValue";
 
 export const Dialog = {
   Confirmation,

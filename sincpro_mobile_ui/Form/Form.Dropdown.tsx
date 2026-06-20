@@ -1,10 +1,9 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useState } from "react";
 import { Modal, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { tv } from "tailwind-variants";
-
-import { Display } from "../Display";
-import { theme } from "../theme";
-import { Typography } from "../Typography";
 
 const dropdown = tv({
   slots: {

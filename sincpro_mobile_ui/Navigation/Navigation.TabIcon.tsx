@@ -1,8 +1,7 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ComponentType } from "react";
 import { View } from "react-native";
-
-import { Display } from "../Display";
-import { cn } from "../theme/tw";
 
 const Icon = Display.Icon;
 

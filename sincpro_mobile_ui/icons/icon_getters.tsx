@@ -1,10 +1,9 @@
+import ArrangeCircleIcon from "@sincpro/mobile-ui/icons/ArrangeCircle";
+import CardIcon from "@sincpro/mobile-ui/icons/CardIcon";
+import CreditIcon from "@sincpro/mobile-ui/icons/CreditIcon";
+import MoneyReceiveIcon from "@sincpro/mobile-ui/icons/MoneyReceiveIcon";
+import SinpeIcon from "@sincpro/mobile-ui/icons/SinpeIcon";
 import type React from "react";
-
-import ArrangeCircleIcon from "./ArrangeCircle";
-import CardIcon from "./CardIcon";
-import CreditIcon from "./CreditIcon";
-import MoneyReceiveIcon from "./MoneyReceiveIcon";
-import SinpeIcon from "./SinpeIcon";
 
 export type IconLabel = { icon: React.ComponentType<any>; label: string };
 const paymentMethodMap: { prefix: string; icon: React.ComponentType<any>; label: string }[] =

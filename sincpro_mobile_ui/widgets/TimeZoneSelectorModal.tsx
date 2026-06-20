@@ -1,11 +1,10 @@
+import { BottomSheet } from "@sincpro/mobile-ui/Dialog/BottomSheet";
+import { Display, Form } from "@sincpro/mobile-ui/index";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { TimezoneLocale } from "@sincpro/mobile-ui/utils/timezone";
 import { useMemo, useState } from "react";
 import { FlatList, TextInput, TouchableOpacity, View } from "react-native";
-
-import { BottomSheet } from "../Dialog/BottomSheet";
-import { Display, Form } from "../index";
-import { TimezoneLocale } from "../lib/timezone";
-import { theme } from "../theme";
-import { Typography } from "../Typography";
 
 interface TimeZoneSelectorModalProps {
   visible: boolean;

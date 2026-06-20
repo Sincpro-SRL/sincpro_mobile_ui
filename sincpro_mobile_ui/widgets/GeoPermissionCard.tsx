@@ -1,9 +1,8 @@
+import { Display, Form } from "@sincpro/mobile-ui/index";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
 import { tv } from "tailwind-variants";
-
-import { Display, Form } from "../index";
-import { theme } from "../theme";
-import { Typography } from "../Typography";
 
 const statusTextVariants = tv({
   variants: {

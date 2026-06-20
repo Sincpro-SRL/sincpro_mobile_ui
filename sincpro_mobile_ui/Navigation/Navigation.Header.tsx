@@ -1,11 +1,10 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
-
-import { Display } from "../Display";
-import GradientContainer from "../layouts/GradientContainer";
-import { theme } from "../theme";
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
 
 export interface HeaderProps {
   title?: string;

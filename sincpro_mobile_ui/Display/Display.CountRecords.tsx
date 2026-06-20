@@ -1,7 +1,6 @@
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
-
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
 
 interface IProps {
   name?: string;

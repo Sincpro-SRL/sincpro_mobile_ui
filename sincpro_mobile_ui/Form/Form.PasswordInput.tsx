@@ -1,8 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
+import InputField from "@sincpro/mobile-ui/Form/Form.InputField";
 import React, { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
-
-import InputField from "./Form.InputField";
 
 export interface PasswordFieldProps {
   label: string;

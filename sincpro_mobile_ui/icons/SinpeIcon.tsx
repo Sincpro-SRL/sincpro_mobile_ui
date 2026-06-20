@@ -1,7 +1,6 @@
+import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { Defs, Image, Pattern, Rect, Use } from "react-native-svg";
-
-import { CustomIconProps } from "./props";
 
 const SinpeIcon: React.FC<CustomIconProps> = ({ size = 25 }) => (
   <Svg fill="none" height={size} viewBox="0 0 24 24" width={size}>

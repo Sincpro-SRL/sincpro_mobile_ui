@@ -8,11 +8,10 @@ import {
   MaterialIcons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { IconType } from "@sincpro/mobile-ui/utils/icon";
 import { ComponentType, FC } from "react";
 import { View } from "react-native";
-
-import { IconType } from "../lib/icon";
-import { theme } from "../theme";
 
 export interface IconProps {
   name?: any;

@@ -1,9 +1,8 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { theme } from "@sincpro/mobile-ui/theme";
+import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import { IconType } from "@sincpro/mobile-ui/utils/icon";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
-
-import { Display } from "../Display";
-import { IconType } from "../lib/icon";
-import { theme } from "../theme";
-import { tv, type VariantProps } from "../theme/tw";
 
 const iconButton = tv({
   base: "rounded-lg items-center justify-center",

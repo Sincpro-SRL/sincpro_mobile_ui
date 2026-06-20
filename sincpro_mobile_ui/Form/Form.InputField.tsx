@@ -1,9 +1,8 @@
+import TextInputF from "@sincpro/mobile-ui/Form/Form.TextInput";
+import { tv } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { FC, useState } from "react";
 import { TextInputProps, View } from "react-native";
-
-import { tv } from "../theme/tw";
-import { Typography } from "../Typography";
-import TextInputF from "./Form.TextInput";
 
 const inputFieldBorder = tv({
   base: "rounded p-2",

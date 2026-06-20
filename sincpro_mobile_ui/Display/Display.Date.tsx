@@ -1,8 +1,7 @@
+import { typographyVariants } from "@sincpro/mobile-ui/theme/typography";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { formatDate } from "@sincpro/mobile-ui/utils/date";
 import type { StyleProp, TextStyle } from "react-native";
-
-import { formatDate } from "../lib/date";
-import { typographyVariants } from "../theme/typography";
-import { Typography } from "../Typography";
 
 type DateFormat = "short" | "long" | "numeric";
 

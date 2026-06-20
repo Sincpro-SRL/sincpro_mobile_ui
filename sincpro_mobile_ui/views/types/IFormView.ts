@@ -1,6 +1,5 @@
+import { UIItem } from "@sincpro/mobile-ui/views/types/UIItem";
 import { ReactNode } from "react";
-
-import { UIItem } from "./UIItem";
 
 export interface IFormView<T> extends UIItem {
   name: string;

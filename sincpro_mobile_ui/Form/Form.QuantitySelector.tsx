@@ -1,9 +1,8 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { StyleProp, TouchableOpacity, View, ViewStyle } from "react-native";
 import { tv } from "tailwind-variants";
-
-import { Display } from "../Display";
-import { Typography } from "../Typography";
 
 const quantitySelector = tv({
   slots: {

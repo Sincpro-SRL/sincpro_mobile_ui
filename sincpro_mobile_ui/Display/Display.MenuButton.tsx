@@ -1,9 +1,8 @@
+import { theme } from "@sincpro/mobile-ui/theme";
+import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ComponentType, ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
-
-import { theme } from "../theme";
-import { tv, type VariantProps } from "../theme/tw";
-import { Typography } from "../Typography";
 
 const menuButton = tv({
   slots: {

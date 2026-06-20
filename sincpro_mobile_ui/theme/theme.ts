@@ -7,10 +7,10 @@
  * SOLO usar cuando className no es suficiente (RefreshControl, placeholderColor, etc.)
  *
  * @example
- * import { theme } from "./";
+ * import { theme } from "@sincpro/mobile-ui/theme";
  * const color = theme.primary;
  */
 
-import { getActiveTheme } from "./active";
+import { getActiveTheme } from "@sincpro/mobile-ui/theme/active";
 
 export const theme = getActiveTheme();

@@ -1,9 +1,8 @@
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { Checkbox } from "expo-checkbox";
 import { Pressable, View } from "react-native";
-
-import { theme } from "../theme";
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
 
 interface RowCheckBoxProps {
   mainText?: string;

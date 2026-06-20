@@ -1,10 +1,9 @@
+import { theme } from "@sincpro/mobile-ui/theme/useTheme";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { IconType } from "@sincpro/mobile-ui/utils/icon";
+import { CircleButton } from "@sincpro/mobile-ui/widgets/CircleButton";
 import { ComponentType } from "react";
 import { TouchableOpacity, View } from "react-native";
-
-import { IconType } from "../lib/icon";
-import { theme } from "../theme/useTheme";
-import { Typography } from "../Typography";
-import { CircleButton } from "./CircleButton";
 
 interface MenuCardProps {
   title: string;

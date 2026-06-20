@@ -1,4 +1,4 @@
-import type { ThemeTokens } from "./types";
+import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
 export const DEFAULT_THEME: ThemeTokens = {
   name: "default",

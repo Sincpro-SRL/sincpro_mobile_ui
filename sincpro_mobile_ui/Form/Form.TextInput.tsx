@@ -1,8 +1,7 @@
+import { theme } from "@sincpro/mobile-ui/theme";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { FC } from "react";
 import { TextInput, TextInputProps } from "react-native";
-
-import { theme } from "../theme";
-import { cn } from "../theme/tw";
 
 export interface TextInputFProps extends TextInputProps {
   error?: string;

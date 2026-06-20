@@ -1,9 +1,8 @@
+import { Display } from "@sincpro/mobile-ui/Display";
+import Button from "@sincpro/mobile-ui/Form/Form.Button";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
-
-import { Display } from "../Display";
-import Button from "../Form/Form.Button";
-import { cn } from "../theme/tw";
-import { Typography } from "../Typography";
 
 interface ErrorProps {
   message?: string;

@@ -1,3 +1,5 @@
+import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -8,9 +10,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-
-import GradientContainer from "../layouts/GradientContainer";
-import { Typography } from "../Typography";
 
 interface DomainSplashScreenProps {
   domainName: string;

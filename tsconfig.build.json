@@ -7,6 +7,7 @@
     "outDir": "./lib",
     "rootDir": "./sincpro_mobile_ui",
     "jsx": "react-jsx",
+    "jsxImportSource": "nativewind",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "sourceMap": false,

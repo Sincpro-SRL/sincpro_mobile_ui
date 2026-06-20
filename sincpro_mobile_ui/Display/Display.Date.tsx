@@ -1,6 +1,6 @@
 import { typographyVariants } from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { formatDate } from "@sincpro/mobile-ui/utils/date";
+import { formatDate, formatDateWithDefaultTimezone } from "@sincpro/mobile-ui/utils/date";
 import type { StyleProp, TextStyle } from "react-native";
 
 type DateFormat = "short" | "long" | "numeric";
@@ -34,12 +34,11 @@ function DateField({
 }: DateFieldProps) {
   const locale = "es-CR";
 
-  const formatted = value
-    ? formatDate(value, timezone, {
-        showTime,
-        locale,
-      })
-    : "-";
+  const formatted = !value
+    ? "-"
+    : timezone
+      ? formatDate(value, timezone, { showTime, locale })
+      : formatDateWithDefaultTimezone(value, { showTime, locale });
 
   return (
     <Typography.Text

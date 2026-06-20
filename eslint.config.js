@@ -5,6 +5,9 @@ const simpleImportSort = require("eslint-plugin-simple-import-sort");
 const reactPlugin = require("eslint-plugin-react");
 
 module.exports = defineConfig([
+  {
+    ignores: ["lib/**", "dist/**", "node_modules/**"],
+  },
   expoConfig,
   eslintPluginPrettierRecommended,
   {
@@ -21,6 +24,5 @@ module.exports = defineConfig([
       "react/jsx-sort-props": ["warn", { ignoreCase: true }],
       "react-hooks/exhaustive-deps": "off",
     },
-    ignores: ["dist/*", "lib/*", "node_modules/*"],
   },
 ]);

@@ -48,8 +48,17 @@ endif
 	fi
 
 publish: build
-	@echo "📦 Publishing @sincpro/mobile_ui to NPM..."
-	@npm publish --access public
+	@echo "📦 Publishing to NPM..."
+	@if [ -n "$$NPM_TOKEN" ]; then \
+		echo "//registry.npmjs.org/:_authToken=$$NPM_TOKEN" > .npmrc.tmp; \
+		chmod 600 .npmrc.tmp; \
+		npm publish --access public --userconfig .npmrc.tmp; \
+		rm -f .npmrc.tmp; \
+	elif [ -n "$$NODE_AUTH_TOKEN" ]; then \
+		npm publish --access public; \
+	else \
+		npm publish --access public; \
+	fi
 	@echo "✓ Published successfully"
 
 clean:

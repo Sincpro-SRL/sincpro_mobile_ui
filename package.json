@@ -1,5 +1,5 @@
 {
-  "name": "@sincpro/mobile_ui",
+  "name": "@sincpro/mobile-ui",
   "version": "0.1.0",
   "description": "Sincpro Mobile design system: generic, presentational React Native components (no domain logic)",
   "source": "./sincpro_mobile_ui/index.ts",

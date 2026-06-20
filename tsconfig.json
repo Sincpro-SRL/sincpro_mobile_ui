@@ -17,5 +17,5 @@
     }
   },
   "include": ["sincpro_mobile_ui/**/*.ts", "sincpro_mobile_ui/**/*.tsx"],
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "dist"]
 }

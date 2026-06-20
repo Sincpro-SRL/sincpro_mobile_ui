@@ -2,205 +2,21 @@
   "name": "@sincpro/mobile-ui",
   "version": "0.1.2",
   "description": "Sincpro Mobile design system: generic, presentational React Native components (no domain logic)",
+  "main": "./sincpro_mobile_ui/index.ts",
+  "module": "./sincpro_mobile_ui/index.ts",
+  "types": "./sincpro_mobile_ui/index.ts",
   "source": "./sincpro_mobile_ui/index.ts",
-  "main": "./lib/module/index.js",
-  "module": "./lib/module/index.js",
   "react-native": "./sincpro_mobile_ui/index.ts",
-  "types": "./lib/typescript/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
-  "exports": {
-    ".": {
-      "source": "./sincpro_mobile_ui/index.ts",
-      "types": "./lib/typescript/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/index.ts",
-      "default": "./lib/module/index.js"
-    },
-    "./theme": {
-      "source": "./sincpro_mobile_ui/theme/index.ts",
-      "types": "./lib/typescript/theme/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/theme/index.ts",
-      "default": "./lib/module/theme/index.js"
-    },
-    "./theme/*": {
-      "source": "./sincpro_mobile_ui/theme/*.ts",
-      "types": "./lib/typescript/theme/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/theme/*.ts",
-      "default": "./lib/module/theme/*.js"
-    },
-    "./Dialog": {
-      "source": "./sincpro_mobile_ui/Dialog/index.ts",
-      "types": "./lib/typescript/Dialog/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Dialog/index.ts",
-      "default": "./lib/module/Dialog/index.js"
-    },
-    "./Dialog/BottomSheet": {
-      "source": "./sincpro_mobile_ui/Dialog/BottomSheet/index.ts",
-      "types": "./lib/typescript/Dialog/BottomSheet/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Dialog/BottomSheet/index.ts",
-      "default": "./lib/module/Dialog/BottomSheet/index.js"
-    },
-    "./Dialog/*": {
-      "source": "./sincpro_mobile_ui/Dialog/*.tsx",
-      "types": "./lib/typescript/Dialog/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/Dialog/*.tsx",
-      "default": "./lib/module/Dialog/*.js"
-    },
-    "./Display": {
-      "source": "./sincpro_mobile_ui/Display/index.ts",
-      "types": "./lib/typescript/Display/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Display/index.ts",
-      "default": "./lib/module/Display/index.js"
-    },
-    "./Display/*": {
-      "source": "./sincpro_mobile_ui/Display/*.tsx",
-      "types": "./lib/typescript/Display/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/Display/*.tsx",
-      "default": "./lib/module/Display/*.js"
-    },
-    "./Feedback": {
-      "source": "./sincpro_mobile_ui/Feedback/index.ts",
-      "types": "./lib/typescript/Feedback/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Feedback/index.ts",
-      "default": "./lib/module/Feedback/index.js"
-    },
-    "./Feedback/*": {
-      "source": "./sincpro_mobile_ui/Feedback/*.tsx",
-      "types": "./lib/typescript/Feedback/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/Feedback/*.tsx",
-      "default": "./lib/module/Feedback/*.js"
-    },
-    "./Form": {
-      "source": "./sincpro_mobile_ui/Form/index.ts",
-      "types": "./lib/typescript/Form/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Form/index.ts",
-      "default": "./lib/module/Form/index.js"
-    },
-    "./Form/*": {
-      "source": "./sincpro_mobile_ui/Form/*.tsx",
-      "types": "./lib/typescript/Form/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/Form/*.tsx",
-      "default": "./lib/module/Form/*.js"
-    },
-    "./Navigation": {
-      "source": "./sincpro_mobile_ui/Navigation/index.ts",
-      "types": "./lib/typescript/Navigation/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Navigation/index.ts",
-      "default": "./lib/module/Navigation/index.js"
-    },
-    "./Navigation/*": {
-      "source": "./sincpro_mobile_ui/Navigation/*.tsx",
-      "types": "./lib/typescript/Navigation/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/Navigation/*.tsx",
-      "default": "./lib/module/Navigation/*.js"
-    },
-    "./Typography": {
-      "source": "./sincpro_mobile_ui/Typography/index.ts",
-      "types": "./lib/typescript/Typography/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/Typography/index.ts",
-      "default": "./lib/module/Typography/index.js"
-    },
-    "./Typography/*": {
-      "source": "./sincpro_mobile_ui/Typography/*.tsx",
-      "types": "./lib/typescript/Typography/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/Typography/*.tsx",
-      "default": "./lib/module/Typography/*.js"
-    },
-    "./primitives": {
-      "source": "./sincpro_mobile_ui/primitives/index.ts",
-      "types": "./lib/typescript/primitives/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/primitives/index.ts",
-      "default": "./lib/module/primitives/index.js"
-    },
-    "./primitives/*": {
-      "source": "./sincpro_mobile_ui/primitives/*.tsx",
-      "types": "./lib/typescript/primitives/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/primitives/*.tsx",
-      "default": "./lib/module/primitives/*.js"
-    },
-    "./widgets": {
-      "source": "./sincpro_mobile_ui/widgets/index.ts",
-      "types": "./lib/typescript/widgets/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/widgets/index.ts",
-      "default": "./lib/module/widgets/index.js"
-    },
-    "./widgets/*": {
-      "source": "./sincpro_mobile_ui/widgets/*.tsx",
-      "types": "./lib/typescript/widgets/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/widgets/*.tsx",
-      "default": "./lib/module/widgets/*.js"
-    },
-    "./views/Wizard": {
-      "source": "./sincpro_mobile_ui/views/Wizard/index.ts",
-      "types": "./lib/typescript/views/Wizard/index.d.ts",
-      "react-native": "./sincpro_mobile_ui/views/Wizard/index.ts",
-      "default": "./lib/module/views/Wizard/index.js"
-    },
-    "./views/types/*": {
-      "source": "./sincpro_mobile_ui/views/types/*.ts",
-      "types": "./lib/typescript/views/types/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/views/types/*.ts",
-      "default": "./lib/module/views/types/*.js"
-    },
-    "./views/*": {
-      "source": "./sincpro_mobile_ui/views/*.tsx",
-      "types": "./lib/typescript/views/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/views/*.tsx",
-      "default": "./lib/module/views/*.js"
-    },
-    "./layouts/*": {
-      "source": "./sincpro_mobile_ui/layouts/*.tsx",
-      "types": "./lib/typescript/layouts/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/layouts/*.tsx",
-      "default": "./lib/module/layouts/*.js"
-    },
-    "./icons/*": {
-      "source": "./sincpro_mobile_ui/icons/*.tsx",
-      "types": "./lib/typescript/icons/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/icons/*.tsx",
-      "default": "./lib/module/icons/*.js"
-    },
-    "./lib/*": {
-      "source": "./sincpro_mobile_ui/lib/*.ts",
-      "types": "./lib/typescript/lib/*.d.ts",
-      "react-native": "./sincpro_mobile_ui/lib/*.ts",
-      "default": "./lib/module/lib/*.js"
-    },
-    "./package.json": "./package.json"
-  },
   "files": [
-    "lib",
     "sincpro_mobile_ui",
     "!**/__tests__",
     "!**/*.test.*",
-    "README.md",
-    "LICENSE"
+    "!**/nativewind-env.d.ts",
+    "README.md"
   ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "bob build",
-    "prepare": "bob build",
-    "clean": "rm -rf lib",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,yml,yaml,md}\" --ignore-path .prettierignore --ignore-unknown",
-    "check": "yarn lint && yarn typecheck"
-  },
-  "react-native-builder-bob": {
-    "source": "sincpro_mobile_ui",
-    "output": "lib",
-    "targets": [
-      [
-        "module",
-        {
-          "esm": true
-        }
-      ],
-      "typescript"
-    ]
-  },
   "prettier": {
     "printWidth": 94
   },
@@ -216,32 +32,30 @@
   "author": "Gutierrez, Andres <andres.gutierrez@sincpro.com.bo>",
   "license": "MIT",
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "nativewind": ">=4",
-    "react-hook-form": ">=7",
-    "react-native-reanimated": "*",
-    "react-native-svg": "*",
-    "react-native-safe-area-context": "*",
-    "react-native-keyboard-controller": "*",
-    "react-native-worklets": "*",
-    "react-native-currency-input": "*",
-    "expo-linear-gradient": "*",
-    "expo-clipboard": "*",
-    "expo-checkbox": "*",
-    "expo-localization": "*",
+    "@expo-google-fonts/montserrat": "*",
     "@expo/vector-icons": "*",
-    "@expo-google-fonts/montserrat": "*"
+    "expo-checkbox": "*",
+    "expo-clipboard": "*",
+    "expo-linear-gradient": "*",
+    "expo-localization": "*",
+    "react": "*",
+    "react-hook-form": ">=7",
+    "react-native": "*",
+    "react-native-currency-input": "*",
+    "react-native-keyboard-controller": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-svg": "*",
+    "react-native-worklets": "*"
   },
   "dependencies": {
+    "big.js": "^7.0.1",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0",
-    "tailwind-variants": "^3.2.2",
     "dayjs": "^1.11.18",
-    "big.js": "^7.0.1"
+    "tailwind-merge": "^3.4.0",
+    "tailwind-variants": "^3.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.0",
     "@expo-google-fonts/montserrat": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
     "@types/big.js": "^6.2.2",
@@ -259,9 +73,8 @@
     "nativewind": "^4.0.1",
     "prettier": "^3.6.2",
     "react": "19.1.0",
-    "react-native": "0.81.5",
     "react-hook-form": "^7.62.0",
-    "react-native-builder-bob": "^0.40.13",
+    "react-native": "0.81.5",
     "react-native-currency-input": "^1.1.1",
     "react-native-keyboard-controller": "1.18.5",
     "react-native-reanimated": "~4.1.1",

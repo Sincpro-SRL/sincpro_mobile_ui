@@ -2,11 +2,12 @@ import { Display, Typography } from "@sincpro/mobile-ui/index";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { theme } from "@sincpro/mobile-ui/theme";
 import React, { ReactNode } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { type ImageSourcePropType, TouchableOpacity, View } from "react-native";
 
 interface HomeHeaderProps {
   readonly title?: string;
   readonly logo?: ReactNode;
+  readonly logoSource?: ImageSourcePropType;
   readonly backButton?: boolean;
   readonly onBack?: () => void;
 }
@@ -14,6 +15,7 @@ interface HomeHeaderProps {
 export const HomeHeader: React.FC<HomeHeaderProps> = ({
   title = "Distribución",
   logo,
+  logoSource,
   backButton = false,
   onBack,
 }) => {
@@ -36,7 +38,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
           </TouchableOpacity>
         )}
         <View className="items-center justify-center">
-          {logo || <Display.Logo size="medium" />}
+          {logo || <Display.Logo size="medium" source={logoSource} />}
           {!!title && (
             <Typography.Text className="text-text-inverse" variant="h4">
               {title}

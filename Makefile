@@ -29,7 +29,10 @@ build:
 	@rm -rf lib
 	@npx tsc -p tsconfig.build.json
 	@npx tsc-alias -p tsconfig.build.json
-	@echo "✓ Build listo en ./lib (JS + .d.ts, alias @ resuelto a relativo)"
+	@echo "🎨 Copiando assets (preset + css)..."
+	@cp tailwind.preset.js lib/tailwind.preset.js
+	@find sincpro_mobile_ui -name '*.css' -exec sh -c 'mkdir -p "lib/$$(dirname "$${1#sincpro_mobile_ui/}")" && cp "$$1" "lib/$${1#sincpro_mobile_ui/}"' _ {} \;
+	@echo "✓ Build listo en ./lib (JS + .d.ts + preset + css, alias @ resuelto a relativo)"
 
 verify-format: format
 	@if ! git diff --quiet; then \

@@ -2,7 +2,7 @@ import { Display } from "@sincpro/mobile-ui/Display";
 import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ReactNode } from "react";
-import { View } from "react-native";
+import { type ImageSourcePropType, View } from "react-native";
 
 const Logo = Display.Logo;
 const Text = Typography.Text;
@@ -10,11 +10,12 @@ const Text = Typography.Text;
 interface AuthFormProps {
   title?: string;
   description?: string;
+  logoSource?: ImageSourcePropType;
   onBack?: () => void;
   FormNode: ReactNode;
 }
 
-function AuthFormView({ title, description, onBack, FormNode }: AuthFormProps) {
+function AuthFormView({ title, description, logoSource, onBack, FormNode }: AuthFormProps) {
   const renderTitle = () => {
     if (!title) return null;
     return (
@@ -30,7 +31,7 @@ function AuthFormView({ title, description, onBack, FormNode }: AuthFormProps) {
   };
 
   return (
-    <AuthContainer header={<Logo size="large" />} onBackPress={onBack}>
+    <AuthContainer header={<Logo size="large" source={logoSource} />} onBackPress={onBack}>
       <View className="m-4">
         <View className="mb-5">
           {renderTitle()}

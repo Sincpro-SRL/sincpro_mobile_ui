@@ -4,17 +4,25 @@ import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { ReactNode } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { type ImageSourcePropType, TouchableOpacity, View } from "react-native";
 
 export interface HeaderProps {
   title?: string;
   logo?: ReactNode;
+  logoSource?: ImageSourcePropType;
   backButton?: boolean;
   handleBackButton?: () => void;
   className?: string;
 }
 
-const Header = ({ title, logo, backButton, handleBackButton, className }: HeaderProps) => {
+const Header = ({
+  title,
+  logo,
+  logoSource,
+  backButton,
+  handleBackButton,
+  className,
+}: HeaderProps) => {
   const onBackPress = handleBackButton ?? (() => {});
 
   return (
@@ -34,7 +42,7 @@ const Header = ({ title, logo, backButton, handleBackButton, className }: Header
           </TouchableOpacity>
         )}
         <View className="items-center justify-center">
-          {logo || <Display.Logo size="medium" />}
+          {logo || <Display.Logo size="medium" source={logoSource} />}
           {title && (
             <Typography.Text className="text-white" variant="h4">
               {title}

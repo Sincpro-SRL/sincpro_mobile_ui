@@ -1,6 +1,6 @@
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
-import { View } from "react-native";
+import { type ImageSourcePropType, View } from "react-native";
 
 const Header = Navigation.Header;
 const HeaderToolbar = Navigation.HeaderToolbar;
@@ -18,6 +18,7 @@ interface ScreenHeaderProps {
   centerTitle?: boolean;
   subtitle?: string;
   logo?: boolean;
+  logoSource?: ImageSourcePropType;
   rightComponent?: React.ReactNode;
   children?: React.ReactNode;
   withGradientContainer?: boolean;
@@ -28,6 +29,7 @@ function ScreenHeader({
   variant,
   title = "Distribución",
   subtitle,
+  logoSource,
   onBack,
   children,
 }: ScreenHeaderProps) {
@@ -60,9 +62,11 @@ function ScreenHeader({
         </GradientContainer>
       );
     case EVariantScreenHeader.LOGO_WITH_BACK_BUTTON:
-      return <Header backButton handleBackButton={onBack} title={"Distribución"} />;
+      return (
+        <Header backButton handleBackButton={onBack} logoSource={logoSource} title={""} />
+      );
     case EVariantScreenHeader.ONLY_LOGO:
-      return <Header title={title} />;
+      return <Header logoSource={logoSource} title={title} />;
     default:
       return null;
   }

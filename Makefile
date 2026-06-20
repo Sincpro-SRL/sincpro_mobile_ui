@@ -56,4 +56,7 @@ clean:
 	@rm -rf lib node_modules
 	@echo "✓ Cleaned"
 
+test:
+	@echo "Running tests..."
+
 .PHONY: prepare-environment init format format-check lint typecheck check build verify-format update-version publish clean

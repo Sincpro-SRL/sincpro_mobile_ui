@@ -1,0 +1,67 @@
+/**
+ * AUTO-GENERATED from apk/domains/index.ts
+ * Active Domain: distribution
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary Colors */
+  --primary: 37 99 235;
+  --secondary: 107 114 128;
+  --accent: 249 115 22;
+
+  /* Backgrounds */
+  --bg-page: 249 250 251;
+  --bg-card: 255 255 255;
+  --bg-popover: 255 255 255;
+  --bg-muted: 243 244 246;
+  --bg-accent: 219 234 254;
+  --bg-hover: 243 244 246;
+  --bg-disabled: 249 250 251;
+
+  /* Text */
+  --text-primary: 17 24 39;
+  --text-secondary: 107 114 128;
+  --text-tertiary: 156 163 175;
+  --text-muted: 107 114 128;
+  --text-accent: 30 64 175;
+  --text-inverse: 255 255 255;
+  --text-disabled: 209 213 219;
+  --text-on-primary: 255 255 255;
+  --text-on-secondary: 255 255 255;
+  --text-on-accent: 255 255 255;
+  --text-on-danger: 255 255 255;
+  --text-on-success: 255 255 255;
+
+  /* Icons */
+  --icon-primary: 17 24 39;
+  --icon-secondary: 107 114 128;
+  --icon-tertiary: 156 163 175;
+  --icon-inverse: 255 255 255;
+  --icon-disabled: 209 213 219;
+
+  /* Borders */
+  --border-default: 229 231 235;
+  --border-light: 243 244 246;
+  --border-strong: 209 213 219;
+  --border-focus: 37 99 235;
+
+  /* Focus & Input */
+  --ring: 37 99 235;
+  --input: 229 231 235;
+
+  /* Semantic */
+  --success: 16 185 129;
+  --warning: 249 115 22;
+  --danger: 239 68 68;
+  --info: 37 99 235;
+
+  /* Semantic Light */
+  --success-light: 209 250 229;
+  --warning-light: 255 237 213;
+  --danger-light: 254 226 226;
+  --info-light: 219 234 254;
+}

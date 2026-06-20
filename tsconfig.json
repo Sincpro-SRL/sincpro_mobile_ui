@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-native",
+    "lib": ["esnext", "dom"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "paths": {
+      "@sincpro/mobile_ui": ["./sincpro_mobile_ui/index.ts"],
+      "@sincpro/mobile_ui/*": ["./sincpro_mobile_ui/*"]
+    }
+  },
+  "include": ["sincpro_mobile_ui/**/*.ts", "sincpro_mobile_ui/**/*.tsx"],
+  "exclude": ["node_modules"]
+}

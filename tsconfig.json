@@ -12,10 +12,10 @@
     "baseUrl": ".",
     "experimentalDecorators": true,
     "paths": {
-      "@sincpro/mobile_ui": ["./sincpro_mobile_ui/index.ts"],
-      "@sincpro/mobile_ui/*": ["./sincpro_mobile_ui/*"]
+      "@sincpro/mobile-ui": ["./sincpro_mobile_ui/index.ts"],
+      "@sincpro/mobile-ui/*": ["./sincpro_mobile_ui/*"]
     }
   },
   "include": ["sincpro_mobile_ui/**/*.ts", "sincpro_mobile_ui/**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib"]
 }

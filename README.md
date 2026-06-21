@@ -1,5 +1,7 @@
 # @sincpro/mobile-ui
 
+> 🤖 **Agentes de IA:** leé [`AGENTS.md`](AGENTS.md) (orientación del ecosistema, patrones) y [`docs/GOTCHAS.md`](docs/GOTCHAS.md) (trampas conocidas).
+
 Sincpro Mobile design system: generic, presentational React Native components.
 
 - **Presentational only** — receives data via props/callbacks. No domain logic, no services, no state stores.

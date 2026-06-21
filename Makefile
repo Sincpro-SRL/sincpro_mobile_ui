@@ -11,18 +11,13 @@ format:
 	@echo "🔤 Ordenando imports (eslint)..."
 	@npx eslint . --fix
 	@echo "🎨 Formateando (prettier)..."
-	@npx prettier --write "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
-
-format-check:
-	@npx prettier --check "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
+	@npx prettier --experimental-cli --write "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
 
 lint:
 	@npx eslint .
 
 typecheck:
 	@npx tsc --noEmit
-
-check: lint typecheck
 
 storybook-check:
 	@echo "🔎 Validando stories (tsconfig.stories.json)..."

@@ -1,4 +1,4 @@
-# @sincpro/mobile_ui
+# @sincpro/mobile-ui
 
 Sincpro Mobile design system: generic, presentational React Native components.
 
@@ -9,24 +9,49 @@ Sincpro Mobile design system: generic, presentational React Native components.
 ## Install
 
 ```bash
-yarn add @sincpro/mobile_ui
+npx expo install @sincpro/mobile-ui
 ```
 
-Peer dependencies (provided by the host app): react, react-native, nativewind, react-native-reanimated, react-native-svg, react-native-safe-area-context, and the expo modules listed in `package.json`.
+Peer dependencies (provided by the host app): `react`, `react-native`, `nativewind`, `react-native-reanimated`, `react-native-svg`, `react-native-safe-area-context`, `react-native-keyboard-controller`, `react-native-worklets`, `react-hook-form`, `react-native-currency-input`, `@expo/vector-icons`, `@expo-google-fonts/montserrat`, and the expo modules listed in `package.json`.
+
+## Tailwind preset (required)
+
+The components use design tokens exposed as Tailwind classes (`bg-primary`, `text-text-secondary`, …) backed by CSS variables. The consumer app wires them via the shipped preset and content globs:
+
+```js
+// tailwind.config.js
+module.exports = {
+  presets: [require("@sincpro/mobile-ui/tailwind.preset")],
+  content: ["./App.tsx", "./src/**/*.{ts,tsx}", "./node_modules/@sincpro/mobile-ui/**/*.js"],
+  theme: { extend: { colors: { brand: "#FF6600" } } },
+};
+```
+
+The token values are CSS variables; override them (a custom theme) in your global CSS `:root`, or inject at runtime with `vars()`. The framework's `createAppShell({ theme })` does this automatically.
 
 ## Usage
 
 ```tsx
-import { Form } from "@sincpro/mobile_ui/Form";
-import { Display } from "@sincpro/mobile_ui/Display";
-import { theme } from "@sincpro/mobile_ui/theme";
-import { formatDate } from "@sincpro/mobile_ui/lib/date";
+import { Form } from "@sincpro/mobile-ui/Form";
+import { Display } from "@sincpro/mobile-ui/Display";
+import { theme } from "@sincpro/mobile-ui/theme";
 ```
+
+## Storybook (on-device, Expo)
+
+Visualiza los componentes en simulador/dispositivo con Storybook React Native (dev-only, no se publica):
+
+```bash
+make storybook          # expo start (Expo Go / dev build)
+make storybook-android  # expo run:android
+```
+
+Las stories viven en `.rnstorybook/stories/**/*.stories.tsx` e importan desde `@sincpro/mobile-ui/*`. El harness (`App.tsx`, `metro.config.js`, `.rnstorybook/`) está excluido del paquete publicado (`files: ["dist", ...]`).
 
 ## Structure
 
 - `Form`, `Display`, `Dialog`, `Feedback`, `Typography`, `Navigation`, `primitives` — component categories
 - `views` — compound views (ListViewV2, FormViewV2, Wizard)
 - `widgets` — generic composed widgets (HomeHeader, MenuGrid, GeoPermissionCard, TimeZoneSelector)
-- `theme` — design tokens + tailwind-variants helpers
-- `lib` — generic utilities (date, monetary, quantity, serializer, icon, timezone)
+- `theme` — design tokens + tailwind-variants helpers (`defineTheme`, `extendTheme`, `themeToVars`)
+- `utils` — generic utilities (date, monetary, quantity, serializer, icon, timezone)

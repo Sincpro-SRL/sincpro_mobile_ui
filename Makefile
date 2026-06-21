@@ -45,7 +45,7 @@ build:
 	@find sincpro_mobile_ui -name '*.css' -exec sh -c 'mkdir -p "dist/$$(dirname "$${1#sincpro_mobile_ui/}")" && cp "$$1" "dist/$${1#sincpro_mobile_ui/}"' _ {} \;
 	@echo "✓ Build listo en ./dist (JS + tipos; los subpaths se exponen vía exports)"
 
-verify-format: format
+verify-format: format typecheck storybook-check
 	@if ! git diff --quiet; then \
 	  echo >&2 "✘ El formateo ha modificado archivos. Por favor agrégalos al commit."; \
 	  git --no-pager diff --name-only HEAD -- >&2; \
@@ -85,4 +85,4 @@ clean:
 test:
 	@echo "Running tests..."
 
-.PHONY: prepare-environment init format format-check lint typecheck check build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios
+.PHONY: prepare-environment init format format-check lint typecheck check verify build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios

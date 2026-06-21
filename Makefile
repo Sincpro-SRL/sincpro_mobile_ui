@@ -24,15 +24,31 @@ typecheck:
 
 check: lint typecheck
 
+storybook-check:
+	@echo "🔎 Validando stories (tsconfig.stories.json)..."
+	@npx tsc --noEmit -p tsconfig.stories.json
+	@echo "✓ Stories OK"
+
+storybook:
+	@echo "📚 Iniciando Storybook on-device (Expo)..."
+	@echo "   Pulsa 'a' (Android), 'i' (iOS) o escanea el QR con Expo Go."
+	@npx expo start -c
+
+storybook-android:
+	@echo "📚 Storybook → Android (build nativo)..."
+	@npx expo run:android
+
+storybook-ios:
+	@echo "📚 Storybook → iOS (build nativo)..."
+	@npx expo run:ios
+
 build:
-	@echo "🏗️  Compilando @sincpro/mobile-ui -> lib (tsc + tsc-alias)..."
-	@rm -rf lib
+	@echo "🏗️  Compilando @sincpro/mobile-ui -> dist (tsc + tsc-alias)..."
+	@rm -rf dist
 	@npx tsc -p tsconfig.build.json
 	@npx tsc-alias -p tsconfig.build.json
-	@echo "🎨 Copiando assets (preset + css)..."
-	@cp tailwind.preset.js lib/tailwind.preset.js
-	@find sincpro_mobile_ui -name '*.css' -exec sh -c 'mkdir -p "lib/$$(dirname "$${1#sincpro_mobile_ui/}")" && cp "$$1" "lib/$${1#sincpro_mobile_ui/}"' _ {} \;
-	@echo "✓ Build listo en ./lib (JS + .d.ts + preset + css, alias @ resuelto a relativo)"
+	@find sincpro_mobile_ui -name '*.css' -exec sh -c 'mkdir -p "dist/$$(dirname "$${1#sincpro_mobile_ui/}")" && cp "$$1" "dist/$${1#sincpro_mobile_ui/}"' _ {} \;
+	@echo "✓ Build listo en ./dist (JS + tipos; los subpaths se exponen vía exports)"
 
 verify-format: format
 	@if ! git diff --quiet; then \
@@ -56,24 +72,22 @@ endif
 	fi
 
 publish: build
-	@echo "📦 Publishing @sincpro/mobile-ui to NPM (source)..."
+	@echo "📦 Publishing @sincpro/mobile-ui to NPM..."
 	@if [ -n "$$NPM_TOKEN" ]; then \
 		echo "//registry.npmjs.org/:_authToken=$$NPM_TOKEN" > .npmrc.tmp; \
 		chmod 600 .npmrc.tmp; \
 		npm publish --access public --userconfig .npmrc.tmp; \
 		rm -f .npmrc.tmp; \
-	elif [ -n "$$NODE_AUTH_TOKEN" ]; then \
-		npm publish --access public; \
 	else \
 		npm publish --access public; \
 	fi
 	@echo "✓ Published successfully"
 
 clean:
-	@rm -rf lib node_modules
+	@rm -rf dist node_modules
 	@echo "✓ Cleaned"
 
 test:
 	@echo "Running tests..."
 
-.PHONY: prepare-environment init format format-check lint typecheck check build verify-format update-version publish clean test
+.PHONY: prepare-environment init format format-check lint typecheck check build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios

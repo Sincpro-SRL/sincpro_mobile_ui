@@ -16,6 +16,11 @@
       "@sincpro/mobile-ui/*": ["./sincpro_mobile_ui/*"]
     }
   },
-  "include": ["sincpro_mobile_ui/**/*.ts", "sincpro_mobile_ui/**/*.tsx"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "sincpro_mobile_ui/**/*.ts",
+    "sincpro_mobile_ui/**/*.tsx",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"],
+  "extends": "expo/tsconfig.base"
 }

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "sincpro_mobile_ui/**/*.ts",
+    "sincpro_mobile_ui/**/*.tsx",
+    ".rnstorybook/**/*.ts",
+    ".rnstorybook/**/*.tsx"
+  ],
+  "exclude": ["node_modules", ".rnstorybook/storybook.requires.ts"]
+}

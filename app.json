@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Mobile UI Storybook",
+    "slug": "sincpro-mobile-ui-storybook",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "android": {
+      "package": "bo.com.sincpro.mobileui.storybook"
+    },
+    "ios": {
+      "bundleIdentifier": "bo.com.sincpro.mobileui.storybook"
+    },
+    "plugins": ["@react-native-community/datetimepicker"]
+  }
+}

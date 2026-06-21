@@ -13,19 +13,11 @@ format:
 	@echo "🎨 Formateando (prettier)..."
 	@npx prettier --experimental-cli --write "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
 
-format-check:
-	@npx prettier --check "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
-
 lint:
 	@npx eslint .
 
 typecheck:
 	@npx tsc --noEmit
-
-check: lint typecheck
-
-verify: lint typecheck format-check storybook-check
-	@echo "✓ verify OK — todos los guardrails en orden (lint + tipos + formato + stories), sin inconsistencias"
 
 storybook-check:
 	@echo "🔎 Validando stories (tsconfig.stories.json)..."

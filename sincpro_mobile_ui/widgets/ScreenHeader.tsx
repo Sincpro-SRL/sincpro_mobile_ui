@@ -5,7 +5,7 @@ import { type ImageSourcePropType, View } from "react-native";
 const Header = Navigation.Header;
 const HeaderToolbar = Navigation.HeaderToolbar;
 
-export const enum EVariantScreenHeader {
+export enum EVariantScreenHeader {
   FLAT_HEADER = "FLAT_HEADER",
   ROUNDED_HEADER = "ROUNDED_HEADER",
   LOGO_WITH_BACK_BUTTON = "LOGO_WITH_BACK_BUTTON",

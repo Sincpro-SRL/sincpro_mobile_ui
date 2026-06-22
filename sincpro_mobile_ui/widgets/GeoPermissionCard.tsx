@@ -20,6 +20,11 @@ interface GeoPermissionCardProps {
   handleRequestPermission?: () => void;
 }
 
+/**
+ * @deprecated Domain-coupled (geo permission + Spanish copy); relocated to the core.
+ * Import from `@sincpro/mobile/ui/components/molecules` instead. Kept here for
+ * backwards compatibility and removed in the next major.
+ */
 function GeoPermissionCard({
   title,
   loading,

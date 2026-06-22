@@ -13,6 +13,7 @@ import CountRecords from "@sincpro/mobile-ui/Display/Display.CountRecords";
 import DataTable from "@sincpro/mobile-ui/Display/Display.DataTable";
 import Date from "@sincpro/mobile-ui/Display/Display.Date";
 import Divider from "@sincpro/mobile-ui/Display/Display.Divider";
+import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import IconBadge from "@sincpro/mobile-ui/Display/Display.IconBadge";
 import DisplayImage from "@sincpro/mobile-ui/Display/Display.Image";
@@ -23,6 +24,7 @@ import MediaCard from "@sincpro/mobile-ui/Display/Display.MediaCard";
 import MediaEmbed from "@sincpro/mobile-ui/Display/Display.MediaEmbed";
 import MenuButton from "@sincpro/mobile-ui/Display/Display.MenuButton";
 import Monetary from "@sincpro/mobile-ui/Display/Display.Monetary";
+import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import PriceTag from "@sincpro/mobile-ui/Display/Display.PriceTag";
 import ProductCard from "@sincpro/mobile-ui/Display/Display.ProductCard";
 import Rating from "@sincpro/mobile-ui/Display/Display.Rating";
@@ -73,11 +75,13 @@ export const Display = {
   CopyableText,
   Date,
   Divider,
+  GradientSurface,
   Icon,
   CountRecords,
   Logo,
   MenuButton,
   Monetary,
+  Pattern,
 };
 
 export { type BadgeProps, BadgeVariants };

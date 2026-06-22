@@ -13,6 +13,7 @@ export const DEFAULT_THEME: ThemeTokens = {
     accent: "#EFF6FF",
     hover: "#F3F4F6",
     disabled: "#F3F4F6",
+    inverse: "#0E1714",
   },
   text: {
     primary: "#0F172A",

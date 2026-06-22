@@ -11,6 +11,11 @@ interface TimeZoneSelectorProps {
   timezone?: string | null;
 }
 
+/**
+ * @deprecated Domain/region-coupled (hardcoded LatAm timezones + Spanish copy); relocated
+ * to the core. Import from `@sincpro/mobile/ui/components/molecules` instead. Kept here for
+ * backwards compatibility and removed in the next major.
+ */
 export function TimeZoneSelector({ onSelect, timezone }: TimeZoneSelectorProps) {
   const [currentTimezone, setCurrentTimezone] = useState(timezone);
   const [selectorVisible, setSelectorVisible] = useState(false);

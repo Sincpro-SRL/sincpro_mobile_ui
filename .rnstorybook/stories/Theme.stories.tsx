@@ -118,3 +118,94 @@ export const LightVsDark: Story = {
     </ScrollView>
   ),
 };
+
+// Proposed brand palette (reference only — apps override via createTheme). Mirrors the
+// handoff spec so designers/devs/AI share one source of truth for the SINCPRO look.
+const BRAND_PALETTE = [
+  { hex: "#00C357", label: "primary · CTA", note: "verde marca" },
+  { hex: "#FFFFFF", label: "on-primary", note: "texto sobre CTA" },
+  { hex: "#000000", label: "bg", note: "base negra" },
+  { hex: "#FAFAFA", label: "surface", note: "tarjetas / UI light" },
+  { hex: "#0B0B0B", label: "ink", note: "texto" },
+  { hex: "#6B6963", label: "muted", note: "texto secundario" },
+  { hex: "#E4E2DD", label: "border", note: "bordes" },
+  { hex: "#00C357", label: "success", note: "semántico" },
+  { hex: "#FFB020", label: "warning", note: "semántico" },
+  { hex: "#201DC4", label: "info", note: "semántico" },
+  { hex: "#FF4D1F", label: "danger", note: "semántico" },
+];
+
+const HANDOFF_SPEC = `:root {
+  /* Marca · base negra, UI light */
+  --color-bg:        #000000;
+  --color-surface:   #FAFAFA;
+  --color-ink:       #0B0B0B;
+  --color-muted:     #6B6963;
+  --color-border:    #E4E2DD;
+
+  /* Acción · CTA */
+  --color-primary:    #00C357;
+  --color-on-primary: #FFFFFF;
+
+  /* Semánticos */
+  --color-success: #00C357;
+  --color-warning: #FFB020;
+  --color-info:    #201DC4;
+  --color-danger:  #FF4D1F;
+
+  /* Tipografía por rol */
+  --font-title:   "Satoshi";
+  --font-body:    "Inter";
+  --font-caption: "Fira Code";
+
+  /* Radios */
+  --radius-card: 16px;
+  --radius-btn:  13px;
+  --radius-pill: 30px;
+}`;
+
+export const BrandPalette: Story = {
+  render: () => (
+    <ScrollView contentContainerStyle={{ gap: 16, padding: 4 }}>
+      <Typography.Text bold className="text-text-primary text-lg">
+        Paleta de marca (referencia)
+      </Typography.Text>
+      <Typography.Text className="text-text-secondary text-sm">
+        Cada app la sobreescribe con createTheme(); esto es la fuente de verdad para handoff.
+      </Typography.Text>
+
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+        {BRAND_PALETTE.map((s, i) => (
+          <View key={`${s.label}-${i}`} style={{ alignItems: "center", width: 92, gap: 4 }}>
+            <View
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 12,
+                backgroundColor: s.hex,
+                borderWidth: 1,
+                borderColor: "rgba(127,127,127,0.35)",
+              }}
+            />
+            <Typography.Text className="text-text-primary text-xs" numberOfLines={1} semibold>
+              {s.label}
+            </Typography.Text>
+            <Typography.Text className="text-text-tertiary text-xs" numberOfLines={1}>
+              {s.hex}
+            </Typography.Text>
+          </View>
+        ))}
+      </View>
+
+      <View
+        style={{ backgroundColor: "#1A1A1A", borderRadius: 12, padding: 14, marginTop: 4 }}
+      >
+        <Typography.Text
+          style={{ color: "#E6E6E6", fontFamily: "monospace", fontSize: 11, lineHeight: 17 }}
+        >
+          {HANDOFF_SPEC}
+        </Typography.Text>
+      </View>
+    </ScrollView>
+  ),
+};

@@ -38,7 +38,7 @@ function Switch({
         onValueChange={onValueChange}
         testID={testID}
         thumbColor={theme.bg.card}
-        trackColor={{ false: theme.bg.muted, true: theme.primary }}
+        trackColor={{ false: theme.bg.muted, true: theme.accent }}
         value={value}
       />
     </View>

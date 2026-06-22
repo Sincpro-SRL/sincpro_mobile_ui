@@ -1,4 +1,5 @@
 import { Feedback } from "@sincpro/mobile-ui/Feedback";
+import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { View } from "react-native";
@@ -87,6 +88,12 @@ export const Banner: Story = {
         onClose={() => {}}
         title="Error"
         tone="danger"
+      />
+      <Feedback.Banner
+        action={<Form.Button onPress={() => {}} size="small" title="Actualizar" />}
+        message="Hay una nueva versión disponible. Actualizá para obtener las últimas mejoras y correcciones de esta pantalla."
+        title="Actualización disponible"
+        tone="info"
       />
     </View>
   ),

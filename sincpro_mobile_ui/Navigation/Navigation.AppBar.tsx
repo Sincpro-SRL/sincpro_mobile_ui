@@ -7,6 +7,9 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+/** Fallback for the `tone="dark"` hero surface when the theme has no `bg.inverse` token. */
+const HERO_DARK_FALLBACK = "#0E1714";
+
 export interface AppBarActionProps {
   icon: string;
   onPress: () => void;
@@ -14,6 +17,10 @@ export interface AppBarActionProps {
   accessibilityLabel?: string;
   /** `tinted` highlights (primary action); `plain` is the neutral contained default. */
   tone?: "plain" | "tinted";
+  /** Render for a dark surface (translucent light button + light icon). */
+  onDark?: boolean;
+  /** Drop the contained surface → bare icon (iOS-style plain back/action). */
+  bare?: boolean;
   testID?: string;
 }
 
@@ -27,27 +34,38 @@ function AppBarAction({
   badge,
   accessibilityLabel,
   tone = "plain",
+  onDark = false,
+  bare = false,
   testID,
 }: AppBarActionProps) {
+  const bg = bare
+    ? "transparent"
+    : onDark
+      ? "rgba(255,255,255,0.14)"
+      : tone === "tinted"
+        ? theme.bg.accent
+        : theme.bg.card;
+  const iconColor =
+    tone === "tinted" ? theme.primary : onDark ? theme.icon.inverse : theme.icon.primary;
+  // Plain (white) squircle gets a hairline so it reads as a contained button on a light bar.
+  const showBorder = !bare && !onDark && tone !== "tinted";
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
-      className="items-center justify-center rounded-full"
+      className="items-center justify-center"
       hitSlop={6}
       onPress={onPress}
       style={{
-        width: 38,
-        height: 38,
-        backgroundColor: tone === "tinted" ? theme.bg.accent : theme.bg.muted,
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: bg,
+        ...(showBorder ? { borderWidth: 1, borderColor: theme.border.light } : null),
       }}
       testID={testID}
     >
-      <Icon
-        color={tone === "tinted" ? theme.primary : theme.icon.primary}
-        name={icon}
-        size={20}
-      />
+      <Icon color={iconColor} name={icon} size={bare ? 24 : 20} />
       {badge != null ? (
         <View
           className="absolute bg-danger rounded-full min-w-[16px] h-4 px-1 items-center justify-center"
@@ -70,6 +88,10 @@ export interface AppBarProps {
   actions?: ReactNode;
   subheader?: ReactNode;
   variant?: "default" | "large" | "center";
+  /** `dark` renders an always-dark hero surface (light text + light contained actions). */
+  tone?: "default" | "dark";
+  /** Back button style: `contained` (circular surface) or `plain` (bare iOS chevron). */
+  backVariant?: "contained" | "plain";
   border?: boolean;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
@@ -91,6 +113,8 @@ function AppBar({
   actions,
   subheader,
   variant = "default",
+  tone = "default",
+  backVariant = "contained",
   border = true,
   safeArea = true,
   className,
@@ -98,17 +122,33 @@ function AppBar({
 }: AppBarProps) {
   const insets = useSafeAreaInsets();
   const centered = variant === "center";
+  const dark = tone === "dark";
+  const titleStyle = dark ? { color: theme.text.inverse } : undefined;
+  const subtitleStyle = dark ? { color: "rgba(255,255,255,0.7)" } : undefined;
 
   return (
     <View
-      className={cn("bg-bg-card", border && "border-b border-border-light", className)}
-      style={{ paddingTop: safeArea ? insets.top : 0 }}
+      className={cn(
+        dark ? "" : "bg-bg-card",
+        !dark && border && "border-b border-border-light",
+        className,
+      )}
+      style={{
+        paddingTop: safeArea ? insets.top : 0,
+        ...(dark ? { backgroundColor: theme.bg.inverse ?? HERO_DARK_FALLBACK } : null),
+      }}
       testID={testID}
     >
       <View className="flex-row items-center px-3 gap-2 min-h-[56px]">
         <View className="flex-row items-center gap-2" style={{ minWidth: 38 }}>
           {onBack ? (
-            <AppBarAction accessibilityLabel="Volver" icon="chevron-back" onPress={onBack} />
+            <AppBarAction
+              accessibilityLabel="Volver"
+              bare={backVariant === "plain"}
+              icon="chevron-back"
+              onDark={dark}
+              onPress={onBack}
+            />
           ) : null}
           {leading}
         </View>
@@ -117,9 +157,10 @@ function AppBar({
           <View className={cn("flex-1", centered && "items-center")}>
             {title ? (
               <Typography.Text
-                className="text-text-primary"
+                className={dark ? "" : "text-text-primary"}
                 numberOfLines={1}
                 semibold
+                style={titleStyle}
                 variant="subtitle"
               >
                 {title}
@@ -127,8 +168,9 @@ function AppBar({
             ) : null}
             {subtitle ? (
               <Typography.Text
-                className="text-text-secondary"
+                className={dark ? "" : "text-text-secondary"}
                 numberOfLines={1}
+                style={subtitleStyle}
                 variant="caption"
               >
                 {subtitle}
@@ -146,11 +188,19 @@ function AppBar({
 
       {variant === "large" && title ? (
         <View className="px-4 pb-2 pt-0.5">
-          <Typography.Text className="text-text-primary" variant="h2">
+          <Typography.Text
+            className={dark ? "" : "text-text-primary"}
+            style={titleStyle}
+            variant="h2"
+          >
             {title}
           </Typography.Text>
           {subtitle ? (
-            <Typography.Text className="text-text-secondary" variant="bodySmall">
+            <Typography.Text
+              className={dark ? "" : "text-text-secondary"}
+              style={subtitleStyle}
+              variant="bodySmall"
+            >
               {subtitle}
             </Typography.Text>
           ) : null}

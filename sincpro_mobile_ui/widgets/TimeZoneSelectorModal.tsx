@@ -74,6 +74,11 @@ function EmptyState() {
   );
 }
 
+/**
+ * @deprecated Domain/region-coupled (hardcoded LatAm timezones + Spanish copy); relocated
+ * to the core. Import from `@sincpro/mobile/ui/components/molecules` instead. Kept here for
+ * backwards compatibility and removed in the next major.
+ */
 function TimeZoneSelectorModal({
   visible,
   onClose,

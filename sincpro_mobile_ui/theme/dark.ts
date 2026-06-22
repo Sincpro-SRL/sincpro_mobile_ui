@@ -18,6 +18,7 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
     accent: "#1E3A8A",
     hover: "#334155",
     disabled: "#1E293B",
+    inverse: "#0B0F0D",
   },
   text: {
     primary: "#F1F5F9",

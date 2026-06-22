@@ -1,6 +1,5 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
-import { Form } from "@sincpro/mobile-ui/Form";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import { theme } from "@sincpro/mobile-ui/theme";
@@ -8,7 +7,7 @@ import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import { IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
-import ScreenHeader, { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
+import { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
@@ -19,6 +18,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import type { Edge } from "react-native-safe-area-context";
 
 interface ListViewProps<T> {
   name: string;
@@ -58,8 +58,10 @@ function ListViewRoot<T>({
   children,
 }: ListViewProps<T>) {
   const Wrapper = withContainer ? Container : View;
+  // The header (AppBar) / parent layout owns the TOP safe-area; the Container only reserves
+  // the remaining edges to avoid stacking the top inset (double padding).
   const wrapperProps = withContainer
-    ? {} // Container maneja su propio backgroundColor
+    ? { edges: ["bottom", "left", "right"] as Edge[] }
     : { className: "flex-1 bg-bg-page" };
 
   // Propagate contentWithMargin to ContentList via context
@@ -87,23 +89,22 @@ function ListViewRoot<T>({
 }
 
 function Header({
-  variant = EVariantScreenHeader.ROUNDED_HEADER,
   children,
 }: {
+  /** @deprecated The header is now flat (Navigation.AppBar); `variant` is ignored. */
   variant?: EVariantScreenHeader;
   children?: ReactNode;
 }) {
   const { name, description, onBack } = useListView();
 
   return (
-    <ScreenHeader
+    <Navigation.AppBar
       onBack={onBack}
+      safeArea={false}
+      subheader={children}
       subtitle={description ? description : `Seleccionar ${name}`}
       title={name}
-      variant={variant}
-    >
-      {children}
-    </ScreenHeader>
+    />
   );
 }
 
@@ -131,8 +132,12 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
   }
 
   return (
-    <View className="px-4 pb-3 mt-2">
-      <Form.SearchBar onChangeText={setQuery} placeholder={`Buscar ${name}`} value={query} />
+    <View className="pb-2">
+      <Navigation.SearchBar
+        onChangeText={setQuery}
+        placeholder={`Buscar ${name}`}
+        value={query}
+      />
     </View>
   );
 }

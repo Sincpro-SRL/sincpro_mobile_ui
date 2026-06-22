@@ -45,6 +45,7 @@ export interface ThemeTokens {
     accent: string; // Selected states, active rows
     hover: string; // Hover states
     disabled: string; // Disabled states
+    inverse?: string; // Optional always-dark hero surface (AppBar tone="dark", dashboard hero)
   };
 
   /** Text */

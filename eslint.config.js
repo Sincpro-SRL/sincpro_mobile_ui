@@ -26,6 +26,13 @@ module.exports = defineConfig([
       "simple-import-sort/exports": "error",
       "react/jsx-sort-props": ["warn", { ignoreCase: true }],
       "react-hooks/exhaustive-deps": "off",
+      // refs/set-state-in-render flag the canonical RN patterns (useRef(new Animated.Value()).current,
+      // PanResponder read in JSX) — kept as warn, they're not bugs.
+      "react-hooks/refs": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/set-state-in-render": "warn",
+      // Off: our components export `default X` + `{ X }`; importing the default by its name is intentional.
+      "import/no-named-as-default": "off",
     },
   },
 ]);

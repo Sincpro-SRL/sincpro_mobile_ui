@@ -3,6 +3,7 @@ import {
   ConfirmationProvider,
   useConfirmationContext,
 } from "@sincpro/mobile-ui/Dialog/Confirmation.context";
+import ActionSheet from "@sincpro/mobile-ui/Dialog/Dialog.ActionSheet";
 import Confirmation from "@sincpro/mobile-ui/Dialog/Dialog.Confirmation";
 import EditValue, {
   type EditableValueModalChip,
@@ -13,6 +14,7 @@ export const Dialog = {
   Confirmation,
   BottomSheet,
   EditValue,
+  ActionSheet,
 };
 
 export {

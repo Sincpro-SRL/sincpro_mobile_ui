@@ -16,7 +16,7 @@ function ScrollContainer({
 }: ScrollContainerProps) {
   return (
     <SafeAreaView className={cn("flex-1 bg-bg-card", className)}>
-      <StatusBar barStyle="dark-content" translucent={false} />
+      <StatusBar barStyle="dark-content" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"

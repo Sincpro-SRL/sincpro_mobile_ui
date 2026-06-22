@@ -25,6 +25,10 @@ interface SearchBarProps {
   className?: string;
 }
 
+/**
+ * @deprecated Use `Navigation.SearchBar` (2026 pill). Kept for backwards compatibility
+ * (consumed by `ListViewV2`).
+ */
 function SearchBar({
   value,
   onChangeText,

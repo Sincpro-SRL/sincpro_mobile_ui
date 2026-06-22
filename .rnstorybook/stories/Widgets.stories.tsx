@@ -6,7 +6,7 @@ import { MenuGrid, type MenuItem } from "@sincpro/mobile-ui/widgets/MenuGrid";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { View } from "react-native";
 
-const meta: Meta = { title: "Widgets" };
+const meta: Meta = { title: "Patterns/Widgets" };
 export default meta;
 
 type Story = StoryObj;

@@ -25,6 +25,10 @@ interface ScreenHeaderProps {
   onBack?: () => void;
 }
 
+/**
+ * @deprecated Legacy style (gradient variants). For new top bars use
+ * `Navigation.AppBar` (flat). Kept for backwards compatibility (used by FormViewV2/ListViewV2).
+ */
 function ScreenHeader({
   variant,
   title = "Distribución",

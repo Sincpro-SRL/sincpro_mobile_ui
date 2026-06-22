@@ -1,11 +1,12 @@
-import { BottomSheet, useConfirmationContext } from "@sincpro/mobile-ui/Dialog";
+import { Dialog, useConfirmationContext } from "@sincpro/mobile-ui/Dialog";
+import GorhomSheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
 import { View } from "react-native";
 
-const meta: Meta = { title: "Dialog" };
+const meta: Meta = { title: "Components/Overlays" };
 export default meta;
 
 type Story = StoryObj;
@@ -27,34 +28,48 @@ function ConfirmationDemo() {
   );
 }
 
-function BottomSheetDemo() {
+function ActionSheetDemo() {
   const [visible, setVisible] = useState(false);
   return (
     <View>
-      <Form.Button onPress={() => setVisible(true)} title="Abrir BottomSheet" />
-      <BottomSheet.Root onClose={() => setVisible(false)} size="medium" visible={visible}>
-        <BottomSheet.Header>
-          <View className="px-5 pb-3">
-            <Typography.Text bold variant="subtitle">
-              Detalle
-            </Typography.Text>
-          </View>
-        </BottomSheet.Header>
-        <BottomSheet.Content>
-          <View className="px-5 py-2">
-            <Typography.Text>Contenido del bottom sheet.</Typography.Text>
-          </View>
-        </BottomSheet.Content>
-        <BottomSheet.Actions>
-          <View className="flex-1">
-            <Form.Button onPress={() => setVisible(false)} title="Cerrar" variant="outline" />
-          </View>
-        </BottomSheet.Actions>
-      </BottomSheet.Root>
+      <Form.Button onPress={() => setVisible(true)} title="Abrir ActionSheet" />
+      <Dialog.ActionSheet
+        actions={[
+          { label: "Editar", icon: "create-outline", onPress: () => {} },
+          { label: "Compartir", icon: "share-outline", onPress: () => {} },
+          { label: "Eliminar", icon: "trash-outline", destructive: true, onPress: () => {} },
+        ]}
+        message="Elegí una acción para el ticket"
+        onClose={() => setVisible(false)}
+        title="Ticket #001"
+        visible={visible}
+      />
     </View>
   );
 }
 
-export const Confirmation: Story = { render: () => <ConfirmationDemo /> };
+function SheetDemo() {
+  const [visible, setVisible] = useState(false);
+  return (
+    <View>
+      <Form.Button onPress={() => setVisible(true)} title="Abrir Sheet (gorhom)" />
+      <GorhomSheet
+        onClose={() => setVisible(false)}
+        title="Detalle del pedido"
+        visible={visible}
+      >
+        <Typography.Text className="text-text-secondary">
+          Sheet moderno con gestos, snap dinámico y backdrop. Deslizá hacia abajo para cerrar.
+        </Typography.Text>
+        <View style={{ height: 12 }} />
+        <Form.Button onPress={() => setVisible(false)} title="Cerrar" variant="outline" />
+      </GorhomSheet>
+    </View>
+  );
+}
 
-export const BottomSheetModal: Story = { render: () => <BottomSheetDemo /> };
+export const Sheet: Story = { render: () => <SheetDemo /> };
+
+export const ActionSheet: Story = { render: () => <ActionSheetDemo /> };
+
+export const Confirmation: Story = { render: () => <ConfirmationDemo /> };

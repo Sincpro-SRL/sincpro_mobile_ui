@@ -16,8 +16,8 @@
 
 | Paquete (npm)                 | Alias import                     | Rol                                                                                                                                                                                                  | Publicado |
 | ----------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `@sincpro/mobile`             | `@sincpro/mobile/*`              | **Core**: infra (DB, cola/eventos, cron), patrones DDD, adapters base, `framework/` (DomainModule, createApp, orchestrator, kernel), `AppShell`, y un `ui/` propio (screens/components de framework) | `0.1.0`   |
-| `@sincpro/mobile-ui`          | `@sincpro/mobile-ui/*`           | **Design system** standalone (Typography, Display, Form, Dialog, Feedback, views, widgets, icons, theme, layouts). Sin router, sin dominios.                                                         | `0.2.0`   |
+| `@sincpro/mobile`             | `@sincpro/mobile/*`              | **Core**: infra (DB, cola/eventos, cron), patrones DDD, adapters base, `framework/` (DomainModule, createApp, orchestrator, kernel), `AppShell`, y un `ui/` propio (screens/components de framework) | `0.1.1`   |
+| `@sincpro/mobile-ui`          | `@sincpro/mobile-ui/*`           | **Design system** standalone (Typography, Display, Form, Dialog, Feedback, views, widgets, icons, theme, layouts). Sin router, sin dominios.                                                         | `0.2.1`   |
 | `@sincpro/mobile-odoo`        | `@sincpro/mobile-odoo/*`         | Integración **Odoo opcional**: `OdooClient`, auth, server, res.partner, pantallas de login/perfil/portal.                                                                                            | `0.1.0`   |
 | `sincpro-mobile-tickets`      | `@sincpro/mobile-tickets/*`      | **App** de negocio (host). Tiene impresora.                                                                                                                                                          | privado   |
 | `sincpro-mobile-distribution` | `@sincpro/mobile-distribution/*` | **App** de negocio (host): ventas, facturación, rutas. **Sin impresora**.                                                                                                                            | privado   |
@@ -137,4 +137,7 @@ Para cambios grandes (migraciones, refactors masivos, auditorías) se usa **orqu
 ## Para profundizar
 
 - [`docs/GOTCHAS.md`](docs/GOTCHAS.md) — trampas de dependencias, UI y runtime (síntoma → causa → fix). **Léelo si algo "raro" pasa.**
-- `README.md` — visión de producto y filosofía.
+- [`docs/PHILOSOPHY.md`](docs/PHILOSOPHY.md) — criterio de diseño (flat, NativeWind-first, híbrido @expo/ui, gotchas).
+- [`docs/STRUCTURE.md`](docs/STRUCTURE.md) — taxonomía de carpetas y dónde va cada cosa.
+- [`docs/CATALOG.md`](docs/CATALOG.md) — catálogo de componentes por categoría.
+- `README.md` — visión de producto y uso.

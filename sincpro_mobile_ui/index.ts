@@ -9,6 +9,13 @@ export { Typography } from "@sincpro/mobile-ui/Typography";
 // Primitives (NativeWind-based - Layout utilities)
 export { Box, Row, Stack } from "@sincpro/mobile-ui/primitives";
 
+// Branding (logo del app, configurado una vez; Display.Logo lo usa como fallback)
+export {
+  type BrandingConfig,
+  getBrandingLogo,
+  setBranding,
+} from "@sincpro/mobile-ui/branding";
+
 // Theme
 export { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 export {

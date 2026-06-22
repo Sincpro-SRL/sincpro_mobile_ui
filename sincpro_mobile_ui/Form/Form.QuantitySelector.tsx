@@ -6,7 +6,7 @@ import { tv } from "tailwind-variants";
 
 const quantitySelector = tv({
   slots: {
-    container: "flex-row items-center border border-brand-accent rounded-full px-1",
+    container: "flex-row items-center self-start border border-accent rounded-full px-1",
     button: "w-9 h-9 rounded-full justify-center items-center",
     valueContainer: "min-w-[40px] items-center px-3",
   },

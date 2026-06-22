@@ -25,7 +25,7 @@ import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { ScrollView, View } from "react-native";
 
-const meta: Meta = { title: "Icons" };
+const meta: Meta = { title: "Foundations/Icons" };
 export default meta;
 
 const ICONS = [

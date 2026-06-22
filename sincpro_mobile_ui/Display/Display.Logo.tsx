@@ -1,3 +1,4 @@
+import { getBrandingLogo } from "@sincpro/mobile-ui/branding";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { FC } from "react";
 import { Image, type ImageSourcePropType, View } from "react-native";
@@ -39,10 +40,11 @@ function renderImage(imageClassName: string, source?: ImageSourcePropType) {
 
 const Logo: FC<LogoProps> = ({ source, size = "medium", className }) => {
   const styles = logo({ size });
+  const resolvedSource = source ?? getBrandingLogo();
 
   return (
     <View className={styles.container({ className })}>
-      {renderImage(styles.image(), source)}
+      {renderImage(styles.image(), resolvedSource)}
     </View>
   );
 };

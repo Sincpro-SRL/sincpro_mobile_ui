@@ -126,6 +126,10 @@ const SIZE_MAP: Record<BottomSheetSize, number> = {
  * </BottomSheet.Root>
  * ```
  */
+/**
+ * @deprecated Custom PanResponder implementation (limited gestures/scroll). The modern
+ * replacement is `Dialog.Sheet` (on RN Modal, no provider). Kept for backwards compatibility.
+ */
 function Root({ visible, onClose, size = "auto", dismissible = true, children }: RootProps) {
   const insets = useSafeAreaInsets();
   const screenHeight = Dimensions.get("window").height;

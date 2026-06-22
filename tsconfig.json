@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "experimentalDecorators": true,
     "paths": {
       "@sincpro/mobile-ui": ["./sincpro_mobile_ui/index.ts"],

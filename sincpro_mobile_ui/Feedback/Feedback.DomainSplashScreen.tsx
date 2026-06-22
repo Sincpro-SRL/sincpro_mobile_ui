@@ -96,7 +96,7 @@ function DomainSplashScreen({
       {children}
       <Animated.View
         pointerEvents={isLoading ? "auto" : "none"}
-        style={[StyleSheet.absoluteFillObject, splashStyle]}
+        style={[StyleSheet.absoluteFill, splashStyle]}
       >
         <GradientContainer className="flex-1 justify-center items-center px-8">
           <View className="w-full items-center gap-6">

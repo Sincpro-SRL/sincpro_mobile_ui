@@ -12,6 +12,10 @@ interface HomeHeaderProps {
   readonly onBack?: () => void;
 }
 
+/**
+ * @deprecated Legacy style (gradient). For new top bars use `Navigation.AppBar`.
+ * Kept for backwards compatibility.
+ */
 export const HomeHeader: React.FC<HomeHeaderProps> = ({
   title = "Distribución",
   logo,

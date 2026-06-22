@@ -44,6 +44,10 @@ const SIZE_MAP = {
   lg: { container: 80, icon: 40 },
 };
 
+/**
+ * @deprecated Duplicates the icon-button. Use `Form.IconButton` (general) or
+ * `Navigation.AppBar.Action` (headers). Kept for backwards compatibility.
+ */
 export function CircleButton({
   iconType = "ionicons",
   size = "md",

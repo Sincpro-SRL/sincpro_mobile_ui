@@ -25,16 +25,16 @@ function deepMerge<T>(base: T, override: DeepPartial<T>): T {
 }
 
 /**
- * Define un theme completo y tipado (API potente: el framework parametriza
- * todos los tokens explícitamente).
+ * Defines a complete, typed theme (powerful API: the framework parametrizes
+ * every token explicitly).
  */
 export function defineTheme(tokens: ThemeTokens): ThemeTokens {
   return tokens;
 }
 
 /**
- * Combina un theme base con overrides parciales (deep merge tipado). Primitiva
- * para construir APIs simples encima (ej. createTheme del core).
+ * Merges a base theme with partial overrides (typed deep merge). Primitive
+ * to build simpler APIs on top (e.g. the core's createTheme).
  */
 export function mergeTheme(
   base: ThemeTokens,
@@ -44,7 +44,7 @@ export function mergeTheme(
 }
 
 /**
- * Theme por defecto + overrides parciales en un solo paso.
+ * Default theme + partial overrides in a single step.
  */
 export function extendTheme(overrides: DeepPartial<ThemeTokens> = {}): ThemeTokens {
   return deepMerge(DEFAULT_THEME, overrides);

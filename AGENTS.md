@@ -137,4 +137,7 @@ Para cambios grandes (migraciones, refactors masivos, auditorías) se usa **orqu
 ## Para profundizar
 
 - [`docs/GOTCHAS.md`](docs/GOTCHAS.md) — trampas de dependencias, UI y runtime (síntoma → causa → fix). **Léelo si algo "raro" pasa.**
-- `README.md` — visión de producto y filosofía.
+- [`docs/PHILOSOPHY.md`](docs/PHILOSOPHY.md) — criterio de diseño (flat, NativeWind-first, híbrido @expo/ui, gotchas).
+- [`docs/STRUCTURE.md`](docs/STRUCTURE.md) — taxonomía de carpetas y dónde va cada cosa.
+- [`docs/CATALOG.md`](docs/CATALOG.md) — catálogo de componentes por categoría.
+- `README.md` — visión de producto y uso.

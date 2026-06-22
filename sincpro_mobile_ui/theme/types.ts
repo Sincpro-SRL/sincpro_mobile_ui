@@ -3,8 +3,8 @@
  * THEME SYSTEM - SIMPLE & SEMANTIC
  * ============================================================================
  *
- * Sistema simplificado de theming sin hooks ni context.
- * Importación directa de tokens según dominio activo.
+ * Simplified theming system without hooks or context.
+ * Tokens are read directly from the active theme.
  */
 
 // ----------------------------------------------------------------------------
@@ -20,71 +20,71 @@ export interface ShadowStyle {
 }
 
 // ----------------------------------------------------------------------------
-// Theme Tokens (SIMPLIFICADO)
+// Theme Tokens (SIMPLIFIED)
 // ----------------------------------------------------------------------------
 
 export interface ThemeTokens {
-  /** Nombre del theme */
+  /** Theme name */
   name: string;
 
-  /** Color primario - botones principales, links, estados activos */
+  /** Primary color - main buttons, links, active states */
   primary: string;
 
-  /** Color secundario - botones secundarios, elementos de bajo perfil (gris) */
+  /** Secondary color - secondary buttons, low-profile elements (gray) */
   secondary: string;
 
-  /** Color de acento - highlights, badges importantes, CTAs secundarios (naranja/indigo) */
+  /** Accent color - highlights, important badges, secondary CTAs (orange/indigo) */
   accent: string;
 
-  /** Fondos */
+  /** Backgrounds */
   bg: {
-    page: string; // Fondo de pantallas
-    card: string; // Cards, modales, inputs
+    page: string; // Screen background
+    card: string; // Cards, modals, inputs
     popover: string; // Dropdowns, tooltips, context menus
-    muted: string; // Superficies secundarias, filas alternas
-    accent: string; // Estados seleccionados, filas activas
+    muted: string; // Secondary surfaces, alternating rows
+    accent: string; // Selected states, active rows
     hover: string; // Hover states
     disabled: string; // Disabled states
   };
 
-  /** Textos */
+  /** Text */
   text: {
-    primary: string; // Texto principal
-    secondary: string; // Texto secundario
-    tertiary: string; // Placeholders, texto terciario
-    muted: string; // Texto sobre bg.muted
-    accent: string; // Texto sobre bg.accent
-    inverse: string; // Texto sobre colores (blanco)
-    disabled: string; // Texto disabled
-    onPrimary: string; // Texto sobre color primary
-    onSecondary: string; // Texto sobre color secondary (gris)
-    onAccent: string; // Texto sobre color accent
-    onDanger: string; // Texto sobre color danger
-    onSuccess: string; // Texto sobre color success
+    primary: string; // Primary text
+    secondary: string; // Secondary text
+    tertiary: string; // Placeholders, tertiary text
+    muted: string; // Text on bg.muted
+    accent: string; // Text on bg.accent
+    inverse: string; // Text on colors (white)
+    disabled: string; // Disabled text
+    onPrimary: string; // Text on primary
+    onSecondary: string; // Text on secondary (gray)
+    onAccent: string; // Text on accent
+    onDanger: string; // Text on danger
+    onSuccess: string; // Text on success
   };
-  /** Iconos */
+  /** Icons */
   icon: {
-    primary: string; // Icono principal
-    secondary: string; // Icono secundario
-    tertiary: string; // Icono terciario
-    inverse: string; // Icono sobre colores (blanco)
-    disabled: string; // Icono disabled
+    primary: string; // Primary icon
+    secondary: string; // Secondary icon
+    tertiary: string; // Tertiary icon
+    inverse: string; // Icon on colors (white)
+    disabled: string; // Disabled icon
   };
-  /** Bordes */
+  /** Borders */
   border: {
-    default: string; // Bordes normales
-    light: string; // Bordes suaves
-    strong: string; // Bordes marcados
-    focus: string; // Color de focus
+    default: string; // Normal borders
+    light: string; // Soft borders
+    strong: string; // Strong borders
+    focus: string; // Focus color
   };
 
-  /** Estados semánticos */
+  /** Semantic states */
   success: string;
   warning: string;
   danger: string;
   info: string;
 
-  /** Estados semánticos - Versiones claras */
+  /** Semantic states - light variants */
   successLight: string;
   warningLight: string;
   dangerLight: string;
@@ -94,13 +94,13 @@ export interface ThemeTokens {
   ring: string; // Focus outline color
   input: string; // Input border color
 
-  /** Gradientes (para LinearGradient) */
+  /** Gradients (for LinearGradient) */
   gradient: {
     primary: readonly [string, string];
     accent: readonly [string, string];
   };
 
-  /** Sombras (React Native) */
+  /** Shadows (React Native) */
   shadow: {
     sm: ShadowStyle;
     md: ShadowStyle;

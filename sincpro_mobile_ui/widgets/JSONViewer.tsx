@@ -45,7 +45,7 @@ interface JsonLine {
 }
 
 function parseJsonToColoredLines(jsonString: string): JsonLine[] {
-  // Protección 1: Verificar tamaño
+  // Guard 1: check size
   if (jsonString.length > MAX_JSON_SIZE) {
     return [
       {
@@ -59,7 +59,7 @@ function parseJsonToColoredLines(jsonString: string): JsonLine[] {
 
   const lines = jsonString.split("\n");
 
-  // Protección 2: Verificar cantidad de líneas
+  // Guard 2: check line count
   if (lines.length > MAX_LINES) {
     return [
       {
@@ -122,7 +122,7 @@ function parseJsonToColoredLines(jsonString: string): JsonLine[] {
 const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Protección 3: Formatear con try-catch robusto
+  // Guard 3: format with a robust try-catch
   const formattedJson = useMemo(() => {
     if (!selectedJson || selectedJson.trim() === "") {
       return "{}";
@@ -138,7 +138,7 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
     }
   }, [selectedJson]);
 
-  // Protección 4: Colorear con control de procesamiento
+  // Guard 4: colorize with processing control
   const coloredLines = useMemo(() => {
     setIsProcessing(true);
 
@@ -149,12 +149,12 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
       // Fallback a texto plano si falla el coloreado
       return [{ text: formattedJson, color: "#333333" }];
     } finally {
-      // Pequeño delay para que el loading sea visible si es necesario
+      // Small delay so the loading state is visible if needed
       setTimeout(() => setIsProcessing(false), 50);
     }
   }, [formattedJson]);
 
-  // Protección 5: Mostrar loading mientras procesa JSONs grandes
+  // Guard 5: show loading while processing large JSON
   if (isProcessing && formattedJson.length > 50_000) {
     return (
       <View className="p-4 items-center justify-center min-h-[200px]">

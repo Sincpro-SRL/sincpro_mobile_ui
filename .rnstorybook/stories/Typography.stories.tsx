@@ -2,7 +2,7 @@ import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 
 const meta = {
-  title: "Typography/Text",
+  title: "Foundations/Typography",
   component: Typography.Text,
   args: {
     children: "El veloz murciélago hindú",

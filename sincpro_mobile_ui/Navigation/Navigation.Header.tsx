@@ -15,6 +15,11 @@ export interface HeaderProps {
   className?: string;
 }
 
+/**
+ * @deprecated Legacy style (forced gradient via `GradientContainer`). Use
+ * `Navigation.AppBar` (flat, modern, opt-in gradient). Kept for backwards compatibility.
+ */
+
 const Header = ({
   title,
   logo,

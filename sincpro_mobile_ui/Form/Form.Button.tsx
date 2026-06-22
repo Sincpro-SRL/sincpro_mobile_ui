@@ -19,6 +19,7 @@ const button = tv({
     variant: {
       primary: "shadow-sm",
       accent: "shadow-sm",
+      cta: "shadow-sm",
       secondary: "bg-bg-card border border-primary shadow-sm",
       outline: "bg-transparent border border-primary",
       outlineDanger: "bg-transparent border border-danger",
@@ -48,6 +49,7 @@ const buttonIcon = tv({
     variant: {
       primary: "shadow-sm",
       accent: "shadow-sm",
+      cta: "shadow-sm",
       secondary: "bg-bg-card border border-primary shadow-sm",
       outline: "bg-transparent border border-primary",
       outlineDanger: "bg-transparent border border-danger",
@@ -76,6 +78,7 @@ const textColor = tv({
     variant: {
       primary: "text-white",
       accent: "text-white",
+      cta: "text-white",
       secondary: "text-primary",
       outline: "text-primary",
       outlineDanger: "text-danger",
@@ -96,6 +99,11 @@ const textColor = tv({
     },
     {
       variant: "accent",
+      disabled: true,
+      className: "text-white/70",
+    },
+    {
+      variant: "cta",
       disabled: true,
       className: "text-white/70",
     },
@@ -139,6 +147,7 @@ function getLoadingColorDynamic(variant: string): string {
   const map: Record<string, string> = {
     primary: theme.text.inverse,
     accent: theme.text.inverse,
+    cta: theme.text.inverse,
     secondary: theme.primary,
     outline: theme.primary,
     outlineDanger: theme.danger,
@@ -155,6 +164,7 @@ function getIconColorDynamic(variant: string, disabled: boolean): string {
     const disabledMap: Record<string, string> = {
       primary: theme.icon.inverse + "70",
       accent: theme.icon.inverse + "70",
+      cta: theme.icon.inverse + "70",
       secondary: theme.icon.disabled,
       outline: theme.icon.disabled,
       outlineDanger: theme.danger + "7f",
@@ -169,6 +179,7 @@ function getIconColorDynamic(variant: string, disabled: boolean): string {
   const enabledMap: Record<string, string> = {
     primary: theme.icon.inverse,
     accent: theme.icon.inverse,
+    cta: theme.icon.inverse,
     secondary: theme.primary,
     outline: theme.primary,
     outlineDanger: theme.danger,
@@ -283,7 +294,7 @@ const Button: FC<ButtonProps> = ({
     );
   }
 
-  if (variant === "primary" || variant === "accent") {
+  if (variant === "primary" || variant === "accent" || variant === "cta") {
     const gradientColors: readonly [string, string] =
       variant === "primary" ? theme.gradient.primary : theme.gradient.accent;
 

@@ -1,8 +1,9 @@
-import { Box, Row, Stack } from "@sincpro/mobile-ui/primitives";
+import { AspectRatio, Box, Row, Spacer, Stack } from "@sincpro/mobile-ui/primitives";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
+import { View } from "react-native";
 
-const meta: Meta = { title: "Primitives" };
+const meta: Meta = { title: "Foundations/Primitives" };
 export default meta;
 
 type Story = StoryObj;
@@ -38,5 +39,28 @@ export const BoxLayout: Story = {
     <Box className="bg-bg-muted p-4 rounded-lg">
       <Typography.Text>Box contenedor</Typography.Text>
     </Box>
+  ),
+};
+
+export const SpacerLayout: Story = {
+  render: () => (
+    <Row className="items-center">
+      <Item label="A" />
+      <Spacer flex />
+      <Item label="B" />
+    </Row>
+  ),
+};
+
+export const AspectRatioLayout: Story = {
+  render: () => (
+    <View style={{ width: 200 }}>
+      <AspectRatio
+        className="bg-bg-muted rounded-lg items-center justify-center"
+        ratio={16 / 9}
+      >
+        <Typography.Text>16:9</Typography.Text>
+      </AspectRatio>
+    </View>
   ),
 };

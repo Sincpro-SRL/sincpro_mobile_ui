@@ -27,7 +27,7 @@ function Splash({
   children,
 }: SplashScreenProps) {
   const [showContent, setShowContent] = useState(false);
-  const minDurationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const minDurationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (minDurationTimeoutRef.current) {

@@ -3,7 +3,7 @@
  * THEME CONSTANT - Acceso directo al theme activo
  * ============================================================================
  *
- * Constante que resuelve automáticamente el theme según el dominio activo.
+ * Constant that resolves the active theme automatically.
  * SOLO usar cuando className no es suficiente (RefreshControl, placeholderColor, etc.)
  *
  * @example

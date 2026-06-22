@@ -95,6 +95,10 @@ function Tab(_props: TabProps) {
   return null;
 }
 
+/**
+ * @deprecated Use `Navigation.BottomNav` (flat, modern) for the bar, and the core's
+ * router-aware layouts. Kept for backwards compatibility.
+ */
 function TabNavigatorLayoutComponent({
   className,
   children,

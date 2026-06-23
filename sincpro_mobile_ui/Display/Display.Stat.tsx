@@ -16,7 +16,7 @@ function Stat({ value, label, align = "center", className, testID }: StatProps) 
       className={cn(align === "center" ? "items-center" : "items-start", className)}
       testID={testID}
     >
-      <Typography.Text className="text-text-primary" semibold variant="subtitle">
+      <Typography.Text className="text-text-primary" variant="dataLarge">
         {value}
       </Typography.Text>
       <Typography.Text className="text-text-secondary" variant="caption">

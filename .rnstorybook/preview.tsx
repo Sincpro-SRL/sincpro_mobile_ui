@@ -9,28 +9,28 @@ import {
 import type { Preview } from "@storybook/react-native";
 import { vars } from "nativewind";
 import { type ReactNode, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 // SINCPRO brand palette (img "THEME · TOKENS"): verde marca + neutros + semánticos.
 // Each app overrides via createTheme(); this previews the DS in the real brand colors.
-// SINCPRO brand manual (literal): color-brand = NEGRO #0B0B0B (primary). accent = VERDE #00C357.
+// SINCPRO brand manual (literal): color-brand = NEGRO #0B0B0B (primary). CTA = VERDE NEÓN
+// #00F58C con texto/ícono OSCURO (#06170E). success = #00C357 (estado-ok, distinto del CTA).
 const BRAND_THEME = extendTheme({
   primary: "#0B0B0B", // color-brand · negro (fondos oscuros, texto, botón neutro)
   secondary: "#6B6963", // muted / neutro
-  accent: "#00C357", // verde marca · CTA
-  success: "#00C357",
+  accent: "#00F58C", // verde neón · CTA (texto oscuro encima)
+  success: "#00C357", // estado-ok (verde marca, diferenciado del CTA neón)
   warning: "#FFB020",
   info: "#201DC4",
   danger: "#FF4D1F",
-  // ring (focus ring) e input (borde de inputs) son tokens propios que por default eran
-  // AZUL/gris → alinearlos a la marca (verde / borde neutro) mata el azul que se colaba.
   ring: "#00C357",
   input: "#E4E2DD",
-  bg: { page: "#FAFAFA", card: "#FFFFFF", muted: "#F0F1EE", accent: "#E6F8EE" },
-  text: { primary: "#0B0B0B", secondary: "#6B6963" },
+  bg: { page: "#FAFAFA", card: "#FFFFFF", muted: "#EDEBE6", accent: "#E6FFF2" },
+  // onAccent OSCURO → texto/ícono sobre el verde neón (contraste, look fintech).
+  text: { primary: "#0B0B0B", secondary: "#6B6963", onAccent: "#06170E" },
   border: { default: "#E4E2DD", light: "#EFEDE8", focus: "#00C357" },
-  // primary gradient = negro; accent gradient = verde (CTA).
-  gradient: { primary: ["#1A1A1A", "#0B0B0B"], accent: ["#22E584", "#00C357"] },
+  // primary gradient = negro; accent gradient = verde neón (CTA).
+  gradient: { primary: ["#1A1A1A", "#0B0B0B"], accent: ["#22E584", "#00F58C"] },
 });
 
 const THEMES = {
@@ -58,20 +58,24 @@ function ThemeFrame({ children }: { children: ReactNode }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <View
+      {/*
+        Scrollable canvas: short stories stay vertically centered (flexGrow:1 +
+        justifyContent:center), tall ones (e.g. AppBar's stacked frames) scroll to the
+        end instead of overflowing off-screen. The theme `vars()` go on the ScrollView so
+        they cascade to all story descendants.
+      */}
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          padding: 16,
+        }}
         key={mode}
-        style={[
-          vars(themeToVars(tokens)),
-          {
-            flex: 1,
-            padding: 16,
-            justifyContent: "center",
-            backgroundColor: tokens.bg.page,
-          },
-        ]}
+        showsVerticalScrollIndicator={false}
+        style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
       >
         {children}
-      </View>
+      </ScrollView>
       <Pressable
         accessibilityRole="button"
         onPress={toggle}

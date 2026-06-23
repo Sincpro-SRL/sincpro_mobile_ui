@@ -20,7 +20,8 @@
   "include": [
     "sincpro_mobile_ui/**/*.ts",
     "sincpro_mobile_ui/**/*.tsx",
-    "nativewind-env.d.ts"
+    "nativewind-env.d.ts",
+    "assets-fonts.d.ts"
   ],
   "exclude": ["node_modules", "dist"],
   "extends": "expo/tsconfig.base"

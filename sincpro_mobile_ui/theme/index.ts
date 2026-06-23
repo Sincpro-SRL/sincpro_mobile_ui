@@ -15,4 +15,12 @@ export {
 } from "@sincpro/mobile-ui/theme/define";
 export { theme } from "@sincpro/mobile-ui/theme/theme";
 export type { ShadowStyle, ThemeTokens } from "@sincpro/mobile-ui/theme/types";
+export {
+  configureFonts,
+  fontFamilies,
+  type FontRole,
+  resetFonts,
+  useAppFonts,
+  variantFontRole,
+} from "@sincpro/mobile-ui/theme/typography";
 export { useTheme } from "@sincpro/mobile-ui/theme/useTheme";

@@ -1,10 +1,11 @@
+import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /** Fallback for the `tone="dark"` hero surface when the theme has no `bg.inverse` token. */
@@ -88,8 +89,16 @@ export interface AppBarProps {
   actions?: ReactNode;
   subheader?: ReactNode;
   variant?: "default" | "large" | "center";
-  /** `dark` renders an always-dark hero surface (light text + light contained actions). */
-  tone?: "default" | "dark";
+  /**
+   * Surface tone:
+   * - `default` — tokenized light card.
+   * - `dark` — always-dark hero (light text + light contained actions).
+   * - `gradient` — brand-accent gradient hero for greeting headers ("Buenos días, …"),
+   *   with dark text via `text.onAccent` (reads `theme.gradient.accent`).
+   */
+  tone?: "default" | "dark" | "gradient";
+  /** [large variant] Show a left vertical accent bar beside the large title. */
+  accentBar?: boolean;
   /** Back button style: `contained` (circular surface) or `plain` (bare iOS chevron). */
   backVariant?: "contained" | "plain";
   border?: boolean;
@@ -114,6 +123,7 @@ function AppBar({
   subheader,
   variant = "default",
   tone = "default",
+  accentBar = false,
   backVariant = "contained",
   border = true,
   safeArea = true,
@@ -122,15 +132,27 @@ function AppBar({
 }: AppBarProps) {
   const insets = useSafeAreaInsets();
   const centered = variant === "center";
+  const large = variant === "large";
   const dark = tone === "dark";
-  const titleStyle = dark ? { color: theme.text.inverse } : undefined;
-  const subtitleStyle = dark ? { color: "rgba(255,255,255,0.7)" } : undefined;
+  const gradient = tone === "gradient";
+  // Greeting/balance hero (large, no back/leading): drop the empty top toolbar row and put
+  // the action(s) inline beside the big title — avoids a tall dead zone above the title.
+  const largeInlineActions = large && !onBack && !leading;
+  // Both `dark` and `gradient` are colored surfaces: no card bg, no hairline, light/dark text.
+  const colored = dark || gradient;
+  const onColoredText = gradient ? theme.text.onAccent : theme.text.inverse;
+  const titleStyle = colored ? { color: onColoredText } : undefined;
+  const subtitleStyle = gradient
+    ? { color: theme.text.onAccent, opacity: 0.72 }
+    : dark
+      ? { color: "rgba(255,255,255,0.7)" }
+      : undefined;
 
   return (
     <View
       className={cn(
-        dark ? "" : "bg-bg-card",
-        !dark && border && "border-b border-border-light",
+        colored ? "" : "bg-bg-card",
+        !colored && border && "border-b border-border-light",
         className,
       )}
       style={{
@@ -139,70 +161,96 @@ function AppBar({
       }}
       testID={testID}
     >
-      <View className="flex-row items-center px-3 gap-2 min-h-[56px]">
-        <View className="flex-row items-center gap-2" style={{ minWidth: 38 }}>
-          {onBack ? (
-            <AppBarAction
-              accessibilityLabel="Volver"
-              bare={backVariant === "plain"}
-              icon="chevron-back"
-              onDark={dark}
-              onPress={onBack}
+      {gradient ? (
+        <GradientSurface
+          colors={theme.gradient.accent as readonly [string, string, ...string[]]}
+          padding="none"
+          radius="none"
+          style={StyleSheet.absoluteFill}
+        />
+      ) : null}
+      {largeInlineActions ? null : (
+        <View className="flex-row items-center px-3 gap-2 min-h-[56px]">
+          <View className="flex-row items-center gap-2" style={{ minWidth: 38 }}>
+            {onBack ? (
+              <AppBarAction
+                accessibilityLabel="Volver"
+                bare={backVariant === "plain"}
+                icon="chevron-back"
+                onDark={dark}
+                onPress={onBack}
+              />
+            ) : null}
+            {leading}
+          </View>
+
+          {!large ? (
+            <View className={cn("flex-1", centered && "items-center")}>
+              {title ? (
+                <Typography.Text
+                  className={colored ? "" : "text-text-primary"}
+                  numberOfLines={1}
+                  semibold
+                  style={titleStyle}
+                  variant="subtitle"
+                >
+                  {title}
+                </Typography.Text>
+              ) : null}
+              {subtitle ? (
+                <Typography.Text
+                  className={colored ? "" : "text-text-secondary"}
+                  numberOfLines={1}
+                  style={subtitleStyle}
+                  variant="caption"
+                >
+                  {subtitle}
+                </Typography.Text>
+              ) : null}
+            </View>
+          ) : (
+            <View className="flex-1" />
+          )}
+
+          <View className="flex-row items-center justify-end gap-2" style={{ minWidth: 38 }}>
+            {actions}
+          </View>
+        </View>
+      )}
+
+      {large && title ? (
+        <View className={cn("flex-row px-4 pb-3", largeInlineActions ? "pt-2" : "pt-0.5")}>
+          {accentBar ? (
+            <View
+              style={{
+                width: 4,
+                marginRight: 10,
+                marginVertical: 2,
+                borderRadius: 999,
+                backgroundColor: theme.accent,
+              }}
             />
           ) : null}
-          {leading}
-        </View>
-
-        {variant !== "large" ? (
-          <View className={cn("flex-1", centered && "items-center")}>
-            {title ? (
-              <Typography.Text
-                className={dark ? "" : "text-text-primary"}
-                numberOfLines={1}
-                semibold
-                style={titleStyle}
-                variant="subtitle"
-              >
-                {title}
-              </Typography.Text>
-            ) : null}
+          <View className="flex-1">
+            <Typography.Text
+              className={colored ? "" : "text-text-primary"}
+              style={titleStyle}
+              variant="h2"
+            >
+              {title}
+            </Typography.Text>
             {subtitle ? (
               <Typography.Text
-                className={dark ? "" : "text-text-secondary"}
-                numberOfLines={1}
+                className={colored ? "" : "text-text-secondary"}
                 style={subtitleStyle}
-                variant="caption"
+                variant="bodySmall"
               >
                 {subtitle}
               </Typography.Text>
             ) : null}
           </View>
-        ) : (
-          <View className="flex-1" />
-        )}
-
-        <View className="flex-row items-center justify-end gap-2" style={{ minWidth: 38 }}>
-          {actions}
-        </View>
-      </View>
-
-      {variant === "large" && title ? (
-        <View className="px-4 pb-2 pt-0.5">
-          <Typography.Text
-            className={dark ? "" : "text-text-primary"}
-            style={titleStyle}
-            variant="h2"
-          >
-            {title}
-          </Typography.Text>
-          {subtitle ? (
-            <Typography.Text
-              className={dark ? "" : "text-text-secondary"}
-              style={subtitleStyle}
-              variant="bodySmall"
-            >
-              {subtitle}
-            </Typography.Text>
+          {largeInlineActions && actions ? (
+            <View className="flex-row items-center justify-end gap-2 pl-2">{actions}</View>
           ) : null}
         </View>
       ) : null}

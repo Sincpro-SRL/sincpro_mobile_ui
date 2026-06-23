@@ -23,7 +23,7 @@ function KeyValue({ label, value, align = "row", className, testID }: KeyValuePr
       )}
       testID={testID}
     >
-      <Typography.Text className="text-text-secondary" variant="bodySmall">
+      <Typography.Text className="text-text-secondary" variant="caption">
         {label}
       </Typography.Text>
       {typeof value === "string" || typeof value === "number" ? (

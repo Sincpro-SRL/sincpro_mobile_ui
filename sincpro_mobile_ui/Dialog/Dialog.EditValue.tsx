@@ -57,8 +57,8 @@ function EditableValueModal({
     <Modal animationType="fade" onRequestClose={onCancel} transparent visible={visible}>
       <View className="flex-1 justify-center p-6 bg-black/40">
         <View
-          className="rounded-xl p-4"
-          style={{ backgroundColor: theme.bg.popover, ...theme.shadow.md }}
+          className="p-4"
+          style={{ borderRadius: 22, backgroundColor: theme.bg.popover, ...theme.shadow.md }}
           testID={testID}
         >
           <Typography.Text className="mb-3" semibold variant="h6">

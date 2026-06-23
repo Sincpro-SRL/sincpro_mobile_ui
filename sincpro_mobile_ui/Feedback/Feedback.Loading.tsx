@@ -10,8 +10,14 @@ interface LoadingStateProps {
   className?: string;
 }
 
+/**
+ * Full-screen centered loading state. Thin layout convenience over `Spinner` (the atom):
+ * `Spinner` is the inline indicator (ActivityIndicator + optional text); `LoadingState`
+ * is `Spinner` centered with `flex-1` for an empty screen/section. Use `Spinner` directly
+ * when you need an inline/footer indicator (e.g. pagination), `LoadingState` for a blank view.
+ */
 function LoadingState({
-  message = "Actualizando lista de órdenes",
+  message = "Cargando…",
   size = "small",
   style = {},
   className,

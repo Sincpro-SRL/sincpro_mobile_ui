@@ -3,7 +3,7 @@ import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { ScrollView, Switch, View } from "react-native";
+import { Switch, View } from "react-native";
 
 const meta: Meta = { title: "Patterns/Settings" };
 export default meta;
@@ -27,7 +27,7 @@ function SettingsScreenDemo() {
   const [notifications, setNotifications] = useState(true);
 
   return (
-    <ScrollView contentContainerStyle={{ gap: 18, padding: 12 }}>
+    <View style={{ gap: 18, padding: 12 }}>
       <Typography.Text style={{ fontSize: 30, fontWeight: "800" }}>Ajustes</Typography.Text>
 
       {/* Account hero row */}
@@ -94,7 +94,7 @@ function SettingsScreenDemo() {
           />
         </Display.Card>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 

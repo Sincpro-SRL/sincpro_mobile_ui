@@ -1,4 +1,5 @@
-import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
+import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { ReactNode, useCallback, useEffect, useState } from "react";
@@ -98,28 +99,41 @@ function DomainSplashScreen({
         pointerEvents={isLoading ? "auto" : "none"}
         style={[StyleSheet.absoluteFill, splashStyle]}
       >
-        <GradientContainer className="flex-1 justify-center items-center px-8">
-          <View className="w-full items-center gap-6">
-            <Typography.Text className="text-2xl font-bold text-white">
-              {isComplete ? "¡Listo!" : `Cargando ${domainName}`}
-            </Typography.Text>
-
-            {!isComplete && (
-              <View className="w-full bg-transparent border border-white/30 rounded-full h-4 overflow-hidden">
-                <Animated.View
-                  className="bg-white rounded-full h-4 shadow-lg"
-                  style={progressBarStyle}
-                />
-              </View>
-            )}
-
-            {isComplete && (
-              <Typography.Text className="text-sm text-white/80">
-                Ya puedes comenzar a usar {domainName}.
+        <GradientSurface
+          preset="night-green"
+          radius="none"
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          <Pattern color="#22E584" kind="dots" opacity={0.14} size={26} />
+          <View className="flex-1 justify-center items-center px-8">
+            <View className="w-full items-center gap-5">
+              <Typography.Text
+                bold
+                style={{ color: "#FFFFFF", fontSize: 24, letterSpacing: 0.5 }}
+              >
+                {isComplete ? "¡Listo!" : `Cargando ${domainName}`}
               </Typography.Text>
-            )}
+
+              {!isComplete && (
+                <View
+                  className="w-full rounded-full h-1.5 overflow-hidden"
+                  style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
+                >
+                  <Animated.View
+                    className="rounded-full h-1.5"
+                    style={[{ backgroundColor: "#22E584" }, progressBarStyle]}
+                  />
+                </View>
+              )}
+
+              {isComplete && (
+                <Typography.Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>
+                  Ya puedes comenzar a usar {domainName}.
+                </Typography.Text>
+              )}
+            </View>
           </View>
-        </GradientContainer>
+        </GradientSurface>
       </Animated.View>
     </View>
   );

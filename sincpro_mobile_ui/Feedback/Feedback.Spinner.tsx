@@ -1,3 +1,4 @@
+import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
@@ -13,7 +14,7 @@ export interface SpinnerProps {
 
 const Spinner: React.FC<SpinnerProps> = ({
   size = "large",
-  color = "#FF7B0A",
+  color = theme.primary,
   text,
   style,
   className,

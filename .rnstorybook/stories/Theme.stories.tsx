@@ -10,7 +10,7 @@ import {
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { vars } from "nativewind";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 const meta = { title: "Foundations/Theme" } satisfies Meta;
 
@@ -94,7 +94,7 @@ function ThemePanel({ tokens, label }: { tokens: ThemeTokens; label: string }) {
 function ActiveTokensView() {
   const tokens = useTheme();
   return (
-    <ScrollView contentContainerStyle={{ gap: 12 }}>
+    <View style={{ gap: 12 }}>
       <Typography.Text bold className="text-text-primary text-lg">
         Tokens activos — {tokens.name}
       </Typography.Text>
@@ -102,7 +102,7 @@ function ActiveTokensView() {
         Cambia el tema desde la toolbar (Light / Dark). Reactivo vía useTheme().
       </Typography.Text>
       <Palette tokens={tokens} />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -112,10 +112,10 @@ export const ActiveTokens: Story = {
 
 export const LightVsDark: Story = {
   render: () => (
-    <ScrollView contentContainerStyle={{ gap: 16 }}>
+    <View style={{ gap: 16 }}>
       <ThemePanel label="Light" tokens={DEFAULT_THEME} />
       <ThemePanel label="Dark" tokens={DEFAULT_DARK_THEME} />
-    </ScrollView>
+    </View>
   ),
 };
 
@@ -166,7 +166,7 @@ const HANDOFF_SPEC = `:root {
 
 export const BrandPalette: Story = {
   render: () => (
-    <ScrollView contentContainerStyle={{ gap: 16, padding: 4 }}>
+    <View style={{ gap: 16, padding: 4 }}>
       <Typography.Text bold className="text-text-primary text-lg">
         Paleta de marca (referencia)
       </Typography.Text>
@@ -206,6 +206,6 @@ export const BrandPalette: Story = {
           {HANDOFF_SPEC}
         </Typography.Text>
       </View>
-    </ScrollView>
+    </View>
   ),
 };

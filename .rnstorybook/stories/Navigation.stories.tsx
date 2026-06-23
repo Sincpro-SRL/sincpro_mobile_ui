@@ -97,6 +97,28 @@ export const AppBar: Story = {
           variant="large"
         />
       </Frame>
+      <Frame label="gradiente CTA · saludo (tone='gradient')">
+        <Navigation.AppBar
+          actions={
+            <Navigation.AppBar.Action icon="notifications-outline" onPress={() => {}} />
+          }
+          safeArea={false}
+          subtitle="Tenés 3 pedidos pendientes hoy"
+          title="Buenos días, Mariana"
+          tone="gradient"
+          variant="large"
+        />
+      </Frame>
+      <Frame label="large + barra de acento (accentBar)">
+        <Navigation.AppBar
+          accentBar
+          actions={<Navigation.AppBar.Action icon="add" onPress={() => {}} tone="tinted" />}
+          safeArea={false}
+          subtitle="Resumen de la jornada"
+          title="Reportes"
+          variant="large"
+        />
+      </Frame>
     </View>
   ),
 };
@@ -173,31 +195,47 @@ function BottomNavMatrixDemo() {
   return (
     <View style={{ gap: 18, paddingBottom: 24, backgroundColor: "#0001" }}>
       <Typography.Text variant="captionSmall">
-        floating · pill activa · icon + label (estilo objetivo)
+        A · pastilla extendida con texto
       </Typography.Text>
-      <Navigation.BottomNav {...common} indicator="pill" shape="floating" />
+      <Navigation.BottomNav
+        {...common}
+        indicator="pill-text"
+        shape="floating"
+        showLabels={false}
+      />
 
-      <Typography.Text variant="captionSmall">floating · icon-only · pill</Typography.Text>
+      <Typography.Text variant="captionSmall">
+        B · botón central elevado (FAB) — squircle con glow verde
+      </Typography.Text>
+      <Navigation.BottomNav
+        {...common}
+        centerAction={{ icon: "add", onPress: () => {} }}
+        items={NAV_ITEMS.slice(0, 4)}
+        shape="floating"
+        showLabels={false}
+      />
+
+      <Typography.Text variant="captionSmall">C · oscura con indicador glow</Typography.Text>
+      <Navigation.BottomNav
+        {...common}
+        indicator="glow"
+        shape="floating"
+        showLabels={false}
+        tone="dark"
+      />
+
+      <Typography.Text variant="captionSmall">
+        D · indicador de barra (top bar)
+      </Typography.Text>
+      <Navigation.BottomNav {...common} indicator="bar" />
+
+      <Typography.Text variant="captionSmall">+ floating · pill icon-only</Typography.Text>
       <Navigation.BottomNav
         {...common}
         indicator="pill"
         shape="floating"
         showLabels={false}
       />
-
-      <Typography.Text variant="captionSmall">floating · center FAB</Typography.Text>
-      <Navigation.BottomNav
-        {...common}
-        centerAction={{ icon: "add", onPress: () => {} }}
-        items={NAV_ITEMS.slice(0, 4)}
-        shape="floating"
-      />
-
-      <Typography.Text variant="captionSmall">bar (docked) · icon + label</Typography.Text>
-      <Navigation.BottomNav {...common} indicator="pill" />
-
-      <Typography.Text variant="captionSmall">bar · icon-only</Typography.Text>
-      <Navigation.BottomNav {...common} showLabels={false} />
     </View>
   );
 }

@@ -12,7 +12,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const HERO_DARK_FALLBACK = "#0E1714";
 
 export interface AppBarActionProps {
-  icon: string;
+  /** Ionicon name. Optional when `label` is set (text-only CTA). */
+  icon?: string;
+  /** Text label → renders a pill CTA ("Editar", "Nuevo", "Guardar") instead of an icon circle. */
+  label?: string;
   onPress: () => void;
   badge?: string | number;
   accessibilityLabel?: string;
@@ -20,7 +23,7 @@ export interface AppBarActionProps {
   tone?: "plain" | "tinted";
   /** Render for a dark surface (translucent light button + light icon). */
   onDark?: boolean;
-  /** Drop the contained surface → bare icon (iOS-style plain back/action). */
+  /** Drop the contained surface → bare icon/text (iOS-style plain back/action). */
   bare?: boolean;
   testID?: string;
 }
@@ -28,9 +31,11 @@ export interface AppBarActionProps {
 /**
  * "Contained" icon-button for the AppBar: circular touch area with a subtle surface
  * (merge of Material 3 state-layer + iOS 26 contained button). Optional badge.
+ * With `label`, renders a text pill CTA instead (for "Editar"/"Nuevo"/"Guardar").
  */
 function AppBarAction({
   icon,
+  label,
   onPress,
   badge,
   accessibilityLabel,
@@ -44,12 +49,44 @@ function AppBarAction({
     : onDark
       ? "rgba(255,255,255,0.14)"
       : tone === "tinted"
-        ? theme.bg.accent
+        ? theme.accent // solid brand-green squircle (FAB-style)
         : theme.bg.card;
   const iconColor =
-    tone === "tinted" ? theme.primary : onDark ? theme.icon.inverse : theme.icon.primary;
+    tone === "tinted"
+      ? theme.text.onAccent // dark token on green surface
+      : onDark
+        ? theme.icon.inverse
+        : theme.icon.primary;
   // Plain (white) squircle gets a hairline so it reads as a contained button on a light bar.
   const showBorder = !bare && !onDark && tone !== "tinted";
+
+  // Labeled (text) action → a pill CTA. Distinct from the icon-only circle; use for
+  // primary/secondary header actions like "Editar", "Nuevo", "Guardar".
+  if (label) {
+    return (
+      <Pressable
+        accessibilityLabel={accessibilityLabel ?? label}
+        accessibilityRole="button"
+        className="flex-row items-center justify-center gap-1.5"
+        hitSlop={6}
+        onPress={onPress}
+        style={{
+          height: 36,
+          paddingHorizontal: 14,
+          borderRadius: 999,
+          backgroundColor: bg,
+          ...(showBorder ? { borderWidth: 1, borderColor: theme.border.light } : null),
+        }}
+        testID={testID}
+      >
+        {icon ? <Icon color={iconColor} name={icon} size={16} /> : null}
+        <Typography.Text semibold style={{ color: iconColor }} variant="bodySmall">
+          {label}
+        </Typography.Text>
+      </Pressable>
+    );
+  }
+
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel}
@@ -66,7 +103,7 @@ function AppBarAction({
       }}
       testID={testID}
     >
-      <Icon color={iconColor} name={icon} size={bare ? 24 : 20} />
+      <Icon color={iconColor} name={icon ?? "ellipse-outline"} size={bare ? 24 : 20} />
       {badge != null ? (
         <View
           className="absolute bg-danger rounded-full min-w-[16px] h-4 px-1 items-center justify-center"
@@ -135,9 +172,11 @@ function AppBar({
   const large = variant === "large";
   const dark = tone === "dark";
   const gradient = tone === "gradient";
-  // Greeting/balance hero (large, no back/leading): drop the empty top toolbar row and put
-  // the action(s) inline beside the big title — avoids a tall dead zone above the title.
-  const largeInlineActions = large && !onBack && !leading;
+  // Large variant: back/leading + actions all live ON the big-title row (single cohesive
+  // block — no separate top toolbar that would push the title to a new line). The compact
+  // top toolbar is only for default/center.
+  const largeHasNav = large && (!!onBack || !!leading);
+  const showTopBar = !large;
   // Both `dark` and `gradient` are colored surfaces: no card bg, no hairline, light/dark text.
   const colored = dark || gradient;
   const onColoredText = gradient ? theme.text.onAccent : theme.text.inverse;
@@ -148,11 +187,15 @@ function AppBar({
       ? { color: "rgba(255,255,255,0.7)" }
       : undefined;
 
+  // Large variant on a plain surface should feel like the page itself (no card surface, no
+  // hairline). Compact variants (default/center) keep the card surface for detail screens.
+  const largePlain = large && !colored;
+
   return (
     <View
       className={cn(
-        colored ? "" : "bg-bg-card",
-        !colored && border && "border-b border-border-light",
+        colored ? "" : largePlain ? "bg-bg-page" : "bg-bg-card",
+        !colored && !largePlain && border && "border-b border-border-light",
         className,
       )}
       style={{
@@ -169,7 +212,7 @@ function AppBar({
           style={StyleSheet.absoluteFill}
         />
       ) : null}
-      {largeInlineActions ? null : (
+      {showTopBar ? (
         <View className="flex-row items-center px-3 gap-2 min-h-[56px]">
           <View className="flex-row items-center gap-2" style={{ minWidth: 38 }}>
             {onBack ? (
@@ -184,43 +227,52 @@ function AppBar({
             {leading}
           </View>
 
-          {!large ? (
-            <View className={cn("flex-1", centered && "items-center")}>
-              {title ? (
-                <Typography.Text
-                  className={colored ? "" : "text-text-primary"}
-                  numberOfLines={1}
-                  semibold
-                  style={titleStyle}
-                  variant="subtitle"
-                >
-                  {title}
-                </Typography.Text>
-              ) : null}
-              {subtitle ? (
-                <Typography.Text
-                  className={colored ? "" : "text-text-secondary"}
-                  numberOfLines={1}
-                  style={subtitleStyle}
-                  variant="caption"
-                >
-                  {subtitle}
-                </Typography.Text>
-              ) : null}
-            </View>
-          ) : (
-            <View className="flex-1" />
-          )}
+          <View className={cn("flex-1", centered && "items-center")}>
+            {title ? (
+              <Typography.Text
+                className={colored ? "" : "text-text-primary"}
+                numberOfLines={1}
+                semibold
+                style={titleStyle}
+                variant="subtitle"
+              >
+                {title}
+              </Typography.Text>
+            ) : null}
+            {subtitle ? (
+              <Typography.Text
+                className={colored ? "" : "text-text-secondary"}
+                numberOfLines={1}
+                style={subtitleStyle}
+                variant="caption"
+              >
+                {subtitle}
+              </Typography.Text>
+            ) : null}
+          </View>
 
           <View className="flex-row items-center justify-end gap-2" style={{ minWidth: 38 }}>
             {actions}
           </View>
         </View>
-      )}
+      ) : null}
 
       {large && title ? (
-        <View className={cn("flex-row px-4 pb-3", largeInlineActions ? "pt-2" : "pt-0.5")}>
-          {accentBar ? (
+        <View
+          className={cn("flex-row px-4 pt-2 pb-3", largeHasNav ? "items-center gap-2" : "")}
+        >
+          {/* back/leading inline with the big title — no extra row, no line break above it */}
+          {onBack ? (
+            <AppBarAction
+              accessibilityLabel="Volver"
+              bare={backVariant === "plain"}
+              icon="chevron-back"
+              onDark={dark}
+              onPress={onBack}
+            />
+          ) : null}
+          {leading}
+          {accentBar && !largeHasNav ? (
             <View
               style={{
                 width: 4,
@@ -249,8 +301,15 @@ function AppBar({
               </Typography.Text>
             ) : null}
           </View>
-          {largeInlineActions && actions ? (
-            <View className="flex-row items-center justify-end gap-2 pl-2">{actions}</View>
+          {actions ? (
+            <View
+              className={cn(
+                "flex-row items-center justify-end gap-2 pl-2",
+                largeHasNav ? "" : "self-center",
+              )}
+            >
+              {actions}
+            </View>
           ) : null}
         </View>
       ) : null}

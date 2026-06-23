@@ -1,13 +1,19 @@
 import { Display } from "@sincpro/mobile-ui/Display";
+import SearchHistory, {
+  type SearchHistoryProps,
+} from "@sincpro/mobile-ui/Display/Display.SearchHistory";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
+import {
+  SegmentedControl,
+  type SegmentedControlProps,
+} from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import { IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
-import { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
@@ -96,22 +102,30 @@ function ListViewRoot<T>({
   );
 }
 
-function Header({
-  children,
-}: {
-  /** @deprecated The header is now flat (Navigation.AppBar); `variant` is ignored. */
-  variant?: EVariantScreenHeader;
+interface HeaderProps {
+  /** AppBar display variant. `large` = big title (list/index). `center` = modal/detail. */
+  variant?: "default" | "large" | "center";
+  /** Surface tone. `dark` = always-dark hero. `gradient` = brand accent gradient. */
+  tone?: "default" | "dark" | "gradient";
+  /** Actions rendered in the AppBar action slot (AppBar.Action nodes). */
+  actions?: ReactNode;
+  /** Subheader content rendered below the title bar (SearchBar, SegmentedControl, etc.). */
   children?: ReactNode;
-}) {
+}
+
+function Header({ variant = "large", tone, actions, children }: HeaderProps) {
   const { name, description, onBack } = useListView();
 
   return (
     <Navigation.AppBar
+      actions={actions}
       onBack={onBack}
       safeArea={false}
       subheader={children}
-      subtitle={description ? description : `Seleccionar ${name}`}
+      subtitle={description ?? undefined}
       title={name}
+      tone={tone}
+      variant={variant}
     />
   );
 }
@@ -152,10 +166,35 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
 
 function HeaderActions({ children }: { children: ReactNode }) {
   return (
-    <View className="flex-row px-4 my-3 items-center justify-between flex-1 gap-2">
+    <View className="flex-row px-4 my-2 items-center justify-between flex-1 gap-2">
       {children}
     </View>
   );
+}
+
+/** Secondary action bar docked below the AppBar — use for Save/Cancel, filter chips, etc. */
+function HeaderActionsBar({ children }: { children: ReactNode }) {
+  return (
+    <View className="bg-bg-card px-4 pt-1 pb-3 border-b border-border-light flex-row gap-2 items-center">
+      {children}
+    </View>
+  );
+}
+
+/**
+ * Tab-like segmented switch for the header subheader (e.g. "Activos" / "Archivados").
+ * Use as a child of `<ListViewV2.Header>` — it lands in the AppBar subheader slot.
+ */
+function HeaderSegmented<T extends string>(props: SegmentedControlProps<T>) {
+  return <SegmentedControl {...props} />;
+}
+
+/**
+ * Recent-searches list. Render as a SIBLING of the Header (like Filters/ActionsBar) —
+ * typically while the search query is empty. Delegates to `Display.SearchHistory`.
+ */
+function HeaderSearchHistory(props: SearchHistoryProps) {
+  return <SearchHistory {...props} />;
 }
 
 function HeaderFilters({ children }: { children: ReactNode }) {
@@ -555,7 +594,10 @@ const FiltersWithSubComponents = Object.assign(HeaderFilters, {
 
 const HeaderWithSubComponents = Object.assign(Header, {
   Search: HeaderSearch,
+  SearchHistory: HeaderSearchHistory,
+  Segmented: HeaderSegmented,
   Actions: HeaderActions,
+  ActionsBar: HeaderActionsBar,
   Filters: FiltersWithSubComponents,
 });
 
@@ -574,6 +616,24 @@ const ContentWithSubComponents = Object.assign(Content, {
   Row: RowWithSubComponents,
 });
 
+/**
+ * Screen container for a collection (list / index / search results).
+ * Owns safe-area, the FlatList (pagination + pull-to-refresh), record count, and the
+ * loading/empty/error states.
+ *
+ * API map:
+ *   ListViewV2.Root          — provider + container; pass `items`, `onSearch`, `onLoadMore`, `onBack`…
+ *   ListViewV2.Header            — AppBar (variant: default | large | center · tone: default | dark | gradient)
+ *     .Header.Search             — debounced SearchBar in the subheader (wires `onSearch`)
+ *     .Header.SearchHistory      — recent-searches list (SIBLING; show while query is empty)
+ *     .Header.Segmented          — tab-like switch in the subheader (Activos / Archivados)
+ *     .Header.Filters(.Chips/.Chip) — horizontal filter pills (SIBLING below the header)
+ *     .Header.ActionsBar         — SIBLING bar below the header (bulk select, etc.)
+ *   ListViewV2.Content           — FlatList body; `children` is an optional custom row renderer
+ *     .Content.Row(.Avatar/.Content/.Title/.Subtitle/.Footer/.Actions/.ActionButton)
+ *   ListViewV2.Footer        — pinned footer (hidden when empty)
+ *   ListViewV2.FloatingButton — absolute FAB overlay
+ */
 export const ListViewV2 = {
   Root: ListViewRoot,
   Header: HeaderWithSubComponents,

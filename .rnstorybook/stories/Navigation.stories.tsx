@@ -1,5 +1,7 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
+import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
+import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -266,3 +268,76 @@ export const Menu: Story = {
     </View>
   ),
 };
+
+// ─── TicketsTabBar ────────────────────────────────────────────────────────────
+// Configuración usada en sincpro_mobile_tickets (AppRoutes.tsx).
+// indicator="pill-text": el tab activo muestra pill extendida con ícono + nombre.
+// Los inactivos muestran solo ícono.
+function TicketsTabBarDemo() {
+  const [tab, setTab] = useState("home");
+  const items = [
+    { customIcon: HomeIcon, key: "odoo", label: "Odoo" },
+    { customIcon: HomeIcon, key: "home", label: "Principal" },
+    { customIcon: SettingsIcon, key: "settings", label: "Ajustes" },
+    { customIcon: ProfileIcon, key: "profile", label: "Perfil" },
+  ];
+  return (
+    <View style={{ gap: 24 }}>
+      <View style={{ gap: 8 }}>
+        <Typography.Text semibold variant="caption">
+          PRODUCCIÓN — pill-text (activo = ícono + nombre)
+        </Typography.Text>
+        <Typography.Text className="text-text-tertiary" variant="captionSmall">
+          {'indicator="pill-text" · floating · activeColor="accent"'}
+        </Typography.Text>
+        <Navigation.BottomNav
+          activeColor="accent"
+          indicator="pill-text"
+          items={items}
+          onChange={setTab}
+          shape="floating"
+          showLabels={false}
+          value={tab}
+        />
+      </View>
+
+      <View style={{ gap: 8 }}>
+        <Typography.Text semibold variant="caption">
+          Alternativa — pill + labels siempre visibles
+        </Typography.Text>
+        <Typography.Text className="text-text-tertiary" variant="captionSmall">
+          {'indicator="pill" · showLabels · floating · activeColor="accent"'}
+        </Typography.Text>
+        <Navigation.BottomNav
+          activeColor="accent"
+          indicator="pill"
+          items={items}
+          onChange={setTab}
+          shape="floating"
+          showLabels
+          value={tab}
+        />
+      </View>
+
+      <View style={{ gap: 8 }}>
+        <Typography.Text semibold variant="caption">
+          Alternativa — barra + labels (estilo iOS clásico)
+        </Typography.Text>
+        <Typography.Text className="text-text-tertiary" variant="captionSmall">
+          {'indicator="bar" · showLabels · floating · activeColor="accent"'}
+        </Typography.Text>
+        <Navigation.BottomNav
+          activeColor="accent"
+          indicator="bar"
+          items={items}
+          onChange={setTab}
+          shape="floating"
+          showLabels
+          value={tab}
+        />
+      </View>
+    </View>
+  );
+}
+
+export const TicketsTabBar: Story = { render: () => <TicketsTabBarDemo /> };

@@ -39,8 +39,8 @@ function TimezoneRow({
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      className={`flex-row items-center p-4 border-b border-gray-100 ${
-        isSelected ? "bg-blue-50" : "bg-white"
+      className={`flex-row items-center p-4 border-b border-border-light ${
+        isSelected ? "bg-info-light" : "bg-white"
       }`}
       onPress={onSelect}
     >
@@ -52,10 +52,12 @@ function TimezoneRow({
       />
       <View className="ml-3 flex-1">
         <Typography.Text semibold>{item.label}</Typography.Text>
-        <Typography.Text className="text-gray-400 text-xs">{item.locale}</Typography.Text>
+        <Typography.Text className="text-text-tertiary text-xs">
+          {item.locale}
+        </Typography.Text>
       </View>
       {isSelected && (
-        <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
+        <View className="w-6 h-6 rounded-full bg-info items-center justify-center">
           <Display.Icon color={theme.text.inverse} name="check" size={16} type="material" />
         </View>
       )}
@@ -67,7 +69,7 @@ function EmptyState() {
   return (
     <View className="p-8 items-center justify-center" style={{ minHeight: 200 }}>
       <Display.Icon color={theme.text.tertiary} name="search-off" size={48} type="material" />
-      <Typography.Text className="text-gray-500 text-center mt-4">
+      <Typography.Text className="text-text-secondary text-center mt-4">
         {"No se encontraron zonas horarias"}
       </Typography.Text>
     </View>
@@ -132,13 +134,13 @@ function TimeZoneSelectorModal({
           <Typography.Text bold variant="subtitle">
             {"Zona Horaria"}
           </Typography.Text>
-          <Typography.Text className="text-gray-500 text-xs">
+          <Typography.Text className="text-text-secondary text-xs">
             {"Selecciona tu zona horaria"}
           </Typography.Text>
         </View>
         <View className="px-5 pb-3">
           <TextInput
-            className="bg-gray-100 px-4 py-3 rounded-xl"
+            className="bg-bg-muted px-4 py-3 rounded-xl"
             onChangeText={setQuery}
             placeholder={"Buscar zona horaria..."}
             placeholderTextColor={theme.text.tertiary}

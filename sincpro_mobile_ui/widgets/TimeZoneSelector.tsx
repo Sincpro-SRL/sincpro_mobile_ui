@@ -30,7 +30,7 @@ export function TimeZoneSelector({ onSelect, timezone }: TimeZoneSelectorProps) 
     : "No configurada";
 
   return (
-    <View className="bg-slate-50 rounded-xl p-5 my-2.5 shadow-sm">
+    <View className="bg-bg-muted rounded-xl p-5 my-2.5 shadow-sm">
       <View className="flex-row items-start">
         <Display.Icon
           color={currentTimezone ? theme.info : theme.text.tertiary}
@@ -45,10 +45,10 @@ export function TimeZoneSelector({ onSelect, timezone }: TimeZoneSelectorProps) 
 
           {currentTimezone ? (
             <View className="mt-2 bg-white rounded-lg p-3">
-              <Typography.Text className="text-gray-700" semibold>
+              <Typography.Text className="text-text-primary" semibold>
                 {displayTimezone}
               </Typography.Text>
-              <Typography.Text className="text-gray-400 text-xs">
+              <Typography.Text className="text-text-tertiary text-xs">
                 {currentTimezone}
               </Typography.Text>
 
@@ -63,7 +63,7 @@ export function TimeZoneSelector({ onSelect, timezone }: TimeZoneSelectorProps) 
             </View>
           ) : (
             <>
-              <Typography.Text className="text-gray-500 mb-2">
+              <Typography.Text className="text-text-secondary mb-2">
                 Selecciona una zona horaria
               </Typography.Text>
               <Form.Button

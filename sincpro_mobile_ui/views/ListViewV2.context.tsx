@@ -16,6 +16,8 @@ interface ListViewContextValue<T> {
   onDeleteItem?: (item: T) => void;
   onSearch?: (query: string) => void;
   onBack?: () => void;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
 }
 
 const Context = createContext<ListViewContextValue<any> | null>(null);
@@ -34,6 +36,8 @@ export function ListViewProvider<T>({
   onDeleteItem,
   onSearch,
   onBack,
+  onLoadMore,
+  loadingMore = false,
   children,
 }: {
   name: string;
@@ -49,6 +53,8 @@ export function ListViewProvider<T>({
   onDeleteItem?: (item: T) => void;
   onSearch?: (query: string) => void;
   onBack?: () => void;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
   children: ReactNode;
 }) {
   const [showRefreshing, setShowRefreshing] = useState(false);
@@ -71,6 +77,8 @@ export function ListViewProvider<T>({
         onDeleteItem,
         onSearch,
         onBack,
+        onLoadMore,
+        loadingMore,
       }}
     >
       {children}

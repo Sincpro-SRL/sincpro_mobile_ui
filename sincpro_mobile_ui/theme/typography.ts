@@ -1,20 +1,24 @@
+import { FiraCode_400Regular, FiraCode_500Medium } from "@expo-google-fonts/fira-code";
 import {
-  Montserrat_300Light,
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_600SemiBold,
-  Montserrat_800ExtraBold,
+  Inter_300Light,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_800ExtraBold,
   useFonts,
-} from "@expo-google-fonts/montserrat";
+} from "@expo-google-fonts/inter";
 import type { TextStyle } from "react-native";
 
-/* -------------------- Font Families & Weights -------------------- */
+/* -------------------- Font Families & Weights --------------------
+ * SINCPRO brand: body/UI = Inter, mono/code = Fira Code. (Título = Satoshi cuando se
+ * provea el asset de Fontshare; por ahora Inter ExtraBold cumple el rol de título.) */
 export const fontFamilies = {
-  light: "Montserrat_300Light",
-  regular: "Montserrat_400Regular",
-  medium: "Montserrat_500Medium",
-  semiBold: "Montserrat_600SemiBold",
-  extraBold: "Montserrat_800ExtraBold",
+  light: "Inter_300Light",
+  regular: "Inter_400Regular",
+  medium: "Inter_500Medium",
+  semiBold: "Inter_600SemiBold",
+  extraBold: "Inter_800ExtraBold",
+  mono: "FiraCode_400Regular",
 } as const;
 
 export const fontWeights = {
@@ -23,6 +27,7 @@ export const fontWeights = {
   medium: "500",
   semiBold: "600",
   extraBold: "800",
+  mono: "400",
 } as const;
 
 /* -------------------- Font Sizes -------------------- */
@@ -246,11 +251,13 @@ export const createCustomTextStyle = (
 /* -------------------- Font Loader -------------------- */
 export const useAppFonts = () => {
   const [loaded] = useFonts({
-    Montserrat_300Light,
-    Montserrat_400Regular,
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_800ExtraBold,
+    FiraCode_400Regular,
+    FiraCode_500Medium,
+    Inter_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_800ExtraBold,
   });
   return loaded;
 };

@@ -47,9 +47,13 @@
   "author": "Gutierrez, Andres <andres.gutierrez@sincpro.com.bo>",
   "license": "MIT",
   "peerDependencies": {
+    "@expo-google-fonts/fira-code": "*",
+    "@expo-google-fonts/inter": "*",
     "@expo-google-fonts/montserrat": "*",
     "@expo/ui": "*",
     "@expo/vector-icons": "*",
+    "@react-native-community/datetimepicker": "*",
+    "@react-native-community/slider": "*",
     "expo-checkbox": "*",
     "expo-clipboard": "*",
     "expo-linear-gradient": "*",
@@ -63,9 +67,7 @@
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",
-    "react-native-worklets": "*",
-    "@react-native-community/slider": "*",
-    "@react-native-community/datetimepicker": "*"
+    "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
     "@expo/ui": {
@@ -80,10 +82,14 @@
     "tailwind-variants": "^3.2.2"
   },
   "devDependencies": {
+    "@expo-google-fonts/fira-code": "^0.4.1",
+    "@expo-google-fonts/inter": "^0.4.2",
     "@expo-google-fonts/montserrat": "^0.4.2",
+    "@expo/ui": "~56.0.18",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "^2",
     "@react-native-community/datetimepicker": "9.1.0",
+    "@react-native-community/slider": "5.2.0",
     "@storybook/addon-ondevice-actions": "^10.4.6",
     "@storybook/addon-ondevice-controls": "^10.4.6",
     "@storybook/react-native": "^10.4.6",
@@ -119,9 +125,7 @@
     "storybook": "^10.4.6",
     "tailwindcss": "^3.4.17",
     "tsc-alias": "^1.8.17",
-    "typescript": "~6.0.3",
-    "@expo/ui": "~56.0.18",
-    "@react-native-community/slider": "5.2.0"
+    "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",

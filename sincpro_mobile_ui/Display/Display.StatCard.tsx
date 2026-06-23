@@ -39,7 +39,7 @@ function StatCard({
       testID={testID}
     >
       <View className="flex-row items-center justify-between">
-        <Typography.Text className="text-text-secondary" variant="bodySmall">
+        <Typography.Text className="text-text-secondary" variant="caption">
           {label}
         </Typography.Text>
         {icon ? <Icon color={theme.icon.secondary} name={icon} size={18} /> : null}
@@ -53,14 +53,14 @@ function StatCard({
           {hasDelta ? (
             <>
               <Icon color={deltaColor} name={up ? "arrow-up" : "arrow-down"} size={14} />
-              <Typography.Text style={{ color: deltaColor }} variant="bodySmall">
+              <Typography.Text style={{ color: deltaColor }} variant="caption">
                 {Math.abs(delta)}
                 {deltaSuffix}
               </Typography.Text>
             </>
           ) : null}
           {hint ? (
-            <Typography.Text className="text-text-tertiary" variant="bodySmall">
+            <Typography.Text className="text-text-tertiary" variant="caption">
               {hint}
             </Typography.Text>
           ) : null}

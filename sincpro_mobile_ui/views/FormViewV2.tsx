@@ -1,11 +1,13 @@
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
 import Container from "@sincpro/mobile-ui/layouts/Container";
+import { AppBar } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
-import ScreenHeader, { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
+import { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
 import React, { ReactNode } from "react";
 import { type ImageSourcePropType, RefreshControl, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import type { Edge } from "react-native-safe-area-context";
 
 interface FormViewProps<T> {
   name: string;
@@ -39,7 +41,11 @@ function FormViewRoot<T>({
   children,
 }: FormViewProps<T>) {
   const Wrapper = withContainer ? Container : View;
-  const wrapperProps = withContainer ? {} : { style: { flex: 1 } };
+  // The header (AppBar) / parent layout owns the TOP safe-area; the inner Container only
+  // reserves the remaining edges to avoid stacking the top inset (double padding).
+  const wrapperProps = withContainer
+    ? { edges: ["bottom", "left", "right"] as Edge[] }
+    : { style: { flex: 1 } };
 
   return (
     <FormViewProvider
@@ -63,10 +69,9 @@ function FormViewRoot<T>({
 }
 
 function Header({
-  variant = EVariantScreenHeader.FLAT_HEADER,
-  logoSource,
   children,
 }: {
+  /** @deprecated The header is now flat (Navigation.AppBar); `variant`/`logoSource` are ignored. */
   variant?: EVariantScreenHeader;
   logoSource?: ImageSourcePropType;
   children?: ReactNode;
@@ -74,17 +79,13 @@ function Header({
   const { name, description, onBack } = useFormView();
 
   return (
-    <>
-      <ScreenHeader
-        logoSource={logoSource}
-        onBack={onBack}
-        subtitle={description ? description : `Seleccionar ${name}`}
-        title={name}
-        variant={variant}
-      >
-        {children}
-      </ScreenHeader>
-    </>
+    <AppBar
+      onBack={onBack}
+      safeArea={false}
+      subheader={children}
+      subtitle={description ? description : `Seleccionar ${name}`}
+      title={name}
+    />
   );
 }
 

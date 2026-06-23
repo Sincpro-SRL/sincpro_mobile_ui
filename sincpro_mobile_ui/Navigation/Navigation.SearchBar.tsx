@@ -3,6 +3,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useState } from "react";
 import { TextInput, View } from "react-native";
 
 export interface SearchBarProps {
@@ -34,17 +35,32 @@ function SearchBar({
   className,
   testID,
 }: SearchBarProps) {
+  const [focused, setFocused] = useState(false);
   const body = (
     <View
-      className={cn("flex-row items-center gap-2 rounded-full bg-bg-muted px-4", className)}
-      style={{ height: 44 }}
+      className={cn(
+        "flex-row items-center gap-2 rounded-full px-4",
+        focused ? "bg-bg-card" : "bg-bg-muted",
+        className,
+      )}
+      style={{
+        height: 44,
+        borderWidth: 1,
+        borderColor: focused ? theme.border.focus : "transparent",
+      }}
     >
-      <Icon color={theme.icon.tertiary} name="search" size={18} />
+      <Icon
+        color={focused ? theme.border.focus : theme.icon.tertiary}
+        name="search"
+        size={18}
+      />
       {editable ? (
         <TextInput
           autoFocus={autoFocus}
           className="flex-1 text-sm text-text-primary"
+          onBlur={() => setFocused(false)}
           onChangeText={onChangeText}
+          onFocus={() => setFocused(true)}
           onSubmitEditing={(e) => onSubmit?.(e.nativeEvent.text)}
           placeholder={placeholder}
           placeholderTextColor={theme.text.tertiary}

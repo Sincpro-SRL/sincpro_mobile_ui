@@ -7,8 +7,8 @@ import { tv } from "tailwind-variants";
 const statusTextVariants = tv({
   variants: {
     granted: {
-      true: "text-green-600",
-      false: "text-red-500",
+      true: "text-success",
+      false: "text-danger",
     },
   },
 });
@@ -20,6 +20,11 @@ interface GeoPermissionCardProps {
   handleRequestPermission?: () => void;
 }
 
+/**
+ * @deprecated Domain-coupled (geo permission + Spanish copy); relocated to the core.
+ * Import from `@sincpro/mobile/ui/components/molecules` instead. Kept here for
+ * backwards compatibility and removed in the next major.
+ */
 function GeoPermissionCard({
   title,
   loading,
@@ -29,7 +34,7 @@ function GeoPermissionCard({
   const granted = hasPermission !== undefined ? hasPermission : false;
 
   return (
-    <View className="bg-slate-50 rounded-xl p-5 my-2.5 shadow-sm">
+    <View className="bg-bg-muted rounded-xl p-5 my-2.5 shadow-sm">
       <View className="flex-row items-start">
         <Display.Icon
           color={granted ? theme.success : theme.danger}

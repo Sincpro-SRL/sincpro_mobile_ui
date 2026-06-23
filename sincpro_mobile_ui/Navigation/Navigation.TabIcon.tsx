@@ -14,6 +14,10 @@ interface TabIconProps {
   className?: string;
 }
 
+/**
+ * @deprecated Orphan tab-bar icon piece (unused). Use `Navigation.BottomNav` (single source
+ * of truth for the bottom tab bar). Kept for backwards compatibility; removed in the next major.
+ */
 function TabIcon({
   focused,
   size = 24,

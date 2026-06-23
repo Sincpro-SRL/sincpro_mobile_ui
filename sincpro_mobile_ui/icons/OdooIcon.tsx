@@ -5,6 +5,11 @@ interface OdooIconProps {
   color?: string;
 }
 
+/**
+ * @deprecated Brand-coupled (Odoo logo); relocated to the Odoo integration package. Import
+ * from `@sincpro/mobile-odoo/ui/components/atoms` instead. Kept here for backwards
+ * compatibility and removed in the next major.
+ */
 function OdooIcon({ size = 100, color = "#ffffff" }: OdooIconProps) {
   return (
     <Svg fill="none" height={size} viewBox="0 0 919 495" width={size}>

@@ -1,6 +1,5 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
-import { Form } from "@sincpro/mobile-ui/Form";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import { theme } from "@sincpro/mobile-ui/theme";
@@ -8,7 +7,7 @@ import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import { IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
-import ScreenHeader, { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
+import { EVariantScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
@@ -19,6 +18,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import type { Edge } from "react-native-safe-area-context";
 
 interface ListViewProps<T> {
   name: string;
@@ -34,6 +34,10 @@ interface ListViewProps<T> {
   onDeleteItem?: (item: T) => void;
   onSearch?: (query: string) => void;
   onBack?: () => void;
+  /** Called when the list nears the end — wire to fetch the next page. */
+  onLoadMore?: () => void;
+  /** Show a footer spinner while the next page loads. */
+  loadingMore?: boolean;
   backgroundColor?: string;
   withContainer?: boolean;
   children: ReactNode;
@@ -53,13 +57,17 @@ function ListViewRoot<T>({
   onDeleteItem,
   onSearch,
   onBack,
+  onLoadMore,
+  loadingMore = false,
   backgroundColor,
   withContainer = true,
   children,
 }: ListViewProps<T>) {
   const Wrapper = withContainer ? Container : View;
+  // The header (AppBar) / parent layout owns the TOP safe-area; the Container only reserves
+  // the remaining edges to avoid stacking the top inset (double padding).
   const wrapperProps = withContainer
-    ? {} // Container maneja su propio backgroundColor
+    ? { edges: ["bottom", "left", "right"] as Edge[] }
     : { className: "flex-1 bg-bg-page" };
 
   // Propagate contentWithMargin to ContentList via context
@@ -70,9 +78,11 @@ function ListViewRoot<T>({
       hasError={hasError}
       isLoading={isLoading}
       items={items}
+      loadingMore={loadingMore}
       name={name}
       onBack={onBack}
       onDeleteItem={onDeleteItem}
+      onLoadMore={onLoadMore}
       onPressItem={onPressItem}
       onRefresh={onRefresh}
       onRetry={onRetry}
@@ -87,23 +97,22 @@ function ListViewRoot<T>({
 }
 
 function Header({
-  variant = EVariantScreenHeader.ROUNDED_HEADER,
   children,
 }: {
+  /** @deprecated The header is now flat (Navigation.AppBar); `variant` is ignored. */
   variant?: EVariantScreenHeader;
   children?: ReactNode;
 }) {
   const { name, description, onBack } = useListView();
 
   return (
-    <ScreenHeader
+    <Navigation.AppBar
       onBack={onBack}
+      safeArea={false}
+      subheader={children}
       subtitle={description ? description : `Seleccionar ${name}`}
       title={name}
-      variant={variant}
-    >
-      {children}
-    </ScreenHeader>
+    />
   );
 }
 
@@ -131,8 +140,12 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
   }
 
   return (
-    <View className="px-4 pb-3 mt-2">
-      <Form.SearchBar onChangeText={setQuery} placeholder={`Buscar ${name}`} value={query} />
+    <View className="pb-2">
+      <Navigation.SearchBar
+        onChangeText={setQuery}
+        placeholder={`Buscar ${name}`}
+        value={query}
+      />
     </View>
   );
 }
@@ -155,12 +168,13 @@ interface FilterChipProps {
   onPress: () => void;
 }
 
+// Modern filter pills (2026): rounded-full, active = accent (green), inactive = muted track.
 const filterChip = tv({
-  base: "py-[5px] px-2.5 items-center justify-center rounded-md",
+  base: "py-1.5 px-3.5 items-center justify-center rounded-full",
   variants: {
     active: {
-      true: "bg-primary",
-      false: "bg-transparent",
+      true: "bg-accent",
+      false: "bg-bg-muted",
     },
   },
   defaultVariants: { active: false },
@@ -169,7 +183,7 @@ const filterChip = tv({
 const filterChipText = tv({
   variants: {
     active: {
-      true: "text-text-on-primary font-semibold",
+      true: "text-text-inverse font-semibold",
       false: "text-text-secondary",
     },
   },
@@ -179,12 +193,11 @@ const filterChipText = tv({
 function FilterChip({ label, active = false, onPress }: FilterChipProps) {
   return (
     <TouchableOpacity
-      activeOpacity={0.7}
+      activeOpacity={0.8}
       className={filterChip({ active })}
       onPress={onPress}
     >
       <Typography.Text className={filterChipText({ active })} variant="bodySmall">
-        {active ? "• " : ""}
         {label}
       </Typography.Text>
     </TouchableOpacity>
@@ -192,27 +205,14 @@ function FilterChip({ label, active = false, onPress }: FilterChipProps) {
 }
 
 function FilterChips({ children }: { children: ReactNode }) {
-  const childArray = React.Children.toArray(children);
-
   return (
     <ScrollView
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-      }}
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
       horizontal
       showsHorizontalScrollIndicator={false}
       style={{ flexGrow: 0 }}
     >
-      <View className="flex-row bg-bg-card rounded-[10px] border-[1.5px] border-border-default self-center shadow-sm overflow-hidden">
-        {childArray.map((child, index) => (
-          <View className="flex-row items-center" key={index}>
-            {child}
-            {index < childArray.length - 1 && (
-              <View className="w-[1.5px] h-[22px] bg-border-divider opacity-50 my-0.5" />
-            )}
-          </View>
-        ))}
-      </View>
+      {children}
     </ScrollView>
   );
 }
@@ -314,6 +314,8 @@ function ContentList({
     onPressItem,
     onDeleteItem,
     readonly,
+    onLoadMore,
+    loadingMore,
   } = useListView();
   const rowItems = useMemo(() => toRowItems(items), [items]);
 
@@ -358,6 +360,15 @@ function ContentList({
       <FlatList
         data={rowItems}
         keyExtractor={(item) => String(item.index)}
+        ListFooterComponent={
+          loadingMore ? (
+            <View className="py-4">
+              <Feedback.Spinner size="small" />
+            </View>
+          ) : null
+        }
+        onEndReached={onLoadMore ? () => onLoadMore() : undefined}
+        onEndReachedThreshold={0.5}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}

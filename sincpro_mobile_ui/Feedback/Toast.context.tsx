@@ -13,7 +13,12 @@ import {
   useState,
 } from "react";
 import { ActivityIndicator, View } from "react-native";
-import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  FadeOutDown,
+  FadeOutUp,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type ToastVariant = "info" | "success" | "warning" | "danger" | "loading";
@@ -29,6 +34,12 @@ export interface ToastOptions {
   variant?: ToastVariant;
   duration?: number;
   action?: ToastAction;
+  /** Stable id: calling show()/info()/… again with the same id updates the existing toast
+   *  (and resets its timer) instead of stacking a duplicate. */
+  id?: string;
+  /** Render a close (✕) button. Defaults to true for persistent toasts (duration 0 / loading),
+   *  false for auto-dismissing ones. */
+  dismissible?: boolean;
 }
 
 interface ToastEntry extends ToastOptions {
@@ -59,22 +70,14 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 const DEFAULT_DURATION = 3500;
 
+// iOS-style card: rounded, hairline border + soft shadow, neutral surface. The variant is
+// conveyed by the colored icon (no left-accent stripe — it doesn't read well on iOS).
 const toast = tv({
   slots: {
-    root: "flex-row items-center gap-3 rounded-lg px-4 py-3 bg-bg-card border-l-4 shadow-lg",
+    root: "flex-row items-center gap-3 rounded-2xl px-4 py-3 bg-bg-card border border-border-light shadow-lg",
     title: "text-sm font-semibold text-text-primary",
     message: "text-sm text-text-secondary",
   },
-  variants: {
-    variant: {
-      info: { root: "border-info" },
-      success: { root: "border-success" },
-      warning: { root: "border-warning" },
-      danger: { root: "border-danger" },
-      loading: { root: "border-primary" },
-    },
-  },
-  defaultVariants: { variant: "info" },
 });
 
 const iconByVariant: Record<
@@ -87,17 +90,29 @@ const iconByVariant: Record<
   danger: { name: "close-circle", color: theme.danger },
 };
 
-function ToastItem({ entry, onHide }: { entry: ToastEntry; onHide: (id: string) => void }) {
+function ToastItem({
+  entry,
+  onHide,
+  position,
+}: {
+  entry: ToastEntry;
+  onHide: (id: string) => void;
+  position: "top" | "bottom";
+}) {
   const variant = entry.variant ?? "info";
-  const styles = toast({ variant });
+  const styles = toast();
+  const entering = position === "top" ? FadeInDown : FadeInUp;
+  const exiting = position === "top" ? FadeOutUp : FadeOutDown;
+  const resolvedDuration = entry.duration ?? (variant === "loading" ? 0 : DEFAULT_DURATION);
+  const showClose = entry.dismissible ?? resolvedDuration === 0;
 
   return (
     <Animated.View
       accessibilityLiveRegion="polite"
       accessible
       className={styles.root()}
-      entering={FadeInDown.duration(220)}
-      exiting={FadeOutDown.duration(180)}
+      entering={entering.duration(220)}
+      exiting={exiting.duration(180)}
     >
       {variant === "loading" ? (
         <ActivityIndicator color={theme.primary} size="small" />
@@ -127,11 +142,22 @@ function ToastItem({ entry, onHide }: { entry: ToastEntry; onHide: (id: string) 
           </Typography.Text>
         </Pressable>
       ) : null}
+      {showClose ? (
+        <Pressable accessibilityLabel="Cerrar" hitSlop={8} onPress={() => onHide(entry.id)}>
+          <Icon color={theme.text.tertiary} name="close" size={18} />
+        </Pressable>
+      ) : null}
     </Animated.View>
   );
 }
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({
+  children,
+  position = "bottom",
+}: {
+  children: ReactNode;
+  position?: "top" | "bottom";
+}) {
   const insets = useSafeAreaInsets();
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const counter = useRef(0);
@@ -166,11 +192,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const show = useCallback(
     (options: ToastOptions) => {
-      counter.current += 1;
-      const id = `toast-${counter.current}`;
-      setToasts((prev) => [...prev, { ...options, id }]);
-      scheduleDismiss(id, options.variant, options.duration);
-      return id;
+      let id = options.id;
+      if (!id) {
+        counter.current += 1;
+        id = `toast-${counter.current}`;
+      }
+      const toastId = id;
+      setToasts((prev) =>
+        prev.some((t) => t.id === toastId)
+          ? prev.map((t) => (t.id === toastId ? { ...t, ...options, id: toastId } : t))
+          : [...prev, { ...options, id: toastId }],
+      );
+      scheduleDismiss(toastId, options.variant, options.duration);
+      return toastId;
     },
     [scheduleDismiss],
   );
@@ -227,10 +261,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <View
         className="absolute left-0 right-0 px-4 gap-2 z-toast"
         pointerEvents="box-none"
-        style={{ bottom: insets.bottom + 12 }}
+        style={position === "top" ? { top: insets.top + 12 } : { bottom: insets.bottom + 12 }}
       >
         {toasts.map((entry) => (
-          <ToastItem entry={entry} key={entry.id} onHide={hide} />
+          <ToastItem entry={entry} key={entry.id} onHide={hide} position={position} />
         ))}
       </View>
     </ToastContext.Provider>

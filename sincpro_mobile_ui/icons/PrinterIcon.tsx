@@ -2,6 +2,11 @@ import { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import React from "react";
 import Svg, { Path, Rect } from "react-native-svg";
 
+/**
+ * @deprecated Device-coupled (printer hardware); relocated to the core. Import from
+ * `@sincpro/mobile/ui/components/atoms` instead. Kept here for backwards compatibility
+ * and removed in the next major.
+ */
 const PrinterIcon: React.FC<CustomIconProps> = ({ size = 24, color = "#000000" }) => (
   <Svg fill="none" height={size} viewBox="0 0 24 24" width={size}>
     <Path

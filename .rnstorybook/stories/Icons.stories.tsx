@@ -23,7 +23,7 @@ import ToggleOffIcon from "@sincpro/mobile-ui/icons/ToggleOffIcon";
 import WalletMoneyIcon from "@sincpro/mobile-ui/icons/WalletMoneyIcon";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 const meta: Meta = { title: "Foundations/Icons" };
 export default meta;
@@ -56,13 +56,13 @@ const ICONS = [
 
 export const Grid: StoryObj = {
   render: () => (
-    <ScrollView contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap", gap: 18 }}>
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 18 }}>
       {ICONS.map(({ name, Icon }) => (
         <View key={name} style={{ alignItems: "center", width: 72, gap: 4 }}>
           <Icon size={28} />
           <Typography.Text variant="caption">{name}</Typography.Text>
         </View>
       ))}
-    </ScrollView>
+    </View>
   ),
 };

@@ -29,8 +29,12 @@ const ConfirmationDialog: React.FC<Props> = ({
         <View className="flex-1 justify-center items-center p-6 bg-black/50">
           <TouchableWithoutFeedback>
             <View
-              className="rounded-xl p-3 w-full max-w-xs mx-auto"
-              style={{ backgroundColor: theme.bg.popover, ...theme.shadow.md }}
+              className="p-3 w-full max-w-xs mx-auto"
+              style={{
+                borderRadius: 22,
+                backgroundColor: theme.bg.popover,
+                ...theme.shadow.md,
+              }}
             >
               <Typography className="mb-1.5 text-sm" variant="body">
                 <Typography semibold variant="body">

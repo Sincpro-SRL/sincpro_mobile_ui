@@ -14,13 +14,13 @@ import { runOnJS } from "react-native-reanimated";
 // ============================================================================
 
 const button = tv({
-  base: "rounded-lg items-center justify-center flex-row min-h-[44px]",
+  base: "rounded-[13px] items-center justify-center flex-row min-h-[44px]",
   variants: {
     variant: {
       primary: "shadow-sm",
       accent: "shadow-sm",
       cta: "shadow-sm",
-      secondary: "bg-bg-card border border-primary shadow-sm",
+      secondary: "bg-bg-muted",
       outline: "bg-transparent border border-primary",
       outlineDanger: "bg-transparent border border-danger",
       outlineBlack: "bg-transparent border border-border-strong",
@@ -44,13 +44,13 @@ const button = tv({
 });
 
 const buttonIcon = tv({
-  base: "rounded-lg items-center justify-center aspect-square",
+  base: "rounded-[13px] items-center justify-center aspect-square",
   variants: {
     variant: {
       primary: "shadow-sm",
       accent: "shadow-sm",
       cta: "shadow-sm",
-      secondary: "bg-bg-card border border-primary shadow-sm",
+      secondary: "bg-bg-muted",
       outline: "bg-transparent border border-primary",
       outlineDanger: "bg-transparent border border-danger",
       outlineBlack: "bg-transparent border border-border-strong",
@@ -77,9 +77,9 @@ const textColor = tv({
   variants: {
     variant: {
       primary: "text-white",
-      accent: "text-white",
-      cta: "text-white",
-      secondary: "text-primary",
+      accent: "text-text-on-accent",
+      cta: "text-text-on-accent",
+      secondary: "text-text-primary",
       outline: "text-primary",
       outlineDanger: "text-danger",
       outlineBlack: "text-text-primary",
@@ -100,12 +100,12 @@ const textColor = tv({
     {
       variant: "accent",
       disabled: true,
-      className: "text-white/70",
+      className: "text-text-on-accent",
     },
     {
       variant: "cta",
       disabled: true,
-      className: "text-white/70",
+      className: "text-text-on-accent",
     },
     {
       variant: "transparent",
@@ -148,7 +148,7 @@ function getLoadingColorDynamic(variant: string): string {
     primary: theme.text.inverse,
     accent: theme.text.inverse,
     cta: theme.text.inverse,
-    secondary: theme.primary,
+    secondary: theme.text.primary,
     outline: theme.primary,
     outlineDanger: theme.danger,
     outlineBlack: theme.text.primary,
@@ -163,9 +163,9 @@ function getIconColorDynamic(variant: string, disabled: boolean): string {
   if (disabled) {
     const disabledMap: Record<string, string> = {
       primary: theme.icon.inverse + "70",
-      accent: theme.icon.inverse + "70",
-      cta: theme.icon.inverse + "70",
-      secondary: theme.icon.disabled,
+      accent: theme.text.onAccent + "70",
+      cta: theme.text.onAccent + "70",
+      secondary: theme.text.disabled,
       outline: theme.icon.disabled,
       outlineDanger: theme.danger + "7f",
       outlineBlack: theme.text.primary + "7f",
@@ -178,9 +178,9 @@ function getIconColorDynamic(variant: string, disabled: boolean): string {
 
   const enabledMap: Record<string, string> = {
     primary: theme.icon.inverse,
-    accent: theme.icon.inverse,
-    cta: theme.icon.inverse,
-    secondary: theme.primary,
+    accent: theme.text.onAccent,
+    cta: theme.text.onAccent,
+    secondary: theme.text.primary,
     outline: theme.primary,
     outlineDanger: theme.danger,
     outlineBlack: theme.text.primary,
@@ -304,7 +304,7 @@ const Button: FC<ButtonProps> = ({
         end={{ x: 1, y: 1 }}
         start={{ x: 0, y: 0 }}
         style={{
-          borderRadius: 8,
+          borderRadius: 13,
           opacity: disabled ? 0.7 : 1,
         }}
       >
@@ -418,11 +418,11 @@ const ButtonIcon: FC<ButtonIconProps> = ({
   if (variant === "primary") {
     return (
       <LinearGradient
-        colors={disabled ? ["#93c5fd", "#60a5fa"] : ["#2563eb", "#1d4ed8"]}
+        colors={theme.gradient.primary}
         end={{ x: 1, y: 1 }}
         start={{ x: 0, y: 0 }}
         style={{
-          borderRadius: 8,
+          borderRadius: 13,
           opacity: disabled ? 0.7 : 1,
         }}
       >

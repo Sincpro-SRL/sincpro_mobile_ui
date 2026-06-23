@@ -10,7 +10,7 @@ const inputContainer = tv({
   variants: {
     state: {
       error: "border-2 border-danger",
-      focused: "border-2 border-ring",
+      focused: "border-2 border-border-focus",
       default: "border border-input",
     },
   },

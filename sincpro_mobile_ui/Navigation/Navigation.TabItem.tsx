@@ -12,6 +12,11 @@ export interface TabIconProps {
   className?: string;
 }
 
+/**
+ * @deprecated Orphan tab-bar icon piece (unused). The bottom tab bar is now the single
+ * `Navigation.BottomNav` (configurable shape/indicator/labels/FAB). Kept for backwards
+ * compatibility; removed in the next major.
+ */
 const TabIcon: FC<TabIconProps> = ({
   focused,
   size = 24,

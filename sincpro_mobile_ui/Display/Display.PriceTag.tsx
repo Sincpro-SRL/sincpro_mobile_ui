@@ -12,9 +12,9 @@ export interface PriceTagProps {
 }
 
 const sizeMap = {
-  sm: { price: "body" as const, original: "caption" as const },
-  md: { price: "subtitle" as const, original: "bodySmall" as const },
-  lg: { price: "h3" as const, original: "body" as const },
+  sm: { price: "data" as const, original: "captionSmall" as const },
+  md: { price: "data" as const, original: "caption" as const },
+  lg: { price: "dataLarge" as const, original: "data" as const },
 };
 
 function format(amount: number, currency: string): string {

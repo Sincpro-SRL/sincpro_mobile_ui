@@ -24,7 +24,7 @@ function MonetaryField({
   currencySymbol = "₡",
   prefix = "",
   color,
-  textVariant = "body",
+  textVariant = "data",
   style = {},
   symbolColor,
   semibold = true,

@@ -69,8 +69,55 @@ export const AppBar: Story = {
           variant="large"
         />
       </Frame>
+      <Frame label="center · back + acción (squircle con borde, estilo detalle)">
+        <Navigation.AppBar
+          actions={<Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />}
+          onBack={() => {}}
+          safeArea={false}
+          title="Detalle"
+          variant="center"
+        />
+      </Frame>
       <Frame label="search header (subheader = SearchBar pill)">
         <SearchHeaderDemo />
+      </Frame>
+      <Frame label="dark / hero (tone='dark')">
+        <Navigation.AppBar
+          actions={
+            <Navigation.AppBar.Action
+              icon="notifications-outline"
+              onDark
+              onPress={() => {}}
+            />
+          }
+          safeArea={false}
+          subtitle="Caja de hoy"
+          title="Bs 4.280"
+          tone="dark"
+          variant="large"
+        />
+      </Frame>
+      <Frame label="gradiente CTA · saludo (tone='gradient')">
+        <Navigation.AppBar
+          actions={
+            <Navigation.AppBar.Action icon="notifications-outline" onPress={() => {}} />
+          }
+          safeArea={false}
+          subtitle="Tenés 3 pedidos pendientes hoy"
+          title="Buenos días, Mariana"
+          tone="gradient"
+          variant="large"
+        />
+      </Frame>
+      <Frame label="large + barra de acento (accentBar)">
+        <Navigation.AppBar
+          accentBar
+          actions={<Navigation.AppBar.Action icon="add" onPress={() => {}} tone="tinted" />}
+          safeArea={false}
+          subtitle="Resumen de la jornada"
+          title="Reportes"
+          variant="large"
+        />
       </Frame>
     </View>
   ),
@@ -127,30 +174,73 @@ function CollapsingDemo() {
 
 export const CollapsingHeader: Story = { render: () => <CollapsingDemo /> };
 
-function FloatingBarDemo() {
+const NAV_ITEMS = [
+  { activeIcon: "home", icon: "home-outline", key: "home", label: "Inicio" },
+  { icon: "cart-outline", key: "sales", label: "Ventas" },
+  { icon: "cube-outline", key: "stock", label: "Stock" },
+  { icon: "people-outline", key: "clients", label: "Clientes" },
+  { icon: "settings-outline", key: "settings", label: "Ajustes" },
+];
+
+// One component (Navigation.BottomNav), every shape/variant by props — the single source of truth.
+function BottomNavMatrixDemo() {
   const [tab, setTab] = useState("home");
+  // activeColor="accent" → el activo usa el verde de marca (accent), no el primary (negro).
+  const common = {
+    activeColor: "accent" as const,
+    items: NAV_ITEMS,
+    onChange: setTab,
+    value: tab,
+  };
   return (
-    <View style={{ height: 360, backgroundColor: "#0001" }}>
-      <Navigation.FloatingBar position="bottom">
-        <Navigation.BottomNav
-          className="bg-transparent border-0"
-          items={[
-            { key: "home", icon: "home-outline", activeIcon: "home" },
-            { key: "search", icon: "search-outline" },
-            { key: "cart", icon: "cart-outline", badge: 2 },
-            { key: "profile", icon: "person-outline" },
-          ]}
-          onChange={setTab}
-          safeArea={false}
-          showLabels={false}
-          value={tab}
-        />
-      </Navigation.FloatingBar>
+    <View style={{ gap: 18, paddingBottom: 24, backgroundColor: "#0001" }}>
+      <Typography.Text variant="captionSmall">
+        A · pastilla extendida con texto
+      </Typography.Text>
+      <Navigation.BottomNav
+        {...common}
+        indicator="pill-text"
+        shape="floating"
+        showLabels={false}
+      />
+
+      <Typography.Text variant="captionSmall">
+        B · botón central elevado (FAB) — squircle con glow verde
+      </Typography.Text>
+      <Navigation.BottomNav
+        {...common}
+        centerAction={{ icon: "add", onPress: () => {} }}
+        items={NAV_ITEMS.slice(0, 4)}
+        shape="floating"
+        showLabels={false}
+      />
+
+      <Typography.Text variant="captionSmall">C · oscura con indicador glow</Typography.Text>
+      <Navigation.BottomNav
+        {...common}
+        indicator="glow"
+        shape="floating"
+        showLabels={false}
+        tone="dark"
+      />
+
+      <Typography.Text variant="captionSmall">
+        D · indicador de barra (top bar)
+      </Typography.Text>
+      <Navigation.BottomNav {...common} indicator="bar" />
+
+      <Typography.Text variant="captionSmall">+ floating · pill icon-only</Typography.Text>
+      <Navigation.BottomNav
+        {...common}
+        indicator="pill"
+        shape="floating"
+        showLabels={false}
+      />
     </View>
   );
 }
 
-export const FloatingBar: Story = { render: () => <FloatingBarDemo /> };
+export const BottomNavVariants: Story = { render: () => <BottomNavMatrixDemo /> };
 
 export const MenuButton: Story = {
   render: () => (

@@ -75,7 +75,7 @@ function RowCheckBox({
         {renderRightComponent()}
         <Checkbox
           className="ml-2"
-          color={theme.primary}
+          color={theme.accent}
           disabled={disabled}
           pointerEvents="none"
           value={isChecked}

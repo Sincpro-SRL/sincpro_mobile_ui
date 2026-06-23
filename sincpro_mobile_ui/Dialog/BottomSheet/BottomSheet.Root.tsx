@@ -435,7 +435,7 @@ export interface FooterProps {
  * @example Status footer
  * ```tsx
  * <BottomSheet.Footer>
- *   <Text className="text-gray-500 text-sm">
+ *   <Text className="text-text-secondary text-sm">
  *     Last updated: 5 minutes ago
  *   </Text>
  * </BottomSheet.Footer>
@@ -446,7 +446,7 @@ export interface FooterProps {
  * <BottomSheet.Footer>
  *   <View className="flex-row items-center">
  *     <Icon name="info" size={16} />
- *     <Text className="ml-2 text-gray-600">Swipe down to dismiss</Text>
+ *     <Text className="ml-2 text-text-secondary">Swipe down to dismiss</Text>
  *   </View>
  * </BottomSheet.Footer>
  * ```

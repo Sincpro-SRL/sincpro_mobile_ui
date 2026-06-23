@@ -1,5 +1,5 @@
 import { Display } from "@sincpro/mobile-ui/Display";
-import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
@@ -24,7 +24,12 @@ function AuthContainer({ header, children, onBackPress, className }: AuthContain
   const screenHeight = Dimensions.get("window").height;
 
   return (
-    <GradientContainer className={cn("flex-1", className)}>
+    <GradientSurface
+      className={cn("flex-1", className)}
+      preset="night-green"
+      radius="none"
+      style={{ flex: 1 }}
+    >
       <SafeAreaView className="flex-1" edges={["top"]}>
         <View className="flex-1">
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -65,7 +70,7 @@ function AuthContainer({ header, children, onBackPress, className }: AuthContain
           </View>
         </View>
       </SafeAreaView>
-    </GradientContainer>
+    </GradientSurface>
   );
 }
 

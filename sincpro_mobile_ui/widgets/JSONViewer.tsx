@@ -1,6 +1,7 @@
 import { ThemedActivityIndicator } from "@sincpro/mobile-ui/theme";
+import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
 import React, { useMemo, useState } from "react";
-import { Platform, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const parseDeepJson = (value: any): any => {
   if (typeof value === "string") {
@@ -169,11 +170,7 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
       <Text
         selectable
         style={{
-          fontFamily: Platform.select({
-            ios: "Courier",
-            android: "monospace",
-            default: "Courier",
-          }),
+          fontFamily: fontFamilies.mono,
           fontSize: 13,
           lineHeight: 18,
         }}

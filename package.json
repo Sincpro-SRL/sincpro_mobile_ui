@@ -50,7 +50,6 @@
   "peerDependencies": {
     "@expo-google-fonts/fira-code": "*",
     "@expo-google-fonts/inter": "*",
-    "@expo-google-fonts/montserrat": "*",
     "@expo/ui": "*",
     "@expo/vector-icons": "*",
     "@react-native-community/datetimepicker": "*",
@@ -85,7 +84,6 @@
   "devDependencies": {
     "@expo-google-fonts/fira-code": "^0.4.1",
     "@expo-google-fonts/inter": "^0.4.2",
-    "@expo-google-fonts/montserrat": "^0.4.2",
     "@expo/ui": "~56.0.18",
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5",

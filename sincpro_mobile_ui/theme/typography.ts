@@ -9,17 +9,6 @@ import {
 } from "@expo-google-fonts/inter";
 import type { TextStyle } from "react-native";
 
-// Re-exports so consumers can declare fonts explicitly without installing extra deps.
-export {
-  FiraCode_400Regular,
-  FiraCode_500Medium,
-  Inter_300Light,
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_800ExtraBold,
-};
-
 /* -------------------- Font Families (configurables por la app) --------------------
  * La LIBRERÍA no shippea ni carga fuentes: solo referencia NOMBRES de familia por rol.
  * Cada app (o el Storybook, como ejemplo) carga sus archivos y los enchufa con

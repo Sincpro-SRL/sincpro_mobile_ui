@@ -63,6 +63,7 @@ export function PromoModal({
     <Modal
       animationType="fade"
       onRequestClose={onDismiss}
+      presentationStyle="overFullScreen"
       statusBarTranslucent
       transparent
       visible={visible}

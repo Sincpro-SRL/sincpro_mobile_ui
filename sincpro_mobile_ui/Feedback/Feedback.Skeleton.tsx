@@ -1,6 +1,6 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { motion } from "@sincpro/mobile-ui/tokens/motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Animated, type DimensionValue, Easing, type ViewStyle } from "react-native";
 
 export interface SkeletonProps {
@@ -20,7 +20,8 @@ function Skeleton({
   className,
   style,
 }: SkeletonProps) {
-  const [opacity] = useState(() => new Animated.Value(0.5));
+  // eslint-disable-next-line react-hooks/refs
+  const opacity = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
     const pulse = Animated.loop(

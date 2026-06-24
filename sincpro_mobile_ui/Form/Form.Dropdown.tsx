@@ -116,7 +116,12 @@ function DropdownButton({
         <Display.Icon color={iconColor} name="chevron-down" size={16} type="feather" />
       </TouchableOpacity>
 
-      <Modal animationType="fade" transparent visible={isOpen}>
+      <Modal
+        animationType="fade"
+        presentationStyle="overFullScreen"
+        transparent
+        visible={isOpen}
+      >
         <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
           <View className={styles.overlay()}>
             <TouchableWithoutFeedback>

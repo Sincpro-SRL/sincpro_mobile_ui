@@ -3,8 +3,8 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useState } from "react";
-import { Modal, Pressable as RNPressable, ScrollView, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Modal, Pressable as RNPressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface SelectOption<T extends string | number> {
@@ -38,6 +38,21 @@ function Select<T extends string | number>({
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value) ?? null;
+  // eslint-disable-next-line react-hooks/refs
+  const translateY = useRef(new Animated.Value(800)).current;
+
+  useEffect(() => {
+    if (open) {
+      Animated.spring(translateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        damping: 20,
+        stiffness: 300,
+      }).start();
+    } else {
+      translateY.setValue(800);
+    }
+  }, [open, translateY]);
 
   return (
     <View className={cn("gap-1", className)} testID={testID}>
@@ -69,8 +84,9 @@ function Select<T extends string | number>({
       </Pressable>
 
       <Modal
-        animationType="slide"
+        animationType="none"
         onRequestClose={() => setOpen(false)}
+        presentationStyle="overFullScreen"
         transparent
         visible={open}
       >
@@ -78,56 +94,58 @@ function Select<T extends string | number>({
           className="flex-1 justify-end bg-black/50"
           onPress={() => setOpen(false)}
         >
-          <RNPressable
-            className="rounded-t-3xl"
-            style={{
-              backgroundColor: theme.bg.card,
-              paddingBottom: insets.bottom + 8,
-              maxHeight: "70%",
-            }}
-          >
-            <View className="items-center pt-3 pb-1">
-              <View className="w-10 h-1 rounded-full bg-border-strong" />
-            </View>
-            {title ? (
-              <Typography.Text
-                className="text-text-primary px-4 py-2"
-                semibold
-                variant="body"
-              >
-                {title}
-              </Typography.Text>
-            ) : null}
-            <ScrollView>
-              {options.map((option) => {
-                const isSelected = option.value === value;
-                return (
-                  <Pressable
-                    accessibilityRole="menuitem"
-                    accessibilityState={{ selected: isSelected }}
-                    className="flex-row items-center justify-between px-4 py-3 border-b border-border-light"
-                    key={String(option.value)}
-                    onPress={() => {
-                      onChange(option.value);
-                      setOpen(false);
-                    }}
-                  >
-                    <Typography.Text
-                      className={cn(
-                        "flex-1 text-sm",
-                        isSelected ? "text-primary font-semibold" : "text-text-primary",
-                      )}
+          <Animated.View style={{ transform: [{ translateY }] }}>
+            <RNPressable
+              className="rounded-t-3xl"
+              style={{
+                backgroundColor: theme.bg.card,
+                paddingBottom: insets.bottom + 8,
+                maxHeight: "70%",
+              }}
+            >
+              <View className="items-center pt-3 pb-1">
+                <View className="w-10 h-1 rounded-full bg-border-strong" />
+              </View>
+              {title ? (
+                <Typography.Text
+                  className="text-text-primary px-4 py-2"
+                  semibold
+                  variant="body"
+                >
+                  {title}
+                </Typography.Text>
+              ) : null}
+              <ScrollView>
+                {options.map((option) => {
+                  const isSelected = option.value === value;
+                  return (
+                    <Pressable
+                      accessibilityRole="menuitem"
+                      accessibilityState={{ selected: isSelected }}
+                      className="flex-row items-center justify-between px-4 py-3 border-b border-border-light"
+                      key={String(option.value)}
+                      onPress={() => {
+                        onChange(option.value);
+                        setOpen(false);
+                      }}
                     >
-                      {option.label}
-                    </Typography.Text>
-                    {isSelected ? (
-                      <Icon color={theme.primary} name="checkmark" size={18} />
-                    ) : null}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </RNPressable>
+                      <Typography.Text
+                        className={cn(
+                          "flex-1 text-sm",
+                          isSelected ? "text-primary font-semibold" : "text-text-primary",
+                        )}
+                      >
+                        {option.label}
+                      </Typography.Text>
+                      {isSelected ? (
+                        <Icon color={theme.primary} name="checkmark" size={18} />
+                      ) : null}
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </RNPressable>
+          </Animated.View>
         </RNPressable>
       </Modal>
     </View>

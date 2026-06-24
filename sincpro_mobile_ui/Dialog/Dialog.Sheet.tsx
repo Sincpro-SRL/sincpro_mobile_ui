@@ -39,13 +39,22 @@ function Sheet({
   testID,
 }: SheetProps) {
   const insets = useSafeAreaInsets();
-  const [translateY] = useState(() => new Animated.Value(0));
+  const translateY = useRef(new Animated.Value(800)).current;
   const onCloseRef = useRef(onClose);
   // eslint-disable-next-line react-hooks/refs
   onCloseRef.current = onClose;
 
   useEffect(() => {
-    if (visible) translateY.setValue(0);
+    if (visible) {
+      Animated.spring(translateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        damping: 20,
+        stiffness: 300,
+      }).start();
+    } else {
+      translateY.setValue(800);
+    }
   }, [visible, translateY]);
 
   // eslint-disable-next-line react-hooks/refs
@@ -71,7 +80,13 @@ function Sheet({
   );
 
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
+    <Modal
+      animationType="none"
+      onRequestClose={onClose}
+      presentationStyle="overFullScreen"
+      transparent
+      visible={visible}
+    >
       <View className="flex-1 justify-end" testID={testID}>
         {/* Dim backdrop: does NOT close on tap (unless dismissOnBackdrop) */}
         <View

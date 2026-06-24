@@ -69,6 +69,7 @@ function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
       <Modal
         animationType="fade"
         onRequestClose={close}
+        presentationStyle="overFullScreen"
         transparent
         visible={anchor !== null}
       >

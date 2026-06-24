@@ -1,6 +1,6 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { motion } from "@sincpro/mobile-ui/tokens/motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Animated, Easing, View } from "react-native";
 
 export interface ProgressProps {
@@ -22,7 +22,8 @@ function Progress({
   className,
   testID,
 }: ProgressProps) {
-  const [translate] = useState(() => new Animated.Value(0));
+  // eslint-disable-next-line react-hooks/refs
+  const translate = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!indeterminate) return;
@@ -55,6 +56,7 @@ function Progress({
             width: "40%",
             transform: [
               {
+                // eslint-disable-next-line react-hooks/refs
                 translateX: translate.interpolate({
                   inputRange: [0, 1],
                   outputRange: ["-40%", "250%"],

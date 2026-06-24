@@ -1,6 +1,6 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { motion } from "@sincpro/mobile-ui/tokens/motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Animated, Easing, View } from "react-native";
 
 export interface ProgressProps {
@@ -22,7 +22,7 @@ function Progress({
   className,
   testID,
 }: ProgressProps) {
-  const translate = useRef(new Animated.Value(0)).current;
+  const [translate] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     if (!indeterminate) return;

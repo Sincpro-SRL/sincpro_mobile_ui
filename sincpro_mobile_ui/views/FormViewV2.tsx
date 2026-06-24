@@ -1,6 +1,8 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
+import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
+import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { AppBar } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import {
   SegmentedControl,
@@ -45,8 +47,6 @@ function FormViewRoot<T>({
   children,
 }: FormViewProps<T>) {
   const Wrapper = withContainer ? Container : View;
-  // The header (AppBar) / parent layout owns the TOP safe-area; the inner Container only
-  // reserves the remaining edges to avoid stacking the top inset (double padding).
   const wrapperProps = withContainer
     ? { edges: ["bottom", "left", "right"] as Edge[] }
     : { style: { flex: 1 } };
@@ -81,22 +81,41 @@ interface HeaderProps {
   actions?: ReactNode;
   /** Subheader content rendered below the title bar (SearchBar, SegmentedControl, etc.). */
   children?: ReactNode;
+  /**
+   * [large variant] Extra top padding (px) above the title.
+   * Use ~16 on root screens (no back button) for more breathing room.
+   */
+  topSpacing?: number;
+  /**
+   * Gradient + texture surface. Automatically activates white text/icons — no need to set `tone="dark"`.
+   * See `AppBarBackground` for the full shape.
+   */
+  background?: AppBarBackground;
   /** @deprecated Pass `variant` prop instead. */
   logoSource?: ImageSourcePropType;
 }
 
-function Header({ variant = "default", tone, actions, children }: HeaderProps) {
+function Header({
+  variant = "default",
+  tone,
+  actions,
+  children,
+  topSpacing,
+  background,
+}: HeaderProps) {
   const { name, description, onBack } = useFormView();
 
   return (
     <AppBar
       actions={actions}
+      background={background}
       onBack={onBack}
       safeArea={false}
       subheader={children}
       subtitle={description ?? undefined}
       title={name}
       tone={tone}
+      topSpacing={topSpacing}
       variant={variant}
     />
   );
@@ -147,6 +166,7 @@ function Content({
     showRefreshing,
     setShowRefreshing,
   } = useFormView();
+  const bottomInset = useBottomInset();
 
   const handleRefresh = React.useCallback(async () => {
     setShowRefreshing(true);
@@ -165,6 +185,7 @@ function Content({
         flexGrow: 1,
         justifyContent: isCenteredContent ? "center" : "flex-start",
         alignItems: isCenteredContent ? "center" : "stretch",
+        paddingBottom: bottomInset,
       }}
       keyboardShouldPersistTaps="handled"
       refreshControl={
@@ -174,7 +195,7 @@ function Content({
           refreshing={showRefreshing}
         />
       }
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.bg.page }}
     >
       {isCenteredContent ? (
         <>
@@ -303,9 +324,11 @@ function Section({
   withMargin?: boolean;
 }) {
   return (
-    <View style={withMargin ? { marginHorizontal: 16 } : undefined}>
+    <View style={withMargin ? { marginHorizontal: 16, marginVertical: 8 } : undefined}>
       {title ? <Display.SectionHeader title={title} /> : null}
-      <Display.Card padding="none">{children}</Display.Card>
+      <Display.Card elevation="none" padding="none">
+        {children}
+      </Display.Card>
     </View>
   );
 }

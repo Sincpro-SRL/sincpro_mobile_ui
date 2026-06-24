@@ -1,6 +1,6 @@
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Animated, Modal, PanResponder, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -39,15 +39,17 @@ function Sheet({
   testID,
 }: SheetProps) {
   const insets = useSafeAreaInsets();
-  const translateY = useRef(new Animated.Value(0)).current;
+  const [translateY] = useState(() => new Animated.Value(0));
   const onCloseRef = useRef(onClose);
+  // eslint-disable-next-line react-hooks/refs
   onCloseRef.current = onClose;
 
   useEffect(() => {
     if (visible) translateY.setValue(0);
   }, [visible, translateY]);
 
-  const pan = useRef(
+  // eslint-disable-next-line react-hooks/refs
+  const [pan] = useState(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, g) => g.dy > 2,
@@ -66,7 +68,7 @@ function Sheet({
         }
       },
     }),
-  ).current;
+  );
 
   return (
     <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>

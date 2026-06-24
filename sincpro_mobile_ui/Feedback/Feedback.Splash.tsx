@@ -94,6 +94,7 @@ function Splash({
     }
 
     if (!isReady) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowContent(false);
       return;
     }

@@ -12,6 +12,7 @@ import Steps from "@sincpro/mobile-ui/Navigation/Navigation.Steps";
 import TabIcon from "@sincpro/mobile-ui/Navigation/Navigation.TabIcon";
 import TabItem from "@sincpro/mobile-ui/Navigation/Navigation.TabItem";
 import Tabs from "@sincpro/mobile-ui/Navigation/Navigation.Tabs";
+export type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 
 export const Navigation = {
   AppBar,

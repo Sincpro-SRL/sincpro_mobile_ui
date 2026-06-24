@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 import { theme } from "@sincpro/mobile-ui/theme";
 import { createContext, type ReactNode, useContext, useEffect, useRef } from "react";
 import {

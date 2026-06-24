@@ -1,9 +1,13 @@
-import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
+import GradientSurface, {
+  type GradientPreset,
+} from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { LinearGradientPoint } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -141,8 +145,50 @@ export interface AppBarProps {
   border?: boolean;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
+  /**
+   * [large variant] Extra top padding (px) above the large title row.
+   * Default is 8. Use ~16–24 on root/home screens without a back button.
+   */
+  topSpacing?: number;
+  /**
+   * Decorative gradient + texture surface. When set, automatically renders white text/icons
+   * (no need to also set `tone="dark"`). Overrides the solid `tone` background.
+   *
+   * Preset: `background={{ surface: "mesh" }}`
+   * Custom: `background={{ colors: ["#0B1410", "#10B981", "#1E1B8A"] }}`
+   * With texture: `background={{ surface: "night-green", pattern: "dots" }}`
+   */
+  background?: AppBarBackground;
+  /**
+   * Visual treatment at the bottom edge of the AppBar.
+   * - `"line"` — hairline border separator (default for light-surface variants)
+   * - `"shadow"` — drop-shadow only, no border (floating/elevated feel)
+   * - `"rounded"` — rounded bottom corners (24 px); gradient is clipped inside
+   * - `"wave"` — inverse-arc cutout: page-bg arch at the bottom creates a wave illusion
+   * - `"none"` — hard edge, no decoration
+   */
+  bottomDivider?: "none" | "line" | "shadow" | "rounded" | "wave";
   className?: string;
   testID?: string;
+}
+
+/**
+ * Gradient + texture surface descriptor for AppBar headers.
+ * Pass as the `background` prop — white text/icons are activated automatically.
+ */
+export interface AppBarBackground {
+  /** Named gradient preset: `"mesh"` (dark aurora), `"night-green"`, `"neon-teal"`, `"emerald"`. */
+  surface?: GradientPreset;
+  /** Custom color stops — overrides `surface`. Minimum 2 colors. */
+  colors?: readonly [string, string, ...string[]];
+  /** Gradient start point. Default: top-left `{ x: 0, y: 0 }`. */
+  start?: LinearGradientPoint;
+  /** Gradient end point. Default: bottom-right `{ x: 1, y: 1 }`. */
+  end?: LinearGradientPoint;
+  /** SVG texture overlay kind. */
+  pattern?: PatternKind;
+  /** Texture opacity (0–1). Default 0.18. */
+  patternOpacity?: number;
 }
 
 /**
@@ -164,6 +210,9 @@ function AppBar({
   backVariant = "contained",
   border = true,
   safeArea = true,
+  topSpacing,
+  background,
+  bottomDivider,
   className,
   testID,
 }: AppBarProps) {
@@ -172,44 +221,81 @@ function AppBar({
   const large = variant === "large";
   const dark = tone === "dark";
   const gradient = tone === "gradient";
+  const hasBackground = !!background;
   // Large variant: back/leading + actions all live ON the big-title row (single cohesive
   // block — no separate top toolbar that would push the title to a new line). The compact
   // top toolbar is only for default/center.
   const largeHasNav = large && (!!onBack || !!leading);
   const showTopBar = !large;
-  // Both `dark` and `gradient` are colored surfaces: no card bg, no hairline, light/dark text.
-  const colored = dark || gradient;
-  const onColoredText = gradient ? theme.text.onAccent : theme.text.inverse;
+  // Colored = any rich surface. `background` alone activates colored mode (white text/icons).
+  const colored = dark || gradient || hasBackground;
+  // background and dark → white text. gradient (light green) → dark text via onAccent.
+  const onColoredText = gradient && !hasBackground ? theme.text.onAccent : theme.text.inverse;
   const titleStyle = colored ? { color: onColoredText } : undefined;
-  const subtitleStyle = gradient
-    ? { color: theme.text.onAccent, opacity: 0.72 }
-    : dark
-      ? { color: "rgba(255,255,255,0.7)" }
-      : undefined;
+  const subtitleStyle =
+    gradient && !hasBackground
+      ? { color: theme.text.onAccent, opacity: 0.72 }
+      : colored
+        ? { color: "rgba(255,255,255,0.7)" }
+        : undefined;
 
   // Large variant on a plain surface should feel like the page itself (no card surface, no
   // hairline). Compact variants (default/center) keep the card surface for detail screens.
   const largePlain = large && !colored;
+  // bottomDivider controls the bottom edge decoration. When not set, fall back to the
+  // legacy border prop (hairline for default/center on plain surfaces).
+  const showBorder = bottomDivider
+    ? bottomDivider === "line"
+    : !colored && !largePlain && border;
+  const showRounded = bottomDivider === "rounded";
+  const showShadow = bottomDivider === "shadow";
+  const showWave = bottomDivider === "wave";
 
   return (
     <View
       className={cn(
         colored ? "" : largePlain ? "bg-bg-page" : "bg-bg-card",
-        !colored && !largePlain && border && "border-b border-border-light",
+        showBorder && "border-b border-border-light",
         className,
       )}
       style={{
         paddingTop: safeArea ? insets.top : 0,
-        ...(dark ? { backgroundColor: theme.bg.inverse ?? HERO_DARK_FALLBACK } : null),
+        // dark tone without a background → solid inverse bg; background prop → GradientSurface handles it
+        ...(dark && !hasBackground
+          ? { backgroundColor: theme.bg.inverse ?? HERO_DARK_FALLBACK }
+          : null),
+        ...(showRounded
+          ? { borderBottomLeftRadius: 24, borderBottomRightRadius: 24, overflow: "hidden" }
+          : null),
+        ...(showShadow ? theme.shadow.md : null),
       }}
       testID={testID}
     >
-      {gradient ? (
+      {/* background prop: custom colors > named preset */}
+      {hasBackground ? (
+        <GradientSurface
+          colors={background.colors}
+          end={background.end}
+          padding="none"
+          preset={background.surface ?? "neon-teal"}
+          radius="none"
+          start={background.start}
+          style={StyleSheet.absoluteFill}
+        />
+      ) : gradient ? (
         <GradientSurface
           colors={theme.gradient.accent as readonly [string, string, ...string[]]}
           padding="none"
           radius="none"
           style={StyleSheet.absoluteFill}
+        />
+      ) : null}
+      {/* Texture overlay on top of the gradient surface */}
+      {background?.pattern ? (
+        <Pattern
+          color={theme.text.inverse}
+          kind={background.pattern}
+          opacity={background.patternOpacity ?? 0.18}
         />
       ) : null}
       {showTopBar ? (
@@ -220,7 +306,7 @@ function AppBar({
                 accessibilityLabel="Volver"
                 bare={backVariant === "plain"}
                 icon="chevron-back"
-                onDark={dark}
+                onDark={dark || gradient || hasBackground}
                 onPress={onBack}
               />
             ) : null}
@@ -259,7 +345,8 @@ function AppBar({
 
       {large && title ? (
         <View
-          className={cn("flex-row px-4 pt-2 pb-3", largeHasNav ? "items-center gap-2" : "")}
+          className={cn("flex-row px-4 pb-3", largeHasNav ? "items-center gap-2" : "")}
+          style={{ paddingTop: topSpacing != null ? topSpacing : 8 }}
         >
           {/* back/leading inline with the big title — no extra row, no line break above it */}
           {onBack ? (
@@ -267,7 +354,7 @@ function AppBar({
               accessibilityLabel="Volver"
               bare={backVariant === "plain"}
               icon="chevron-back"
-              onDark={dark}
+              onDark={dark || gradient || hasBackground}
               onPress={onBack}
             />
           ) : null}
@@ -315,6 +402,17 @@ function AppBar({
       ) : null}
 
       {subheader ? <View className="px-3 pb-3 pt-0.5">{subheader}</View> : null}
+      {/* Wave: page-bg inverse-arc that cuts into the bottom of the hero */}
+      {showWave ? (
+        <View
+          style={{
+            height: 24,
+            backgroundColor: theme.bg.page,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+          }}
+        />
+      ) : null}
     </View>
   );
 }

@@ -3,8 +3,10 @@ import SearchHistory, {
   type SearchHistoryProps,
 } from "@sincpro/mobile-ui/Display/Display.SearchHistory";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
+import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
+import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import {
   SegmentedControl,
   type SegmentedControlProps,
@@ -70,8 +72,6 @@ function ListViewRoot<T>({
   children,
 }: ListViewProps<T>) {
   const Wrapper = withContainer ? Container : View;
-  // The header (AppBar) / parent layout owns the TOP safe-area; the Container only reserves
-  // the remaining edges to avoid stacking the top inset (double padding).
   const wrapperProps = withContainer
     ? { edges: ["bottom", "left", "right"] as Edge[] }
     : { className: "flex-1 bg-bg-page" };
@@ -111,20 +111,39 @@ interface HeaderProps {
   actions?: ReactNode;
   /** Subheader content rendered below the title bar (SearchBar, SegmentedControl, etc.). */
   children?: ReactNode;
+  /**
+   * Gradient + texture surface. Automatically activates white text/icons.
+   * See `AppBarBackground` for the full shape.
+   */
+  background?: AppBarBackground;
+  /**
+   * [large variant] Extra top padding (px) above the large title.
+   * Use ~16 on root screens (no back button) for breathing room.
+   */
+  topSpacing?: number;
 }
 
-function Header({ variant = "large", tone, actions, children }: HeaderProps) {
+function Header({
+  variant = "large",
+  tone,
+  actions,
+  children,
+  background,
+  topSpacing,
+}: HeaderProps) {
   const { name, description, onBack } = useListView();
 
   return (
     <Navigation.AppBar
       actions={actions}
+      background={background}
       onBack={onBack}
       safeArea={false}
       subheader={children}
       subtitle={description ?? undefined}
       title={name}
       tone={tone}
+      topSpacing={topSpacing}
       variant={variant}
     />
   );
@@ -147,7 +166,7 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
     if (onSearch && debouncedQuery !== undefined) {
       onSearch(debouncedQuery);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, onSearch]);
 
   if (!onSearch) {
     return null;
@@ -276,6 +295,8 @@ function Content({
     setShowRefreshing,
   } = useListView();
 
+  const bottomInset = useBottomInset();
+
   const handleRefresh = useCallback(async () => {
     setShowRefreshing(true);
     if (onRefresh) {
@@ -295,6 +316,7 @@ function Content({
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
+          paddingBottom: bottomInset,
         }}
         refreshControl={
           <RefreshControl
@@ -303,6 +325,7 @@ function Content({
             refreshing={showRefreshing}
           />
         }
+        style={{ backgroundColor: theme.bg.page }}
       >
         <Feedback.Error message={errorMessage} onBack={onBack} onRetry={onRetry} />
       </ScrollView>
@@ -316,6 +339,7 @@ function Content({
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
+          paddingBottom: bottomInset,
         }}
         refreshControl={
           <RefreshControl
@@ -324,6 +348,7 @@ function Content({
             refreshing={showRefreshing}
           />
         }
+        style={{ backgroundColor: theme.bg.page }}
       >
         <Feedback.Empty />
       </ScrollView>
@@ -331,7 +356,7 @@ function Content({
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: theme.bg.page }}>
       <Display.CountRecords count={items.length || 0} name={name} />
       <ContentList contentWithMargin={withMargin}>{children}</ContentList>
     </View>
@@ -356,6 +381,7 @@ function ContentList({
     onLoadMore,
     loadingMore,
   } = useListView();
+  const bottomInset = useBottomInset();
   const rowItems = useMemo(() => toRowItems(items), [items]);
 
   const handleRefresh = useCallback(async () => {
@@ -394,9 +420,11 @@ function ContentList({
         flex: 1,
         marginTop: 2,
         paddingHorizontal: contentWithMargin ? 4 : 0,
+        backgroundColor: theme.bg.page,
       }}
     >
       <FlatList
+        contentContainerStyle={bottomInset ? { paddingBottom: bottomInset } : undefined}
         data={rowItems}
         keyExtractor={(item) => String(item.index)}
         ListFooterComponent={

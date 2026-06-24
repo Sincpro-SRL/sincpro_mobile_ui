@@ -1,5 +1,4 @@
 import Banner from "@sincpro/mobile-ui/Feedback/Feedback.Banner";
-import DomainSplashScreen from "@sincpro/mobile-ui/Feedback/Feedback.DomainSplashScreen";
 import Empty from "@sincpro/mobile-ui/Feedback/Feedback.Empty";
 import EmptyState from "@sincpro/mobile-ui/Feedback/Feedback.EmptyState";
 import Error from "@sincpro/mobile-ui/Feedback/Feedback.Error";
@@ -34,7 +33,6 @@ export const Feedback = {
   EmptyState,
   Error,
   SplashScreen,
-  DomainSplashScreen,
 };
 
 export default Feedback;

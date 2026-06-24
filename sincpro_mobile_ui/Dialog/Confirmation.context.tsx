@@ -136,12 +136,7 @@ export function ConfirmationProvider({ children }: { children: ReactNode }) {
 export function useConfirmationContext() {
   const context = useContext(ConfirmationContext);
   if (!context) {
-    // Return no-op functions during initial mount to avoid timing issues
-    console.warn("useConfirmationContext called before ConfirmationProvider mounted");
-    return {
-      show: () => {},
-      hide: () => {},
-    };
+    return { show: () => {}, hide: () => {} };
   }
   return context;
 }

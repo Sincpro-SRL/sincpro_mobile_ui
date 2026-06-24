@@ -24,7 +24,13 @@ const ConfirmationDialog: React.FC<Props> = ({
   cancelButtonText = "No, continuar aquí",
 }) => {
   return (
-    <Modal animationType="fade" onRequestClose={onCancel} transparent visible={visible}>
+    <Modal
+      animationType="fade"
+      onRequestClose={onCancel}
+      presentationStyle="overFullScreen"
+      transparent
+      visible={visible}
+    >
       <TouchableWithoutFeedback onPress={onCancel}>
         <View className="flex-1 justify-center items-center p-6 bg-black/50">
           <TouchableWithoutFeedback>

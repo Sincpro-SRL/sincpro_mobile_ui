@@ -54,7 +54,13 @@ function EditableValueModal({
   }, [visible, autoFocus]);
 
   return (
-    <Modal animationType="fade" onRequestClose={onCancel} transparent visible={visible}>
+    <Modal
+      animationType="fade"
+      onRequestClose={onCancel}
+      presentationStyle="overFullScreen"
+      transparent
+      visible={visible}
+    >
       <View className="flex-1 justify-center p-6 bg-black/40">
         <View
           className="p-4"

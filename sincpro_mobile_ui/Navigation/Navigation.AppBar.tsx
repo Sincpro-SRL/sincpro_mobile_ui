@@ -4,7 +4,7 @@ import GradientSurface, {
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { LinearGradientPoint } from "expo-linear-gradient";
@@ -48,6 +48,7 @@ function AppBarAction({
   bare = false,
   testID,
 }: AppBarActionProps) {
+  const theme = useTheme();
   const bg = bare
     ? "transparent"
     : onDark
@@ -59,7 +60,7 @@ function AppBarAction({
     tone === "tinted"
       ? theme.text.onAccent // dark token on green surface
       : onDark
-        ? theme.icon.inverse
+        ? "#FFFFFF" // always white on tone="dark"/gradient surfaces; icon.inverse flips dark in dark-mode
         : theme.icon.primary;
   // Plain (white) squircle gets a hairline so it reads as a contained button on a light bar.
   const showBorder = !bare && !onDark && tone !== "tinted";
@@ -189,6 +190,17 @@ export interface AppBarBackground {
   pattern?: PatternKind;
   /** Texture opacity (0–1). Default 0.18. */
   patternOpacity?: number;
+  /**
+   * Text and icon color rendered over this gradient surface.
+   * Defaults to `"#FFFFFF"` since gradient AppBar surfaces are typically dark.
+   * Pass a dark color (e.g. `theme.text.primary`) for light-colored gradients.
+   */
+  textColor?: string;
+  /**
+   * SVG texture pattern tint color. Defaults to `"#FFFFFF"`.
+   * Override when using a light gradient that needs a dark dot/grid texture.
+   */
+  patternColor?: string;
 }
 
 /**
@@ -216,6 +228,7 @@ function AppBar({
   className,
   testID,
 }: AppBarProps) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const centered = variant === "center";
   const large = variant === "large";
@@ -229,8 +242,15 @@ function AppBar({
   const showTopBar = !large;
   // Colored = any rich surface. `background` alone activates colored mode (white text/icons).
   const colored = dark || gradient || hasBackground;
-  // background and dark → white text. gradient (light green) → dark text via onAccent.
-  const onColoredText = gradient && !hasBackground ? theme.text.onAccent : theme.text.inverse;
+  // gradient (neon green) → dark text via onAccent. background → textColor prop (default white, since
+  // gradient surfaces are dark). dark tone → white always. text.inverse is NOT used here: it flips to
+  // near-black in dark-mode themes (semantic: "text on light surfaces"), wrong for dark gradient AppBars.
+  const onColoredText =
+    gradient && !hasBackground
+      ? theme.text.onAccent
+      : hasBackground
+        ? (background?.textColor ?? "#FFFFFF")
+        : "#FFFFFF";
   const titleStyle = colored ? { color: onColoredText } : undefined;
   const subtitleStyle =
     gradient && !hasBackground
@@ -293,7 +313,7 @@ function AppBar({
       {/* Texture overlay on top of the gradient surface */}
       {background?.pattern ? (
         <Pattern
-          color={theme.text.inverse}
+          color={background.patternColor ?? "#FFFFFF"}
           kind={background.pattern}
           opacity={background.patternOpacity ?? 0.18}
         />

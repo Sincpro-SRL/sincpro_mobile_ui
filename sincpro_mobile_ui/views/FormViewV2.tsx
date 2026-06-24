@@ -8,7 +8,7 @@ import {
   SegmentedControl,
   type SegmentedControlProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
 import React, { ReactNode } from "react";
 import { type ImageSourcePropType, RefreshControl, View } from "react-native";
@@ -167,6 +167,7 @@ function Content({
     setShowRefreshing,
   } = useFormView();
   const bottomInset = useBottomInset();
+  const theme = useTheme();
 
   const handleRefresh = React.useCallback(async () => {
     setShowRefreshing(true);

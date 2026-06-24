@@ -11,7 +11,7 @@ import {
   SegmentedControl,
   type SegmentedControlProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
@@ -296,6 +296,7 @@ function Content({
   } = useListView();
 
   const bottomInset = useBottomInset();
+  const theme = useTheme();
 
   const handleRefresh = useCallback(async () => {
     setShowRefreshing(true);
@@ -382,6 +383,7 @@ function ContentList({
     loadingMore,
   } = useListView();
   const bottomInset = useBottomInset();
+  const theme = useTheme();
   const rowItems = useMemo(() => toRowItems(items), [items]);
 
   const handleRefresh = useCallback(async () => {

@@ -32,7 +32,7 @@ const PasswordField: React.FC<PasswordFieldProps> = ({ label, error, inputProps 
         onPress={() => setShowPassword(!showPassword)}
       >
         <Display.Icon
-          color={theme.icon.secondary}
+          color={theme.text.primary}
           name={showPassword ? "eye-off-outline" : "eye-outline"}
           size={22}
           type="ionicons"

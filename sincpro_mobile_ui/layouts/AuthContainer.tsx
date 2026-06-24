@@ -2,13 +2,14 @@ import { Display } from "@sincpro/mobile-ui/Display";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
 import {
-  Dimensions,
   Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -30,16 +31,17 @@ function AuthContainer({
   background,
   className,
 }: AuthContainerProps) {
-  const screenHeight = Dimensions.get("window").height;
+  const { height: screenHeight } = useWindowDimensions();
+  const theme = useTheme();
 
   return (
     <GradientSurface
       className={cn("flex-1", className)}
       colors={background?.colors}
-      end={background?.end}
+      end={background?.end ?? (background?.colors ? { x: 0, y: 1 } : undefined)}
       preset={background?.surface ?? "night-green"}
       radius="none"
-      start={background?.start}
+      start={background?.start ?? (background?.colors ? { x: 0, y: 0 } : undefined)}
       style={{ flex: 1 }}
     >
       {background?.pattern ? (
@@ -62,7 +64,7 @@ function AuthContainer({
                   onPress={onBackPress}
                 >
                   <Display.Icon
-                    color={background?.textColor ?? "#FFFFFF"}
+                    color={background?.textColor ?? theme.text.inverse}
                     name="arrow-back"
                     size={24}
                     type="ionicons"

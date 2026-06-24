@@ -28,6 +28,7 @@ export {
 } from "@sincpro/mobile-ui/theme/typography";
 
 // Layouts
+export { BottomInsetContext } from "@sincpro/mobile-ui/layouts/BottomInset";
 export { default as Container } from "@sincpro/mobile-ui/layouts/Container";
 export { default as GradientContainer } from "@sincpro/mobile-ui/layouts/GradientContainer";
 export { default as PlainLayout } from "@sincpro/mobile-ui/layouts/PlainLayout";

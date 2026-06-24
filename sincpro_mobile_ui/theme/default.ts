@@ -6,7 +6,7 @@ export const DEFAULT_THEME: ThemeTokens = {
   secondary: "#64748B",
   accent: "#F59E0B",
   bg: {
-    page: "#F9FAFB",
+    page: "#F0F1F3",
     card: "#FFFFFF",
     popover: "#FFFFFF",
     muted: "#F3F4F6",

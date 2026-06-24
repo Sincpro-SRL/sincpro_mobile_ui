@@ -9,12 +9,12 @@ init: prepare-environment
 
 format:
 	@echo "🔤 Ordenando imports (eslint)..."
-	@npx eslint . --fix
+	@npx eslint sincpro_mobile_ui/ .rnstorybook/ --fix
 	@echo "🎨 Formateando (prettier)..."
-	@npx prettier --experimental-cli --write "**/*.{ts,tsx,js,jsx,json,yml,yaml,md}" --ignore-path .prettierignore --ignore-unknown
+	@npx prettier --experimental-cli --write "{sincpro_mobile_ui,\.rnstorybook}/**/*.{ts,tsx,js,jsx}" --ignore-path .prettierignore --ignore-unknown
 
 lint:
-	@npx eslint .
+	@npx eslint sincpro_mobile_ui/ .rnstorybook/
 
 typecheck:
 	@npx tsc --noEmit

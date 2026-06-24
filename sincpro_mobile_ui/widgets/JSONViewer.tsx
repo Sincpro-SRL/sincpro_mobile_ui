@@ -1,6 +1,6 @@
 import { ThemedActivityIndicator } from "@sincpro/mobile-ui/theme";
 import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 
 const parseDeepJson = (value: any): any => {
@@ -141,18 +141,19 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
 
   // Guard 4: colorize with processing control
   const coloredLines = useMemo(() => {
-    setIsProcessing(true);
-
     try {
       return parseJsonToColoredLines(formattedJson);
     } catch (error) {
       console.warn("[JSONViewer] Error coloring JSON:", error);
-      // Fallback a texto plano si falla el coloreado
       return [{ text: formattedJson, color: "#333333" }];
-    } finally {
-      // Small delay so the loading state is visible if needed
-      setTimeout(() => setIsProcessing(false), 50);
     }
+  }, [formattedJson]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsProcessing(true);
+    const t = setTimeout(() => setIsProcessing(false), 50);
+    return () => clearTimeout(t);
   }, [formattedJson]);
 
   // Guard 5: show loading while processing large JSON

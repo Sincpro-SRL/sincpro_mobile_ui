@@ -18,6 +18,7 @@
     "./Dialog": "./dist/Dialog/index.js",
     "./Dialog/BottomSheet": "./dist/Dialog/BottomSheet/index.js",
     "./Dialog/Sheet": "./dist/Dialog/Dialog.Sheet.js",
+    "./Actions": "./dist/Actions/index.js",
     "./Display": "./dist/Display/index.js",
     "./Feedback": "./dist/Feedback/index.js",
     "./Form": "./dist/Form/index.js",

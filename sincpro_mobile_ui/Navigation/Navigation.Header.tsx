@@ -1,4 +1,5 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import Logo from "@sincpro/mobile-ui/Display/Display.Logo";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -38,16 +39,11 @@ const Header = ({
             className="absolute top-0 left-0 z-10 border border-white p-1.5 rounded"
             onPress={onBackPress}
           >
-            <Display.Icon
-              color={theme.text.inverse}
-              name="chevron-back"
-              size={25}
-              type="ionicons"
-            />
+            <Icon color={theme.text.inverse} name="chevron-back" size={25} type="ionicons" />
           </TouchableOpacity>
         )}
         <View className="items-center justify-center">
-          {logo || <Display.Logo size="medium" source={logoSource} />}
+          {logo || <Logo size="medium" source={logoSource} />}
           {title && (
             <Typography.Text className="text-white" variant="h4">
               {title}

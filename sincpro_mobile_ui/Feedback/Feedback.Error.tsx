@@ -1,4 +1,4 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Button from "@sincpro/mobile-ui/Form/Form.Button";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -15,7 +15,7 @@ interface ErrorProps {
 function Error({ message, onRetry, onBack, onHome, className }: ErrorProps) {
   return (
     <View className={cn("flex-1 items-center justify-center px-4", className)}>
-      <Display.Icon color="#ef4444" name="exclamation-circle" size={80} type="fontawesome5" />
+      <Icon color="#ef4444" name="exclamation-circle" size={80} type="fontawesome5" />
       <Typography.Text className="pt-4 text-text-primary" semibold variant="h3">
         ¡Error!
       </Typography.Text>

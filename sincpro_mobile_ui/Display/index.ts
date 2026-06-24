@@ -8,6 +8,7 @@ import Badge, {
 import Card from "@sincpro/mobile-ui/Display/Display.Card";
 import Carousel from "@sincpro/mobile-ui/Display/Display.Carousel";
 import Chip from "@sincpro/mobile-ui/Display/Display.Chip";
+import { CircleButton } from "@sincpro/mobile-ui/Display/Display.CircleButton";
 import CopyableText from "@sincpro/mobile-ui/Display/Display.CopyableText";
 import CountRecords from "@sincpro/mobile-ui/Display/Display.CountRecords";
 import DataTable from "@sincpro/mobile-ui/Display/Display.DataTable";
@@ -23,6 +24,8 @@ import Logo from "@sincpro/mobile-ui/Display/Display.Logo";
 import MediaCard from "@sincpro/mobile-ui/Display/Display.MediaCard";
 import MediaEmbed from "@sincpro/mobile-ui/Display/Display.MediaEmbed";
 import MenuButton from "@sincpro/mobile-ui/Display/Display.MenuButton";
+import { MenuCard } from "@sincpro/mobile-ui/Display/Display.MenuCard";
+import { MenuGrid } from "@sincpro/mobile-ui/Display/Display.MenuGrid";
 import Monetary from "@sincpro/mobile-ui/Display/Display.Monetary";
 import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import PriceTag from "@sincpro/mobile-ui/Display/Display.PriceTag";
@@ -79,11 +82,17 @@ export const Display = {
   Icon,
   CountRecords,
   Logo,
+  CircleButton,
   MenuButton,
+  MenuCard,
+  MenuGrid,
   Monetary,
   Pattern,
 };
 
 export { type BadgeProps, BadgeVariants };
+export type { CircleButtonProps } from "@sincpro/mobile-ui/Display/Display.CircleButton";
+export type { MenuCardProps } from "@sincpro/mobile-ui/Display/Display.MenuCard";
+export type { MenuGridItem } from "@sincpro/mobile-ui/Display/Display.MenuGrid";
 
 export default Display;

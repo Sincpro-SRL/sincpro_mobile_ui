@@ -1,4 +1,4 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -370,7 +370,7 @@ export const BaseButtonIcon: FC<BaseButtonIconProps> = ({
             {loading ? (
               <ActivityIndicator color={loadingColorValue} size="small" />
             ) : (
-              <Display.Icon color={iconColorValue} name={icon} size={iconSizeValue} />
+              <Icon color={iconColorValue} name={icon} size={iconSizeValue} />
             )}
           </View>
         </TouchableOpacity>
@@ -388,7 +388,7 @@ export const BaseButtonIcon: FC<BaseButtonIconProps> = ({
       {loading ? (
         <ActivityIndicator color={loadingColorValue} size="small" />
       ) : (
-        <Display.Icon color={iconColorValue} name={icon} size={iconSizeValue} />
+        <Icon color={iconColorValue} name={icon} size={iconSizeValue} />
       )}
     </TouchableOpacity>
   );

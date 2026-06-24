@@ -4,6 +4,7 @@ import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { AppBar } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
+import { MenuSection } from "@sincpro/mobile-ui/Navigation/Navigation.MenuSection";
 import {
   SegmentedControl,
   type SegmentedControlProps,
@@ -311,26 +312,24 @@ function Group({
 }
 
 /**
- * Settings-style section: SectionHeader label + Card(padding="none") wrapper.
- * Use inside FormViewV2.Content for preference/config screens where rows are
- * Display.ListItem or Display.MenuButton (not form inputs).
+ * Settings-style section: titled card grouping Display.MenuButton rows.
+ * Delegates to the standalone `MenuSection` widget — single source of truth
+ * for this pattern whether used inside a FormView or on a standalone screen.
  */
 function Section({
   title,
+  footer,
   children,
-  withMargin = true,
 }: {
   title?: string;
+  /** Hint text rendered below the card (e.g. "Toca para cambiar la configuración"). */
+  footer?: string;
   children: ReactNode;
-  withMargin?: boolean;
 }) {
   return (
-    <View style={withMargin ? { marginHorizontal: 16, marginVertical: 8 } : undefined}>
-      {title ? <Display.SectionHeader title={title} /> : null}
-      <Display.Card elevation="none" padding="none">
-        {children}
-      </Display.Card>
-    </View>
+    <MenuSection footer={footer} title={title}>
+      {children}
+    </MenuSection>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ComponentType, FC } from "react";
 import { View } from "react-native";
@@ -33,7 +33,7 @@ const TabIcon: FC<TabIconProps> = ({
         className,
       )}
     >
-      <Display.Icon
+      <Icon
         color={focused ? "#FFFFFF" : "#6B7280"}
         customIcon={customIcon}
         name={name}

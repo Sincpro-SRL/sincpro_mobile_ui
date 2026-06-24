@@ -1,9 +1,9 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { type ReactNode, useRef, useState } from "react";
+import { cloneElement, type ReactElement, type ReactNode, useRef, useState } from "react";
 import { Dimensions, Modal, Pressable as RNPressable, View } from "react-native";
 
 export interface MenuItem {
@@ -35,6 +35,7 @@ interface Anchor {
 }
 
 function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
+  const theme = useTheme();
   const triggerRef = useRef<View>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
@@ -52,9 +53,18 @@ function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
 
   return (
     <View collapsable={false} ref={triggerRef} testID={testID}>
-      <Pressable accessibilityLabel="Más opciones" accessibilityRole="button" onPress={open}>
-        {trigger ?? <Icon color={theme.icon.secondary} name="ellipsis-vertical" size={22} />}
-      </Pressable>
+      {trigger ? (
+        // eslint-disable-next-line react-hooks/refs
+        cloneElement(trigger as ReactElement<{ onPress: () => void }>, { onPress: open })
+      ) : (
+        <Pressable
+          accessibilityLabel="Más opciones"
+          accessibilityRole="button"
+          onPress={open}
+        >
+          <Icon color={theme.icon.secondary} name="ellipsis-vertical" size={22} />
+        </Pressable>
+      )}
 
       <Modal
         animationType="fade"

@@ -1,4 +1,4 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import DisplayIcon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { Children, isValidElement, ReactElement, ReactNode } from "react";
@@ -32,7 +32,7 @@ function TabIcon({ focused, Icon }: { focused: boolean; Icon: any }): ReactEleme
   return (
     <View className="justify-center items-center w-10 h-10">
       {focused && <View className="absolute w-10 h-10 rounded-full bg-primary" />}
-      <Display.Icon
+      <DisplayIcon
         color={focused ? "#FFFFFF" : "#6B7280"}
         customIcon={Icon}
         size={24}

@@ -1,5 +1,5 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
@@ -26,6 +26,7 @@ function ActionButtons({
   actions: SwipeRowAction[];
   onDone: () => void;
 }) {
+  const theme = useTheme();
   return (
     <View style={{ flexDirection: "row" }}>
       {actions.map((action, index) => (

@@ -1,5 +1,5 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useState } from "react";
 import { View } from "react-native";
@@ -7,9 +7,23 @@ import { View } from "react-native";
 export interface TooltipProps {
   content: string;
   children: ReactNode;
-  placement?: "top" | "bottom";
+  placement?: "top" | "bottom" | "left" | "right";
   width?: number;
   testID?: string;
+}
+
+function resolvePosition(placement: "top" | "bottom" | "left" | "right") {
+  switch (placement) {
+    case "bottom":
+      return { top: "100%" as const, left: 0, marginVertical: 6 };
+    case "left":
+      return { right: "100%" as const, top: 0, marginHorizontal: 6 };
+    case "right":
+      return { left: "100%" as const, top: 0, marginHorizontal: 6 };
+    case "top":
+    default:
+      return { bottom: "100%" as const, left: 0, marginVertical: 6 };
+  }
 }
 
 function Tooltip({
@@ -19,8 +33,8 @@ function Tooltip({
   width = 200,
   testID,
 }: TooltipProps) {
+  const theme = useTheme();
   const [visible, setVisible] = useState(false);
-  const isTop = placement === "top";
 
   return (
     <View style={{ position: "relative", alignSelf: "flex-start" }} testID={testID}>
@@ -35,10 +49,8 @@ function Tooltip({
         <View
           style={{
             position: "absolute",
-            [isTop ? "bottom" : "top"]: "100%",
-            left: 0,
+            ...resolvePosition(placement),
             width,
-            marginVertical: 6,
             paddingHorizontal: 10,
             paddingVertical: 8,
             borderRadius: 8,

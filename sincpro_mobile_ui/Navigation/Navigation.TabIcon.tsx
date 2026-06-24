@@ -1,9 +1,7 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ComponentType } from "react";
 import { View } from "react-native";
-
-const Icon = Display.Icon;
 
 interface TabIconProps {
   focused: boolean;

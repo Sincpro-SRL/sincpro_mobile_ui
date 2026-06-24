@@ -155,24 +155,82 @@ export const TagsAndStats: Story = {
 };
 
 export const Tooltip: Story = {
+  name: "Tooltip — placements",
   render: () => (
-    <View style={{ paddingTop: 60, gap: 8 }}>
-      <Display.KeyValue
-        label="Total a pagar"
-        value={
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <Typography.Text className="text-text-primary" semibold>
-              Bs 96,00
-            </Typography.Text>
-            <Display.Tooltip content="Incluye impuestos y costo de envío.">
-              <Display.Icon name="information-circle-outline" size={18} />
-            </Display.Tooltip>
-          </View>
-        }
-      />
+    <View style={{ gap: 32, padding: 16 }}>
       <Typography.Text className="text-text-tertiary" variant="caption">
-        Tocá el icono para ver el detalle.
+        Tocá cada icono para mostrar/ocultar el tooltip.
       </Typography.Text>
+
+      <View style={{ gap: 12 }}>
+        <Typography.Text className="text-text-secondary" variant="bodySmall">
+          {`placement="top" (default)`}
+        </Typography.Text>
+        <View style={{ paddingTop: 80, alignItems: "flex-start" }}>
+          <Display.KeyValue
+            label="Total a pagar"
+            value={
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <Typography.Text className="text-text-primary" semibold>
+                  Bs 96,00
+                </Typography.Text>
+                <Display.Tooltip content="Incluye impuestos y costo de envío estimados.">
+                  <Display.Icon name="information-circle-outline" size={18} />
+                </Display.Tooltip>
+              </View>
+            }
+          />
+        </View>
+      </View>
+
+      <View style={{ gap: 12 }}>
+        <Typography.Text className="text-text-secondary" variant="bodySmall">
+          {`placement="bottom"`}
+        </Typography.Text>
+        <Display.Tooltip
+          content="El estado se actualiza cada 30 segundos automáticamente."
+          placement="bottom"
+          width={240}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Display.StatusDot status="online" />
+            <Typography.Text className="text-text-primary">Conexión activa</Typography.Text>
+            <Display.Icon
+              className="text-text-tertiary"
+              name="chevron-down-outline"
+              size={14}
+            />
+          </View>
+        </Display.Tooltip>
+      </View>
+
+      <View style={{ gap: 12 }}>
+        <Typography.Text className="text-text-secondary" variant="bodySmall">
+          {`placement="right"`}
+        </Typography.Text>
+        <Display.Tooltip content="Campo obligatorio" placement="right" width={160}>
+          <Display.Icon
+            className="text-text-tertiary"
+            name="alert-circle-outline"
+            size={20}
+          />
+        </Display.Tooltip>
+      </View>
+
+      <View style={{ gap: 12 }}>
+        <Typography.Text className="text-text-secondary" variant="bodySmall">
+          {`placement="left"`}
+        </Typography.Text>
+        <View style={{ alignItems: "flex-end" }}>
+          <Display.Tooltip
+            content="Ver más opciones de configuración."
+            placement="left"
+            width={220}
+          >
+            <Display.Icon className="text-text-tertiary" name="settings-outline" size={20} />
+          </Display.Tooltip>
+        </View>
+      </View>
     </View>
   ),
 };

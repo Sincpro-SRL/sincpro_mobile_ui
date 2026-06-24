@@ -1,7 +1,7 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import type { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ComponentType } from "react";
@@ -82,6 +82,7 @@ function BottomNav({
   testID,
 }: BottomNavProps) {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const dark = tone === "dark";
   const rounded = shape === "floating" || dark;
   const bottomPad = rounded ? 6 : safeArea ? insets.bottom : 0;

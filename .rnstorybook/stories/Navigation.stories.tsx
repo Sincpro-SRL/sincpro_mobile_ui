@@ -1,4 +1,3 @@
-import { Display } from "@sincpro/mobile-ui/Display";
 import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
 import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
 import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
@@ -525,31 +524,6 @@ function BottomNavMatrixDemo() {
 }
 
 export const BottomNavVariants: Story = { render: () => <BottomNavMatrixDemo /> };
-
-export const MenuButton: Story = {
-  render: () => (
-    <View style={{ width: 280, gap: 4 }}>
-      <Display.MenuButton icon={HomeIcon} label="Configuración" onPress={() => {}} />
-      <Display.MenuButton icon={HomeIcon} label="Mi cuenta" onPress={() => {}} />
-    </View>
-  ),
-};
-
-export const Menu: Story = {
-  render: () => (
-    <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 8 }}>
-      <Navigation.Menu
-        items={[
-          { label: "Editar", icon: "create-outline", onPress: () => {} },
-          { label: "Compartir", icon: "share-outline", onPress: () => {} },
-          { label: "Duplicar", icon: "copy-outline", onPress: () => {} },
-          { separator: true },
-          { label: "Eliminar", icon: "trash-outline", destructive: true, onPress: () => {} },
-        ]}
-      />
-    </View>
-  ),
-};
 
 // ─── TicketsTabBar ────────────────────────────────────────────────────────────
 // Configuración usada en sincpro_mobile_tickets (AppRoutes.tsx).

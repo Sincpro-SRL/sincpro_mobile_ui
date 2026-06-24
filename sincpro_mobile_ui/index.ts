@@ -1,4 +1,5 @@
 // Design System - Compound Components
+export { Actions } from "@sincpro/mobile-ui/Actions";
 export { Dialog } from "@sincpro/mobile-ui/Dialog";
 export { Display } from "@sincpro/mobile-ui/Display";
 export { Feedback } from "@sincpro/mobile-ui/Feedback";

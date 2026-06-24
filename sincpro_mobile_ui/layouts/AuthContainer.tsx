@@ -1,13 +1,15 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
+import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
 import {
-  Dimensions,
   Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -18,18 +20,37 @@ interface AuthContainerProps {
   children: ReactNode;
   onBackPress?: () => void;
   className?: string;
+  /** Gradient + pattern surface for the header area. Defaults to `night-green` preset. */
+  background?: AppBarBackground;
 }
 
-function AuthContainer({ header, children, onBackPress, className }: AuthContainerProps) {
-  const screenHeight = Dimensions.get("window").height;
+function AuthContainer({
+  header,
+  children,
+  onBackPress,
+  background,
+  className,
+}: AuthContainerProps) {
+  const { height: screenHeight } = useWindowDimensions();
+  const theme = useTheme();
 
   return (
     <GradientSurface
       className={cn("flex-1", className)}
-      preset="night-green"
+      colors={background?.colors}
+      end={background?.end ?? (background?.colors ? { x: 0, y: 1 } : undefined)}
+      preset={background?.surface ?? "night-green"}
       radius="none"
+      start={background?.start ?? (background?.colors ? { x: 0, y: 0 } : undefined)}
       style={{ flex: 1 }}
     >
+      {background?.pattern ? (
+        <Pattern
+          color={background.patternColor ?? "#FFFFFF"}
+          kind={background.pattern as PatternKind}
+          opacity={background.patternOpacity ?? 0.18}
+        />
+      ) : null}
       <SafeAreaView className="flex-1" edges={["top"]}>
         <View className="flex-1">
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -43,7 +64,7 @@ function AuthContainer({ header, children, onBackPress, className }: AuthContain
                   onPress={onBackPress}
                 >
                   <Display.Icon
-                    color={theme.text.inverse}
+                    color={background?.textColor ?? theme.text.inverse}
                     name="arrow-back"
                     size={24}
                     type="ionicons"

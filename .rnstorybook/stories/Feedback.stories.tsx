@@ -17,8 +17,55 @@ export const Loading: Story = {
   ),
 };
 
+export const LoadingDots: Story = {
+  render: () => (
+    <View style={{ height: 200 }}>
+      <Feedback.Loading message="Cargando tickets..." variant="dots" />
+    </View>
+  ),
+};
+
+export const LoadingRipple: Story = {
+  render: () => (
+    <View style={{ height: 200 }}>
+      <Feedback.Loading message="Cargando tickets..." variant="ripple" />
+    </View>
+  ),
+};
+
 export const Spinner: Story = {
   render: () => <Feedback.Spinner />,
+};
+
+export const SpinnerDots: Story = {
+  render: () => <Feedback.Spinner variant="dots" />,
+};
+
+export const SpinnerRipple: Story = {
+  render: () => <Feedback.Spinner variant="ripple" />,
+};
+
+export const SpinnerSizes: Story = {
+  render: () => (
+    <View style={{ gap: 24, alignItems: "center" }}>
+      <View style={{ gap: 8, alignItems: "center" }}>
+        <Typography.Text variant="caption">dots · small</Typography.Text>
+        <Feedback.Spinner size="small" variant="dots" />
+      </View>
+      <View style={{ gap: 8, alignItems: "center" }}>
+        <Typography.Text variant="caption">dots · large</Typography.Text>
+        <Feedback.Spinner size="large" variant="dots" />
+      </View>
+      <View style={{ gap: 8, alignItems: "center" }}>
+        <Typography.Text variant="caption">ripple · small</Typography.Text>
+        <Feedback.Spinner size="small" variant="ripple" />
+      </View>
+      <View style={{ gap: 8, alignItems: "center" }}>
+        <Typography.Text variant="caption">ripple · large</Typography.Text>
+        <Feedback.Spinner size="large" variant="ripple" />
+      </View>
+    </View>
+  ),
 };
 
 export const Empty: Story = {

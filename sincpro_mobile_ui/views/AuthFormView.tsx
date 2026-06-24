@@ -1,5 +1,6 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
+import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ReactNode } from "react";
 import { type ImageSourcePropType, View } from "react-native";
@@ -13,9 +14,17 @@ interface AuthFormProps {
   logoSource?: ImageSourcePropType;
   onBack?: () => void;
   FormNode: ReactNode;
+  background?: AppBarBackground;
 }
 
-function AuthFormView({ title, description, logoSource, onBack, FormNode }: AuthFormProps) {
+function AuthFormView({
+  title,
+  description,
+  logoSource,
+  onBack,
+  FormNode,
+  background,
+}: AuthFormProps) {
   const renderTitle = () => {
     if (!title) return null;
     return (
@@ -31,7 +40,11 @@ function AuthFormView({ title, description, logoSource, onBack, FormNode }: Auth
   };
 
   return (
-    <AuthContainer header={<Logo size="large" source={logoSource} />} onBackPress={onBack}>
+    <AuthContainer
+      background={background}
+      header={<Logo size="large" source={logoSource} />}
+      onBackPress={onBack}
+    >
       <View className="m-4">
         <View className="mb-5">
           {renderTitle()}

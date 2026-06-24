@@ -1,5 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Display } from "@sincpro/mobile-ui/Display";
 import InputField from "@sincpro/mobile-ui/Form/Form.InputField";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import React, { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 
@@ -10,6 +11,7 @@ export interface PasswordFieldProps {
 }
 
 const PasswordField: React.FC<PasswordFieldProps> = ({ label, error, inputProps }) => {
+  const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -26,12 +28,14 @@ const PasswordField: React.FC<PasswordFieldProps> = ({ label, error, inputProps 
       />
       <TouchableOpacity
         className="absolute right-3 bottom-[25px]"
+        hitSlop={8}
         onPress={() => setShowPassword(!showPassword)}
       >
-        <Ionicons
-          className="text-text-primary"
+        <Display.Icon
+          color={theme.text.primary}
           name={showPassword ? "eye-off-outline" : "eye-outline"}
-          size={24}
+          size={22}
+          type="ionicons"
         />
       </TouchableOpacity>
     </View>

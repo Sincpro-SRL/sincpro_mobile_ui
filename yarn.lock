@@ -857,11 +857,6 @@
   resolved "https://registry.yarnpkg.com/@expo-google-fonts/inter/-/inter-0.4.2.tgz#2d37ffb1cb16600cff616b6c4c0efee9b6c47c28"
   integrity sha512-syfiImMaDmq7cFi0of+waE2M4uSCyd16zgyWxdPOY7fN2VBmSLKEzkfbZgeOjJq61kSqPBNNtXjggiQiSD6gMQ==
 
-"@expo-google-fonts/montserrat@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@expo-google-fonts/montserrat/-/montserrat-0.4.2.tgz#2fa3a12ac0c79bf51ff48b5ed7fa71db26057fda"
-  integrity sha512-Xyq7rKJhhZOE1Xk4wKSSVoUeOkFmQEMhtZ3pdFrgYckGZMs115Apmld1AI8Ju+yrl5GzDdfRCCqRr33dvEDYUA==
-
 "@expo/cli@^56.1.16":
   version "56.1.16"
   resolved "https://registry.yarnpkg.com/@expo/cli/-/cli-56.1.16.tgz#136ff7d9020053b5ea836dbb3d95156ea193d3f2"

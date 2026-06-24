@@ -9,14 +9,14 @@ import {
 } from "@expo-google-fonts/inter";
 import type { TextStyle } from "react-native";
 
-/* -------------------- Font Families (configurables por la app) --------------------
- * La LIBRERÍA no shippea ni carga fuentes: solo referencia NOMBRES de familia por rol.
- * Cada app (o el Storybook, como ejemplo) carga sus archivos y los enchufa con
- * `configureFonts({...})`. Defaults seguros = Inter (body) + Fira Code (mono); el rol
- * "title" cae a Inter hasta que la app configure su tipo de marca (p.ej. Satoshi).
+/* -------------------- Font Families ----------------------------------------
+ * The DS ships NO font files — it only holds FAMILY NAME strings per role.
+ * Each app (or Storybook) loads its own font files and wires them in via
+ * `configureFonts({...})`. Safe defaults: Inter (body) + Fira Code (mono);
+ * the "title" roles fall back to Inter until the app sets its brand typeface.
  *
- * `fontFamilies` es un singleton MUTABLE (igual que `theme`): `configureFonts` hace
- * Object.assign in-place, así los componentes que lo leen en render ven el cambio. */
+ * `fontFamilies` is a MUTABLE singleton: `configureFonts` does Object.assign
+ * in-place so components that read it at render time see the updated values. */
 export type FontRole =
   | "light"
   | "regular"
@@ -38,7 +38,7 @@ const DEFAULT_FONT_FAMILIES: Record<FontRole, string> = {
   extraBold: "Inter_800ExtraBold",
   mono: "FiraCode_400Regular",
   monoMedium: "FiraCode_500Medium",
-  // Título: default Inter (seguro). Storybook/app lo apunta a Satoshi vía configureFonts.
+  // Title roles default to Inter until the app wires its brand typeface via configureFonts.
   titleRegular: "Inter_400Regular",
   titleMedium: "Inter_500Medium",
   title: "Inter_600SemiBold",
@@ -48,15 +48,15 @@ const DEFAULT_FONT_FAMILIES: Record<FontRole, string> = {
 export const fontFamilies: Record<FontRole, string> = { ...DEFAULT_FONT_FAMILIES };
 
 /**
- * Configura las familias de fuente del DS (rol → nombre de familia ya cargada por la app).
- * Mutación in-place del singleton, así los componentes la leen en vivo. Ejemplo:
- * `configureFonts({ title: "Satoshi-Bold", titleBlack: "Satoshi-Black" })`.
+ * Override DS font family names (role → already-loaded family name).
+ * Mutates the singleton in-place so components pick up the change at render time.
+ * Example: `configureFonts({ title: "Satoshi-Bold", titleBlack: "Satoshi-Black" })`.
  */
 export function configureFonts(overrides: Partial<Record<FontRole, string>>): void {
   Object.assign(fontFamilies, overrides);
 }
 
-/** Restablece las familias a los defaults (Inter + Fira Code). Útil en tests/stories. */
+/** Reset all font roles to the defaults (Inter + Fira Code). Useful in tests and stories. */
 export function resetFonts(): void {
   Object.assign(fontFamilies, DEFAULT_FONT_FAMILIES);
 }
@@ -113,7 +113,7 @@ export const letterSpacing = {
 
 /* -------------------- Typography Variants -------------------- */
 export const typographyVariants = {
-  // Display (Satoshi Black — carácter de marca)
+  // Display (Satoshi Black — brand character)
   display: {
     fontSize: fontSizes["7xl"],
     fontFamily: fontFamilies.titleBlack,
@@ -205,7 +205,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.wide,
   },
 
-  // Data — cifras, montos, SKU, % (mono Fira Code, peso medio). DS spec rol "data".
+  // Data — amounts, SKU, % (Fira Code mono, medium weight). DS role "data".
   data: {
     fontSize: fontSizes.lg,
     fontFamily: fontFamilies.monoMedium,
@@ -220,7 +220,7 @@ export const typographyVariants = {
     lineHeight: fontSizes["4xl"] * lineHeights.none,
     letterSpacing: letterSpacing.tight,
   },
-  // Overline — labels/metadata en mono MAYÚSCULAS con tracking. DS spec rol "caption".
+  // Overline — UPPERCASE labels / metadata in mono with tracking. DS role "caption".
   overline: {
     fontSize: 11,
     fontFamily: fontFamilies.mono,
@@ -230,7 +230,7 @@ export const typographyVariants = {
     textTransform: "uppercase",
   },
 
-  // Caption — Fira Code mono (secundario, metadata, labels de datos)
+  // Caption — Fira Code mono (secondary text, metadata, data labels)
   caption: {
     fontSize: fontSizes.sm,
     fontFamily: fontFamilies.mono,
@@ -287,9 +287,9 @@ export const typographyVariants = {
 } as const;
 
 /* -------------------- Variant → Font Role --------------------
- * Cada variante apunta a un ROL de fuente (no a una familia fija), para que
- * `configureFonts` la cambie en vivo. `Typography.Text` resuelve `fontFamilies[rol]`
- * en render. La familia "baked" de cada variante arriba queda solo como fallback. */
+ * Each variant points to a ROLE (not a fixed family) so `configureFonts` can
+ * update it at runtime. `Typography.Text` resolves `fontFamilies[role]` on
+ * render. The baked-in family in each variant above is a static fallback only. */
 export const variantFontRole: Record<keyof typeof typographyVariants, FontRole> = {
   display: "titleBlack",
   h1: "titleBlack",
@@ -351,10 +351,10 @@ export const createCustomTextStyle = (
  * depending directly on expo-font — it's already a transitive dep via this package. */
 export { useFonts };
 
-/* -------------------- Font Loader (opcional, conveniencia) --------------------
- * Carga las fuentes recomendadas (Inter + Fira Code), que la app instala como peer deps.
- * El rol "title" (Satoshi u otra) lo carga y enchufa la app/Storybook por su cuenta vía
- * `configureFonts` — la librería NO bundlea archivos de fuente. */
+/* -------------------- Font Loader (optional, convenience) ------------------
+ * Loads the recommended base fonts (Inter + Fira Code) declared as peer deps.
+ * The "title" role (e.g. Satoshi) is loaded and wired by the app/Storybook
+ * via `configureFonts` — the DS never bundles font files. */
 export const useAppFonts = () => {
   const [loaded] = useFonts({
     FiraCode_400Regular,

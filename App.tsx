@@ -13,14 +13,17 @@ import SatoshiBold from "./assets/fonts/Satoshi-Bold.otf";
 import SatoshiMedium from "./assets/fonts/Satoshi-Medium.otf";
 import SatoshiRegular from "./assets/fonts/Satoshi-Regular.otf";
 
-// EJEMPLO de cómo una app enchufa su tipo de marca: la librería NO bundlea fuentes; aquí el
-// Storybook carga Satoshi (assets locales) y lo apunta al rol "title" vía configureFonts.
-// Una app cliente haría lo mismo con SUS propios archivos/familias.
+// Manual de marca SINCPRO — 3 familias semánticas:
+//   df  (display) → Satoshi       — títulos y encabezados
+//   bf  (body)    → Inter         — cuerpo, labels, botones  [default DS]
+//   cf/mono       → Fira Code     — captions, datos numéricos [default DS]
 configureFonts({
   titleRegular: "Satoshi-Regular",
-  titleMedium: "Satoshi-Medium",
-  title: "Satoshi-Bold",
-  titleBlack: "Satoshi-Black",
+  titleMedium:  "Satoshi-Medium",
+  title:        "Satoshi-Bold",
+  titleBlack:   "Satoshi-Black",
+  // body roles (light/regular/medium/semiBold/extraBold) → Inter (defaults, no tocar)
+  // mono / monoMedium → Fira Code (defaults, no tocar)
 });
 
 export default function App() {

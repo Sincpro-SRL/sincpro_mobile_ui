@@ -34,7 +34,7 @@ function SectionHeader({ title, subtitle, action, className, testID }: SectionHe
       </View>
       {action ? (
         <Pressable accessibilityRole="button" hitSlop={8} onPress={action.onPress}>
-          <Typography.Text className="text-primary text-sm font-semibold">
+          <Typography.Text className="text-text-accent text-sm font-semibold">
             {action.label}
           </Typography.Text>
         </Pressable>

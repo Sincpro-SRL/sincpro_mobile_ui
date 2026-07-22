@@ -4,7 +4,8 @@
     "sincpro_mobile_ui/**/*.ts",
     "sincpro_mobile_ui/**/*.tsx",
     ".rnstorybook/**/*.ts",
-    ".rnstorybook/**/*.tsx"
+    ".rnstorybook/**/*.tsx",
+    "nativewind-env.d.ts"
   ],
   "exclude": ["node_modules", ".rnstorybook/storybook.requires.ts"]
 }

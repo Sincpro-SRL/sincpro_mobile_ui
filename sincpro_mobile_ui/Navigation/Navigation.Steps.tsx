@@ -49,7 +49,7 @@ function Steps({ steps, current, className, testID }: StepsProps) {
             <Typography.Text
               className="mt-1 text-center"
               numberOfLines={1}
-              style={{ color: active ? theme.primary : theme.text.tertiary }}
+              style={{ color: active ? theme.text.accent : theme.text.tertiary }}
               variant="caption"
             >
               {label}

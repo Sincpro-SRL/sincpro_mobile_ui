@@ -94,7 +94,7 @@ function TabsTrigger({ value, children, icon, iconLayout = "left" }: TabsTrigger
   const theme = useTheme();
   const { value: active, setValue, variant } = useTabs();
   const selected = active === value;
-  const iconColor = selected ? theme.primary : theme.text.secondary;
+  const iconColor = selected ? theme.text.accent : theme.text.secondary;
 
   if (variant === "filled") {
     return (

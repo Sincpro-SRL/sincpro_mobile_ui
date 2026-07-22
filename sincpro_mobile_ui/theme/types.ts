@@ -1,15 +1,23 @@
 /**
  * ============================================================================
- * THEME SYSTEM - SIMPLE & SEMANTIC
+ * THEME SYSTEM — semantic + container (M3-era) tokens
  * ============================================================================
  *
- * Simplified theming system without hooks or context.
- * Tokens are read directly from the active theme.
+ * Layers (framework contract, mid-2026):
+ * 1. Semantic fills — `primary` / `accent` / `secondary` / state hues (chrome, CTAs).
+ * 2. Containers — soft tonal surfaces + `on*` ink (badges, chips, tonal buttons).
+ * 3. Surfaces — `bg.*` including tonal `containerLowest|container|containerHigh`.
+ * 4. State layers — opacity overlays for press/hover/focus (Material state layers).
+ * 5. Material — nav-chrome hints for Liquid Glass / blur peers (optional usage).
+ *
+ * Color roles:
+ * - Fills/borders/tracks → `primary` / `accent` (never body text).
+ * - Brand text/links → `text.accent` (AA on `bg.page` / `bg.card`).
+ * - Ink on filled brand → `text.onPrimary` via `resolveOnColor`.
+ * - Ink on soft containers → `container.onPrimary` / `container.onSuccess` / …
  */
 
-// ----------------------------------------------------------------------------
-// Shadow Tokens (React Native)
-// ----------------------------------------------------------------------------
+import type { ImageSourcePropType } from "react-native";
 
 export interface ShadowStyle {
   shadowColor: string;
@@ -19,92 +27,143 @@ export interface ShadowStyle {
   elevation: number;
 }
 
-// ----------------------------------------------------------------------------
-// Theme Tokens (SIMPLIFIED)
-// ----------------------------------------------------------------------------
-
 export interface ThemeTokens {
-  /** Theme name */
   name: string;
 
-  /** Primary color - main buttons, links, active states */
+  /** Primary fill — CTA surfaces, active tracks, decorative borders. Not for body text. */
   primary: string;
-
-  /** Secondary color - secondary buttons, low-profile elements (gray) */
+  /** Secondary fill — low-profile surfaces and secondary actions. */
   secondary: string;
-
-  /** Accent color - highlights, important badges, secondary CTAs (orange/indigo) */
+  /** Accent fill — highlights, secondary CTAs, decorative chrome. Not for body text. */
   accent: string;
 
-  /** Backgrounds */
   bg: {
-    page: string; // Screen background
-    card: string; // Cards, modals, inputs
-    popover: string; // Dropdowns, tooltips, context menus
-    muted: string; // Secondary surfaces, alternating rows
-    accent: string; // Selected states, active rows
-    hover: string; // Hover states
-    disabled: string; // Disabled states
-    inverse?: string; // Optional always-dark hero surface (AppBar tone="dark", dashboard hero)
+    page: string;
+    card: string;
+    popover: string;
+    muted: string;
+    accent: string;
+    hover: string;
+    disabled: string;
+    /** Opposite / hero surface (AppBar tone="dark"). Light themes: dark; dark themes: light. */
+    inverse?: string;
+    /**
+     * Tonal elevation ladder (M3 surfaceContainer*). Prefer these over stacking
+     * shadows for hierarchy on mobile.
+     */
+    containerLowest: string;
+    container: string;
+    containerHigh: string;
   };
 
-  /** Text */
   text: {
-    primary: string; // Primary text
-    secondary: string; // Secondary text
-    tertiary: string; // Placeholders, tertiary text
-    muted: string; // Text on bg.muted
-    accent: string; // Text on bg.accent
-    inverse: string; // Text on colors (white)
-    disabled: string; // Disabled text
-    onPrimary: string; // Text on primary
-    onSecondary: string; // Text on secondary (gray)
-    onAccent: string; // Text on accent
-    onDanger: string; // Text on danger
-    onSuccess: string; // Text on success
-  };
-  /** Icons */
-  icon: {
-    primary: string; // Primary icon
-    secondary: string; // Secondary icon
-    tertiary: string; // Tertiary icon
-    inverse: string; // Icon on colors (white)
-    disabled: string; // Disabled icon
-  };
-  /** Borders */
-  border: {
-    default: string; // Normal borders
-    light: string; // Soft borders
-    strong: string; // Strong borders
-    focus: string; // Focus color
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    muted: string;
+    accent: string;
+    inverse: string;
+    disabled: string;
+    onPrimary: string;
+    onSecondary: string;
+    onAccent: string;
+    onDanger: string;
+    onSuccess: string;
   };
 
-  /** Semantic states */
+  icon: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    inverse: string;
+    disabled: string;
+  };
+
+  border: {
+    default: string;
+    light: string;
+    strong: string;
+    focus: string;
+  };
+
   success: string;
   warning: string;
   danger: string;
   info: string;
 
-  /** Semantic states - light variants */
+  /**
+   * @deprecated Prefer `container.success`. Kept for NativeWind `bg-success-light`
+   * back-compat; defaults stay in sync with container fills.
+   */
   successLight: string;
+  /** @deprecated Prefer `container.warning`. */
   warningLight: string;
+  /** @deprecated Prefer `container.danger`. */
   dangerLight: string;
+  /** @deprecated Prefer `container.info`. */
   infoLight: string;
 
-  /** Focus & Input */
-  ring: string; // Focus outline color
-  input: string; // Input border color
+  /**
+   * Soft tonal fills + on-colors — badges, chips, tonal CTAs, selected rows.
+   * Prefer these over saturated `success` + white for body-sized labels.
+   */
+  container: {
+    primary: string;
+    onPrimary: string;
+    secondary: string;
+    onSecondary: string;
+    accent: string;
+    onAccent: string;
+    success: string;
+    onSuccess: string;
+    warning: string;
+    onWarning: string;
+    danger: string;
+    onDanger: string;
+    info: string;
+    onInfo: string;
+  };
 
-  /** Gradients (for LinearGradient) */
+  /**
+   * State-layer opacities (Material 3). Overlay brand/on-surface at this alpha
+   * for press/hover/focus — do not invent per-component opacities.
+   */
+  state: {
+    hover: number;
+    press: number;
+    focus: number;
+    drag: number;
+  };
+
+  /**
+   * Nav-chrome material hints (iOS Liquid Glass / frosted bars). Opt-in peers
+   * (`expo-glass-effect`) read these; content layers stay solid `bg.*`.
+   */
+  material: {
+    blur: number;
+    opacity: number;
+    borderOpacity: number;
+  };
+
+  ring: string;
+  input: string;
+
   gradient: {
     primary: readonly [string, string];
     accent: readonly [string, string];
   };
 
-  /** Shadows (React Native) */
   shadow: {
     sm: ShadowStyle;
     md: ShadowStyle;
     lg: ShadowStyle;
   };
+
+  pattern?: {
+    mode: PatternMode;
+    size: number;
+    source?: ImageSourcePropType;
+  };
 }
+
+export type PatternMode = "light-pattern" | "dark-pattern" | "dark-full";

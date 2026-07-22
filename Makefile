@@ -86,6 +86,7 @@ clean:
 	@echo "✓ Cleaned"
 
 test:
-	@echo "Running tests..."
+	@echo "🧪 Running node:test (runtime, tests/ at repo root)..."
+	@./node_modules/.bin/tsx --test 'tests/**/*.test.ts'
 
 .PHONY: prepare-environment init format format-check lint typecheck check verify build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios

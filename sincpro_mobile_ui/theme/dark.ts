@@ -1,65 +1,103 @@
+import { containerPair } from "@sincpro/mobile-ui/theme/color";
+import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
+const PRIMARY = "#C9A84C";
+const SECONDARY = "#8B6914";
+const ACCENT = "#F0D060";
+const SUCCESS = "#15803D";
+const WARNING = "#B45309";
+const DANGER = "#B91C1C";
+const INFO = "#1D4ED8";
+
+const primaryC = containerPair(PRIMARY, "dark");
+const secondaryC = containerPair(SECONDARY, "dark");
+const accentC = containerPair(ACCENT, "dark");
+const successC = containerPair(SUCCESS, "dark");
+const warningC = containerPair(WARNING, "dark");
+const dangerC = containerPair(DANGER, "dark");
+const infoC = containerPair(INFO, "dark");
+
 /**
- * SINCPRO brand-dark theme.
- * Identity: black (#0B0B0B) surfaces + neon-green (#00F58C) as primary CTA / accent.
- * Border/text tones shift to near-black warm neutrals (not blue-slate).
+ * Default dark theme. Companion to `DEFAULT_THEME`.
+ * Prefer `buildThemeFromBrand({ mode: "dark", ... })` for brand apps.
  */
 export const DEFAULT_DARK_THEME: ThemeTokens = {
-  name: "dark",
-  primary: "#00F58C", // verde neón → primary action in dark (border, link, focus indicator)
-  secondary: "#6B6963",
-  accent: "#00F58C",
+  name: "default-dark",
+  primary: PRIMARY,
+  secondary: SECONDARY,
+  accent: ACCENT,
   bg: {
-    page: "#0B0B0B",
+    page: "#0C0C0C",
     card: "#161616",
     popover: "#161616",
     muted: "#1E1E1E",
-    accent: "#0D2B1F", // dark-green tint for selected/active rows
+    accent: "#3D2F0A",
     hover: "#262626",
-    disabled: "#161616",
-    inverse: "#0B0B0B",
+    disabled: "#2A2A2A",
+    inverse: "#FAF8F3",
+    containerLowest: "#0A0A0A",
+    container: "#1E1E1E",
+    containerHigh: "#2A2A2A",
   },
   text: {
-    primary: "#FFFFFF",
-    secondary: "#B0B0B0",
-    tertiary: "#7D7D7D",
-    muted: "#9D9D9D",
-    accent: "#00F58C",
-    inverse: "#0B0B0B",
-    disabled: "#4A4A4A",
-    onPrimary: "#06170E", // texto sobre verde neón: oscuro para contraste
-    onSecondary: "#0B0B0B",
-    onAccent: "#06170E",
-    onDanger: "#FFFFFF",
-    onSuccess: "#FFFFFF",
+    primary: "#FDF3C8",
+    secondary: "#C9A84C",
+    tertiary: "#8B6914",
+    muted: "#9A8B5C",
+    accent: ACCENT,
+    inverse: "#0A0A0A",
+    disabled: "#8A8A8A",
+    onPrimary: resolveOnColor(PRIMARY),
+    onSecondary: resolveOnColor(SECONDARY),
+    onAccent: resolveOnColor(ACCENT),
+    onDanger: resolveOnColor(DANGER),
+    onSuccess: resolveOnColor(SUCCESS),
   },
   icon: {
-    primary: "#FFFFFF",
-    secondary: "#9A9A9A",
-    tertiary: "#7D7D7D",
-    inverse: "#0B0B0B",
-    disabled: "#4A4A4A",
+    primary: "#FDF3C8",
+    secondary: "#C9A84C",
+    tertiary: "#8B6914",
+    inverse: "#0A0A0A",
+    disabled: "#8A8A8A",
   },
   border: {
     default: "#262626",
     light: "#1E1E1E",
     strong: "#3A3A3A",
-    focus: "#00F58C",
+    focus: PRIMARY,
   },
-  success: "#00C357",
-  warning: "#FFB020",
-  danger: "#FF4D1F",
-  info: "#5B8DEF",
-  successLight: "#0D2B1A",
-  warningLight: "#2B1E04",
-  dangerLight: "#2B0A04",
-  infoLight: "#0A143B",
-  ring: "#00F58C",
+  success: SUCCESS,
+  warning: WARNING,
+  danger: DANGER,
+  info: INFO,
+  successLight: successC.container,
+  warningLight: warningC.container,
+  dangerLight: dangerC.container,
+  infoLight: infoC.container,
+  container: {
+    primary: primaryC.container,
+    onPrimary: primaryC.onContainer,
+    secondary: secondaryC.container,
+    onSecondary: secondaryC.onContainer,
+    accent: accentC.container,
+    onAccent: accentC.onContainer,
+    success: successC.container,
+    onSuccess: successC.onContainer,
+    warning: warningC.container,
+    onWarning: warningC.onContainer,
+    danger: dangerC.container,
+    onDanger: dangerC.onContainer,
+    info: infoC.container,
+    onInfo: infoC.onContainer,
+  },
+  state: { hover: 0.1, press: 0.16, focus: 0.14, drag: 0.2 },
+  material: { blur: 28, opacity: 0.62, borderOpacity: 0.22 },
+  ring: PRIMARY,
   input: "#262626",
   gradient: {
-    primary: ["#22E584", "#00F58C"], // verde gradient → primary btn en dark = CTA verde
-    accent: ["#22E584", "#00F58C"],
+    primary: [ACCENT, PRIMARY],
+    accent: [PRIMARY, SECONDARY],
   },
   shadow: {
     sm: {
@@ -83,5 +121,9 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
       shadowRadius: 18,
       elevation: 7,
     },
+  },
+  pattern: {
+    mode: "dark-pattern",
+    size: 56,
   },
 };

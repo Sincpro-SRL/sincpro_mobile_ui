@@ -1,3 +1,8 @@
+/* eslint-disable react-hooks/refs */
+// This file uses the canonical RN patterns: useRef(new Animated.Value()).current and PanResponder
+// created inside useState. Those hooks rules warn — they're not bugs here. Documented at the
+// eslint config level (see eslint.config.js:30-33).
+
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -41,7 +46,6 @@ function Sheet({
   const insets = useSafeAreaInsets();
   const translateY = useRef(new Animated.Value(800)).current;
   const onCloseRef = useRef(onClose);
-  // eslint-disable-next-line react-hooks/refs
   onCloseRef.current = onClose;
 
   useEffect(() => {
@@ -57,7 +61,6 @@ function Sheet({
     }
   }, [visible, translateY]);
 
-  // eslint-disable-next-line react-hooks/refs
   const [pan] = useState(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,

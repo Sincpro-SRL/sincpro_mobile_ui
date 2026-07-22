@@ -49,6 +49,8 @@ function SearchBar({
         onFocus={() => setIsFocused(true)}
         placeholder={placeholder}
         placeholderTextColor={theme.text.tertiary}
+        selectionColor={theme.primary}
+        underlineColorAndroid="transparent"
         value={value}
       />
       {value.length > 0 && (

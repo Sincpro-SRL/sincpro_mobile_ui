@@ -17,7 +17,9 @@ const TextInputF: FC<TextInputFProps> = ({ className, ...props }) => {
         className,
       )}
       placeholderTextColor={theme.text.tertiary}
+      selectionColor={theme.primary}
       style={props.style}
+      underlineColorAndroid="transparent"
     />
   );
 };

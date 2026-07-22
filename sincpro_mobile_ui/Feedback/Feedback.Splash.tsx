@@ -2,6 +2,7 @@ import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface"
 import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Loading from "@sincpro/mobile-ui/Feedback/Feedback.Loading";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
+import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -42,17 +43,17 @@ function HeroSplash({
   return (
     <GradientSurface
       className="flex-1 items-center justify-center"
-      preset="night-green"
+      preset="warm"
       radius="none"
     >
-      <Pattern color="#22E584" kind="dots" opacity={0.16} size={26} />
+      <Pattern color={theme.primary} kind="dots" opacity={0.16} size={26} />
       <View className="items-center">
         {logo ? (
           <Image
             className="w-28 h-28 mb-7"
             resizeMode="contain"
             source={logo}
-            style={{ shadowColor: "#22E584", shadowOpacity: 0.7, shadowRadius: 28 }}
+            style={{ shadowColor: theme.primary, shadowOpacity: 0.7, shadowRadius: 28 }}
           />
         ) : null}
         {title ? (
@@ -68,7 +69,11 @@ function HeroSplash({
           </Typography.Text>
         ) : null}
         <View className="mt-10">
-          <ActivityIndicator accessibilityLabel={message} color="#22E584" size="small" />
+          <ActivityIndicator
+            accessibilityLabel={message}
+            color={theme.primary}
+            size="small"
+          />
         </View>
       </View>
     </GradientSurface>

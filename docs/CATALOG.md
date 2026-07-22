@@ -17,7 +17,7 @@
 
 ### Actions
 
-`Form.Button` (variants primary/cta/secondary/outline/…), `Form.IconButton`, `Form.FAB`, `Navigation.AppBar.Action`.
+`Actions.Button` (variants primary/cta/secondary/outline/…), `Actions.IconButton`, `Actions.FAB`, `Navigation.AppBar.Action`. (`Form.Button` / `Form.IconButton` / `Form.FAB` exist as deprecated aliases.)
 
 ### Inputs (`Form`)
 
@@ -53,16 +53,17 @@
 
 ## Patterns
 
-- **Views** (`…/views/*`): `FormViewV2`, `ListViewV2`, `AuthFormView`, `Wizard` — screen templates.
-- **Widgets** (`…/widgets`): `MenuGrid`, `MenuCard`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer`.
+- **Views** (`…/views/*`): `FormViewV2`, `ListViewV2`, `AuthFormView`, `Wizard`, `AppSplashView` — screen templates.
+- **Widgets** (`…/widgets`): `MenuGrid`, `MenuCard`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer`, `PromoBanner`, `PromoModal`, `QuickActions`, `HomeHeader`, `ScreenHeader`, `MenuSection`, `CircleButton`.
 
 ## Legacy (deprecated — `@deprecated`, still exported)
 
 | Piece                                                                              | Replacement                                 |
 | ---------------------------------------------------------------------------------- | ------------------------------------------- |
 | `Navigation.Header`, `HeaderToolbar`, `widgets.ScreenHeader`, `widgets.HomeHeader` | `Navigation.AppBar`                         |
-| `widgets.CircleButton`                                                             | `Form.IconButton` / `AppBar.Action`         |
+| `widgets.CircleButton`                                                             | `Actions.IconButton` / `AppBar.Action`      |
 | `Form.SearchBar`                                                                   | `Navigation.SearchBar`                      |
+| `Form.Button` / `Form.IconButton` / `Form.FAB`                                     | `Actions.Button` / `Actions.IconButton` / `Actions.FAB` |
 | `layouts.TabNavigatorLayout`                                                       | `Navigation.BottomNav` + core router layout |
 | `Dialog.BottomSheet` (custom)                                                      | `Dialog.Sheet` (RN Modal)                   |
 

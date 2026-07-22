@@ -9,9 +9,9 @@ function toRgbTriplet(color: string): string {
           .map((c) => c + c)
           .join("")
       : hex;
-  const r = parseInt(full.slice(0, 2), 16);
-  const g = parseInt(full.slice(2, 4), 16);
-  const b = parseInt(full.slice(4, 6), 16);
+  const r = Number.parseInt(full.slice(0, 2), 16);
+  const g = Number.parseInt(full.slice(2, 4), 16);
+  const b = Number.parseInt(full.slice(4, 6), 16);
   return `${r} ${g} ${b}`;
 }
 
@@ -19,6 +19,8 @@ function toRgbTriplet(color: string): string {
  * Deriva las CSS variables (tripletes RGB para `rgb(var(--x) / <alpha>)`) a
  * partir del objeto de tokens tipado. Fuente ÚNICA: las clases (className) y el
  * objeto JS (style) salen del mismo `ThemeTokens`, sin posibilidad de divergir.
+ *
+ * State / material opacities are emitted as unitless numbers (not RGB).
  */
 export function themeToVars(t: ThemeTokens): Record<string, string> {
   const rgb = toRgbTriplet;
@@ -34,6 +36,9 @@ export function themeToVars(t: ThemeTokens): Record<string, string> {
     "--bg-accent": rgb(t.bg.accent),
     "--bg-hover": rgb(t.bg.hover),
     "--bg-disabled": rgb(t.bg.disabled),
+    "--bg-container-lowest": rgb(t.bg.containerLowest),
+    "--bg-container": rgb(t.bg.container),
+    "--bg-container-high": rgb(t.bg.containerHigh),
 
     "--text-primary": rgb(t.text.primary),
     "--text-secondary": rgb(t.text.secondary),
@@ -67,6 +72,30 @@ export function themeToVars(t: ThemeTokens): Record<string, string> {
     "--warning-light": rgb(t.warningLight),
     "--danger-light": rgb(t.dangerLight),
     "--info-light": rgb(t.infoLight),
+
+    "--container-primary": rgb(t.container.primary),
+    "--container-on-primary": rgb(t.container.onPrimary),
+    "--container-secondary": rgb(t.container.secondary),
+    "--container-on-secondary": rgb(t.container.onSecondary),
+    "--container-accent": rgb(t.container.accent),
+    "--container-on-accent": rgb(t.container.onAccent),
+    "--container-success": rgb(t.container.success),
+    "--container-on-success": rgb(t.container.onSuccess),
+    "--container-warning": rgb(t.container.warning),
+    "--container-on-warning": rgb(t.container.onWarning),
+    "--container-danger": rgb(t.container.danger),
+    "--container-on-danger": rgb(t.container.onDanger),
+    "--container-info": rgb(t.container.info),
+    "--container-on-info": rgb(t.container.onInfo),
+
+    "--state-hover": String(t.state.hover),
+    "--state-press": String(t.state.press),
+    "--state-focus": String(t.state.focus),
+    "--state-drag": String(t.state.drag),
+
+    "--material-blur": String(t.material.blur),
+    "--material-opacity": String(t.material.opacity),
+    "--material-border-opacity": String(t.material.borderOpacity),
 
     "--ring": rgb(t.ring),
     "--input": rgb(t.input),

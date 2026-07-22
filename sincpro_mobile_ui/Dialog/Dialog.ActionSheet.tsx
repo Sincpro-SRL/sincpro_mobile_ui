@@ -123,7 +123,7 @@ function ActionSheet({
               onPress={onClose}
               style={{ backgroundColor: theme.bg.card }}
             >
-              <Typography.Text className="text-primary" semibold>
+              <Typography.Text className="text-text-accent" semibold>
                 {cancelLabel}
               </Typography.Text>
             </Pressable>

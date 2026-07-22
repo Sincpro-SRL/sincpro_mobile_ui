@@ -1,9 +1,15 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import Splash from "@sincpro/mobile-ui/Feedback/Feedback.Splash";
 import { Form } from "@sincpro/mobile-ui/Form";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { View } from "react-native";
+
+// Demo "walls" for the brand texture showcase. Fixed (not theme-aware) so the contrast
+// is always visible regardless of which theme the storybook is set to.
+const DEMO_WALL_BONE = "#FAF8F3";
+const DEMO_WALL_INK = "#0C0C0C";
 
 const meta: Meta = { title: "Foundations/Surfaces" };
 export default meta;
@@ -21,13 +27,15 @@ function Label({ children }: { children: string }) {
 export const Gradients: Story = {
   render: () => (
     <View style={{ gap: 14, padding: 4 }}>
-      <Label>neón → teal</Label>
+      <Label>warm (default brand preset)</Label>
+      <Display.GradientSurface preset="warm" style={{ height: 90 }} />
+      <Label>neon-teal (#22E584 → #0FB8A0)</Label>
       <Display.GradientSurface preset="neon-teal" style={{ height: 90 }} />
-      <Label>noche + verde</Label>
+      <Label>night-green (#0B1410 → #08120D)</Label>
       <Display.GradientSurface preset="night-green" style={{ height: 90 }} />
-      <Label>mesh / aurora</Label>
+      <Label>mesh / aurora (ink + emerald + indigo)</Label>
       <Display.GradientSurface preset="mesh" style={{ height: 90 }} />
-      <Label>emerald</Label>
+      <Label>emerald (#00C357 → #00A862)</Label>
       <Display.GradientSurface preset="emerald" style={{ height: 90 }} />
     </View>
   ),
@@ -73,17 +81,77 @@ export const Textures: Story = {
   ),
 };
 
-// Real use case: a "hero" dashboard card (gradient + dotted texture + content on top).
-export const HeroCardUseCase: Story = {
-  render: () => (
+// Brand-mesh textures — the three default variants for the brand symbol. Consumers can
+// swap the asset via the `meshSrc` prop on `<Display.Pattern />` or by overriding
+// `theme.pattern.source`. The bundled default is a black symbol on transparent bg, so the
+// dark modes flip it via SVG ColorMatrix to produce a light symbol on the ink surface.
+function BrandTexturesBody() {
+  const theme = useTheme();
+  return (
+    <View style={{ gap: 14, padding: 4 }}>
+      <Label>brand · light-pattern (bone wall + gold border · showcase)</Label>
+      <View
+        style={{
+          height: 140,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_BONE,
+          borderWidth: 1,
+          borderColor: theme.primary,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="light-pattern" />
+      </View>
+      <Label>brand · dark-pattern (ink wall · hero subtle)</Label>
+      <View
+        style={{
+          height: 140,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_INK,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="dark-pattern" />
+      </View>
+      <Label>brand · dark-full (ink wall · signature 55%)</Label>
+      <View
+        style={{
+          height: 140,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_INK,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="dark-full" />
+      </View>
+    </View>
+  );
+}
+
+export const BrandTextures: Story = { render: BrandTexturesBody };
+
+// Real use case: a "hero" dashboard card (ink surface + brand texture inverted + content on top).
+// Matches the dark-pattern brand texture — black background, light symbol subtle.
+function HeroCardBody() {
+  const theme = useTheme();
+  return (
     <View style={{ padding: 4 }}>
-      <Label>Caso de uso · tarjeta hero (gradiente + textura + contenido)</Label>
-      <Display.GradientSurface padding="lg" preset="night-green" style={{ marginTop: 6 }}>
-        <Display.Pattern color="#22E584" kind="dots" opacity={0.18} size={24} />
-        <Typography.Text style={{ color: "#22E584", fontSize: 13, marginBottom: 4 }}>
+      <Label>Caso de uso · tarjeta hero (ink wall + brand dark-pattern + contenido)</Label>
+      <View
+        style={{
+          marginTop: 6,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_INK,
+          padding: 24,
+          minHeight: 140,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="dark-pattern" />
+        <Typography.Text style={{ color: theme.text.primary, fontSize: 13, marginBottom: 4 }}>
           Caja de hoy
         </Typography.Text>
-        <Typography.Text bold style={{ color: "#FFFFFF", fontSize: 30 }}>
+        <Typography.Text bold style={{ color: theme.text.inverse, fontSize: 30 }}>
           Bs 4.280
         </Typography.Text>
         <View style={{ marginTop: 16, alignSelf: "flex-start" }}>
@@ -94,15 +162,58 @@ export const HeroCardUseCase: Story = {
             variant="cta"
           />
         </View>
-      </Display.GradientSurface>
+      </View>
     </View>
-  ),
-};
+  );
+}
+
+export const HeroCardUseCase: Story = { render: HeroCardBody };
 
 export const SplashHero: Story = {
   render: () => (
     <View style={{ height: 520, borderRadius: 24, overflow: "hidden" }}>
-      <Splash isReady={false} subtitle="gestión · v2.0" title="SINCPRO" variant="hero" />
+      <Splash isReady={false} subtitle="gestión · v2.0" title="BRAND" variant="hero" />
+    </View>
+  ),
+};
+
+// Brand textures at different tile densities — pick what fits the surface.
+export const BrandTextureSizes: Story = {
+  render: () => (
+    <View style={{ gap: 14, padding: 4 }}>
+      <Label>size 40px (watermark · muy denso)</Label>
+      <View
+        style={{
+          height: 110,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_INK,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="dark-pattern" size={40} />
+      </View>
+      <Label>size 56px (default mobile · brand)</Label>
+      <View
+        style={{
+          height: 110,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_INK,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="dark-pattern" size={56} />
+      </View>
+      <Label>size 80px (más aire · hero)</Label>
+      <View
+        style={{
+          height: 110,
+          borderRadius: 16,
+          overflow: "hidden",
+          backgroundColor: DEMO_WALL_INK,
+        }}
+      >
+        <Display.Pattern kind="mesh" mode="dark-pattern" size={80} />
+      </View>
     </View>
   ),
 };

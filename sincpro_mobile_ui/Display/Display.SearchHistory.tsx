@@ -36,7 +36,7 @@ function SearchHistory({
         </Typography.Text>
         {onClearAll ? (
           <Pressable accessibilityLabel="Borrar todo" hitSlop={8} onPress={onClearAll}>
-            <Typography.Text className="text-primary" variant="bodySmall">
+            <Typography.Text className="text-text-accent" variant="bodySmall">
               Borrar todo
             </Typography.Text>
           </Pressable>

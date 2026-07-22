@@ -132,13 +132,13 @@ function Select<T extends string | number>({
                       <Typography.Text
                         className={cn(
                           "flex-1 text-sm",
-                          isSelected ? "text-primary font-semibold" : "text-text-primary",
+                          isSelected ? "text-text-accent font-semibold" : "text-text-primary",
                         )}
                       >
                         {option.label}
                       </Typography.Text>
                       {isSelected ? (
-                        <Icon color={theme.primary} name="checkmark" size={18} />
+                        <Icon color={theme.text.accent} name="checkmark" size={18} />
                       ) : null}
                     </Pressable>
                   );

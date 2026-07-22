@@ -115,7 +115,7 @@ function ToastItem({
       exiting={exiting.duration(180)}
     >
       {variant === "loading" ? (
-        <ActivityIndicator color={theme.primary} size="small" />
+        <ActivityIndicator color={theme.text.accent} size="small" />
       ) : (
         <Icon
           color={iconByVariant[variant].color}
@@ -137,7 +137,7 @@ function ToastItem({
             onHide(entry.id);
           }}
         >
-          <Typography.Text className="text-primary text-sm font-semibold">
+          <Typography.Text className="text-text-accent text-sm font-semibold">
             {entry.action.label}
           </Typography.Text>
         </Pressable>

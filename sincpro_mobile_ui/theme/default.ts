@@ -1,66 +1,109 @@
+import { containerPair } from "@sincpro/mobile-ui/theme/color";
+import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
+const PRIMARY = "#C9A84C";
+const SECONDARY = "#8B6914";
+const ACCENT = "#C9A84C";
+const SUCCESS = "#15803D";
+const WARNING = "#B45309";
+const DANGER = "#B91C1C";
+const INFO = "#1D4ED8";
+
+const primaryC = containerPair(PRIMARY, "light");
+const secondaryC = containerPair(SECONDARY, "light");
+const accentC = containerPair(ACCENT, "light");
+const successC = containerPair(SUCCESS, "light");
+const warningC = containerPair(WARNING, "light");
+const dangerC = containerPair(DANGER, "light");
+const infoC = containerPair(INFO, "light");
+
+/**
+ * Default light theme. Sample values — not the framework identity.
+ * Prefer `buildThemeFromBrand` or `extendTheme` at app boot.
+ */
 export const DEFAULT_THEME: ThemeTokens = {
-  name: "default",
-  primary: "#2563EB",
-  secondary: "#64748B",
-  accent: "#F59E0B",
+  name: "default-light",
+  primary: PRIMARY,
+  secondary: SECONDARY,
+  accent: ACCENT,
   bg: {
-    page: "#F0F1F3",
+    page: "#FAF8F3",
     card: "#FFFFFF",
     popover: "#FFFFFF",
-    muted: "#F3F4F6",
-    accent: "#EFF6FF",
-    hover: "#F3F4F6",
-    disabled: "#F3F4F6",
-    inverse: "#0E1714",
+    muted: "#F1ECDF",
+    accent: "#FDF3C8",
+    hover: "#EDE6D2",
+    disabled: "#E5DEC8",
+    inverse: "#0C0C0C",
+    containerLowest: "#FAF8F3",
+    container: "#F1ECDF",
+    containerHigh: "#E5DEC8",
   },
   text: {
-    primary: "#0F172A",
-    secondary: "#475569",
-    tertiary: "#94A3B8",
-    muted: "#64748B",
-    accent: "#1E40AF",
+    primary: "#0A0A0A",
+    secondary: "#4A3100",
+    tertiary: "#A09060",
+    muted: "#6B5A2E",
+    accent: SECONDARY,
     inverse: "#FFFFFF",
-    disabled: "#94A3B8",
-    onPrimary: "#FFFFFF",
-    onSecondary: "#FFFFFF",
-    onAccent: "#FFFFFF",
-    onDanger: "#FFFFFF",
-    onSuccess: "#FFFFFF",
+    disabled: "#9A8B5C",
+    onPrimary: resolveOnColor(PRIMARY),
+    onSecondary: resolveOnColor(SECONDARY),
+    onAccent: resolveOnColor(ACCENT),
+    onDanger: resolveOnColor(DANGER),
+    onSuccess: resolveOnColor(SUCCESS),
   },
   icon: {
-    primary: "#0F172A",
-    secondary: "#64748B",
-    tertiary: "#94A3B8",
+    primary: "#0A0A0A",
+    secondary: "#6B5A2E",
+    tertiary: "#A09060",
     inverse: "#FFFFFF",
-    disabled: "#CBD5E1",
+    disabled: "#9A8B5C",
   },
   border: {
-    default: "#E5E7EB",
-    light: "#F3F4F6",
-    strong: "#D1D5DB",
-    focus: "#2563EB",
+    default: "#E5DEC8",
+    light: "#F1ECDF",
+    strong: "#C9C0A2",
+    focus: SECONDARY,
   },
-  success: "#16A34A",
-  warning: "#F59E0B",
-  danger: "#DC2626",
-  info: "#2563EB",
-  successLight: "#DCFCE7",
-  warningLight: "#FEF3C7",
-  dangerLight: "#FEE2E2",
-  infoLight: "#DBEAFE",
-  ring: "#2563EB",
-  input: "#E5E7EB",
+  success: SUCCESS,
+  warning: WARNING,
+  danger: DANGER,
+  info: INFO,
+  successLight: successC.container,
+  warningLight: warningC.container,
+  dangerLight: dangerC.container,
+  infoLight: infoC.container,
+  container: {
+    primary: primaryC.container,
+    onPrimary: primaryC.onContainer,
+    secondary: secondaryC.container,
+    onSecondary: secondaryC.onContainer,
+    accent: accentC.container,
+    onAccent: accentC.onContainer,
+    success: successC.container,
+    onSuccess: successC.onContainer,
+    warning: warningC.container,
+    onWarning: warningC.onContainer,
+    danger: dangerC.container,
+    onDanger: dangerC.onContainer,
+    info: infoC.container,
+    onInfo: infoC.onContainer,
+  },
+  state: { hover: 0.08, press: 0.12, focus: 0.12, drag: 0.16 },
+  material: { blur: 24, opacity: 0.78, borderOpacity: 0.18 },
+  ring: SECONDARY,
+  input: "#E5DEC8",
   gradient: {
-    primary: ["#2563EB", "#1E40AF"],
-    accent: ["#F59E0B", "#D97706"],
+    primary: ["#F0D060", PRIMARY],
+    accent: [PRIMARY, SECONDARY],
   },
   shadow: {
     sm: {
       shadowColor: "#000000",
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
+      shadowOpacity: 0.06,
       shadowRadius: 2,
       elevation: 1,
     },
@@ -74,9 +117,13 @@ export const DEFAULT_THEME: ThemeTokens = {
     lg: {
       shadowColor: "#000000",
       shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: 0.1,
+      shadowOpacity: 0.14,
       shadowRadius: 15,
       elevation: 5,
     },
+  },
+  pattern: {
+    mode: "light-pattern",
+    size: 56,
   },
 };

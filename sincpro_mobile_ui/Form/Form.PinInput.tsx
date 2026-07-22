@@ -64,8 +64,10 @@ function PinInput({
         maxLength={length}
         onChangeText={handleChange}
         ref={inputRef}
+        selectionColor={theme.primary}
         style={{ position: "absolute", opacity: 0, width: 1, height: 1 }}
         textContentType="oneTimeCode"
+        underlineColorAndroid="transparent"
         value={value}
       />
     </Pressable>

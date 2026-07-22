@@ -20,7 +20,10 @@ interface AuthContainerProps {
   children: ReactNode;
   onBackPress?: () => void;
   className?: string;
-  /** Gradient + pattern surface for the header area. Defaults to `night-green` preset. */
+  /** Gradient + optional texture surface for the header area. Defaults to the `warm`
+   *  preset. Set `background.pattern` to opt-in a texture (`dots` / `grid` /
+   *  `diagonals`); compose `<Display.Pattern kind="mesh" />` outside if you want the
+   *  brand symbol. */
   background?: AppBarBackground;
 }
 
@@ -39,7 +42,7 @@ function AuthContainer({
       className={cn("flex-1", className)}
       colors={background?.colors}
       end={background?.end ?? (background?.colors ? { x: 0, y: 1 } : undefined)}
-      preset={background?.surface ?? "night-green"}
+      preset={background?.surface ?? "warm"}
       radius="none"
       start={background?.start ?? (background?.colors ? { x: 0, y: 0 } : undefined)}
       style={{ flex: 1 }}

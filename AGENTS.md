@@ -14,13 +14,15 @@
 
 ## Mapa del ecosistema
 
-| Paquete (npm)                 | Alias import                     | Rol                                                                                                                                                                                                  | Publicado |
-| ----------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `@sincpro/mobile`             | `@sincpro/mobile/*`              | **Core**: infra (DB, cola/eventos, cron), patrones DDD, adapters base, `framework/` (DomainModule, createApp, orchestrator, kernel), `AppShell`, y un `ui/` propio (screens/components de framework) | `0.1.1`   |
-| `@sincpro/mobile-ui`          | `@sincpro/mobile-ui/*`           | **Design system** standalone (Typography, Display, Form, Dialog, Feedback, views, widgets, icons, theme, layouts). Sin router, sin dominios.                                                         | `0.2.1`   |
-| `@sincpro/mobile-odoo`        | `@sincpro/mobile-odoo/*`         | Integración **Odoo opcional**: `OdooClient`, auth, server, res.partner, pantallas de login/perfil/portal.                                                                                            | `0.1.0`   |
-| `sincpro-mobile-tickets`      | `@sincpro/mobile-tickets/*`      | **App** de negocio (host). Tiene impresora.                                                                                                                                                          | privado   |
-| `sincpro-mobile-distribution` | `@sincpro/mobile-distribution/*` | **App** de negocio (host): ventas, facturación, rutas. **Sin impresora**.                                                                                                                            | privado   |
+| Paquete (npm)                 | Alias import                     | Rol                                                                                                                                                                                                  |
+| ----------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@sincpro/mobile`             | `@sincpro/mobile/*`              | **Core**: infra (DB, cola/eventos, cron), patrones DDD, adapters base, `framework/` (DomainModule, createApp, orchestrator, kernel), `AppShell`, y un `ui/` propio (screens/components de framework) |
+| `@sincpro/mobile-ui`          | `@sincpro/mobile-ui/*`           | **Design system** standalone (Typography, Display, Form, Dialog, Feedback, views, widgets, icons, theme, layouts). Sin router, sin dominios.                                                         |
+| `@sincpro/mobile-odoo`        | `@sincpro/mobile-odoo/*`         | Integración **Odoo opcional**: `OdooClient`, auth, server, res.partner, pantallas de login/perfil/portal.                                                                                            |
+| `sincpro-mobile-tickets`      | `@sincpro/mobile-tickets/*`      | **App** de negocio (host). Tiene impresora.                                                                                                                                                          |
+| `sincpro-mobile-distribution` | `@sincpro/mobile-distribution/*` | **App** de negocio (host): ventas, facturación, rutas. **Sin impresora**.                                                                                                                            |
+
+> Las versiones publicadas cambian seguido; consultá `npm view <paquete> version` o el registry. Este archivo es compartido entre todos los `sincpro_mobile*` y se mantiene estable a nivel arquitectura, no de versiones.
 
 **Dirección de dependencias (estricta):** `apps → (mobile-odoo) → mobile → mobile-ui`.
 El core **no** conoce las apps ni Odoo; el design system **no** conoce nada de negocio.

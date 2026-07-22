@@ -74,26 +74,26 @@ const buttonIcon = tv({
 const textColor = tv({
   variants: {
     variant: {
-      primary: "text-white",
+      primary: "text-text-on-primary",
       accent: "text-text-on-accent",
       cta: "text-text-on-accent",
       secondary: "text-text-primary",
-      outline: "text-primary",
+      outline: "text-text-accent",
       outlineDanger: "text-danger",
       outlineBlack: "text-text-primary",
       flat: "text-text-primary",
-      link: "text-primary",
-      transparent: "text-white",
+      link: "text-text-accent",
+      transparent: "text-text-inverse",
     },
     disabled: {
       true: "opacity-50",
     },
   },
   compoundVariants: [
-    { variant: "primary", disabled: true, className: "text-white/70" },
+    { variant: "primary", disabled: true, className: "text-text-on-primary" },
     { variant: "accent", disabled: true, className: "text-text-on-accent" },
     { variant: "cta", disabled: true, className: "text-text-on-accent" },
-    { variant: "transparent", disabled: true, className: "text-white/70" },
+    { variant: "transparent", disabled: true, className: "text-text-inverse/70" },
     {
       variant: ["secondary", "outline", "link"],
       disabled: true,
@@ -110,15 +110,15 @@ const textColor = tv({
 
 function getLoadingColor(variant: string): string {
   const map: Record<string, string> = {
-    primary: theme.text.inverse,
-    accent: theme.text.inverse,
-    cta: theme.text.inverse,
+    primary: theme.text.onPrimary,
+    accent: theme.text.onAccent,
+    cta: theme.text.onAccent,
     secondary: theme.text.primary,
-    outline: theme.primary,
+    outline: theme.text.accent,
     outlineDanger: theme.danger,
     outlineBlack: theme.text.primary,
     flat: theme.text.primary,
-    link: theme.primary,
+    link: theme.text.accent,
     transparent: theme.text.inverse,
   };
   return map[variant] ?? theme.text.inverse;
@@ -127,7 +127,7 @@ function getLoadingColor(variant: string): string {
 function getIconColor(variant: string, disabled: boolean): string {
   if (disabled) {
     const map: Record<string, string> = {
-      primary: theme.icon.inverse + "70",
+      primary: theme.text.onPrimary + "70",
       accent: theme.text.onAccent + "70",
       cta: theme.text.onAccent + "70",
       secondary: theme.text.disabled,
@@ -141,15 +141,15 @@ function getIconColor(variant: string, disabled: boolean): string {
     return map[variant] ?? theme.icon.disabled;
   }
   const map: Record<string, string> = {
-    primary: theme.icon.inverse,
+    primary: theme.text.onPrimary,
     accent: theme.text.onAccent,
     cta: theme.text.onAccent,
     secondary: theme.text.primary,
-    outline: theme.primary,
+    outline: theme.text.accent,
     outlineDanger: theme.danger,
     outlineBlack: theme.text.primary,
     flat: theme.text.primary,
-    link: theme.primary,
+    link: theme.text.accent,
     transparent: theme.icon.inverse,
   };
   return map[variant] ?? theme.icon.inverse;

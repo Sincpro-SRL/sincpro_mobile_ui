@@ -5,11 +5,16 @@ import type { ReactNode } from "react";
 import { View, type ViewStyle } from "react-native";
 
 /**
- * Decorative gradient presets (2026 art direction). `brand` is themeable (reads
- * `theme.gradient.primary`); the rest are intentional design constants for heroes/splash.
- * Each is [from, …, to].
+ * Decorative gradient presets. `brand` is themeable (reads `theme.gradient.primary`) —
+ * use it when you want the surface to follow whatever the app's active theme defines.
+ * Other presets are static constants for one-off uses. Each is [from, …, to].
  */
 const GRADIENT_PRESETS = {
+  warm: {
+    colors: ["#4A3100", "#C9A84C", "#8B6914", "#F0D060"] as const,
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 1 },
+  },
   "neon-teal": {
     colors: ["#22E584", "#0FB8A0"] as const,
     start: { x: 0, y: 0 },
@@ -32,7 +37,19 @@ const GRADIENT_PRESETS = {
   },
 } as const;
 
-export type GradientPreset = keyof typeof GRADIENT_PRESETS | "brand";
+/**
+ * Aliases kept for backwards compatibility. These were the original names; the
+ * canonical ones are above. Use the canonical names in new code.
+ * @deprecated use `warm` instead of `gold-mesh`.
+ */
+const DEPRECATED_PRESETS = {
+  "gold-mesh": "warm",
+} as const satisfies Record<string, keyof typeof GRADIENT_PRESETS>;
+
+export type GradientPreset =
+  | keyof typeof GRADIENT_PRESETS
+  | keyof typeof DEPRECATED_PRESETS
+  | "brand";
 
 const surface = tv({
   variants: {
@@ -53,7 +70,7 @@ const surface = tv({
 });
 
 export interface GradientSurfaceProps extends VariantProps<typeof surface> {
-  /** Named brand preset. Ignored if `colors` is provided. */
+  /** Named gradient preset. Ignored if `colors` is provided. */
   preset?: GradientPreset;
   /** Custom gradient stops (overrides `preset`). */
   colors?: readonly [string, string, ...string[]];
@@ -66,12 +83,12 @@ export interface GradientSurfaceProps extends VariantProps<typeof surface> {
 }
 
 /**
- * Modern gradient surface (delivery/fintech 2026 look). Wraps `expo-linear-gradient` with
- * named brand presets + tokenized radius/padding. iOS + Android (no native dep beyond the
- * already-peer `expo-linear-gradient`). Replaces the legacy `GradientContainer`.
+ * Modern gradient surface. Wraps `expo-linear-gradient` with named presets +
+ * tokenized radius/padding. iOS + Android (no native dep beyond the already-peer
+ * `expo-linear-gradient`). Replaces the legacy `GradientContainer`.
  */
 function GradientSurface({
-  preset = "neon-teal",
+  preset = "warm",
   colors,
   start,
   end,
@@ -82,8 +99,14 @@ function GradientSurface({
   style,
   testID,
 }: GradientSurfaceProps) {
-  const p = preset === "brand" ? GRADIENT_PRESETS["neon-teal"] : GRADIENT_PRESETS[preset];
-  const presetColors = preset === "brand" ? theme.gradient.primary : p.colors;
+  const resolvedPreset = (
+    preset in DEPRECATED_PRESETS
+      ? DEPRECATED_PRESETS[preset as keyof typeof DEPRECATED_PRESETS]
+      : preset
+  ) as keyof typeof GRADIENT_PRESETS | "brand";
+  const p =
+    resolvedPreset === "brand" ? GRADIENT_PRESETS.warm : GRADIENT_PRESETS[resolvedPreset];
+  const presetColors = resolvedPreset === "brand" ? theme.gradient.primary : p.colors;
   const resolvedColors = (colors ?? presetColors) as readonly [string, string, ...string[]];
 
   return (

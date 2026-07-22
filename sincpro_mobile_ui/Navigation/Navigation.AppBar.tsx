@@ -54,7 +54,7 @@ function AppBarAction({
     : onDark
       ? "rgba(255,255,255,0.14)"
       : tone === "tinted"
-        ? theme.accent // solid brand-green squircle (FAB-style)
+        ? theme.accent // solid brand-gold squircle (FAB-style)
         : theme.bg.card;
   const iconColor =
     tone === "tinted"
@@ -156,7 +156,7 @@ export interface AppBarProps {
    * (no need to also set `tone="dark"`). Overrides the solid `tone` background.
    *
    * Preset: `background={{ surface: "mesh" }}`
-   * Custom: `background={{ colors: ["#0B1410", "#10B981", "#1E1B8A"] }}`
+   * Custom: `background={{ colors: ["#4A3100", "#C9A84C", "#8B6914", "#F0D060"] }}`
    * With texture: `background={{ surface: "night-green", pattern: "dots" }}`
    */
   background?: AppBarBackground;
@@ -178,7 +178,8 @@ export interface AppBarProps {
  * Pass as the `background` prop — white text/icons are activated automatically.
  */
 export interface AppBarBackground {
-  /** Named gradient preset: `"mesh"` (dark aurora), `"night-green"`, `"neon-teal"`, `"emerald"`. */
+  /** Named gradient preset: `"warm"` (default), or `"brand"` (themeable). Legacy
+   * `"mesh" | "neon-teal" | "night-green" | "emerald"` presets still work but are deprecated. */
   surface?: GradientPreset;
   /** Custom color stops — overrides `surface`. Minimum 2 colors. */
   colors?: readonly [string, string, ...string[]];
@@ -242,7 +243,7 @@ function AppBar({
   const showTopBar = !large;
   // Colored = any rich surface. `background` alone activates colored mode (white text/icons).
   const colored = dark || gradient || hasBackground;
-  // gradient (neon green) → dark text via onAccent. background → textColor prop (default white, since
+  // gradient (brand gold) → dark text via onAccent. background → textColor prop (default white, since
   // gradient surfaces are dark). dark tone → white always. text.inverse is NOT used here: it flips to
   // near-black in dark-mode themes (semantic: "text on light surfaces"), wrong for dark gradient AppBars.
   const onColoredText =
@@ -297,7 +298,7 @@ function AppBar({
           colors={background.colors}
           end={background.end}
           padding="none"
-          preset={background.surface ?? "neon-teal"}
+          preset={background.surface ?? "warm"}
           radius="none"
           start={background.start}
           style={StyleSheet.absoluteFill}

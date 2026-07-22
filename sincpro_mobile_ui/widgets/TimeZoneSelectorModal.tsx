@@ -144,6 +144,8 @@ function TimeZoneSelectorModal({
             onChangeText={setQuery}
             placeholder={"Buscar zona horaria..."}
             placeholderTextColor={theme.text.tertiary}
+            selectionColor={theme.primary}
+            underlineColorAndroid="transparent"
             value={query}
           />
         </View>

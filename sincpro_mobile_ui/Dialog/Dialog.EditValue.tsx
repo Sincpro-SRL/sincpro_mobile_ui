@@ -77,8 +77,11 @@ function EditableValueModal({
               onChangeText={onChangeValue}
               onSubmitEditing={onConfirm}
               placeholder={placeholder}
+              placeholderTextColor={theme.text.tertiary}
               ref={inputRef}
               returnKeyType="done"
+              selectionColor={theme.primary}
+              underlineColorAndroid="transparent"
               value={value}
             />
             {rightAdornment && <View className="ml-2">{rightAdornment}</View>}

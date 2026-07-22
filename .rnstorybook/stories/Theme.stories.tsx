@@ -3,6 +3,7 @@ import { Form } from "@sincpro/mobile-ui/Form";
 import {
   DEFAULT_DARK_THEME,
   DEFAULT_THEME,
+  defineTheme,
   type ThemeTokens,
   themeToVars,
   useTheme,
@@ -206,6 +207,51 @@ export const BrandPalette: Story = {
           {HANDOFF_SPEC}
         </Typography.Text>
       </View>
+    </View>
+  ),
+};
+
+// "Acme" brand — what a different brand consumer would look like. Demonstrates the
+// rebrand recipe in code form.
+const ACME_LIGHT = defineTheme({
+  ...DEFAULT_THEME,
+  name: "acme-light",
+  primary: "#0066FF",
+  secondary: "#0052CC",
+  accent: "#FF6B35",
+  bg: { ...DEFAULT_THEME.bg, page: "#FFFFFF", accent: "#E6F0FF" },
+  text: { ...DEFAULT_THEME.text, primary: "#0A1628", accent: "#0052CC" },
+  gradient: {
+    primary: ["#0066FF", "#003D99"] as const,
+    accent: ["#FF6B35", "#E65100"] as const,
+  },
+});
+
+const ACME_DARK = defineTheme({
+  ...DEFAULT_DARK_THEME,
+  name: "acme-dark",
+  primary: "#4D94FF",
+  accent: "#FF8C5A",
+  bg: { ...DEFAULT_DARK_THEME.bg, page: "#0A1628", card: "#1A2942" },
+  text: { ...DEFAULT_DARK_THEME.text, primary: "#F0F4FA", accent: "#4D94FF" },
+  gradient: {
+    primary: ["#4D94FF", "#0066FF"] as const,
+    accent: ["#FF8C5A", "#FF6B35"] as const,
+  },
+});
+
+export const CustomBrand: Story = {
+  render: () => (
+    <View style={{ gap: 18, padding: 4 }}>
+      <Typography.Text bold className="text-text-primary text-lg">
+        Custom Brand (rebrand recipe)
+      </Typography.Text>
+      <Typography.Text className="text-text-secondary text-sm">
+        Esto es cómo un consumer (Acme, ClientX, …) define su propio theme. Reemplaza paleta,
+        gradientes y mantiene el resto de tokens (status, fonts, radius). Ver docs/REBRAND.md.
+      </Typography.Text>
+      <ThemePanel label="Acme · light" tokens={ACME_LIGHT} />
+      <ThemePanel label="Acme · dark" tokens={ACME_DARK} />
     </View>
   ),
 };

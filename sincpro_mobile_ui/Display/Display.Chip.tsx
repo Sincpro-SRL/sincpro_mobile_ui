@@ -12,10 +12,10 @@ const chip = tv({
   variants: {
     tone: {
       neutral: { root: "bg-bg-muted", label: "text-text-secondary" },
-      primary: { root: "bg-bg-accent", label: "text-text-accent" },
-      success: { root: "bg-success-light", label: "text-success" },
-      warning: { root: "bg-warning-light", label: "text-warning" },
-      danger: { root: "bg-danger-light", label: "text-danger" },
+      primary: { root: "bg-container-primary", label: "text-container-on-primary" },
+      success: { root: "bg-container-success", label: "text-container-on-success" },
+      warning: { root: "bg-container-warning", label: "text-container-on-warning" },
+      danger: { root: "bg-container-danger", label: "text-container-on-danger" },
     },
     selected: {
       true: { root: "border border-primary" },
@@ -29,10 +29,10 @@ const chip = tv({
 
 const removeIconColor: Record<string, string> = {
   neutral: theme.text.secondary,
-  primary: theme.text.accent,
-  success: theme.success,
-  warning: theme.warning,
-  danger: theme.danger,
+  primary: theme.container.onPrimary,
+  success: theme.container.onSuccess,
+  warning: theme.container.onWarning,
+  danger: theme.container.onDanger,
 };
 
 export interface ChipProps extends VariantProps<typeof chip> {

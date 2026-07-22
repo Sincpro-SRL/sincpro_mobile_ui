@@ -71,7 +71,9 @@ function FormInput({
           onBlur={handleBlur}
           onFocus={handleFocus}
           placeholderTextColor={theme.text.tertiary}
+          selectionColor={theme.primary}
           textAlignVertical={multiline ? "top" : "center"}
+          underlineColorAndroid="transparent"
           {...props}
         />
       </View>

@@ -1,5 +1,6 @@
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
+import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { ReactNode, useCallback, useEffect, useState } from "react";
@@ -100,11 +101,11 @@ function DomainSplashScreen({
         style={[StyleSheet.absoluteFill, splashStyle]}
       >
         <GradientSurface
-          preset="night-green"
+          preset="warm"
           radius="none"
           style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
         >
-          <Pattern color="#22E584" kind="dots" opacity={0.14} size={26} />
+          <Pattern color={theme.primary} kind="dots" opacity={0.14} size={26} />
           <View className="flex-1 justify-center items-center px-8">
             <View className="w-full items-center gap-5">
               <Typography.Text
@@ -121,7 +122,7 @@ function DomainSplashScreen({
                 >
                   <Animated.View
                     className="rounded-full h-1.5"
-                    style={[{ backgroundColor: "#22E584" }, progressBarStyle]}
+                    style={[{ backgroundColor: theme.primary }, progressBarStyle]}
                   />
                 </View>
               )}

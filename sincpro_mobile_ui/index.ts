@@ -10,10 +10,13 @@ export { Typography } from "@sincpro/mobile-ui/Typography";
 // Primitives (NativeWind-based - Layout utilities)
 export { Box, Row, Stack } from "@sincpro/mobile-ui/primitives";
 
-// Branding (logo del app, configurado una vez; Display.Logo lo usa como fallback)
+// Branding (logo + brand mesh symbol, configurado una vez; Display.Logo y
+// Display.Pattern leen de acá como fallback)
 export {
   type BrandingConfig,
   getBrandingLogo,
+  getBrandingMesh,
+  getBrandingMeshSize,
   setBranding,
 } from "@sincpro/mobile-ui/branding";
 
@@ -37,6 +40,7 @@ export { default as ScrollContainer } from "@sincpro/mobile-ui/layouts/ScrollCon
 export { default as TabNavigatorLayout } from "@sincpro/mobile-ui/layouts/TabNavigatorLayout";
 
 // Views
+export { default as AppSplashView } from "@sincpro/mobile-ui/views/AppSplashView";
 export { default as AuthFormView } from "@sincpro/mobile-ui/views/AuthFormView";
 export { default as FormViewV2 } from "@sincpro/mobile-ui/views/FormViewV2";
 export { default as ListViewV2 } from "@sincpro/mobile-ui/views/ListViewV2";

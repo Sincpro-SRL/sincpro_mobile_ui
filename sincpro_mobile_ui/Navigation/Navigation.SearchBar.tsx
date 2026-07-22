@@ -65,6 +65,8 @@ function SearchBar({
           placeholder={placeholder}
           placeholderTextColor={theme.text.tertiary}
           returnKeyType="search"
+          selectionColor={theme.primary}
+          underlineColorAndroid="transparent"
           value={value}
         />
       ) : (

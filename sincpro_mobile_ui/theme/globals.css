@@ -1,67 +1,82 @@
-/**
- * AUTO-GENERATED from apk/domains/index.ts
- * Active Domain: distribution
- */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Primary Colors */
-  --primary: 37 99 235;
-  --secondary: 107 114 128;
-  --accent: 249 115 22;
+  /* Fallback CSS vars — runtime source of truth is themeToVars(activeTheme). */
+  --primary: 201 168 76;
+  --secondary: 139 105 20;
+  --accent: 201 168 76;
 
-  /* Backgrounds */
-  --bg-page: 249 250 251;
+  --bg-page: 250 248 243;
   --bg-card: 255 255 255;
   --bg-popover: 255 255 255;
-  --bg-muted: 243 244 246;
-  --bg-accent: 219 234 254;
-  --bg-hover: 243 244 246;
-  --bg-disabled: 249 250 251;
+  --bg-muted: 241 236 223;
+  --bg-accent: 253 243 200;
+  --bg-hover: 237 230 210;
+  --bg-disabled: 229 222 200;
+  --bg-container-lowest: 250 248 243;
+  --bg-container: 241 236 223;
+  --bg-container-high: 229 222 200;
 
-  /* Text */
-  --text-primary: 17 24 39;
-  --text-secondary: 107 114 128;
-  --text-tertiary: 156 163 175;
-  --text-muted: 107 114 128;
-  --text-accent: 30 64 175;
+  --text-primary: 10 10 10;
+  --text-secondary: 74 49 0;
+  --text-tertiary: 160 144 96;
+  --text-muted: 107 90 46;
+  --text-accent: 139 105 20;
   --text-inverse: 255 255 255;
-  --text-disabled: 209 213 219;
-  --text-on-primary: 255 255 255;
+  --text-disabled: 154 139 92;
+  --text-on-primary: 10 10 10;
   --text-on-secondary: 255 255 255;
-  --text-on-accent: 255 255 255;
+  --text-on-accent: 10 10 10;
   --text-on-danger: 255 255 255;
   --text-on-success: 255 255 255;
 
-  /* Icons */
-  --icon-primary: 17 24 39;
-  --icon-secondary: 107 114 128;
-  --icon-tertiary: 156 163 175;
+  --icon-primary: 10 10 10;
+  --icon-secondary: 107 90 46;
+  --icon-tertiary: 160 144 96;
   --icon-inverse: 255 255 255;
-  --icon-disabled: 209 213 219;
+  --icon-disabled: 154 139 92;
 
-  /* Borders */
-  --border-default: 229 231 235;
-  --border-light: 243 244 246;
-  --border-strong: 209 213 219;
-  --border-focus: 37 99 235;
+  --border-default: 229 222 200;
+  --border-light: 241 236 223;
+  --border-strong: 201 192 162;
+  --border-focus: 139 105 20;
 
-  /* Focus & Input */
-  --ring: 37 99 235;
-  --input: 229 231 235;
+  --ring: 139 105 20;
+  --input: 229 222 200;
 
-  /* Semantic */
-  --success: 16 185 129;
-  --warning: 249 115 22;
-  --danger: 239 68 68;
-  --info: 37 99 235;
+  --success: 21 128 61;
+  --warning: 180 83 9;
+  --danger: 185 28 28;
+  --info: 29 78 216;
 
-  /* Semantic Light */
-  --success-light: 209 250 229;
-  --warning-light: 255 237 213;
+  --success-light: 220 252 231;
+  --warning-light: 254 243 199;
   --danger-light: 254 226 226;
   --info-light: 219 234 254;
+
+  --container-primary: 253 243 200;
+  --container-on-primary: 139 105 20;
+  --container-secondary: 245 236 210;
+  --container-on-secondary: 74 49 0;
+  --container-accent: 253 243 200;
+  --container-on-accent: 139 105 20;
+  --container-success: 220 252 231;
+  --container-on-success: 21 128 61;
+  --container-warning: 254 243 199;
+  --container-on-warning: 180 83 9;
+  --container-danger: 254 226 226;
+  --container-on-danger: 185 28 28;
+  --container-info: 219 234 254;
+  --container-on-info: 29 78 216;
+
+  --state-hover: 0.08;
+  --state-press: 0.12;
+  --state-focus: 0.12;
+  --state-drag: 0.16;
+
+  --material-blur: 24;
+  --material-opacity: 0.78;
+  --material-border-opacity: 0.18;
 }

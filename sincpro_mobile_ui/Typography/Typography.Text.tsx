@@ -16,7 +16,7 @@ import { Text, type TextProps, type TextStyle } from "react-native";
  *
  * Reason: Custom fonts (Montserrat) not in Tailwind, complex typography system
  *
- * @deprecated color prop - Use className instead: className="text-primary" or className="text-text-secondary"
+ * @deprecated color prop - Use className instead: e.g. className="text-text-primary" or className="text-text-accent"
  */
 interface AppTextProps extends TextProps {
   variant?: keyof typeof typographyVariants;

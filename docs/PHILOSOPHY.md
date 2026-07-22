@@ -14,6 +14,8 @@
 1. **Mobile-first de verdad.** Targets táctiles ≥44px, `hitSlop`, gestos (swipe), bottom-sheets en vez de dropdowns, safe-area en todo lo que flota, pensado para una mano. Si un patrón solo tiene sentido con mouse/teclado, no va.
 2. **NativeWind-first.** El estilo se expresa con `className` (Tailwind). El objeto JS (`theme.x`) es un _escape hatch_ solo para lo que className no puede: props nativas (`placeholderColor`), gradientes, sombras, y **superficies dentro de `<Modal>`** (las CSS-vars no cruzan el portal nativo → ahí va color inline).
 3. **Tokens como fuente de verdad.** Color/spacing/radio salen del theme (CSS-vars); animación de `tokens/motion`; layering de las clases `z-*`. Nada de hex sueltos. Reestilizar = cambiar tokens, no editar componentes.
+   - **Capas (2026):** fills semánticos (`primary`) → **containers** (`container.success` + `onSuccess`) → superficies tonales (`bg.containerLowest|container|containerHigh`) → **state layers** (`state.press`) → **material** chrome (`material.blur` para nav/glass). Badges/chips usan containers, no fill saturado + blanco.
+   - **Contrato de color:** `primary` / `accent` = superficies y chrome (fills, borders, tracks). Texto/links/labels con color de marca = `text.accent` (AA sobre `bg.page`/`bg.card`). Tinta sobre un fill de marca = `text.onPrimary` / `text.onAccent` vía `resolveOnColor(fill)`. Rebrand rápido: `buildThemeFromBrand({ brand, mode })`.
 4. **Extensible sin forkear.** Se extiende agregando una `variant` (tailwind-variants), pasando `className`, o componiendo — nunca copiando un componente para tunearlo. Rediseños que rompen API van en `next/` y coexisten.
 5. **Retrocompatible.** Hay apps en producción. Todo cambio es **aditivo** por defecto (minor); lo que rompe es opt-in y se deprecia con camino de migración. Nunca cambiamos cómo se ve una pantalla existente sin que la app lo adopte.
 6. **Liviano para el build.** Subpath exports + barrels finos → tree-shaking real. Deps nativas pesadas/opcionales (`expo-glass-effect`, etc.) como peer opcional expuesto solo por subpath, para que una app que no las usa no las cargue.
@@ -27,9 +29,9 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
 > El DS arrastra un look heredado de "app X" con **gradientes forzados** (botones `primary`/`accent` con `LinearGradient`, headers con `GradientContainer`). **No es el estilo objetivo.** El lenguaje moderno es:
 
 - **Flat / minimal**: superficies tokenizadas (`bg-bg-card`/`bg-bg-page`) + **hairline** (`border-border-light`) + sombra sutil. Sin gradiente por defecto.
-- **Color con intención**: `primary` para el estado activo y CTAs; el resto en neutros. El gradiente es **opt-in**, no la norma.
+- **Color con intención**: `primary` para fills/CTAs; `text.accent` para texto brand; el resto en neutros. El gradiente es **opt-in**, no la norma.
 - **Aire y jerarquía** por tipografía/spacing, no por bloques de color.
-- **Cómo se introduce sin romper v1**: los componentes con look viejo se **deprecan** (`@deprecated` JSDoc, siguen exportados) y se entregan equivalentes flat nuevos. Ej: `Navigation.Header`/`HeaderToolbar`/`ScreenHeader`/`HomeHeader` → **`Navigation.AppBar`**; `Navigation.TabBar` (glass) → **`Navigation.BottomNav`**. El rediseño de `Button` (gradiente→flat) es el próximo paso y, por ser core, irá vía `next/` o variante opt-in (no se cambia el default v1).
+- **Cómo se introduce sin romper v1**: los componentes con look viejo se **deprecan** (`@deprecated` JSDoc, siguen exportados) y se entregan equivalentes flat nuevos. Ej: `Navigation.Header`/`HeaderToolbar`/`ScreenHeader`/`HomeHeader` → **`Navigation.AppBar`**; `Navigation.BottomNav` reemplaza al viejo tab bar. El rediseño de `Button` (gradiente→flat) es el próximo paso y, por ser core, irá vía `next/` o variante opt-in (no se cambia el default v1).
 
 ## Padding & safe-area: ¿interno o externo?
 
@@ -40,7 +42,7 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
 
 ## Estrategia híbrida `@expo/ui` + NativeWind (2026-06)
 
-> `@expo/ui` (SDK 56) es **estable, en Expo Go, oficial de Expo** (60+ componentes nativos SwiftUI/Compose). Pero **no toma `className`/tokens** y se ve como el OS (Material/Cupertino). Decisión: **híbrido**.
+> `@expo/ui` (SDK 57) es **estable, en Expo Go, oficial de Expo** (60+ componentes nativos SwiftUI/Compose). Pero **no toma `className`/tokens** y se ve como el OS (Material/Cupertino). Decisión: **híbrido**.
 
 - **Nativo (`@expo/ui` u otra lib nativa)** — para primitivos donde el _comportamiento/feel nativo_ vale más que la marca: **date/time pickers** (`Form.DatePicker` sobre `@react-native-community/datetimepicker` ✅), `Switch`, `BottomSheet`/`ContextMenu`. Tinte vía props/`modifiers`, no className.
 - **Lección (no todo nativo gana)**: el `Slider` de `@expo/ui` se probó y **se descartó** — su estilo Material con ticks no respeta los tokens y se ve peor que un slider tokenizado. `Form.Slider` volvió a `@react-native-community/slider` (track en `primary`, limpio). Regla: nativo **solo** cuando mejora UX _sin_ romper la marca; si el control nativo se ve "ajeno", gana el tokenizado.

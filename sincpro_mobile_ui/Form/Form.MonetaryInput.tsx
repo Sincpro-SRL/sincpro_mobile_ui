@@ -1,3 +1,4 @@
+import { theme } from "@sincpro/mobile-ui/theme";
 import { tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { parseToMonetaryNumber } from "@sincpro/mobile-ui/utils/monetary";
@@ -54,7 +55,10 @@ function MonetaryInput({
           onChangeValue={handleChange}
           onFocus={() => setIsFocused(true)}
           placeholder={placeholder}
+          placeholderTextColor={theme.text.tertiary}
+          selectionColor={theme.primary}
           separator=","
+          underlineColorAndroid="transparent"
           value={raw}
         />
       </View>

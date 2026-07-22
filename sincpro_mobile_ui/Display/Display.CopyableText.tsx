@@ -27,7 +27,11 @@ function CopyableText({ value, getValue, label, className }: CopyableTextProps) 
 
   return (
     <TouchableOpacity onPress={handleCopy}>
-      <Typography.Text className={className || "text-primary"} semibold variant="bodySmall">
+      <Typography.Text
+        className={className || "text-text-accent"}
+        semibold
+        variant="bodySmall"
+      >
         {displayText}
       </Typography.Text>
     </TouchableOpacity>

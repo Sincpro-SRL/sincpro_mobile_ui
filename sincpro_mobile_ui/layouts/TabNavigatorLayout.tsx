@@ -75,7 +75,7 @@ function TabNavigator({
             >
               <TabIcon focused={focused} Icon={Icon} />
               <Text
-                className={`text-xs mt-1.5 font-medium ${focused ? "text-primary" : "text-text-secondary"}`}
+                className={`text-xs mt-1.5 font-medium ${focused ? "text-text-accent" : "text-text-secondary"}`}
               >
                 {label}
               </Text>

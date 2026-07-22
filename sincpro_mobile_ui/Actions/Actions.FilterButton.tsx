@@ -19,7 +19,7 @@ const filterText = tv({
   variants: {
     active: {
       true: "text-white",
-      false: "text-primary",
+      false: "text-text-accent",
     },
   },
   defaultVariants: { active: false },

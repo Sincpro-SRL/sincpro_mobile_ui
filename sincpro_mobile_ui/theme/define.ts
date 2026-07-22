@@ -27,6 +27,9 @@ function deepMerge<T>(base: T, override: DeepPartial<T>): T {
 /**
  * Defines a complete, typed theme (powerful API: the framework parametrizes
  * every token explicitly).
+ *
+ * Tip for brand palettes: set on-colors with `resolveOnColor` from
+ * `@sincpro/mobile-ui/theme` so light and dark brand fills both stay WCAG AA.
  */
 export function defineTheme(tokens: ThemeTokens): ThemeTokens {
   return tokens;

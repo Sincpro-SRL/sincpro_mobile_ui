@@ -1,6 +1,6 @@
 # @sincpro/mobile-ui
 
-**Sincpro Mobile Design System** — the UI contract between design and engineering for React Native / Expo SDK 56 applications.
+**Sincpro Mobile Design System** — the UI contract between design and engineering for React Native / Expo SDK 57 applications.
 
 This package is maintained by Sincpro as part of the mobile framework ecosystem. Anyone can read the source and use the components. What Sincpro provides is the commitment behind it: stable APIs, predictable behavior, long-term support, and a team that ensures this keeps working as platforms evolve. Build on it knowing it will still be there.
 
@@ -29,6 +29,7 @@ module.exports = {
 ```
 
 ```tsx
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Display } from "@sincpro/mobile-ui/Display";
 import { Form }    from "@sincpro/mobile-ui/Form";
 import { useToast, ToastProvider } from "@sincpro/mobile-ui/Feedback";
@@ -39,9 +40,9 @@ export default function InvoiceScreen() {
     <Display.Card>
       <Display.KeyValue label="Invoice #" value="INV-0042" copyable />
       <Display.Monetary amount={1500.00} variant="dataLarge" />
-      <Form.Button onPress={() => toast.success("Invoice sent")}>
+      <Actions.Button onPress={() => toast.success("Invoice sent")}>
         Send Invoice
-      </Form.Button>
+      </Actions.Button>
     </Display.Card>
   );
 }
@@ -153,7 +154,7 @@ import { ConfirmationProvider, useConfirmationContext } from "@sincpro/mobile-ui
 
 // Controlled sheet — built on RN Modal, no native peer deps
 <Sheet visible={open} onClose={() => setOpen(false)} title="Options">
-  <Form.Button onPress={confirm}>Confirm</Form.Button>
+  <Actions.Button onPress={confirm}>Confirm</Actions.Button>
 </Sheet>
 
 // Imperative confirmation
@@ -257,7 +258,7 @@ import { Display } from "@sincpro/mobile-ui/Display";
 | `Form.ControlledCheckbox` | `Checkbox` + react-hook-form |
 | `Form.ControlledDropdown` | `Dropdown` + react-hook-form |
 | `Form.ControlledMonetaryInput` | `MonetaryInput` + react-hook-form |
-| `Form.Button` / `IconButton` / `FAB` | Action components in Form namespace |
+| `Actions.Button` / `IconButton` / `FAB` | Action components (preferred over deprecated `Form.Button` aliases) |
 
 ### Feedback
 
@@ -338,6 +339,7 @@ import { Display } from "@sincpro/mobile-ui/Display";
 | `FormViewV2` | Dynamic form view with field management |
 | `AuthFormView` | Authentication form layout |
 | `Wizard` / `useWizard` | Multi-step wizard with guards and lifecycle hooks |
+| `AppSplashView` | Branded splash screen with logo and loading state |
 
 ### Widgets
 

@@ -1,12 +1,19 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import type { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { useTheme } from "@sincpro/mobile-ui/theme";
+import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
+import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ComponentType } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+/** Forced-dark chrome: prefer `bg.inverse` when it is actually dark, else `bg.card`. */
+function resolveDarkSurface(theme: ThemeTokens): string {
+  const candidate = theme.bg.inverse ?? theme.bg.card;
+  return relativeLuminance(candidate) < 0.25 ? candidate : theme.bg.card;
+}
 
 export interface BottomNavItem {
   key: string;
@@ -59,8 +66,6 @@ export interface BottomNavProps {
   testID?: string;
 }
 
-const DARK_SURFACE = "#15181B";
-
 /**
  * The single bottom-navigation component. Extensible by props, not by forking:
  * `shape` (bar/floating), `tone` (light/dark), `indicator` (none/pill/pill-text/bar/glow),
@@ -88,10 +93,11 @@ function BottomNav({
   const bottomPad = rounded ? 6 : safeArea ? insets.bottom : 0;
 
   const activeTint = activeColor === "accent" ? theme.accent : theme.primary;
-  const onActive = activeColor === "accent" ? theme.text.onAccent : theme.icon.inverse;
+  const onActive = activeColor === "accent" ? theme.text.onAccent : theme.text.onPrimary;
+  const brandText = theme.text.accent;
   const inactiveColor = dark ? "rgba(255,255,255,0.55)" : theme.icon.secondary;
 
-  const surfaceColor = dark ? DARK_SURFACE : theme.bg.card;
+  const surfaceColor = dark ? resolveDarkSurface(theme) : theme.bg.card;
   const containerStyle = rounded
     ? {
         borderRadius: 32,
@@ -181,14 +187,14 @@ function BottomNav({
 
     // Variants none / pill / bar / glow — vertical icon + optional indicator + optional label.
     const inPill = indicator === "pill" && active;
-    const iconColor = inPill
-      ? onActive
-      : active
-        ? indicator === "glow"
-          ? activeTint
-          : activeTint
-        : inactiveColor;
-    const labelColor = active ? (dark ? "#FFFFFF" : activeTint) : inactiveColor;
+    let iconColor = inactiveColor;
+    if (inPill) iconColor = onActive;
+    else if (active) iconColor = brandText;
+
+    let labelColor = inactiveColor;
+    if (active && inPill) labelColor = onActive;
+    else if (active && dark) labelColor = theme.text.inverse;
+    else if (active) labelColor = brandText;
 
     return (
       <Pressable

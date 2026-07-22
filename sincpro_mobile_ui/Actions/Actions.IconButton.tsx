@@ -54,7 +54,7 @@ function IconButton({
   iconColor,
   className,
 }: IconButtonProps) {
-  const resolvedColor = iconColor ?? theme.primary;
+  const resolvedColor = iconColor ?? theme.text.accent;
 
   return (
     <TouchableOpacity

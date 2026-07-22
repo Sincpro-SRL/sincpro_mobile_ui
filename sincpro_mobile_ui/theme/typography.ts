@@ -50,7 +50,7 @@ export const fontFamilies: Record<FontRole, string> = { ...DEFAULT_FONT_FAMILIES
 /**
  * Override DS font family names (role → already-loaded family name).
  * Mutates the singleton in-place so components pick up the change at render time.
- * Example: `configureFonts({ title: "Satoshi-Bold", titleBlack: "Satoshi-Black" })`.
+ * Example: `configureFonts({ title: "YourBrandTitle-Bold", titleBlack: "YourBrandDisplay-Black" })`.
  */
 export function configureFonts(overrides: Partial<Record<FontRole, string>>): void {
   Object.assign(fontFamilies, overrides);
@@ -113,7 +113,7 @@ export const letterSpacing = {
 
 /* -------------------- Typography Variants -------------------- */
 export const typographyVariants = {
-  // Display (Satoshi Black — brand character)
+  // Display (titleBlack role — typically the brand display typeface)
   display: {
     fontSize: fontSizes["7xl"],
     fontFamily: fontFamilies.titleBlack,
@@ -122,7 +122,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.tight,
   },
 
-  // Headings (Satoshi Bold)
+  // Headings (title role)
   h1: {
     fontSize: fontSizes["5xl"],
     fontFamily: fontFamilies.title,
@@ -353,8 +353,8 @@ export { useFonts };
 
 /* -------------------- Font Loader (optional, convenience) ------------------
  * Loads the recommended base fonts (Inter + Fira Code) declared as peer deps.
- * The "title" role (e.g. Satoshi) is loaded and wired by the app/Storybook
- * via `configureFonts` — the DS never bundles font files. */
+ * The "title" role is loaded and wired by the app/Storybook via
+ * `configureFonts` — the DS never bundles font files. */
 export const useAppFonts = () => {
   const [loaded] = useFonts({
     FiraCode_400Regular,

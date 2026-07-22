@@ -86,14 +86,14 @@ function DropdownButton({
 
   const textColorClass = {
     primary: "text-text-on-primary",
-    outline: "text-primary",
-    secondary: "text-primary",
+    outline: "text-text-accent",
+    secondary: "text-text-accent",
   }[variant];
 
   const iconColor = {
     primary: theme.text.onPrimary,
-    outline: theme.primary,
-    secondary: theme.primary,
+    outline: theme.text.accent,
+    secondary: theme.text.accent,
   }[variant];
 
   const textVariant = {

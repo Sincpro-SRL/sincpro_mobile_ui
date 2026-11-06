@@ -189,6 +189,53 @@ export const ProgressCircle: Story = {
   ),
 };
 
+export const ReducedMotion: Story = {
+  render: () => (
+    <View style={{ gap: 20 }}>
+      <Typography.Text>
+        Indicadores estáticos: animated=false. Los defaults también respetan Reducir
+        movimiento del sistema; cambia ese ajuste con la story abierta.
+      </Typography.Text>
+      <Feedback.Skeleton animated={false} height={64} testID="static-skeleton" />
+      <Feedback.Progress
+        accessibilityLabel="Sincronizando registros"
+        animated={false}
+        indeterminate
+      />
+      <Feedback.Spinner animated={false} text="Preparando archivo" />
+      <Feedback.Spinner animated={false} text="Cargando registros" variant="dots" />
+      <Feedback.Spinner animated={false} text="Esperando respuesta" variant="ripple" />
+      <Feedback.Progress accessibilityLabel="Carga con ajuste del sistema" indeterminate />
+      <Feedback.Spinner text="Animación según el sistema" variant="dots" />
+    </View>
+  ),
+};
+
+export const CustomProgress: Story = {
+  render: () => (
+    <View style={{ gap: 20 }}>
+      <Typography.Text>
+        Personalización local sin sustituir cálculo ni semántica accesible.
+      </Typography.Text>
+      <Feedback.Progress
+        accessibilityLabel="Descarga del archivo"
+        indicatorClassName="bg-container-success"
+        indicatorStyle={{ borderRadius: 2 }}
+        style={{ height: 12, borderRadius: 2 }}
+        value={0.65}
+      />
+      <Feedback.ProgressCircle
+        accessibilityLabel="Preparación del archivo"
+        size={96}
+        strokeWidth={8}
+        value={0.65}
+      >
+        <Typography.Text>65%</Typography.Text>
+      </Feedback.ProgressCircle>
+    </View>
+  ),
+};
+
 export const EmptyStateRich: Story = {
   render: () => (
     <View style={{ height: 420 }}>

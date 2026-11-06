@@ -1,18 +1,28 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { motion } from "@sincpro/mobile-ui/tokens/motion";
+import { normalizeProgress } from "@sincpro/mobile-ui/utils/progress";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, View } from "react-native";
+import {
+  Animated,
+  Easing,
+  type StyleProp,
+  View,
+  type ViewProps,
+  type ViewStyle,
+} from "react-native";
 
-export interface ProgressProps {
+export interface ProgressProps extends Omit<
+  ViewProps,
+  "children" | "accessibilityValue" | "accessibilityRole" | "accessibilityState"
+> {
   value?: number;
   indeterminate?: boolean;
   height?: number;
   className?: string;
-  testID?: string;
-}
-
-function clamp(n: number): number {
-  return Math.max(0, Math.min(1, n));
+  animated?: boolean;
+  indicatorClassName?: string;
+  indicatorStyle?: StyleProp<ViewStyle>;
 }
 
 function Progress({
@@ -20,55 +30,72 @@ function Progress({
   indeterminate = false,
   height = 6,
   className,
-  testID,
+  animated = true,
+  indicatorClassName,
+  indicatorStyle,
+  style,
+  ...props
 }: ProgressProps) {
+  const reducedMotion = useReducedMotion();
+  const shouldAnimate = indeterminate && animated && !reducedMotion;
+  const progress = indeterminate ? 0 : normalizeProgress(value);
   // eslint-disable-next-line react-hooks/refs
   const translate = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (!indeterminate) return;
+    translate.setValue(0);
+    if (!shouldAnimate) return;
     const loop = Animated.loop(
       Animated.timing(translate, {
         toValue: 1,
         duration: motion.duration.slower,
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: true,
+        isInteraction: false,
       }),
     );
     loop.start();
     return () => loop.stop();
-  }, [indeterminate, translate]);
+  }, [shouldAnimate, translate]);
 
   return (
     <View
+      {...props}
       accessibilityRole="progressbar"
+      accessibilityState={{ busy: indeterminate }}
       accessibilityValue={
-        indeterminate ? undefined : { now: Math.round(clamp(value) * 100), min: 0, max: 100 }
+        indeterminate ? undefined : { now: Math.round(progress * 100), min: 0, max: 100 }
       }
+      accessible
       className={cn("w-full overflow-hidden rounded-full bg-bg-muted", className)}
-      style={{ height }}
-      testID={testID}
+      style={[{ height }, style]}
     >
       {indeterminate ? (
         <Animated.View
-          className="h-full rounded-full bg-primary"
-          style={{
-            width: "40%",
-            transform: [
-              {
-                // eslint-disable-next-line react-hooks/refs
-                translateX: translate.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ["-40%", "250%"],
-                }),
-              },
-            ],
-          }}
+          className={cn("h-full rounded-full bg-primary", indicatorClassName)}
+          style={[
+            {
+              width: "40%",
+              marginLeft: shouldAnimate ? 0 : "30%",
+              transform: shouldAnimate
+                ? [
+                    {
+                      // eslint-disable-next-line react-hooks/refs
+                      translateX: translate.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["-40%", "250%"],
+                      }),
+                    },
+                  ]
+                : [],
+            },
+            indicatorStyle,
+          ]}
         />
       ) : (
         <View
-          className="h-full rounded-full bg-primary"
-          style={{ width: `${clamp(value) * 100}%` }}
+          className={cn("h-full rounded-full bg-primary", indicatorClassName)}
+          style={[{ width: `${progress * 100}%` }, indicatorStyle]}
         />
       )}
     </View>

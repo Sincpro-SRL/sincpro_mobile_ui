@@ -1,9 +1,13 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
+import { normalizeProgress } from "@sincpro/mobile-ui/utils/progress";
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { View, type ViewProps } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 
-export interface ProgressCircleProps {
+export interface ProgressCircleProps extends Omit<
+  ViewProps,
+  "accessibilityValue" | "accessibilityRole"
+> {
   value?: number;
   size?: number;
   strokeWidth?: number;
@@ -13,10 +17,6 @@ export interface ProgressCircleProps {
   testID?: string;
 }
 
-function clamp(n: number): number {
-  return Math.max(0, Math.min(1, n));
-}
-
 function ProgressCircle({
   value = 0,
   size = 64,
@@ -24,19 +24,26 @@ function ProgressCircle({
   color,
   trackColor,
   children,
-  testID,
+  style,
+  ...props
 }: ProgressCircleProps) {
+  const theme = useTheme();
+  const progress = normalizeProgress(value);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - clamp(value));
+  const offset = circumference * (1 - progress);
   const center = size / 2;
 
   return (
     <View
+      {...props}
       accessibilityRole="progressbar"
-      accessibilityValue={{ now: Math.round(clamp(value) * 100), min: 0, max: 100 }}
-      style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}
-      testID={testID}
+      accessibilityValue={{ now: Math.round(progress * 100), min: 0, max: 100 }}
+      accessible
+      style={[
+        { width: size, height: size, alignItems: "center", justifyContent: "center" },
+        style,
+      ]}
     >
       <Svg height={size} style={{ position: "absolute" }} width={size}>
         <Circle

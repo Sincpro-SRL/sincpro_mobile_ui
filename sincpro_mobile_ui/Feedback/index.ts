@@ -12,6 +12,13 @@ import SplashScreen from "@sincpro/mobile-ui/Feedback/Feedback.Splash";
 import { Toast } from "@sincpro/mobile-ui/Feedback/Toast.context";
 
 export { ErrorBoundary } from "@sincpro/mobile-ui/Feedback/ErrorBoundary";
+export type { ProgressProps } from "@sincpro/mobile-ui/Feedback/Feedback.Progress";
+export type { ProgressCircleProps } from "@sincpro/mobile-ui/Feedback/Feedback.ProgressCircle";
+export type { SkeletonProps } from "@sincpro/mobile-ui/Feedback/Feedback.Skeleton";
+export type {
+  SpinnerProps,
+  SpinnerVariant,
+} from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 export {
   Toast,
   type ToastAction,
@@ -30,6 +37,7 @@ export {
   type ToastVariant,
   useToast,
 } from "@sincpro/mobile-ui/Feedback/Toast.context";
+export { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 
 export const Feedback = {
   Loading,

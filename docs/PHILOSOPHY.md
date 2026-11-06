@@ -66,6 +66,11 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
   esencial debe seguir disponible; no resolver problemas ocultándolo o desactivando scaling.
 - **Feedback:** copiar o guardar comunica resultado solo después de completar la operación.
   Un fallo conserva el trabajo y ofrece recuperación, sin éxito ficticio.
+- **Movimiento de carga:** respetar Reducir movimiento del sistema y conservar un indicador
+  estático con nombre/estado accesible, sin inventar porcentajes. `animated={false}` permite
+  desactivar animación localmente; `true` no fuerza movimiento contra la preferencia.
+  El contrato está implementado en Skeleton/Progress/Spinner/Loading; otras animaciones
+  requieren revisión propia, no quedan certificadas por compartir tokens.
 - **Texto y datos:** un valor corto usa el icono conocido de copia y tap sobre el dato;
   el check confirma sin agregar bloques ni mover el layout. Texto largo conserva selección
   nativa con una acción separada para copiar todo. El consumidor elige `selectable`

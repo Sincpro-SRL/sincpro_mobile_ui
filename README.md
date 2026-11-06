@@ -91,6 +91,12 @@ recoverable error. It uses fictional data and local state, not persistence or a 
 
 ### Accessible interaction
 
+- Loading feedback respects the live system Reduce Motion setting; `animated={false}`
+  keeps `Feedback.Skeleton`, `Progress`, `Spinner` and `Loading` static explicitly.
+  Spinners expose a named busy state; progress exposes a percentage only when known.
+  Track/indicator styling and native accessibility props remain customizable.
+  See the [feedback contract](docs/CATALOG.md#feedback-feedback) and the
+  [comparison and priorities](docs/DESIGN-SYSTEM-GAPS.md).
 - `Actions.Button` (including `.Icon`), `Actions.IconButton`, `BaseButton`,
   `Feedback.EmptyState`, `Feedback.Error` and `Form.Input` accept `accessibleSizing` to
   opt into a minimum 48-point target. Buttons also allow enlarged, multiline labels in

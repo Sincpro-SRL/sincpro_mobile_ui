@@ -156,6 +156,24 @@ icon renderers retain control.
 
 `Loading`, `Spinner`, `Skeleton`, `Progress`, `ProgressCircle`, `Banner`, `Empty`, `EmptyState`, `Error`, `PermissionCard`, `SplashScreen`, `ErrorBoundary`, `ToastProvider` + `useToast` (info/success/warning/danger/**loading**/**promise**) with composable `Toast` slots, a custom render callback, and upward/downward swipe dismissal.
 
+`Skeleton`, `Progress` (indeterminate), `Spinner` and `Loading` respect the live system
+Reduce Motion preference. `animated={false}` explicitly opts out; `true` never overrides
+the system setting. Indicators start static until the asynchronous preference is known;
+lookup failures warn and leave motion disabled. Skeletons remain hidden from screen readers.
+Static loading indicators retain their shape and busy semantics, not an invented percentage.
+This is limited to these components, not a system-wide motion certification.
+`useReducedMotion` is available from `…/Feedback` for other host-owned animations.
+
+`Spinner` uses `text` as its accessible name (fallback "Cargando"); `accessibilityLabel`
+overrides it. `Loading` forwards that name, `animated` and `testID` to its indicator.
+Both progress shapes accept `accessibilityLabel`, `accessibilityHint`, native view props,
+`className` and `style`. Progress accepts `indicatorClassName` / `indicatorStyle` independently
+of the track. Values remain fractions from 0 to 1; finite out-of-range values clamp.
+Non-finite determinate values throw a descriptive RangeError rather than rendering invalid
+geometry or announcing NaN. Indeterminate Progress omits the percentage and exposes busy.
+Spinner and ProgressCircle default colors follow live theme changes; explicit colors stay
+consumer-controlled. No automatic live announcements on every progress update.
+
 ### Navigation (`Navigation`)
 
 `AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `Search` (compound field, filter chips, advanced filter sheet, history and suggestions), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).

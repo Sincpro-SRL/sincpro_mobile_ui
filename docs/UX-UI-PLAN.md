@@ -22,7 +22,7 @@ Fecha: 2026-11-06.
 - El flujo largo/dark también pasó con categoría de texto `accessibility-large`.
 - Export Android de Expo 58 pasó como smoke de bundling; no equivale a runtime Android.
 - `make verify-format` incorpora tests y `expo install --check`; el gate sigue exigiendo
-  un worktree sin diferencias, por lo que no pasa hasta registrar los cambios.
+  un worktree sin diferencias. Al preparar el PR se registraron los cambios y el gate pasó.
 
 El [informe de auditoría](./UX-AUDIT.md) registra los patrones revisados y sus límites.
 

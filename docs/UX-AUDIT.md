@@ -90,8 +90,9 @@ Los siete flujos Maestro pasaron en el iPhone 17 Pro con Expo Go; los dos flujos
 largo/dark (detalle y resumen nativo) también pasaron con `accessibility-large`.
 Se restauró `large` al terminar. El export Android del código final pasó; no equivale a
 comprobar selección/gestos/hojas en un dispositivo Android.
-`make verify-format` termina con error únicamente por diferencias Git sin commit;
-no se alteró el gate ni se hizo un commit para ocultar ese estado.
+Antes de registrar el lote, `make verify-format` terminaba con error únicamente por
+diferencias Git sin commit. Al preparar el PR, se registraron los cambios y el gate completo
+pasó con worktree limpio; no se alteró el gate.
 
 En la story de texto a tamaño normal, los targets medidos en la jerarquía iOS son
 88×48 para la referencia corta y 48×48 para el icono independiente de la descripción.

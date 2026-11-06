@@ -30,7 +30,7 @@ fonts and system scaling. Legacy `body` remains 14.
 
 ### Actions
 
-`Actions.Button` (variants primary/cta/secondary/outline/…), `Actions.IconButton`, `Actions.FAB`, `Navigation.AppBar.Action`. (`Form.Button` / `Form.IconButton` / `Form.FAB` exist as deprecated aliases.)
+`Actions.Button` (variants primary/cta/secondary/outline/…), `Actions.IconButton`, `Actions.FAB`, `Actions.Dock`, `Navigation.AppBar.Action`. (`Form.Button` / `Form.IconButton` / `Form.FAB` exist as deprecated aliases.)
 
 Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
 alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
@@ -40,6 +40,12 @@ button text, and a supplied accessible name for icon-only actions.
 `FilterButton variant="mobile"` exposes selected/disabled state, a selected check and
 wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
 horizontal scrolling or wrapping; the default remains its legacy row layout.
+`Actions.Dock` defaults to a fixed bottom bar with a primary action and optional summary.
+Swipe up on its handle (or press “Más opciones”) to reveal secondary content above the bar;
+the primary action stays fixed, and swipe down or “Ocultar opciones” collapses it. Mount it
+in a full-screen safe-area container and reserve bottom space in scrolling content. Set
+`placement="footer"` inside `FormViewV2.Footer` to use its existing sticky layout without
+nesting another fixed bar. It owns no business calculations or submission state.
 
 ### Inputs (`Form`)
 
@@ -47,7 +53,7 @@ horizontal scrolling or wrapping; the default remains its legacy row layout.
 
 ### Data Display (`Display`)
 
-`Card`, `Chip`, `Tag`, `Badge`, `Avatar`, `AvatarGroup`, `Accordion`, `ListItem`, `KeyValue`, `DataTable`, `Stat`, `StatCard`, `Rating`, `SwipeableRow`, `SectionHeader`, `Timeline`, `Image`, `Carousel`, `Tooltip`, `StatusDot` (presence), `Divider`, `Monetary`, `Date` (variants `inline`/`withIcon`/`pill` + `relative`), `CopyableText`, `CountRecords`, `Logo`, `Icon`, `IconBadge` (icon + count/dot).
+`Card`, `Chip`, `Tag`, `Badge`, `Avatar`, `AvatarGroup`, `Accordion`, `ListItem`, `KeyValue`, `AmountSummary`, `DataTable`, `Stat`, `StatCard`, `Rating`, `SwipeableRow`, `SectionHeader`, `Timeline`, `Image`, `Carousel`, `Tooltip`, `StatusDot` (presence), `Divider`, `Monetary`, `Date` (variants `inline`/`withIcon`/`pill` + `relative`), `CopyableText`, `CountRecords`, `Logo`, `Icon`, `IconBadge` (icon + count/dot).
 
 `CopyableText` presents short values as tap-to-copy text with a familiar copy icon,
 pending spinner and transient checkmark without layout shift. `selectable` preserves native
@@ -55,6 +61,10 @@ selection of longer text and separates the full-copy action; failures remain vis
 and results are announced. `KeyValue copyable` requires a string or number and forwards
 `selectable`; `align="auto"` stacks on narrow screens or enlarged text.
 `SectionHeader` exposes header semantics.
+`AmountSummary.Root` composes `Row` and `Total` using `Display.Monetary`; set the currency
+at the root or per row. It presents values only—calculations, business labels and status
+remain in the consuming app. `KeyValue copyable` already covers copying identifiers and
+other scalar fields; do not build a second copy control for those rows.
 
 `ListGroup` groups short settings/data lists using a title, optional description/action/footer,
 one inset surface or `surface="plain"`, and hairline separators between direct children.
@@ -93,11 +103,11 @@ icon renderers retain control.
 
 ### Feedback (`Feedback`)
 
-`Loading`, `Spinner`, `Skeleton`, `Progress`, `ProgressCircle`, `Banner`, `Empty`, `EmptyState`, `Error`, `PermissionCard`, `SplashScreen`, `ErrorBoundary`, `ToastProvider` + `useToast` (info/success/warning/danger/**loading**/**promise**).
+`Loading`, `Spinner`, `Skeleton`, `Progress`, `ProgressCircle`, `Banner`, `Empty`, `EmptyState`, `Error`, `PermissionCard`, `SplashScreen`, `ErrorBoundary`, `ToastProvider` + `useToast` (info/success/warning/danger/**loading**/**promise**) with composable `Toast` slots, a custom render callback, and upward/downward swipe dismissal.
 
 ### Navigation (`Navigation`)
 
-`AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).
+`AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `Search` (compound field, filter chips, advanced filter sheet, history and suggestions), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).
 
 `SearchBar accessibleSizing` opts into readable 17-point text and 48-point input/clear
 targets. Name search and clear independently with `accessibilityLabel` and
@@ -105,10 +115,16 @@ targets. Name search and clear independently with `accessibilityLabel` and
 `suggestions` accepts host-owned items `{id,label,description?}`, `onSelect`, loading,
 error/retry and empty copy. Suggestions appear on focus; selecting one does not guess
 which field to search or mutate the query. `Navigation.SearchSuggestions` is also composable.
+`Navigation.Search.Root` composes the existing `Field`, `Filters`, `FilterSheet`, `History`
+and `Suggestions`; it does not own query/filter state or data fetching. Use it in a
+`ListViewV2.Header` composition and keep `ListViewV2.Header.SearchHistory` when that
+existing list-specific API fits. For hierarchy, prefer `AppBar` back navigation and
+`Steps` for sequential flows; generic breadcrumbs are not added because they consume
+horizontal space without improving common mobile navigation.
 
 ### Overlays (`Dialog`)
 
-`Sheet` (bottom sheet on RN Modal — subpath `Dialog/Sheet`, swipe-down to close), `ActionSheet`, `Confirmation` (+`ConfirmationProvider`), `EditValue`.
+`Sheet` (bottom sheet on RN Modal — subpath `Dialog/Sheet`, swipe-down to close, optional fixed `footer`), `ActionSheet`, `Confirmation` (+`ConfirmationProvider`), `EditValue`.
 
 `NativeSheet` — optional subpath `Dialog/NativeSheet`, backed by Expo 58
 `@expo/ui/community/bottom-sheet`. SwiftUI presentation on iOS and Material3 on Android,

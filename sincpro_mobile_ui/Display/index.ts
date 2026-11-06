@@ -1,4 +1,5 @@
 import Accordion from "@sincpro/mobile-ui/Display/Display.Accordion";
+import AmountSummary from "@sincpro/mobile-ui/Display/Display.AmountSummary";
 import Avatar from "@sincpro/mobile-ui/Display/Display.Avatar";
 import AvatarGroup from "@sincpro/mobile-ui/Display/Display.AvatarGroup";
 import Badge, {
@@ -46,6 +47,7 @@ import Timeline from "@sincpro/mobile-ui/Display/Display.Timeline";
 import Tooltip from "@sincpro/mobile-ui/Display/Display.Tooltip";
 
 export const Display = {
+  AmountSummary,
   Badge,
   BadgeVariants,
   Accordion,
@@ -93,6 +95,11 @@ export const Display = {
 };
 
 export { type BadgeProps, BadgeVariants };
+export type {
+  AmountSummaryRootProps,
+  AmountSummaryRowProps,
+  AmountSummaryTotalProps,
+} from "@sincpro/mobile-ui/Display/Display.AmountSummary";
 export type { CircleButtonProps } from "@sincpro/mobile-ui/Display/Display.CircleButton";
 export type { ListGroupProps } from "@sincpro/mobile-ui/Display/Display.ListGroup";
 export type { ListItemProps } from "@sincpro/mobile-ui/Display/Display.ListItem";

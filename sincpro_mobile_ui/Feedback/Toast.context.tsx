@@ -1,18 +1,20 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
-import { tv } from "@sincpro/mobile-ui/theme/tw";
+import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import {
   createContext,
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, type StyleProp, View, type ViewStyle } from "react-native";
+import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import Animated, {
   FadeInDown,
   FadeInUp,
@@ -28,12 +30,20 @@ export interface ToastAction {
   onPress: () => void;
 }
 
+export interface ToastRenderProps {
+  id: string;
+  dismiss: () => void;
+  update: (options: Partial<ToastOptions>) => void;
+}
+
 export interface ToastOptions {
   message: string;
   title?: string;
   variant?: ToastVariant;
   duration?: number;
   action?: ToastAction;
+  className?: string;
+  render?: (controls: ToastRenderProps) => ReactNode;
   /** Stable id: calling show()/info()/… again with the same id updates the existing toast
    *  (and resets its timer) instead of stacking a duplicate. */
   id?: string;
@@ -42,9 +52,153 @@ export interface ToastOptions {
   dismissible?: boolean;
 }
 
+export type ToastCustomOptions = Omit<ToastOptions, "message" | "render"> & {
+  message?: string;
+  render: (controls: ToastRenderProps) => ReactNode;
+};
+
 interface ToastEntry extends ToastOptions {
   id: string;
 }
+
+export interface ToastRootProps {
+  children: ReactNode;
+  accessibilityHint?: string;
+  className?: string;
+  position?: "top" | "bottom";
+  style?: StyleProp<ViewStyle>;
+  testID?: string;
+}
+
+function ToastRoot({
+  children,
+  accessibilityHint = "Desliza hacia arriba o abajo para cerrar",
+  className,
+  position = "top",
+  style,
+  testID,
+}: ToastRootProps) {
+  const styles = toast();
+  const entering = position === "top" ? FadeInDown : FadeInUp;
+  const exiting = position === "top" ? FadeOutUp : FadeOutDown;
+
+  return (
+    <Animated.View
+      accessibilityHint={accessibilityHint}
+      accessibilityLiveRegion="polite"
+      accessibilityRole="alert"
+      className={styles.root({ className })}
+      entering={entering.duration(220)}
+      exiting={exiting.duration(180)}
+      style={style}
+      testID={testID}
+    >
+      {children}
+    </Animated.View>
+  );
+}
+
+export interface ToastIconProps {
+  variant?: ToastVariant;
+  icon?: ReactNode;
+  color?: string;
+  size?: number;
+}
+
+function ToastIcon({ variant = "info", icon, color, size = 22 }: ToastIconProps) {
+  if (icon) return <>{icon}</>;
+  if (variant === "loading") {
+    return <ActivityIndicator color={color ?? theme.text.accent} size="small" />;
+  }
+  const config = iconByVariant[variant];
+  return <Icon color={color ?? config.color} name={config.name} size={size} />;
+}
+
+export interface ToastContentProps {
+  children: ReactNode;
+  className?: string;
+  style?: StyleProp<ViewStyle>;
+}
+
+function ToastContent({ children, className, style }: ToastContentProps) {
+  return (
+    <View className={cn("flex-1", className)} style={style}>
+      {children}
+    </View>
+  );
+}
+
+export interface ToastTextProps {
+  children: ReactNode;
+  className?: string;
+}
+
+function ToastTitle({ children, className }: ToastTextProps) {
+  return (
+    <Typography.Text className={cn("text-sm font-semibold text-text-primary", className)}>
+      {children}
+    </Typography.Text>
+  );
+}
+
+function ToastDescription({ children, className }: ToastTextProps) {
+  return (
+    <Typography.Text className={cn("text-sm text-text-secondary", className)}>
+      {children}
+    </Typography.Text>
+  );
+}
+
+export interface ToastActionProps {
+  label: string;
+  onPress: () => void;
+  className?: string;
+}
+
+function ToastActionButton({ label, onPress, className }: ToastActionProps) {
+  return (
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      className={cn("min-h-11 justify-center px-2", className)}
+      onPress={onPress}
+    >
+      <Typography.Text className="text-sm font-semibold text-text-accent">
+        {label}
+      </Typography.Text>
+    </Pressable>
+  );
+}
+
+export interface ToastCloseProps {
+  onPress: () => void;
+  accessibilityLabel?: string;
+  className?: string;
+}
+
+function ToastClose({ onPress, accessibilityLabel = "Cerrar", className }: ToastCloseProps) {
+  return (
+    <Pressable
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="button"
+      className={cn("min-h-11 min-w-11 items-center justify-center", className)}
+      hitSlop={8}
+      onPress={onPress}
+    >
+      <Icon color={theme.text.tertiary} name="close" size={18} />
+    </Pressable>
+  );
+}
+
+export const Toast = {
+  Root: ToastRoot,
+  Icon: ToastIcon,
+  Content: ToastContent,
+  Title: ToastTitle,
+  Description: ToastDescription,
+  Action: ToastActionButton,
+  Close: ToastClose,
+};
 
 type MessageOrFn<T> = string | ((value: T) => string);
 
@@ -55,7 +209,7 @@ export interface ToastPromiseMessages<T> {
 }
 
 export interface ToastContextValue {
-  show: (options: ToastOptions) => string;
+  show: (options: ToastOptions | ToastCustomOptions) => string;
   update: (id: string, options: Partial<ToastOptions>) => void;
   hide: (id: string) => void;
   info: (message: string, options?: Omit<ToastOptions, "message" | "variant">) => string;
@@ -93,61 +247,58 @@ const iconByVariant: Record<
 function ToastItem({
   entry,
   onHide,
+  onUpdate,
   position,
 }: {
   entry: ToastEntry;
   onHide: (id: string) => void;
+  onUpdate: (id: string, options: Partial<ToastOptions>) => void;
   position: "top" | "bottom";
 }) {
   const variant = entry.variant ?? "info";
-  const styles = toast();
-  const entering = position === "top" ? FadeInDown : FadeInUp;
-  const exiting = position === "top" ? FadeOutUp : FadeOutDown;
   const resolvedDuration = entry.duration ?? (variant === "loading" ? 0 : DEFAULT_DURATION);
   const showClose = entry.dismissible ?? resolvedDuration === 0;
+  const dismiss = () => onHide(entry.id);
+  const pan = usePanGesture({
+    activeOffsetY: [-12, 12],
+    failOffsetX: [-24, 24],
+    onDeactivate: ({ canceled, translationY, velocityY }) => {
+      if (!canceled && (Math.abs(translationY) >= 48 || Math.abs(velocityY) >= 800)) {
+        dismiss();
+      }
+    },
+  });
 
   return (
-    <Animated.View
-      accessibilityLiveRegion="polite"
-      accessible
-      className={styles.root()}
-      entering={entering.duration(220)}
-      exiting={exiting.duration(180)}
-    >
-      {variant === "loading" ? (
-        <ActivityIndicator color={theme.text.accent} size="small" />
-      ) : (
-        <Icon
-          color={iconByVariant[variant].color}
-          name={iconByVariant[variant].name}
-          size={22}
-        />
-      )}
-      <View className="flex-1">
-        {entry.title ? (
-          <Typography.Text className={styles.title()}>{entry.title}</Typography.Text>
-        ) : null}
-        <Typography.Text className={styles.message()}>{entry.message}</Typography.Text>
-      </View>
-      {entry.action ? (
-        <Pressable
-          accessibilityLabel={entry.action.label}
-          onPress={() => {
-            entry.action?.onPress();
-            onHide(entry.id);
-          }}
-        >
-          <Typography.Text className="text-text-accent text-sm font-semibold">
-            {entry.action.label}
-          </Typography.Text>
-        </Pressable>
-      ) : null}
-      {showClose ? (
-        <Pressable accessibilityLabel="Cerrar" hitSlop={8} onPress={() => onHide(entry.id)}>
-          <Icon color={theme.text.tertiary} name="close" size={18} />
-        </Pressable>
-      ) : null}
-    </Animated.View>
+    <GestureDetector gesture={pan}>
+      <Toast.Root className={entry.className} position={position}>
+        {entry.render ? (
+          entry.render({
+            dismiss,
+            id: entry.id,
+            update: (options) => onUpdate(entry.id, options),
+          })
+        ) : (
+          <>
+            <Toast.Icon variant={variant} />
+            <Toast.Content>
+              {entry.title ? <Toast.Title>{entry.title}</Toast.Title> : null}
+              {entry.message ? <Toast.Description>{entry.message}</Toast.Description> : null}
+            </Toast.Content>
+            {entry.action ? (
+              <Toast.Action
+                label={entry.action.label}
+                onPress={() => {
+                  entry.action?.onPress();
+                  dismiss();
+                }}
+              />
+            ) : null}
+            {showClose ? <Toast.Close onPress={dismiss} /> : null}
+          </>
+        )}
+      </Toast.Root>
+    </GestureDetector>
   );
 }
 
@@ -160,12 +311,18 @@ export function ToastProvider({
 }) {
   const insets = useSafeAreaInsets();
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
+  const toastsRef = useRef<ToastEntry[]>([]);
   const counter = useRef(0);
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  const commitToasts = useCallback((next: ToastEntry[]) => {
+    toastsRef.current = next;
+    setToasts(next);
+  }, []);
+
   const clearTimer = useCallback((id: string) => {
     const timer = timers.current[id];
-    if (timer) {
+    if (timer !== undefined) {
       clearTimeout(timer);
       delete timers.current[id];
     }
@@ -173,10 +330,10 @@ export function ToastProvider({
 
   const hide = useCallback(
     (id: string) => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+      commitToasts(toastsRef.current.filter((t) => t.id !== id));
       clearTimer(id);
     },
-    [clearTimer],
+    [clearTimer, commitToasts],
   );
 
   const scheduleDismiss = useCallback(
@@ -191,30 +348,49 @@ export function ToastProvider({
   );
 
   const show = useCallback(
-    (options: ToastOptions) => {
+    (options: ToastOptions | ToastCustomOptions) => {
       let id = options.id;
       if (!id) {
         counter.current += 1;
         id = `toast-${counter.current}`;
       }
       const toastId = id;
-      setToasts((prev) =>
-        prev.some((t) => t.id === toastId)
-          ? prev.map((t) => (t.id === toastId ? { ...t, ...options, id: toastId } : t))
-          : [...prev, { ...options, id: toastId }],
+      const current = toastsRef.current;
+      const currentEntry = current.find((entry) => entry.id === toastId);
+      const nextEntry: ToastEntry = {
+        ...currentEntry,
+        ...options,
+        id: toastId,
+        message: options.message ?? currentEntry?.message ?? "",
+      };
+      commitToasts(
+        currentEntry
+          ? current.map((entry) => (entry.id === toastId ? nextEntry : entry))
+          : [...current, nextEntry],
       );
-      scheduleDismiss(toastId, options.variant, options.duration);
+      scheduleDismiss(toastId, nextEntry.variant, nextEntry.duration);
       return toastId;
     },
-    [scheduleDismiss],
+    [commitToasts, scheduleDismiss],
   );
 
   const update = useCallback(
     (id: string, options: Partial<ToastOptions>) => {
-      setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, ...options } : t)));
-      scheduleDismiss(id, options.variant, options.duration);
+      const current = toastsRef.current.find((entry) => entry.id === id);
+      if (!current) return;
+      const updated = { ...current, ...options, id };
+      commitToasts(toastsRef.current.map((entry) => (entry.id === id ? updated : entry)));
+      scheduleDismiss(id, updated.variant, updated.duration);
     },
-    [scheduleDismiss],
+    [commitToasts, scheduleDismiss],
+  );
+
+  useEffect(
+    () => () => {
+      Object.values(timers.current).forEach(clearTimeout);
+      timers.current = {};
+    },
+    [],
   );
 
   const value = useMemo<ToastContextValue>(() => {
@@ -264,7 +440,13 @@ export function ToastProvider({
         style={position === "top" ? { top: insets.top + 12 } : { bottom: insets.bottom + 12 }}
       >
         {toasts.map((entry) => (
-          <ToastItem entry={entry} key={entry.id} onHide={hide} position={position} />
+          <ToastItem
+            entry={entry}
+            key={entry.id}
+            onHide={hide}
+            onUpdate={update}
+            position={position}
+          />
         ))}
       </View>
     </ToastContext.Provider>

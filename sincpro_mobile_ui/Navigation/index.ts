@@ -7,6 +7,7 @@ import HeaderToolbar from "@sincpro/mobile-ui/Navigation/Navigation.HeaderToolba
 import Menu from "@sincpro/mobile-ui/Navigation/Navigation.Menu";
 import { MenuSection } from "@sincpro/mobile-ui/Navigation/Navigation.MenuSection";
 import RowItem from "@sincpro/mobile-ui/Navigation/Navigation.RowItem";
+import Search from "@sincpro/mobile-ui/Navigation/Navigation.Search";
 import SearchBar from "@sincpro/mobile-ui/Navigation/Navigation.SearchBar";
 import SearchSuggestions from "@sincpro/mobile-ui/Navigation/Navigation.SearchSuggestions";
 import SegmentedControl from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
@@ -16,6 +17,11 @@ import TabItem from "@sincpro/mobile-ui/Navigation/Navigation.TabItem";
 import Tabs from "@sincpro/mobile-ui/Navigation/Navigation.Tabs";
 export type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 export type { MenuSectionProps } from "@sincpro/mobile-ui/Navigation/Navigation.MenuSection";
+export type {
+  SearchFilterSheetProps,
+  SearchFiltersProps,
+  SearchRootProps,
+} from "@sincpro/mobile-ui/Navigation/Navigation.Search";
 export type { SearchBarProps } from "@sincpro/mobile-ui/Navigation/Navigation.SearchBar";
 export type {
   SearchSuggestion,
@@ -28,6 +34,7 @@ export const Navigation = {
   CollapsingHeader,
   FloatingBar,
   SearchBar,
+  Search,
   SearchSuggestions,
   Header,
   HeaderToolbar,

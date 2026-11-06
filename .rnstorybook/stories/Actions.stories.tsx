@@ -116,6 +116,29 @@ export const FilterButtons: Story = {
   render: () => <FilterDemo />,
 };
 
+export const ActionDock: Story = {
+  name: "Dock — primary action and expandable details",
+  render: () => (
+    <View style={{ minHeight: 300, justifyContent: "flex-end" }}>
+      <Actions.Dock
+        primaryAction={<Actions.Button onPress={() => {}} title="Confirmar pedido" />}
+        summary={
+          <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
+            <Display.AmountSummary.Total label="Total" value={128.5} />
+          </Display.AmountSummary.Root>
+        }
+        title="Resumen del pedido"
+      >
+        <Display.AmountSummary.Root currencySymbol="Bs">
+          <Display.AmountSummary.Row label="Subtotal" value={120} />
+          <Display.AmountSummary.Row label="Envío" value={8.5} />
+          <Display.AmountSummary.Total label="Total" value={128.5} />
+        </Display.AmountSummary.Root>
+      </Actions.Dock>
+    </View>
+  ),
+};
+
 // ─── CircleButton ─────────────────────────────────────────────────────────────
 
 export const CircleButtonStory: Story = {

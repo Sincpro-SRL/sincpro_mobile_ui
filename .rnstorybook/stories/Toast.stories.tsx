@@ -1,4 +1,4 @@
-import { ToastProvider, useToast } from "@sincpro/mobile-ui/Feedback";
+import { Toast, ToastProvider, useToast } from "@sincpro/mobile-ui/Feedback";
 import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -116,6 +116,31 @@ function ToastButtons() {
         variant="cta"
       />
       <Form.Button onPress={processQueue} title="Cola de ejecución (3 ítems)" variant="cta" />
+
+      <Label>Contenido compuesto</Label>
+      <Form.Button
+        onPress={() =>
+          toast.show({
+            render: ({ dismiss, update }) => (
+              <>
+                <Toast.Icon variant="loading" />
+                <Toast.Content>
+                  <Toast.Title>Actualizando catálogo</Toast.Title>
+                  <Toast.Description>Descargando imágenes y precios…</Toast.Description>
+                </Toast.Content>
+                <Toast.Action
+                  label="Listo"
+                  onPress={() => update({ message: "La descarga continúa en segundo plano" })}
+                />
+                <Toast.Close onPress={dismiss} />
+              </>
+            ),
+            variant: "loading",
+          })
+        }
+        title="Toast compuesto y actualizable"
+        variant="secondary"
+      />
     </View>
   );
 }

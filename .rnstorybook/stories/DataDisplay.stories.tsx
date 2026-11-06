@@ -106,6 +106,17 @@ export const KeyValueList: Story = {
   ),
 };
 
+export const AmountSummary: Story = {
+  name: "AmountSummary — composed rows and total",
+  render: () => (
+    <Display.AmountSummary.Root currencySymbol="Bs">
+      <Display.AmountSummary.Row label="Subtotal" value={120} />
+      <Display.AmountSummary.Row label="Descuento" prefix="-" value={10} />
+      <Display.AmountSummary.Total label="Total a pagar" value={110} />
+    </Display.AmountSummary.Root>
+  ),
+};
+
 export const SectionHeader: Story = {
   render: () => (
     <Display.SectionHeader

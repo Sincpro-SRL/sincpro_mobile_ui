@@ -391,6 +391,31 @@ host-supplied autocomplete while focused. Choosing a suggestion calls `onSelect`
 silently rewriting the query. A host may complete a title or create a field-specific
 condition; it owns matching, request cancellation and stale responses.
 
+`Navigation.Search` composes that existing field with horizontally scrolling chips,
+advanced filters in a `Dialog/Sheet`, recent searches and suggestions:
+
+```tsx
+<Navigation.Search.Root>
+  <Navigation.Search.Field value={query} onChangeText={setQuery} />
+  <Navigation.Search.Filters>
+    <Actions.FilterButton active title="Todos" onPress={() => {}} variant="mobile" />
+  </Navigation.Search.Filters>
+  <Navigation.Search.FilterSheet
+    activeCount={activeFilterCount}
+    onApply={applyFilters}
+    onClear={clearDraftFilters}
+  >
+    <FilterFields />
+  </Navigation.Search.FilterSheet>
+  <Navigation.Search.History items={recent} onRemove={removeRecent} onSelect={setQuery} />
+</Navigation.Search.Root>
+```
+
+It composes presentation only; the host owns query/filter state, history persistence and
+results. Keep `ListViewV2.Header.Search` when its built-in debounced `onSearch` behavior is
+preferred. Use `Navigation.AppBar` for back/context and `Navigation.Steps` for sequential
+flows rather than adding breadcrumb trails to compact mobile headers.
+
 Story: `Patterns/Collections/Query configuration` exercises actual local filtering,
 multiple sorting priorities, grouping levels and saving/loading configurations.
 
@@ -461,7 +486,7 @@ const { control } = useForm<{ email: string; amount: number }>();
 Queued toast system with promise support — covers the full loading → success / error lifecycle:
 
 ```tsx
-import { ToastProvider, useToast } from "@sincpro/mobile-ui/Feedback";
+import { Toast, ToastProvider, useToast } from "@sincpro/mobile-ui/Feedback";
 
 // 1. Wrap the app once (createAppShell does this automatically)
 <ToastProvider position="top">{children}</ToastProvider>;
@@ -474,7 +499,26 @@ toast.promise(sendInvoice(), {
   success: "Invoice sent",
   error: "Failed to send",
 });
+
+// Compose custom content while keeping the shared toast surface and lifecycle
+toast.show({
+  render: ({ dismiss, update }) => (
+    <>
+      <Toast.Icon variant="loading" />
+      <Toast.Content>
+        <Toast.Title>Syncing catalog</Toast.Title>
+        <Toast.Description>Downloading product images…</Toast.Description>
+      </Toast.Content>
+      <Toast.Action label="Details" onPress={() => update({ message: "Still syncing…" })} />
+      <Toast.Close onPress={dismiss} />
+    </>
+  ),
+  variant: "loading",
+});
 ```
+
+Toast cards can also be dismissed with an upward or downward swipe. Custom render content keeps
+the shared card surface, safe-area placement, lifecycle, and swipe behavior.
 
 ### Bottom Sheet and Dialogs
 
@@ -525,7 +569,21 @@ import { Display } from "@sincpro/mobile-ui/Display";
 <Display.Badge     variant="success">Paid</Display.Badge>
 <Display.Monetary  amount={1500.00} variant="dataLarge" />
 <Display.DataTable columns={cols} rows={rows} />
+
+<Display.AmountSummary.Root currencySymbol="Bs">
+  <Display.AmountSummary.Row label="Subtotal" value={120} />
+  <Display.AmountSummary.Row label="Delivery" value={8.5} />
+  <Display.AmountSummary.Total label="Total" value={128.5} />
+</Display.AmountSummary.Root>
 ```
+
+`AmountSummary` formats and arranges amounts; the app supplies labels, calculations and
+business states. `KeyValue copyable` remains the reusable copy affordance for identifiers.
+`Actions.Dock` defaults to a fixed bottom action bar. Swipe up on its handle or press
+“Más opciones” to reveal additional content above it; the primary action remains fixed.
+Swipe down or press “Ocultar opciones” to collapse. Mount it in a full-screen safe-area
+container and reserve bottom space in scrolling content. Inside `FormViewV2.Footer`, set
+`placement="footer"` to reuse that view's sticky layout.
 
 ---
 
@@ -538,6 +596,7 @@ import { Display } from "@sincpro/mobile-ui/Display";
 | `Actions.Button`            | Primary action — gradient, outline, flat, link variants; optional confirm dialog |
 | `Actions.IconButton`        | Icon-only tap target — ghost, primary, secondary, tertiary variants              |
 | `Actions.FAB`               | Floating Action Button — fixed position, optional label                          |
+| `Actions.Dock`              | Fixed primary action with swipe-expandable content and persistent CTA             |
 | `Actions.FilterButton`      | Chip-style active/inactive toggle                                                |
 | `Actions.FilterButtonGroup` | Horizontal scroll container for filter chips                                     |
 
@@ -548,6 +607,7 @@ import { Display } from "@sincpro/mobile-ui/Display";
 | `Display.Badge`                               | Status badge — success, warning, danger, info, neutral |
 | `Display.Card`                                | Surface container with optional shadow and padding     |
 | `Display.KeyValue`                            | Label + value row, optional clipboard copy             |
+| `Display.AmountSummary`                       | Composable monetary rows and total                      |
 | `Display.Stat`                                | KPI cell — label, value, optional trend indicator      |
 | `Display.StatCard`                            | Card-wrapped KPI                                       |
 | `Display.Monetary`                            | Formatted monetary amount using mono typography        |
@@ -623,6 +683,7 @@ import { Display } from "@sincpro/mobile-ui/Display";
 | `Navigation.CollapsingHeader`     | Header that collapses on scroll       |
 | `Navigation.FloatingBar`          | Floating action bar                   |
 | `Navigation.SearchBar`            | Navigation-level search input         |
+| `Navigation.Search`               | Compound field, filters, history and filter sheet |
 | `Navigation.SegmentedControl`     | Segmented control switcher            |
 | `Navigation.Tabs`                 | Tab navigation container              |
 | `Navigation.Steps`                | Step indicator / breadcrumb           |

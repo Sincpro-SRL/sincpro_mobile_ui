@@ -1,3 +1,4 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
 import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
 import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
@@ -238,6 +239,56 @@ export const AppBarDividers: Story = {
       ))}
     </View>
   ),
+};
+
+function SearchCompositionDemo() {
+  const [query, setQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("Todos");
+  const [activeCount, setActiveCount] = useState(2);
+  const filters = ["Todos", "Activos", "Completados"];
+
+  return (
+    <Navigation.Search.Root>
+      <Navigation.Search.Field
+        onChangeText={setQuery}
+        placeholder="Buscar pedidos"
+        value={query}
+      />
+      <Navigation.Search.Filters>
+        {filters.map((filter) => (
+          <Actions.FilterButton
+            active={activeFilter === filter}
+            key={filter}
+            onPress={() => setActiveFilter(filter)}
+            title={filter}
+            variant="mobile"
+          />
+        ))}
+      </Navigation.Search.Filters>
+      <Navigation.Search.FilterSheet
+        activeCount={activeCount}
+        onApply={() => {}}
+        onClear={() => setActiveCount(0)}
+      >
+        <Typography.Text variant="body">
+          Define criterios avanzados sin sobrecargar la barra de búsqueda.
+        </Typography.Text>
+      </Navigation.Search.FilterSheet>
+      {!query ? (
+        <Navigation.Search.History
+          items={["Pedido #1024", "Cliente: Mercado Central"]}
+          onClearAll={() => {}}
+          onRemove={() => {}}
+          onSelect={setQuery}
+        />
+      ) : null}
+    </Navigation.Search.Root>
+  );
+}
+
+export const SearchComposition: Story = {
+  name: "Search — field, chips, history and advanced filters",
+  render: () => <SearchCompositionDemo />,
 };
 
 export const AppBarBackground: Story = {

@@ -9,14 +9,24 @@ import ProgressCircle from "@sincpro/mobile-ui/Feedback/Feedback.ProgressCircle"
 import Skeleton from "@sincpro/mobile-ui/Feedback/Feedback.Skeleton";
 import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 import SplashScreen from "@sincpro/mobile-ui/Feedback/Feedback.Splash";
+import { Toast } from "@sincpro/mobile-ui/Feedback/Toast.context";
 
 export { ErrorBoundary } from "@sincpro/mobile-ui/Feedback/ErrorBoundary";
 export {
+  Toast,
   type ToastAction,
+  type ToastActionProps,
+  type ToastCloseProps,
+  type ToastContentProps,
   type ToastContextValue,
+  type ToastCustomOptions,
+  type ToastIconProps,
   type ToastOptions,
   type ToastPromiseMessages,
   ToastProvider,
+  type ToastRenderProps,
+  type ToastRootProps,
+  type ToastTextProps,
   type ToastVariant,
   useToast,
 } from "@sincpro/mobile-ui/Feedback/Toast.context";
@@ -33,6 +43,7 @@ export const Feedback = {
   EmptyState,
   Error,
   SplashScreen,
+  Toast,
 };
 
 export default Feedback;

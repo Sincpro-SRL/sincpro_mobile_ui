@@ -64,11 +64,13 @@ function AppText({
   // `configureFonts(...)` (app/Storybook) takes effect. Falls back to the variant's baked
   // family if a role is somehow missing.
   const variantFamily = fontFamilies[variantFontRole[variant]] ?? baseStyle.fontFamily;
-  // `bold`/`semibold` map to the Inter weights — but NOT when the active family is a branded
-  // face (a configured title face, or Fira Code mono): those carry their own weight, so
-  // forcing Inter would erase the typeface. Keep the variant's family for those.
+  // `bold`/`semibold` map to the IBM Plex Sans weights — but NOT when the active family is a
+  // branded face (a configured title face, or IBM Plex Mono): those carry their own weight, so
+  // forcing Plex Sans would erase the typeface. Keep the variant's family for those.
   const isBrandedFace =
-    typeof variantFamily === "string" && !variantFamily.startsWith("Inter_");
+    typeof variantFamily === "string" &&
+    !variantFamily.startsWith("Inter_") &&
+    !variantFamily.startsWith("IBMPlexSans_");
 
   const textStyle: TextStyle = {
     ...baseStyle,

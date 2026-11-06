@@ -57,7 +57,7 @@ function MediaEmbed({
           style={{
             width: 44,
             height: 44,
-            borderRadius: 22,
+            borderRadius: 16,
             backgroundColor: "rgba(0,0,0,0.55)",
             alignItems: "center",
             justifyContent: "center",

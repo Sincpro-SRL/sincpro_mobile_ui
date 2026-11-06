@@ -11,27 +11,27 @@ import { View, type ViewStyle } from "react-native";
  */
 const GRADIENT_PRESETS = {
   warm: {
-    colors: ["#4A3100", "#C9A84C", "#8B6914", "#F0D060"] as const,
+    colors: ["#1A1714", "#C89B3C", "#B88A2E"] as const,
     start: { x: 0, y: 0 },
     end: { x: 1, y: 1 },
   },
   "neon-teal": {
-    colors: ["#22E584", "#0FB8A0"] as const,
+    colors: ["#0F5C6E", "#5CC4D8"] as const,
     start: { x: 0, y: 0 },
     end: { x: 1, y: 1 },
   },
   "night-green": {
-    colors: ["#0B1410", "#0E2A1E", "#08120D"] as const,
+    colors: ["#0B101E", "#18223A"] as const,
     start: { x: 0, y: 0 },
     end: { x: 1, y: 1 },
   },
   mesh: {
-    colors: ["#0B1410", "#10B981", "#0B1410", "#1E1B8A"] as const,
+    colors: ["#1C3765", "#2A4A85", "#8FA9E8"] as const,
     start: { x: 0, y: 0 },
     end: { x: 1, y: 1 },
   },
   emerald: {
-    colors: ["#00C357", "#00A862"] as const,
+    colors: ["#2F6B3C", "#6FCF8B"] as const,
     start: { x: 0, y: 0 },
     end: { x: 1, y: 1 },
   },
@@ -47,9 +47,7 @@ const DEPRECATED_PRESETS = {
 } as const satisfies Record<string, keyof typeof GRADIENT_PRESETS>;
 
 export type GradientPreset =
-  | keyof typeof GRADIENT_PRESETS
-  | keyof typeof DEPRECATED_PRESETS
-  | "brand";
+  keyof typeof GRADIENT_PRESETS | keyof typeof DEPRECATED_PRESETS | "brand";
 
 const surface = tv({
   variants: {

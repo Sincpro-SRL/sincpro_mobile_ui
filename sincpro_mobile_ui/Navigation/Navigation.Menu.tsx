@@ -4,7 +4,13 @@ import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { cloneElement, type ReactElement, type ReactNode, useRef, useState } from "react";
-import { Dimensions, Modal, Pressable as RNPressable, View } from "react-native";
+import {
+  Dimensions,
+  Modal,
+  Pressable as RNPressable,
+  View,
+  type ViewInstance,
+} from "react-native";
 
 export interface MenuItem {
   label: string;
@@ -36,7 +42,7 @@ interface Anchor {
 
 function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
   const theme = useTheme();
-  const triggerRef = useRef<View>(null);
+  const triggerRef = useRef<ViewInstance>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
   const open = () => {

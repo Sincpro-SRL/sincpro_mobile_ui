@@ -121,17 +121,21 @@ function Pattern({
             y2={0}
           />
         );
-      case "mesh":
+      case "mesh": {
+        if (!resolvedMeshSrc) return null;
+        const mesh = RNImage.resolveAssetSource(resolvedMeshSrc);
+        if (!mesh) return null;
         return (
           <SvgImage
             height={resolvedSize}
-            href={RNImage.resolveAssetSource(resolvedMeshSrc!).uri}
+            href={mesh.uri}
             preserveAspectRatio="xMidYMid meet"
             width={resolvedSize}
             x={0}
             y={0}
           />
         );
+      }
       case "dots":
       default:
         return <Circle cx={resolvedSize / 2} cy={resolvedSize / 2} fill={color} r={1.4} />;

@@ -2,13 +2,16 @@ import { containerPair } from "@sincpro/mobile-ui/theme/color";
 import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
-const PRIMARY = "#C9A84C";
-const SECONDARY = "#8B6914";
-const ACCENT = "#C9A84C";
-const SUCCESS = "#15803D";
-const WARNING = "#B45309";
-const DANGER = "#B91C1C";
-const INFO = "#1D4ED8";
+/** Web UI light palette. Gold is a fill, never a border or a label. */
+const PRIMARY = "#2A4A85";
+const SECONDARY = "#1C3765";
+const ACCENT = "#C89B3C";
+const SUCCESS = "#2F6B3C";
+const WARNING = "#7E5E12";
+const DANGER = "#9B3B30";
+const INFO = "#0F5C6E";
+const INK = "#1A1714";
+const MUTED = "#6B6459";
 
 const primaryC = containerPair(PRIMARY, "light");
 const secondaryC = containerPair(SECONDARY, "light");
@@ -28,44 +31,44 @@ export const DEFAULT_THEME: ThemeTokens = {
   secondary: SECONDARY,
   accent: ACCENT,
   bg: {
-    page: "#FAF8F3",
+    page: "#FAF9F7",
     card: "#FFFFFF",
     popover: "#FFFFFF",
-    muted: "#F1ECDF",
-    accent: "#FDF3C8",
-    hover: "#EDE6D2",
-    disabled: "#E5DEC8",
-    inverse: "#0C0C0C",
-    containerLowest: "#FAF8F3",
-    container: "#F1ECDF",
-    containerHigh: "#E5DEC8",
+    muted: "#F3F0EA",
+    accent: primaryC.container,
+    hover: "#EBE6DE",
+    disabled: "#E4DFD7",
+    inverse: "#181614",
+    containerLowest: "#FAF9F7",
+    container: "#F3F0EA",
+    containerHigh: "#E4DFD7",
   },
   text: {
-    primary: "#0A0A0A",
-    secondary: "#4A3100",
-    tertiary: "#A09060",
-    muted: "#6B5A2E",
-    accent: SECONDARY,
+    primary: INK,
+    secondary: MUTED,
+    tertiary: "#A39B90",
+    muted: MUTED,
+    accent: PRIMARY,
     inverse: "#FFFFFF",
-    disabled: "#9A8B5C",
-    onPrimary: resolveOnColor(PRIMARY),
-    onSecondary: resolveOnColor(SECONDARY),
-    onAccent: resolveOnColor(ACCENT),
+    disabled: "#A39B90",
+    onPrimary: "#FFFFFF",
+    onSecondary: "#FFFFFF",
+    onAccent: "#1A1714",
     onDanger: resolveOnColor(DANGER),
     onSuccess: resolveOnColor(SUCCESS),
   },
   icon: {
-    primary: "#0A0A0A",
-    secondary: "#6B5A2E",
-    tertiary: "#A09060",
+    primary: INK,
+    secondary: MUTED,
+    tertiary: "#A39B90",
     inverse: "#FFFFFF",
-    disabled: "#9A8B5C",
+    disabled: "#A39B90",
   },
   border: {
-    default: "#E5DEC8",
-    light: "#F1ECDF",
-    strong: "#C9C0A2",
-    focus: SECONDARY,
+    default: "#E4DFD7",
+    light: "#F3F0EA",
+    strong: "#D5CEC2",
+    focus: PRIMARY,
   },
   success: SUCCESS,
   warning: WARNING,
@@ -93,11 +96,11 @@ export const DEFAULT_THEME: ThemeTokens = {
   },
   state: { hover: 0.08, press: 0.12, focus: 0.12, drag: 0.16 },
   material: { blur: 24, opacity: 0.78, borderOpacity: 0.18 },
-  ring: SECONDARY,
-  input: "#E5DEC8",
+  ring: PRIMARY,
+  input: "#E4DFD7",
   gradient: {
-    primary: ["#F0D060", PRIMARY],
-    accent: [PRIMARY, SECONDARY],
+    primary: [SECONDARY, PRIMARY],
+    accent: ["#B88A2E", ACCENT],
   },
   shadow: {
     sm: {

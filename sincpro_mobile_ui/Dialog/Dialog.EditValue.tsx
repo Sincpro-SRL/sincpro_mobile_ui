@@ -1,7 +1,14 @@
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { useEffect, useRef } from "react";
-import { FlatList, Modal, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Modal,
+  TextInput,
+  type TextInputInstance,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export interface EditableValueModalChip {
   key?: string;
@@ -44,7 +51,7 @@ function EditableValueModal({
   autoFocus = true,
   testID,
 }: EditableValueModalProps) {
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   useEffect(() => {
     if (visible && autoFocus) {
@@ -64,7 +71,7 @@ function EditableValueModal({
       <View className="flex-1 justify-center p-6 bg-black/40">
         <View
           className="p-4"
-          style={{ borderRadius: 22, backgroundColor: theme.bg.popover, ...theme.shadow.md }}
+          style={{ borderRadius: 16, backgroundColor: theme.bg.popover, ...theme.shadow.md }}
           testID={testID}
         >
           <Typography.Text className="mb-3" semibold variant="h6">

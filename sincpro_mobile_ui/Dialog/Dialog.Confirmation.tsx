@@ -37,7 +37,7 @@ const ConfirmationDialog: React.FC<Props> = ({
             <View
               className="p-3 w-full max-w-xs mx-auto"
               style={{
-                borderRadius: 22,
+                borderRadius: 16,
                 backgroundColor: theme.bg.popover,
                 ...theme.shadow.md,
               }}

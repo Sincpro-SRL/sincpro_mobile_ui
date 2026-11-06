@@ -3,7 +3,12 @@ import { Typography } from "@sincpro/mobile-ui/Typography";
 import { IRowItemProps } from "@sincpro/mobile-ui/views/types/IListView";
 import { TouchableOpacity, View } from "react-native";
 
-function RowItem({ item, className }: IRowItemProps<any> & { className?: string }) {
+function RowItem({
+  item,
+  className,
+  onPress = item.onPress,
+  readonly = item.readonly,
+}: IRowItemProps<any> & { className?: string }) {
   function rowContent() {
     return (
       <View className="flex-1">
@@ -17,12 +22,12 @@ function RowItem({ item, className }: IRowItemProps<any> & { className?: string 
     );
   }
 
-  return item.readonly ? (
+  return readonly ? (
     <View className={cn("flex-row items-center py-2.5", className)}>{rowContent()}</View>
   ) : (
     <TouchableOpacity
       className={cn("flex-row items-center py-2.5", className)}
-      onPress={item.onPress}
+      onPress={onPress}
     >
       {rowContent()}
     </TouchableOpacity>

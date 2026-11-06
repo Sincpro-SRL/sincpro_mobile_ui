@@ -79,6 +79,12 @@ Without a design system, every developer makes local decisions: which shade of g
 
 ## Philosophy
 
+**Composable behavior, customizable presentation.** Sincpro defaults are a starting
+point, not a mandatory visual style. Preserve existing appearances while exposing public
+APIs for fonts, sizes, shapes, content and composition. See the
+[permanent design-system manifesto](docs/MANIFESTO.md) for the goal, acceptance criteria
+and current limitations; full customizability is an objective, not a completed audit.
+
 The [UX/UI evolution plan](docs/UX-UI-PLAN.md) tracks the rollout. The first native pilot
 is in Storybook under `Patterns/Records/Detail`: list, detail, copy, edit, cancel and
 recoverable error. It uses fictional data and local state, not persistence or a backend.
@@ -228,14 +234,53 @@ it grows with enlarged text. Override `bottomOffset` for additional accessories.
 Customize `toolbarLabels` or compose `Form.KeyboardToolbar` with an existing aware scroll,
 using `onHeightChange` to reserve its measured height. The toolbar compensates for space
 below its parent, such as a safe area or form footer, instead of floating over the caret.
+The default toolbar uses compact icons; `toolbarProps={{ showDoneLabel: true }}` opts into
+a text dismiss action. `toolbarProps` also accepts `className`, `style`, `actionStyle`,
+`labelStyle`, `iconSize` and `renderActionContent(action, { label, disabled })`.
+The content slot replaces only non-interactive content: the toolbar retains focus actions,
+accessible labels and disabled states. `toolbarLabels` remains supported;
+`toolbarProps` takes precedence. Font size/family and shape can be changed without
+reimplementing keyboard behavior.
 Do not nest this component inside another vertical ScrollView.
 
 For existing templates, opt into `FormViewV2.Content keyboardToolbar` or
 `AuthFormView keyboardToolbar` / `AuthContainer keyboardToolbar`; defaults stay unchanged.
 `Form.Input` forwards its native ref for explicit return-key navigation:
 `onSubmitEditing={() => nextRef.current?.focus()}` with `submitBehavior="submit"`.
+`KeyboardForm` forwards its ref to the native aware scroll for methods such as
+`assureFocusedInputVisible()` after validation/layout changes.
+The three templates accept `keyboardFormProps` (excluding `children` and `toolbar`) for
+the same ref, offsets, toolbar customization, scroll callbacks and content styling.
+`keyboardToolbar` remains the explicit opt-in; omitting it preserves the original
+template layout without a toolbar.
 Multiline Return remains a newline; dismissing the keyboard does not submit the form.
 Story: `Patterns/Forms/Keyboard navigation`.
+
+`ListViewV2.Content` accepts native `keyboardShouldPersistTaps` and `keyboardDismissMode`
+across populated, empty and error states. Handled row/retry actions receive the first tap
+while search has focus (`"handled"` by default); pass `"never"` for the old dismiss-first
+behavior. Drag-dismiss remains opt-in (`keyboardDismissMode="on-drag"`).
+This changes interaction, not the list's typography or layout.
+
+```tsx
+<FormViewV2.Content
+  keyboardToolbar
+  keyboardFormProps={{
+    ref: scrollRef,
+    toolbarProps: {
+      style: { borderRadius: 16 },
+      iconSize: 18,
+      showDoneLabel: true,
+      labelStyle: { fontFamily: "MyFont", fontSize: 13 },
+    },
+  }}
+>
+  {fields}
+</FormViewV2.Content>
+```
+
+Default list rows now honor the template's `onPressItem` and `readonly` settings;
+direct `Navigation.RowItem` usage can still supply the legacy callback on `item`.
 
 ### Structured queries, not just quick chips
 

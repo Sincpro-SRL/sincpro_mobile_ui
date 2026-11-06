@@ -39,10 +39,9 @@ export const ProfileHero: Story = {
           <Typography.Text semibold variant="h5">
             Mariana Rojas
           </Typography.Text>
-          <Display.CopyableText
-            accessibilityLabel="Copiar correo electrónico"
-            value="mariana@sincpro.com.bo"
-          />
+          <Typography.Text className="text-text-secondary" variant="caption">
+            mariana@sincpro.com.bo
+          </Typography.Text>
           <Typography.Text className="text-text-tertiary" variant="caption">
             Administradora · SINCPRO
           </Typography.Text>
@@ -65,13 +64,20 @@ export const ProfileFields: Story = {
           { label: "Teléfono", value: "+591 70 123 456", variant: "data" as const },
           { label: "VAT", value: "4012345021", variant: "data" as const },
           { label: "Ciudad", value: "Santa Cruz, Bolivia", variant: "caption" as const },
-        ].map(({ label, value }) =>
-          label === "Ciudad" ? (
-            <Display.KeyValue align="auto" key={label} label={label} value={value} />
-          ) : (
-            <Display.KeyValue align="auto" copyable key={label} label={label} value={value} />
-          ),
-        )}
+        ].map(({ label, value, variant }) => (
+          <View className="flex-row items-center" key={label}>
+            <Typography.Text
+              className="text-text-secondary"
+              style={{ width: 88 }}
+              variant="caption"
+            >
+              {label}
+            </Typography.Text>
+            <Typography.Text className="flex-1 text-right" variant={variant}>
+              {value}
+            </Typography.Text>
+          </View>
+        ))}
       </View>
     </Display.Card>
   ),

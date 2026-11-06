@@ -61,6 +61,9 @@ export const Form = {
 
 export { type DropdownOption };
 export type { KeyboardFormProps } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
-export type { KeyboardToolbarProps } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
+export type {
+  KeyboardToolbarAction,
+  KeyboardToolbarProps,
+} from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 
 export default Form;

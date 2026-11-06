@@ -1,7 +1,9 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
-import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import KeyboardForm, {
+  type KeyboardFormProps,
+} from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -21,6 +23,7 @@ interface AuthContainerProps {
   onBackPress?: () => void;
   className?: string;
   keyboardToolbar?: boolean;
+  keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
   /** Gradient + optional texture surface for the header area. Defaults to the `warm`
    *  preset. Set `background.pattern` to opt-in a texture (`dots` / `grid` /
    *  `diagonals`); compose `<Display.Pattern kind="mesh" />` outside if you want the
@@ -35,6 +38,7 @@ function AuthContainer({
   background,
   className,
   keyboardToolbar = false,
+  keyboardFormProps,
 }: AuthContainerProps) {
   const { height: screenHeight } = useWindowDimensions();
   const theme = useTheme();
@@ -90,6 +94,7 @@ function AuthContainer({
               contentContainerClassName="flex-grow pb-10"
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
+              {...keyboardFormProps}
               toolbar={keyboardToolbar}
             >
               <View className="p-4">{children}</View>

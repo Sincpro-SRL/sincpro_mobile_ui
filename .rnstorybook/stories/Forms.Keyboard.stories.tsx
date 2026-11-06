@@ -1,5 +1,6 @@
 import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
+import type { KeyboardToolbarProps } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import FormView from "@sincpro/mobile-ui/views/FormViewV2";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -15,7 +16,11 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-export function KeyboardNavigation() {
+export function KeyboardNavigation({
+  toolbarProps,
+}: {
+  toolbarProps?: Omit<KeyboardToolbarProps, "onHeightChange">;
+} = {}) {
   const email = useRef<ComponentRef<typeof TextInput>>(null);
   const phone = useRef<ComponentRef<typeof TextInput>>(null);
   const notes = useRef<ComponentRef<typeof TextInput>>(null);
@@ -28,10 +33,9 @@ export function KeyboardNavigation() {
   return (
     <FormView.Root item={values} name="Contacto" withContainer={false}>
       <FormView.Header />
-      <FormView.Content keyboardToolbar withMargin>
+      <FormView.Content keyboardFormProps={{ toolbarProps }} keyboardToolbar withMargin>
         <View style={{ gap: 20, paddingTop: 16 }}>
           <Input
-            accessibleSizing
             label="Nombre completo"
             onChangeText={(text) => update("name", text)}
             onSubmitEditing={() => email.current?.focus()}
@@ -41,7 +45,6 @@ export function KeyboardNavigation() {
             value={values.name}
           />
           <Input
-            accessibleSizing
             autoCapitalize="none"
             keyboardType="email-address"
             label="Correo de contacto"
@@ -54,7 +57,6 @@ export function KeyboardNavigation() {
             value={values.email}
           />
           <Input
-            accessibleSizing
             keyboardType="phone-pad"
             label="Teléfono de contacto"
             onChangeText={(text) => update("phone", text)}
@@ -62,14 +64,8 @@ export function KeyboardNavigation() {
             testID="contact-phone"
             value={values.phone}
           />
+          <Input editable={false} label="Referencia de solo lectura" value="CONTACT-001" />
           <Input
-            accessibleSizing
-            editable={false}
-            label="Referencia de solo lectura"
-            value="CONTACT-001"
-          />
-          <Input
-            accessibleSizing
             label="Notas de contacto"
             multiline
             onChangeText={(text) => update("notes", text)}
@@ -79,7 +75,6 @@ export function KeyboardNavigation() {
             value={values.notes}
           />
           <Button
-            accessibleSizing
             onPress={() => {
               KeyboardController.dismiss();
               setSaved(true);
@@ -91,7 +86,7 @@ export function KeyboardNavigation() {
               Contacto guardado en esta demostración
             </Typography.Text>
           ) : null}
-          <Typography.Text className="text-text-secondary" variant="bodyLarge">
+          <Typography.Text className="text-text-secondary" variant="bodySmall">
             Ocultar el teclado no guarda los cambios.
           </Typography.Text>
         </View>
@@ -101,3 +96,18 @@ export function KeyboardNavigation() {
 }
 
 export const ContactForm: Story = { render: () => <KeyboardNavigation /> };
+
+export const CustomToolbar: Story = {
+  render: () => (
+    <KeyboardNavigation
+      toolbarProps={{
+        doneLabel: "Listo",
+        showDoneLabel: true,
+        iconSize: 18,
+        style: { borderRadius: 16, marginHorizontal: 8 },
+        actionStyle: { borderRadius: 12 },
+        labelStyle: { fontSize: 13 },
+      }}
+    />
+  ),
+};

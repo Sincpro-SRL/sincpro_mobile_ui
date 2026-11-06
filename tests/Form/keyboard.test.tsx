@@ -4,10 +4,12 @@ import KeyboardToolbar from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { type ComponentRef, createRef } from "react";
-import { TextInput } from "react-native";
+import { StyleSheet, Text, TextInput } from "react-native";
 import { FocusedInputEvents, KeyboardController } from "react-native-keyboard-controller";
+import type { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 
 let mockKeyboardVisible = true;
+const mockAssureVisible = jest.fn();
 beforeEach(() => {
   mockKeyboardVisible = true;
 });
@@ -17,6 +19,18 @@ jest.mock("react-native-keyboard-controller", () => {
   const { View, Text } = require("react-native");
   const Container = ({ children, ...props }: { children: React.ReactNode }) =>
     mockReact.createElement(View, props, children);
+  const Scroll = ({
+    ref,
+    ...props
+  }: {
+    children: React.ReactNode;
+    ref?: React.Ref<{ assureFocusedInputVisible: typeof mockAssureVisible }>;
+  }) => {
+    mockReact.useImperativeHandle(ref, () => ({
+      assureFocusedInputVisible: mockAssureVisible,
+    }));
+    return mockReact.createElement(Container, props);
+  };
   const Part = ({
     button: Button,
     children,
@@ -34,7 +48,7 @@ jest.mock("react-native-keyboard-controller", () => {
     FocusedInputEvents: { addListener: jest.fn(() => ({ remove: jest.fn() })) },
     KeyboardController: { setFocusTo: jest.fn(), dismiss: jest.fn() },
     KeyboardStickyView: Container,
-    KeyboardAwareScrollView: Container,
+    KeyboardAwareScrollView: Scroll,
     KeyboardToolbar: Object.assign(Container, {
       Group: Container,
       Prev: Part,
@@ -78,9 +92,69 @@ test("toolbar labels are localizable and its actions have 48-point non-overlappi
     />,
   );
   const next = screen.getByRole("button", { name: "Next field" });
-  expect(next.props.style).toMatchObject({ minWidth: 48, minHeight: 48 });
+  expect(StyleSheet.flatten(next.props.style)).toMatchObject({ minWidth: 48, minHeight: 48 });
   expect(next.props.hitSlop).toBe(0);
   expect(screen.getByRole("button", { name: "Close keyboard" })).toBeTruthy();
+});
+
+test("compact toolbar keeps names accessible without forcing visible text", async () => {
+  const { rerender } = await render(<KeyboardToolbar />);
+  expect(screen.getByRole("button", { name: "Ocultar teclado" })).toBeTruthy();
+  expect(screen.queryByText("Ocultar teclado")).toBeNull();
+  await rerender(
+    <KeyboardToolbar labelStyle={{ fontSize: 12, fontFamily: "CustomFont" }} showDoneLabel />,
+  );
+  expect(StyleSheet.flatten(screen.getByText("Ocultar teclado").props.style)).toMatchObject({
+    fontSize: 12,
+    fontFamily: "CustomFont",
+  });
+});
+
+test("custom content and geometry retain native actions, names and disabled states", async () => {
+  await render(
+    <KeyboardToolbar
+      actionStyle={{ borderRadius: 24 }}
+      className="rounded-full"
+      renderActionContent={(action, state) => (
+        <Text>{`${action}:${state.disabled ? "off" : "on"}`}</Text>
+      )}
+      style={{ borderRadius: 28, paddingHorizontal: 16 }}
+    />,
+  );
+  expect(
+    StyleSheet.flatten(screen.getByTestId("keyboard-toolbar").props.style),
+  ).toMatchObject({
+    borderRadius: 28,
+    paddingHorizontal: 16,
+  });
+  const next = screen.getByRole("button", { name: "Campo siguiente" });
+  expect(StyleSheet.flatten(next.props.style)).toMatchObject({ borderRadius: 24 });
+  expect(screen.getByText("next:off")).toBeTruthy();
+  const listener = jest.mocked(FocusedInputEvents.addListener).mock.calls.at(-1)?.[1];
+  if (!listener) throw new Error("Missing native focus subscription");
+  await act(() => listener({ current: 1, count: 3 }));
+  expect(screen.getByText("next:on")).toBeTruthy();
+  await fireEvent.press(screen.getByRole("button", { name: "Campo siguiente" }));
+  expect(KeyboardController.setFocusTo).toHaveBeenLastCalledWith("next");
+  await fireEvent.press(screen.getByRole("button", { name: "Ocultar teclado" }));
+  expect(KeyboardController.dismiss).toHaveBeenCalled();
+});
+
+test("KeyboardForm forwards native scroll ref and composes toolbar overrides", async () => {
+  const ref = createRef<KeyboardAwareScrollViewRef>();
+  await render(
+    <KeyboardForm
+      ref={ref}
+      toolbarLabels={{ doneLabel: "Legacy close label" }}
+      toolbarProps={{ doneLabel: "Cerrar edición", showDoneLabel: true }}
+    >
+      <Input label="Campo" value="" />
+    </KeyboardForm>,
+  );
+  ref.current?.assureFocusedInputVisible();
+  expect(mockAssureVisible).toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "Cerrar edición" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Legacy close label" })).toBeNull();
 });
 
 test("toolbar follows native group boundaries and delegates focus traversal", async () => {

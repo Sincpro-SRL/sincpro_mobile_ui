@@ -3,6 +3,10 @@
 > Grouped by the Storybook taxonomy (Foundations / Components / Patterns / Legacy).
 > Import: `import { Display } from "@sincpro/mobile-ui/Display"` (namespace) unless a subpath is noted.
 
+The [manifesto](./MANIFESTO.md) defines the permanent objective: composable behavior and
+customizable presentation, with original defaults preserved. A missing styling/content
+hook is an API limitation, not a reason to require a fork or a new visual system.
+
 ## Foundations
 
 | Piece      | Import         | What it is                                                                                                         |

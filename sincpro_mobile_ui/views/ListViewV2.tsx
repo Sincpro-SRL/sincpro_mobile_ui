@@ -29,6 +29,7 @@ import {
   FlatList,
   RefreshControl,
   ScrollView,
+  type ScrollViewProps,
   StyleProp,
   TouchableOpacity,
   View,
@@ -309,13 +310,21 @@ function FilterChips({ children }: { children: ReactNode }) {
   );
 }
 
+type ListScrollProps = Pick<
+  ScrollViewProps,
+  "keyboardShouldPersistTaps" | "keyboardDismissMode" | "testID"
+>;
+
 function Content({
   children,
   withMargin = true,
+  keyboardShouldPersistTaps = "handled",
+  keyboardDismissMode = "none",
+  testID,
 }: {
   children?: (item: any) => ReactNode;
   withMargin?: boolean;
-}) {
+} & ListScrollProps) {
   const {
     name,
     items,
@@ -350,6 +359,8 @@ function Content({
           alignItems: "center",
           paddingBottom: bottomInset,
         }}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}
@@ -358,6 +369,7 @@ function Content({
           />
         }
         style={{ backgroundColor: theme.bg.page }}
+        testID={testID}
       >
         <Feedback.Error message={errorMessage} onBack={onBack} onRetry={onRetry} />
       </ScrollView>
@@ -373,6 +385,8 @@ function Content({
           alignItems: "center",
           paddingBottom: bottomInset,
         }}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}
@@ -381,6 +395,7 @@ function Content({
           />
         }
         style={{ backgroundColor: theme.bg.page }}
+        testID={testID}
       >
         <Feedback.Empty />
       </ScrollView>
@@ -390,7 +405,14 @@ function Content({
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg.page }}>
       <Display.CountRecords count={items.length || 0} name={name} />
-      <ContentList contentWithMargin={withMargin}>{children}</ContentList>
+      <ContentList
+        contentWithMargin={withMargin}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        testID={testID}
+      >
+        {children}
+      </ContentList>
     </View>
   );
 }
@@ -398,10 +420,13 @@ function Content({
 function ContentList({
   children,
   contentWithMargin,
+  keyboardShouldPersistTaps,
+  keyboardDismissMode,
+  testID,
 }: {
   children?: (item: any) => ReactNode;
   contentWithMargin: boolean;
-}) {
+} & ListScrollProps) {
   const {
     items,
     onRefresh,
@@ -456,6 +481,8 @@ function ContentList({
       <FlatList
         contentContainerStyle={bottomInset ? { paddingBottom: bottomInset } : undefined}
         data={rowItems}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         keyExtractor={(item) => String(item.index)}
         ListFooterComponent={
           loadingMore ? (
@@ -476,6 +503,7 @@ function ContentList({
         renderItem={renderItem}
         scrollEnabled={true}
         showsVerticalScrollIndicator={false}
+        testID={testID}
       />
     </View>
   );

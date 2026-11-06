@@ -62,6 +62,12 @@ Keyboard tests cover avoidance props/clearance, first-tap controls, named 48-poi
 actions and native input ref forwarding. The iOS flow additionally types through
 name → email → phone → multiline using the actual toolbar, skips a read-only field,
 returns to phone, dismisses and saves. Unit mocks do not claim to verify native focus.
+Extension tests cover compact icon defaults, optional text/font overrides, custom content
+slots retaining focus actions, measured clearance, native scroll refs and template
+configuration forwarding. Form/auth defaults remain unchanged without opt-in.
+List tests cover first-tap keyboard policies in populated/empty/error states, and default
+row callback precedence and readonly behavior. Native flows exercise the customized
+toolbar and select a real default list row with search and the keyboard still active.
 
 Criteria tests cover immutable nested updates, all/any/none descriptions, arity, zero,
 finite numbers, range ordering, calendar dates and configured operators/choice values.

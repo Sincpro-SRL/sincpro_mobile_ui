@@ -1,6 +1,8 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
-import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import KeyboardForm, {
+  type KeyboardFormProps,
+} from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
@@ -178,10 +180,12 @@ function HeaderSegmented<T extends string>(props: SegmentedControlProps<T>) {
 function Content({
   withMargin = false,
   keyboardToolbar = false,
+  keyboardFormProps,
   children,
 }: {
   withMargin?: boolean;
   keyboardToolbar?: boolean;
+  keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
   children: ReactNode;
 }) {
   const {
@@ -209,21 +213,27 @@ function Content({
 
   return (
     <KeyboardForm
-      contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: isCenteredContent ? "center" : "flex-start",
-        alignItems: isCenteredContent ? "center" : "stretch",
-        paddingBottom: bottomInset,
-      }}
-      keyboardShouldPersistTaps="handled"
+      {...keyboardFormProps}
+      contentContainerStyle={[
+        {
+          flexGrow: 1,
+          justifyContent: isCenteredContent ? "center" : "flex-start",
+          alignItems: isCenteredContent ? "center" : "stretch",
+          paddingBottom: bottomInset,
+        },
+        keyboardFormProps?.contentContainerStyle,
+      ]}
+      keyboardShouldPersistTaps={keyboardFormProps?.keyboardShouldPersistTaps ?? "handled"}
       refreshControl={
-        <RefreshControl
-          colors={[theme.primary]}
-          onRefresh={handleRefresh}
-          refreshing={showRefreshing}
-        />
+        keyboardFormProps?.refreshControl ?? (
+          <RefreshControl
+            colors={[theme.primary]}
+            onRefresh={handleRefresh}
+            refreshing={showRefreshing}
+          />
+        )
       }
-      style={{ flex: 1, backgroundColor: theme.bg.page }}
+      style={[{ flex: 1, backgroundColor: theme.bg.page }, keyboardFormProps?.style]}
       toolbar={keyboardToolbar}
     >
       {isCenteredContent ? (

@@ -2,8 +2,15 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { type ComponentRef, useEffect, useRef, useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { type ComponentRef, type ReactNode, useEffect, useRef, useState } from "react";
+import {
+  type StyleProp,
+  StyleSheet,
+  type TextStyle,
+  useWindowDimensions,
+  View,
+  type ViewStyle,
+} from "react-native";
 import {
   FocusedInputEvents,
   KeyboardController,
@@ -11,18 +18,39 @@ import {
   useKeyboardState,
 } from "react-native-keyboard-controller";
 
+export type KeyboardToolbarAction = "previous" | "next" | "done";
+
 export interface KeyboardToolbarProps {
   previousLabel?: string;
   nextLabel?: string;
   doneLabel?: string;
+  showDoneLabel?: boolean;
   onHeightChange?: (height: number) => void;
+  className?: string;
+  style?: StyleProp<ViewStyle>;
+  actionStyle?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
+  iconSize?: number;
+  testID?: string;
+  renderActionContent?: (
+    action: KeyboardToolbarAction,
+    state: { label: string; disabled: boolean },
+  ) => ReactNode;
 }
 
 export default function KeyboardToolbar({
   previousLabel = "Campo anterior",
   nextLabel = "Campo siguiente",
   doneLabel = "Ocultar teclado",
+  showDoneLabel = false,
   onHeightChange,
+  className,
+  style,
+  actionStyle,
+  labelStyle,
+  iconSize = 20,
+  testID = "keyboard-toolbar",
+  renderActionContent,
 }: KeyboardToolbarProps) {
   const theme = useTheme();
   const frame = useRef<ComponentRef<typeof View>>(null);
@@ -37,6 +65,28 @@ export default function KeyboardToolbar({
   }, []);
   const previousDisabled = inputs.current === 0;
   const nextDisabled = inputs.current >= inputs.count - 1;
+  const content = (action: KeyboardToolbarAction, label: string, disabled: boolean) => {
+    if (renderActionContent) return renderActionContent(action, { label, disabled });
+    if (action === "done" && showDoneLabel)
+      return (
+        <Typography.Text className="text-text-accent" style={labelStyle} variant="bodySmall">
+          {label}
+        </Typography.Text>
+      );
+    return (
+      <Icon
+        color={disabled ? theme.text.tertiary : theme.text.accent}
+        name={
+          action === "previous"
+            ? "chevron-up"
+            : action === "next"
+              ? "chevron-down"
+              : "checkmark"
+        }
+        size={iconSize}
+      />
+    );
+  };
   return (
     <View
       accessibilityElementsHidden={!isVisible}
@@ -55,22 +105,26 @@ export default function KeyboardToolbar({
         style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
       >
         <View
+          className={className}
           onLayout={(event) => {
             const nextHeight = event.nativeEvent.layout.height;
             setHeight(nextHeight);
             onHeightChange?.(nextHeight);
           }}
-          style={{
-            minHeight: 48,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 8,
-            backgroundColor: theme.bg.card,
-            borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: theme.border.light,
-          }}
-          testID="keyboard-toolbar"
+          style={[
+            {
+              minHeight: 48,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 8,
+              backgroundColor: theme.bg.card,
+              borderTopWidth: StyleSheet.hairlineWidth,
+              borderTopColor: theme.border.light,
+            },
+            style,
+          ]}
+          testID={testID}
         >
           <View style={{ flexDirection: "row" }}>
             <Pressable
@@ -78,43 +132,36 @@ export default function KeyboardToolbar({
               disabled={previousDisabled}
               hitSlop={0}
               onPress={() => KeyboardController.setFocusTo("prev")}
-              style={styles.arrow}
+              style={[styles.arrow, actionStyle]}
             >
-              <Icon
-                color={previousDisabled ? theme.text.tertiary : theme.text.accent}
-                name="chevron-up"
-                size={24}
-              />
+              {content("previous", previousLabel, previousDisabled)}
             </Pressable>
             <Pressable
               accessibilityLabel={nextLabel}
               disabled={nextDisabled}
               hitSlop={0}
               onPress={() => KeyboardController.setFocusTo("next")}
-              style={styles.arrow}
+              style={[styles.arrow, actionStyle]}
             >
-              <Icon
-                color={nextDisabled ? theme.text.tertiary : theme.text.accent}
-                name="chevron-down"
-                size={24}
-              />
+              {content("next", nextLabel, nextDisabled)}
             </Pressable>
           </View>
           <Pressable
             accessibilityLabel={doneLabel}
             hitSlop={0}
             onPress={() => KeyboardController.dismiss()}
-            style={{
-              minWidth: 48,
-              minHeight: 48,
-              flexShrink: 1,
-              justifyContent: "center",
-              padding: 8,
-            }}
+            style={[
+              {
+                minWidth: 48,
+                minHeight: 48,
+                flexShrink: 1,
+                justifyContent: "center",
+                padding: 8,
+              },
+              actionStyle,
+            ]}
           >
-            <Typography.Text className="text-text-accent" semibold variant="bodyLarge">
-              {doneLabel}
-            </Typography.Text>
+            {content("done", doneLabel, false)}
           </Pressable>
         </View>
       </KeyboardStickyView>

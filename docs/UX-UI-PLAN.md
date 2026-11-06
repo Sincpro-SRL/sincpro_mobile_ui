@@ -5,6 +5,20 @@ La certificación completa de dispositivos/accesibilidad y la adopción en apps 
 lo comprobado en esta ejecución.
 Fecha: 2026-11-06.
 
+## Dirección actual: composición y comportamiento, no rediseño general
+
+El [manifiesto](./MANIFESTO.md) fija el objetivo permanente. Conservar la presentación
+original; consolidar teclado, foco, templates y APIs públicas de personalización.
+Las recetas de los lotes anteriores son posibilidades, no la nueva apariencia obligatoria.
+No se declara completada una auditoría de extensibilidad de todo el catálogo.
+
+- Perfil: se recuperan las composiciones originales de hero/campos; los ejemplos nuevos
+  de copia y datos permanecen separados.
+- Toolbar compacta por defecto, texto opcional; estilos, fuente/tamaño, iconos y slots
+  de contenido sin reimplementar navegación nativa.
+- Templates form/auth exponen opciones y ref del scroll; listado permite controlar
+  el comportamiento del teclado sin otro layout.
+
 ## Implementación inicial
 
 - Contratos de interacción incorporados a `PHILOSOPHY.md`; README actualizado a Expo 58.

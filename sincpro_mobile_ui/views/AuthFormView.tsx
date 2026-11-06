@@ -1,4 +1,5 @@
 import { Display } from "@sincpro/mobile-ui/Display";
+import type { KeyboardFormProps } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -16,6 +17,7 @@ interface AuthFormProps {
   FormNode: ReactNode;
   background?: AppBarBackground;
   keyboardToolbar?: boolean;
+  keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
 }
 
 function AuthFormView({
@@ -26,6 +28,7 @@ function AuthFormView({
   FormNode,
   background,
   keyboardToolbar,
+  keyboardFormProps,
 }: AuthFormProps) {
   const renderTitle = () => {
     if (!title) return null;
@@ -45,6 +48,7 @@ function AuthFormView({
     <AuthContainer
       background={background}
       header={<Logo size="large" source={logoSource} />}
+      keyboardFormProps={keyboardFormProps}
       keyboardToolbar={keyboardToolbar}
       onBackPress={onBack}
     >

@@ -5,6 +5,11 @@
 
 ## Qué es (y qué no)
 
+El [manifiesto de composición y personalización](./MANIFESTO.md) define el objetivo
+permanente del sistema. Los defaults visuales son un punto de partida, no una restricción:
+la prioridad actual es comportamiento reutilizable y extensión mediante APIs públicas,
+no un rediseño general ni una escala visual obligatoria.
+
 - **Es** un set de componentes **presentacionales puros**, mobile-first (React Native / Expo), que varias apps consumen vía npm.
 - **No es** un framework de dominio: no tiene lógica de negocio, red, navegación de rutas ni stores. Recibe datos por props y emite eventos por callbacks.
 - **No es** una UI de escritorio adaptada: cada componente se diseña para **el pulgar, la pantalla chica y el gesto táctil**, no para mouse/hover.
@@ -13,10 +18,10 @@
 
 1. **Mobile-first de verdad.** Targets táctiles ≥44px, `hitSlop`, gestos (swipe), bottom-sheets en vez de dropdowns, safe-area en todo lo que flota, pensado para una mano. Si un patrón solo tiene sentido con mouse/teclado, no va.
 2. **NativeWind-first.** El estilo se expresa con `className` (Tailwind). El objeto JS (`theme.x`) es un _escape hatch_ solo para lo que className no puede: props nativas (`placeholderColor`), gradientes, sombras, y **superficies dentro de `<Modal>`** (las CSS-vars no cruzan el portal nativo → ahí va color inline).
-3. **Tokens como fuente de verdad.** Color/spacing/radio salen del theme (CSS-vars); animación de `tokens/motion`; layering de las clases `z-*`. Nada de hex sueltos. Reestilizar = cambiar tokens, no editar componentes.
+3. **Tokens como defaults compartidos.** Color/spacing/radio salen del theme (CSS-vars); animación de `tokens/motion`; layering de las clases `z-*`. Identidad global vía tokens; ajustes locales vía `className`, `style` y slots, sin editar componentes.
    - **Capas (2026):** fills semánticos (`primary`) → **containers** (`container.success` + `onSuccess`) → superficies tonales (`bg.containerLowest|container|containerHigh`) → **state layers** (`state.press`) → **material** chrome (`material.blur` para nav/glass). Badges/chips usan containers, no fill saturado + blanco.
    - **Contrato de color:** `primary` / `accent` = superficies y chrome (fills, borders, tracks). Texto/links/labels con color de marca = `text.accent` (AA sobre `bg.page`/`bg.card`). Tinta sobre un fill de marca = `text.onPrimary` / `text.onAccent` vía `resolveOnColor(fill)`. Rebrand rápido: `buildThemeFromBrand({ brand, mode })`.
-4. **Extensible sin forkear.** Se extiende agregando una `variant` (tailwind-variants), pasando `className`, o componiendo — nunca copiando un componente para tunearlo. Rediseños que rompen API van en `next/` y coexisten.
+4. **Extensible sin forkear.** `className`, `style`, `children`, slots y render props permiten modificar presentación y composición sin copiar el componente. Las variantes son conveniencias, no el límite de personalización. Rediseños que rompen API requieren una adopción explícita.
 5. **Retrocompatible.** Hay apps en producción. Todo cambio es **aditivo** por defecto (minor); lo que rompe es opt-in y se deprecia con camino de migración. Nunca cambiamos cómo se ve una pantalla existente sin que la app lo adopte.
 6. **Liviano para el build.** Subpath exports + barrels finos → tree-shaking real. Deps nativas pesadas/opcionales (`expo-glass-effect`, etc.) como peer opcional expuesto solo por subpath, para que una app que no las usa no las cargue.
 
@@ -80,20 +85,22 @@ El [plan UX/UI](./UX-UI-PLAN.md) separa implementación, validación pendiente y
 presentación SwiftUI/Material3 y contenido de marca con tokens. El tema se reinyecta dentro
 del portal nativo; no se reemplaza todo el catálogo por controles visualmente ajenos.
 
-## Lenguaje visual (estilo objetivo 2026)
+## Lenguaje visual (opciones, no una migración automática)
 
-> El DS arrastra un look heredado de "app X" con **gradientes forzados** (botones `primary`/`accent` con `LinearGradient`, headers con `GradientContainer`). **No es el estilo objetivo.** El lenguaje moderno es:
+Los tratamientos siguientes son posibilidades de composición. No invalidan los gradientes,
+radios, fuentes ni tamaños originales, ni autorizan a sustituirlos en componentes existentes.
+El consumidor decide cuándo y cómo adoptarlos:
 
-- **Flat / minimal**: superficies tokenizadas (`bg-bg-card`/`bg-bg-page`) + **hairline** (`border-border-light`) + sombra sutil. Sin gradiente por defecto.
-- **Color con intención**: `primary` para fills/CTAs; `text.accent` para texto brand; el resto en neutros. El gradiente es **opt-in**, no la norma.
+- **Flat / minimal**: superficies tokenizadas (`bg-bg-card`/`bg-bg-page`) + **hairline** (`border-border-light`) + sombra sutil como una opción, sin eliminar defaults con gradiente.
+- **Color con intención**: `primary` para fills/CTAs; `text.accent` para texto brand; el resto en neutros. El consumidor puede elegir gradientes o superficies planas.
 - **Aire y jerarquía** por tipografía/spacing, no por bloques de color.
-- **Cómo se introduce sin romper v1**: los componentes con look viejo se **deprecan** (`@deprecated` JSDoc, siguen exportados) y se entregan equivalentes flat nuevos. Ej: `Navigation.Header`/`HeaderToolbar`/`ScreenHeader`/`HomeHeader` → **`Navigation.AppBar`**; `Navigation.BottomNav` reemplaza al viejo tab bar. El rediseño de `Button` (gradiente→flat) es el próximo paso y, por ser core, irá vía `next/` o variante opt-in (no se cambia el default v1).
+- **Cómo se introduce sin romper v1**: una alternativa visual no depreca por sí sola el componente existente. Las APIs legacy ya marcadas mantienen sus exports; no se programa otro rediseño de `Button` ni una migración visual como consecuencia de mejorar teclado, foco o composición.
 
 ## Padding & safe-area: ¿interno o externo?
 
 > Duda recurrente: ¿el padding lo pone el componente o la app? Regla:
 
-- **Padding interno (lo pone el DS, principio fijo)**: el espaciado _dentro_ del componente (entre icono y texto, alto de la barra, gutters de las filas). Consistente, no configurable — es parte de la identidad.
+- **Padding interno (default del DS, personalizable)**: el espaciado _dentro_ del componente (entre icono y texto, alto de la barra, gutters de las filas) tiene un default consistente. Se puede ajustar mediante tokens, `className`, `style` o estilos de slots públicos; no es una restricción de identidad. Si una región no lo permite todavía, es una limitación por resolver.
 - **Contexto externo (lo controla quien lo usa)**: márgenes de pantalla, posición, y la **safe-area**. Las barras que viven al borde (`AppBar`, `CollapsingHeader`, `BottomNav`) reservan la safe-area por defecto (`safeArea={true}`) porque ese es el caso real (arriba/abajo de pantalla), **pero es un prop**: `safeArea={false}` al embeber (dentro de un `FloatingBar`, en demos, o en layouts anidados) para no duplicar el espacio del status/nav bar. Síntoma de no respetarlo: padding-top/bottom "de más" al apilar barras o anidarlas.
 
 ## Estrategia híbrida `@expo/ui` + NativeWind (2026-06)

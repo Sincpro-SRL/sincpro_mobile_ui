@@ -208,6 +208,34 @@ Los E2E usan estado local ficticio. No certifican persistencia, red, dominio ni 
 con una app consumidora. La fuente ampliada es una prueba de estrés, no el nuevo tamaño default.
 El simulador debe volver a su categoría original al terminar.
 
+## Sexto lote: preservar presentación y abrir APIs funcionales
+
+- El [manifiesto](./MANIFESTO.md) establece composición y personalización como objetivo
+  permanente, no un rediseño visual general ni una certificación de extensibilidad completa.
+  Se corrige la documentación que calificaba el padding interno como no configurable.
+- Las recetas originales de perfil recuperan tipografía, disposición y densidad previas.
+  No se eliminan los componentes nuevos ni se reemplazan por una pantalla obligatoria.
+- Toolbar compacta con iconos por defecto; texto opcional con fuente/tamaño personalizables.
+  `style`, `className`, estilos de acciones/etiqueta, tamaño de iconos y contenido por acción
+  permiten modificar la presentación conservando callbacks, labels y estados.
+- `KeyboardForm` reenvía el ref nativo; form/auth exponen `keyboardFormProps` sin activar
+  automáticamente una toolbar. El scroll de formulario combina estilos locales con sus
+  defaults, incluido el inset inferior.
+- Listado: acciones manejadas reciben el primer tap con teclado abierto; política configurable
+  en estados con datos/vacío/error. La prueba real encontró que `Navigation.RowItem` ignoraba
+  el callback/readonly que le pasaba el template; ahora los respeta, manteniendo el fallback
+  a los campos legacy de `item` y sin cambiar su representación.
+
+Evidencia de este lote, separada de los resultados históricos anteriores:
+
+- 60 tests de lógica/tokens + 98 nativos (158), tipos, stories y build de librería pasan.
+- Cinco flujos iOS afectados pasan: formulario compacto, toolbar personalizada, listado
+  con búsqueda/primer tap y dos flujos de consultas. La suite contiene dieciséis flujos;
+  no se presenta la ejecución selectiva de cinco como una nueva corrida completa de dieciséis.
+- Ambos flujos de formulario pasan con `accessibility-large`. Las capturas muestran notas
+  y cursor por encima de la barra; el tamaño `large` se restaura al terminar.
+- El export Android pasa como smoke de bundling, no como prueba de runtime.
+
 ## Adopción y límites
 
 1. Usar las APIs accesibles en pantallas nuevas y adoptar las existentes por lotes.

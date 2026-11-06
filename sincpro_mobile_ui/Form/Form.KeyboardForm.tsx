@@ -1,10 +1,13 @@
 import KeyboardToolbar, {
   type KeyboardToolbarProps,
 } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
-import { type ReactNode } from "react";
+import { type ReactNode, type Ref } from "react";
 import { useState } from "react";
 import { View } from "react-native";
-import type { KeyboardAwareScrollViewProps } from "react-native-keyboard-controller";
+import type {
+  KeyboardAwareScrollViewProps,
+  KeyboardAwareScrollViewRef,
+} from "react-native-keyboard-controller";
 import {
   KeyboardAwareScrollView,
   KeyboardToolbar as NativeToolbar,
@@ -12,14 +15,20 @@ import {
 
 export interface KeyboardFormProps extends KeyboardAwareScrollViewProps {
   children: ReactNode;
+  ref?: Ref<KeyboardAwareScrollViewRef>;
   toolbar?: boolean;
-  toolbarLabels?: Pick<KeyboardToolbarProps, "previousLabel" | "nextLabel" | "doneLabel">;
+  toolbarProps?: Omit<KeyboardToolbarProps, "onHeightChange">;
+  toolbarLabels?: Pick<
+    KeyboardToolbarProps,
+    "previousLabel" | "nextLabel" | "doneLabel" | "showDoneLabel"
+  >;
 }
 
 export default function KeyboardForm({
   children,
   toolbar = true,
   toolbarLabels,
+  toolbarProps,
   bottomOffset,
   style,
   ...props
@@ -38,7 +47,11 @@ export default function KeyboardForm({
         </KeyboardAwareScrollView>
       </NativeToolbar.Group>
       {toolbar ? (
-        <KeyboardToolbar {...toolbarLabels} onHeightChange={setToolbarHeight} />
+        <KeyboardToolbar
+          {...toolbarLabels}
+          {...toolbarProps}
+          onHeightChange={setToolbarHeight}
+        />
       ) : null}
     </View>
   );

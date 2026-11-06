@@ -128,6 +128,26 @@ los defaults; la representación real se revisó además en el simulador.
 Esto no aprueba automáticamente toda la dirección visual ni certifica Android runtime
 o lectores de pantalla.
 
+## Cuarto lote: composición abierta y filtros móviles
+
+- `FilterBar` reutiliza SearchBar, FilterButton e IconButton; no duplica otro sistema
+  visual ni filtra datos dentro de la librería. Controles, labels y layout son componibles.
+- La receta muestra alternativas de filas y cards sobre los mismos datos locales:
+  miniaturas decorativas acotadas a 56×56, fallback de icono, lectura, métricas y acciones.
+  Abrir el recurso y guardarlo son targets hermanos, no botones anidados.
+- Búsqueda y filtros se limpian por separado. Chips rápidos aplican inmediatamente;
+  el sheet avanzado descarta cambios al cerrar y aplica solo al confirmar.
+- El ScrollView de stories permite el primer toque con teclado abierto.
+  Auto cambia de scroll a wrap por encima de fontScale 1.3; el host puede elegir.
+- Los dos nuevos flujos iOS pasaron, incluyendo filas/cards, guardados, copia real,
+  borrador/cancelación, selección aplicada y vacío/recuperación en tests.
+  Se comprobó el portapapeles nativo con `REF-GUIDE`.
+- El flujo largo/dark pasó con `accessibility-large`. La referencia queda bajo el
+  contenido al ampliar texto: se comprobó que el scroll nativo permite alcanzarla,
+  no se redujo la fuente ni se ocultó contenido para hacer pasar el test.
+- 53 tests de lógica/tokens + 71 nativos (124), tipos/stories, build y export Android pasan.
+  La suite Maestro contiene once flujos. No equivale a aprobación visual o runtime Android.
+
 Además de acciones/copia/jerarquía, se implementaron los hallazgos del muestreo de
 Checkbox, Select, Sheet, Confirmation, Banner, refresh, navegación y SwipeableRow.
 El tamaño accesible y los controles visibles nuevos son opt-in cuando cambian el layout.
@@ -136,10 +156,11 @@ El tamaño accesible y los controles visibles nuevos son opt-in cuando cambian e
 - `make verify-format`: formato, tipos de librería/stories/tests, doctor, matriz Expo y tests.
   El último paso exige cambios registrados; no confundir un worktree modificado con un fallo de tipos.
 - `make build`: build de la librería y resolución de aliases.
-- `make storybook-e2e`: nueve flujos: lista/detalle/editar/cancelar, error/retry,
+- `make storybook-e2e`: once flujos: lista/detalle/editar/cancelar, error/retry,
   contenido largo/dark, tareas/undo/filtros, selección/cancelación,
   resumen nativo largo/dark, texto con selección de fragmentos y dos flujos de
-  agrupación/ajustes/personalización/contenido largo.
+  agrupación/ajustes/personalización/contenido largo, más dos flujos de
+  colección/búsqueda/filtros/acciones independientes/texto largo.
 - Export Android de Expo 58: smoke de bundling, no validación de comportamiento en Android.
 
 Los E2E usan estado local ficticio. No certifican persistencia, red, dominio ni integración

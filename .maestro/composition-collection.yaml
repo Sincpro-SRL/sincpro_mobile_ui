@@ -1,0 +1,51 @@
+appId: host.exp.Exponent
+name: Mobile collection combines search, independent actions and staged filters
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-composition-mobile-collection--rows"
+- assertVisible: "Explorar"
+- tapOn: "Buscar recursos"
+- inputText: "visual"
+- assertVisible: "1 resultado"
+- tapOn:
+    id: "collection-filters-pending"
+- assertVisible: "Sin resultados"
+- tapOn: "Limpiar filtros"
+- assertVisible: "1 resultado"
+- tapOn: "Limpiar búsqueda"
+- assertVisible: "3 resultados"
+- scrollUntilVisible:
+    element: "Guardar Guía de inicio"
+- tapOn: "Guardar Guía de inicio"
+- assertNotVisible: "Quitar de mi selección"
+- scrollUntilVisible:
+    element:
+      id: "collection-filters-saved"
+    direction: UP
+- tapOn:
+    id: "collection-filters-saved"
+- assertVisible: "1 resultado"
+- tapOn: "Limpiar filtros"
+- tapOn: "Más filtros"
+- tapOn: "Solo destacados"
+- tapOn: "Cerrar"
+- assertVisible: "3 resultados"
+- assertNotVisible: "Destacados"
+- tapOn: "Más filtros"
+- tapOn: "Solo destacados"
+- tapOn: "Aplicar filtros"
+- assertVisible: "1 resultado"
+- assertVisible: "Destacados"
+- tapOn: "Abrir Referencia visual"
+- tapOn: "Copiar REF-REFERENCE"
+- assertVisible: "Copiar REF-REFERENCE. Copiado"
+- assertVisible: "Guardar en mi selección"
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-composition-mobile-collection--cards"
+- scrollUntilVisible:
+    element: "Guardar Guía de inicio"
+- tapOn: "Guardar Guía de inicio"
+- tapOn: "Abrir Guía de inicio"
+- tapOn: "Copiar REF-GUIDE"
+- assertVisible: "Copiar REF-GUIDE. Copiado"
+- assertVisible: "Quitar de mi selección"

@@ -166,6 +166,45 @@ optional description/footer/action and hairline separators only between rows. Ch
 Stories: `Patterns/UX/Grouped settings` shows Sincpro defaults, long content, customized
 surfaces and the opt-in reading hierarchy. Customization is not a complete visual approval.
 
+### Compose collections, not a prescribed screen
+
+`Patterns/Composition/Mobile collection` shows the same local data as rows, cards and
+long-label variants. It combines icons, bounded 56-point artwork, readable text, metrics,
+independent open/save actions and a native detail sheet. These are recipes to adapt,
+not new domain-specific screen components or a web toolbar squeezed onto a phone.
+
+```tsx
+import { FilterBar } from "@sincpro/mobile-ui/widgets";
+
+<FilterBar
+  filters={filterOptions}
+  onFilterPress={toggleFilter}
+  onClearFilters={clearFilters}
+  onOpenFilters={openFilterSheet}
+  resultsLabel={resultsLabel}
+  search={{
+    value: query,
+    onChangeText: setQuery,
+    accessibilityLabel: "Buscar recursos",
+    clearAccessibilityLabel: "Limpiar búsqueda",
+  }}
+/>;
+```
+
+Each filter supplies `id`, `label`, `selected` and optional `disabled`. State, matching,
+result counts and advanced-filter drafts belong to the host. Clearing filters does not
+silently clear the search query. Search, advanced action, result label and clear action
+are optional; customize labels, `className`, theme and `layout="scroll|wrap|auto"`.
+Auto wraps above font scale 1.3, otherwise it scrolls horizontally. Quick chips apply
+immediately; the recipe's advanced sheet applies only on confirmation.
+
+`Actions.FilterButton variant="mobile"` adds readable wrapping labels and 48-point targets.
+`FilterButtonGroup layout="scroll|wrap"` and `Navigation.SearchBar accessibleSizing` are
+additive; legacy filter layout and search sizing remain unchanged.
+When placing these controls in a host ScrollView, use `keyboardShouldPersistTaps="handled"`
+so a filter can act on the first tap while the keyboard is open.
+Use virtualized lists for production-sized collections.
+
 Dependencies follow the latest stable version compatible with Expo 58, not unbounded
 upgrades. Validate with `CI=1 npx expo install --check` in addition to the quality gates.
 

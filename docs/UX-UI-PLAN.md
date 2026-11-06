@@ -52,6 +52,20 @@ El [informe de auditoría](./UX-AUDIT.md) registra los patrones revisados y sus 
 - 111 tests (53 + 58) y nueve flujos iOS pasando; agrupación largo/dark también con
   texto ampliado. Build/export Android pasan; continúa pendiente runtime Android.
 
+### Cuarto lote implementado: libertad de composición y filtros móviles
+
+- `widgets.FilterBar` controlado: búsqueda opcional, chips, más filtros, resultado y limpiar.
+  El host conserva datos/estado; no se agrega lógica de dominio al design system.
+- SearchBar y FilterButton con modo móvil opt-in, targets 48 y etiquetas legibles.
+  Auto usa scroll horizontal o wrap con fuente ampliada; se puede elegir explícitamente.
+- Recetas de colección en filas/cards/texto largo: imagen decorativa de 56 puntos o icono,
+  texto, métricas y abrir/guardar como acciones independientes. No son plantillas obligatorias.
+- Búsqueda y filtros reales sobre datos locales, recuperación de vacío, filtros avanzados
+  con borrador/cancelación/aplicación y detalle nativo con copia.
+- 124 tests (53 + 71), tipos, stories y build pasando; export Android correcto.
+  Dos nuevos flujos iOS pasan y amplían la suite a once. Texto largo/dark también pasó
+  con `accessibility-large`, alcanzando la acción de copia mediante scroll nativo.
+
 No se eliminan variantes legacy ni se cambian automáticamente apps consumidoras.
 Android runtime, VoiceOver/TalkBack y pruebas con usuarios no se pudieron verificar en esta
 ejecución: no había dispositivo/emulador Android configurado ni usuarios de prueba.

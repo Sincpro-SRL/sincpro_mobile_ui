@@ -47,6 +47,14 @@ range selection on iOS.
 Grouping tests cover separators, independently accessible child actions, disabled rows,
 legacy/readable typography, configured fonts, class override precedence and settings tasks.
 Native flows exercise both default and customized surfaces and long grouped settings.
+Filter/search tests cover named inputs, clear/submit, 48-point targets, disabled/selected
+chips, legacy search triggers and auto-layout at font scales 1.3/1.31.
+Composition tests exercise actual local query/filter results, empty reset, independent
+save/open in rows/cards and cancel/apply of advanced drafts.
+Two collection flows verify first-tap filtering with the keyboard open, separate query
+and filter clearing, saved results, native detail/copy and long dark labels.
+The long-label flow also passes at `accessibility-large`, including scrolling within the
+native detail sheet to reach its copy action.
 They mock device services where needed; they do not replace VoiceOver/TalkBack or
 multiplatform device validation.
 

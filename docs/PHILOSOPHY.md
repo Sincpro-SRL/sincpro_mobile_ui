@@ -35,6 +35,13 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
 - **Personalización:** tema/fuentes para identidad global; `className`, superficies y slots
   para composición local. Extender el sistema existente, no crear otra paleta.
   El nuevo `bodyReadable` de 17 puntos es opt-in; no cambia el `body` legacy.
+- **Libertad de composición:** las stories enseñan posibilidades, no imponen una pantalla.
+  Combinar icono, texto, imagen de apoyo y acciones con roles distintos; una miniatura
+  no debe competir con el contenido principal. Abrir y guardar son targets hermanos.
+- **Filtros móviles:** búsqueda y filtros son estados independientes. Chips rápidos aplican
+  al tocar; decisiones avanzadas usan borrador y confirmación. Mostrar selección, resultado
+  y recuperación. `FilterBar` compone controles, pero no conoce datos ni reglas de negocio.
+  Auto usa scroll horizontal y pasa a wrap con fuente ampliada; el consumidor puede elegir.
 - **Énfasis:** una acción de máximo énfasis por contexto de tarea. Un modal es otro contexto;
   las excepciones se justifican. Las acciones secundarias no compiten con la principal.
 - **Tacto:** objetivo efectivo de 44×44 puntos en iOS y 48×48 dp en Android. El modo

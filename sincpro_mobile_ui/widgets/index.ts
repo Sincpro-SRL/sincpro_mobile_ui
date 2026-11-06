@@ -1,4 +1,9 @@
 export { CircleButton } from "@sincpro/mobile-ui/widgets/CircleButton";
+export {
+  FilterBar,
+  type FilterBarOption,
+  type FilterBarProps,
+} from "@sincpro/mobile-ui/widgets/FilterBar";
 export { default as GeoPermissionCard } from "@sincpro/mobile-ui/widgets/GeoPermissionCard";
 export { HomeHeader } from "@sincpro/mobile-ui/widgets/HomeHeader";
 export { MenuCard } from "@sincpro/mobile-ui/widgets/MenuCard";

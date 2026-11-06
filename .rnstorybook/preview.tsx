@@ -70,6 +70,7 @@ function ThemeFrame({ children, screen = false }: { children: ReactNode; screen?
           padding: 16,
         }}
         key={mode}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
       >

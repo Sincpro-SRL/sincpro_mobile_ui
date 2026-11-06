@@ -33,6 +33,9 @@ alternative, `link` for a quiet action and `outlineDanger` for an explicit destr
 alternative. Existing variants are retained; `primary` and `cta` currently share styling.
 Use `accessibleSizing` on buttons/icon buttons for a 48-point minimum, multiline/scaled
 button text, and a supplied accessible name for icon-only actions.
+`FilterButton variant="mobile"` exposes selected/disabled state, a selected check and
+wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
+horizontal scrolling or wrapping; the default remains its legacy row layout.
 
 ### Inputs (`Form`)
 
@@ -82,6 +85,10 @@ enables a standalone row divider when needed.
 
 `AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).
 
+`SearchBar accessibleSizing` opts into readable 17-point text and 48-point input/clear
+targets. Name search and clear independently with `accessibilityLabel` and
+`clearAccessibilityLabel`. Legacy height remains 44.
+
 ### Overlays (`Dialog`)
 
 `Sheet` (bottom sheet on RN Modal — subpath `Dialog/Sheet`, swipe-down to close), `ActionSheet`, `Confirmation` (+`ConfirmationProvider`), `EditValue`.
@@ -110,6 +117,16 @@ selection cancellation; do not nest sheets.
 
 - **Views** (`…/views/*`): `FormViewV2`, `ListViewV2`, `AuthFormView`, `Wizard`, `AppSplashView` — screen templates.
 - **Widgets** (`…/widgets`): `MenuGrid`, `MenuCard`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer`, `PromoBanner`, `PromoModal`, `QuickActions`, `HomeHeader`, `ScreenHeader`, `MenuSection`, `CircleButton`.
+
+`FilterBar` (`…/widgets` or named export from `…/widgets/FilterBar`) composes optional search,
+quick chips, an advanced-filter action, results and clear. Controlled `filters` contain
+`id`, `label`, `selected`, optional `disabled`; `onFilterPress(id)` leaves data/state to
+the host. `onClearFilters` clears filters only, not the query. Customize labels, classes,
+theme and layout; auto wraps above font scale 1.3, otherwise scrolls horizontally.
+It does not fetch, filter, paginate or own advanced drafts.
+`Patterns/Composition/Mobile collection` demonstrates rows/cards, fixed 56-point decorative
+artwork, icon fallbacks, metrics, independent open/save actions, actual local filtering,
+empty recovery and staged advanced filters. Adapt or replace any part of the recipe.
 
 ## Legacy (deprecated — `@deprecated`, still exported)
 

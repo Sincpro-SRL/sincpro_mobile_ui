@@ -98,6 +98,36 @@ En la story de texto a tamaño normal, los targets medidos en la jerarquía iOS 
 88×48 para la referencia corta y 48×48 para el icono independiente de la descripción.
 El tamaño de una captura de pantalla no representa el tamaño físico de estos controles.
 
+## Tercer lote: agrupación, lectura e identidad configurable
+
+- `Display.ListGroup`: agrupa listas cortas de ajustes con título, descripción/footer
+  opcionales, una superficie común o agrupación plana y hairlines entre filas.
+  No agrega sombras ni una card por cada fila. No es una lista virtualizada.
+- `ListItem variant="mobile"`: títulos/valores de 17 puntos, ayuda de 16, texto sin truncar,
+  target mínimo 48×48 y press tonal en vez de escalar/desvanecer toda la fila.
+  Valores/controles pasan debajo del texto al ampliar la fuente o estrechar la pantalla.
+  La explicación de una acción deshabilitada sigue legible.
+- El nombre y el valor accesible de una fila son independientes. La validación nativa
+  detectó que un nombre explícito ocultaba el valor de idioma: ahora se expone
+  `accessibilityValue`, además de mostrar el valor en pantalla.
+- `bodyReadable` de 17 puntos es opt-in para Text/SelectableText y conserva los roles de
+  fuentes existentes. `body` y las filas legacy no cambian.
+- Se conserva la identidad actual: fondos cálidos, azul de acciones, oro tonal acotado y
+  tipografía de marca, sin cambiar la paleta. `surface`, `contentClassName`, `className`,
+  slots, `separators` y los helpers de tema/fuentes permiten extenderla sin un segundo tema.
+- Stories `Patterns/UX/Grouped settings`: defaults Sincpro, contenido largo, superficies
+  personalizadas y jerarquía de lectura. Los cambios de idioma/avisos son estado local
+  de demostración, no preferencias persistentes ni traducción de toda la pantalla.
+
+Validación del lote: 53 tests de lógica/tokens + 58 nativos (111), tipos, lint/stories,
+build de librería y export Android pasando. Los nueve flujos Maestro pasaron en iOS,
+incluyendo la variante personalizada. El flujo largo/dark de agrupación también pasó con
+`accessibility-large` y se restauró `large`.
+Los tests de personalización verifican que las clases de superficie/radio sustituyen
+los defaults; la representación real se revisó además en el simulador.
+Esto no aprueba automáticamente toda la dirección visual ni certifica Android runtime
+o lectores de pantalla.
+
 Además de acciones/copia/jerarquía, se implementaron los hallazgos del muestreo de
 Checkbox, Select, Sheet, Confirmation, Banner, refresh, navegación y SwipeableRow.
 El tamaño accesible y los controles visibles nuevos son opt-in cuando cambian el layout.
@@ -106,9 +136,10 @@ El tamaño accesible y los controles visibles nuevos son opt-in cuando cambian e
 - `make verify-format`: formato, tipos de librería/stories/tests, doctor, matriz Expo y tests.
   El último paso exige cambios registrados; no confundir un worktree modificado con un fallo de tipos.
 - `make build`: build de la librería y resolución de aliases.
-- `make storybook-e2e`: siete flujos: lista/detalle/editar/cancelar, error/retry,
+- `make storybook-e2e`: nueve flujos: lista/detalle/editar/cancelar, error/retry,
   contenido largo/dark, tareas/undo/filtros, selección/cancelación,
-  resumen nativo largo/dark y texto con selección de fragmentos.
+  resumen nativo largo/dark, texto con selección de fragmentos y dos flujos de
+  agrupación/ajustes/personalización/contenido largo.
 - Export Android de Expo 58: smoke de bundling, no validación de comportamiento en Android.
 
 Los E2E usan estado local ficticio. No certifican persistencia, red, dominio ni integración

@@ -21,6 +21,8 @@
 `SelectableText value` uses a read-only multiline native control with range handles and no
 keyboard, preserving configured fonts and tokens. Use it for passages where selecting a
 fragment matters. On iOS, `Text selectable` only offers full-paragraph copying.
+`variant="bodyReadable"` opts Text/SelectableText into 17-point body text with live configured
+fonts and system scaling. Legacy `body` remains 14.
 
 ### Actions
 
@@ -46,6 +48,23 @@ selection of longer text and separates the full-copy action; failures remain vis
 and results are announced. `KeyValue copyable` requires a string or number and forwards
 `selectable`; `align="auto"` stacks on narrow screens or enlarged text.
 `SectionHeader` exposes header semantics.
+
+`ListGroup` groups short settings/data lists using a title, optional description/action/footer,
+one inset surface or `surface="plain"`, and hairline separators between direct children.
+No shadows or per-row cards. Customize `className`, `contentClassName`, slots and
+`separators`; colors inherit existing theme variables.
+Use one direct child per row; a Fragment counts as one child, not a list of rows.
+Use FlatList/SectionList for large collections, not this non-virtualized wrapper.
+
+`ListItem variant="mobile"` opts into readable 17-point titles/values, wrapping, 48-point
+actions and tonal press highlighting instead of opacity/scale feedback. `value`, `disabled`,
+`accessibilityHint` and `layout="auto|row|stacked"` support navigation/settings rows.
+Auto stacks accessories below text on screens under 360 points or font scales above 1.3;
+choose stacked explicitly for narrow embedded containers. A trailing control belongs in
+a row without `onPress`. Existing ListItem defaults stay unchanged.
+Mobile rows omit their own dividers so ListGroup can manage them; `showDivider` explicitly
+enables a standalone row divider when needed.
+`SectionHeader variant="mobile"` uses the same reading variant.
 
 ### Commerce (`Display`)
 

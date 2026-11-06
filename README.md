@@ -121,6 +121,51 @@ recoverable error. It uses fictional data and local state, not persistence or a 
 
 The [audit and validation report](docs/UX-AUDIT.md) records scope, evidence and device limits.
 
+### Clean Sincpro grouping and customization
+
+`Display.ListGroup` groups related settings or a short list on one surface, with a title,
+optional description/footer/action and hairline separators only between rows. Choose
+`surface="plain"` for grouping by proximity instead of a rounded container.
+
+```tsx
+<Display.ListGroup
+  title="Cuenta"
+  footer="Puedes cambiar estas preferencias en cualquier momento."
+  contentClassName="rounded-lg bg-bg-muted"
+>
+  <Display.ListItem
+    variant="mobile"
+    title="Idioma"
+    value="Español"
+    chevron
+    onPress={openLanguageChoices}
+  />
+  <Display.ListItem
+    variant="mobile"
+    title="Avisos importantes"
+    trailing={notificationControl}
+  />
+</Display.ListGroup>
+```
+
+- `ListItem variant="mobile"` opts into 17-point reading text, wrapping, a 48-point target,
+  tonal row press feedback and adaptive accessories. `layout="auto"` stacks values/controls
+  below the text on narrow screens or enlarged text; use `layout="stacked"` for narrow
+  embedded containers. Navigation values are also exposed as native accessibility values.
+- Put a toggle/checkbox in a **non-pressable** row; do not nest a second action inside a
+  pressable row. The leading/trailing slots remain consumer-owned.
+- `Typography.Text variant="bodyReadable"` and `Typography.SelectableText` with the same
+  variant opt into 17 points while retaining `configureFonts` and system font scaling.
+  The 14-point `body` and existing ListItem appearance remain unchanged.
+- Customize per instance with `className`, `contentClassName`, slots, surface and separators.
+  Customize branding centrally with `buildThemeFromBrand`/`extendTheme`, `setActiveTheme`
+  and `themeToVars` on the host, plus `configureFonts` for already-loaded font families.
+  Do not introduce a competing palette or hardcode colors in every screen.
+- This group is not virtualized: use FlatList/SectionList for large or unbounded collections.
+
+Stories: `Patterns/UX/Grouped settings` shows Sincpro defaults, long content, customized
+surfaces and the opt-in reading hierarchy. Customization is not a complete visual approval.
+
 Dependencies follow the latest stable version compatible with Expo 58, not unbounded
 upgrades. Validate with `CI=1 npx expo install --check` in addition to the quality gates.
 

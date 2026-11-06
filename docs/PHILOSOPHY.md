@@ -28,6 +28,13 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
 
 - **Jerarquía:** título de pantalla, sección, etiqueta, valor y ayuda deben distinguirse sin
   depender exclusivamente del color. Títulos con semántica de header.
+- **Agrupación Sincpro:** filas relacionadas comparten una superficie o proximidad,
+  con separadores hairline y distancia entre grupos mayor que entre filas. No convertir
+  cada fila en una card ni usar sombras para todo. `ListGroup` y el modo móvil de
+  `ListItem` preservan fondos cálidos, acentos existentes y familias tipográficas configurables.
+- **Personalización:** tema/fuentes para identidad global; `className`, superficies y slots
+  para composición local. Extender el sistema existente, no crear otra paleta.
+  El nuevo `bodyReadable` de 17 puntos es opt-in; no cambia el `body` legacy.
 - **Énfasis:** una acción de máximo énfasis por contexto de tarea. Un modal es otro contexto;
   las excepciones se justifican. Las acciones secundarias no compiten con la principal.
 - **Tacto:** objetivo efectivo de 44×44 puntos en iOS y 48×48 dp en Android. El modo

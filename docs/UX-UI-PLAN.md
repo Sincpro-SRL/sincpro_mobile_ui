@@ -39,6 +39,19 @@ El [informe de auditoría](./UX-AUDIT.md) registra los patrones revisados y sus 
 - 100 pruebas pasando (53 de lógica/tokens + 47 nativas). Suite Maestro ampliada a siete
   flujos; ver el informe para resultados y límites por dispositivo.
 
+### Tercer lote implementado: estilo Sincpro y personalización
+
+- `ListGroup`: agrupación limpia en superficie común o plana, sin cards por fila,
+  separadores hairline y título; descripción/footer opcionales.
+- `ListItem variant="mobile"`: lectura de 17 puntos, accesorios adaptables, estado/valor
+  accesible y feedback tonal por fila. Default legacy conservado.
+- `bodyReadable` opt-in para Text/SelectableText; conserva fuentes configuradas y scaling.
+- Personalización con los tokens y helpers existentes, `className`, `contentClassName`,
+  superficies, separadores y slots; sin segunda paleta ni nuevas dependencias.
+- Story completa de preferencias en Sincpro default, texto largo y variante personalizada.
+- 111 tests (53 + 58) y nueve flujos iOS pasando; agrupación largo/dark también con
+  texto ampliado. Build/export Android pasan; continúa pendiente runtime Android.
+
 No se eliminan variantes legacy ni se cambian automáticamente apps consumidoras.
 Android runtime, VoiceOver/TalkBack y pruebas con usuarios no se pudieron verificar en esta
 ejecución: no había dispositivo/emulador Android configurado ni usuarios de prueba.
@@ -82,9 +95,9 @@ de fragmentos en iOS ya demostró esa diferencia.
 
 ### Próxima aprobación visual: criterios y pendientes
 
-1. Revisar la escala de lectura: `body` actual de 14 y `bodyLarge` de 16 no equivalen al
-   default recomendado de 17 pt de Apple. No son automáticamente ilegibles, pero requieren
-   evaluación explícita y una rampa nueva opt-in antes de cambiar consumidores.
+1. Revisar la escala de lectura: `body` de 14 y `bodyLarge` de 16 no equivalen al
+   default recomendado de 17 pt de Apple. Se añadió `bodyReadable` de 17 opt-in para
+   el piloto de agrupación; falta aprobar su adopción visual antes de cambiar consumidores.
 2. Comparar pantallas completas a escala normal, no solo controles aislados o capturas de
    texto ampliado. Distinguir distancia entre filas, grupos y secciones.
 3. Evaluar agrupación por proximidad/superficies/separadores antes de envolver todo en cards.

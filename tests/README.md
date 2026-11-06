@@ -44,6 +44,9 @@ list/detail/edit/error/cancel pilot.
 Selectable text uses a read-only native multiline control: tests cover its keyboard/edition
 contract, live branded fonts and selection events. `Text selectable` alone does not provide
 range selection on iOS.
+Grouping tests cover separators, independently accessible child actions, disabled rows,
+legacy/readable typography, configured fonts, class override precedence and settings tasks.
+Native flows exercise both default and customized surfaces and long grouped settings.
 They mock device services where needed; they do not replace VoiceOver/TalkBack or
 multiplatform device validation.
 

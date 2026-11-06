@@ -187,6 +187,13 @@ export const typographyVariants = {
   },
 
   // Body
+  bodyReadable: {
+    fontSize: 17,
+    fontFamily: fontFamilies.regular,
+    fontWeight: fontWeights.regular,
+    lineHeight: 17 * lineHeights.normal,
+    letterSpacing: letterSpacing.normal,
+  },
   bodyLarge: {
     fontSize: fontSizes.lg,
     fontFamily: fontFamilies.regular,
@@ -318,6 +325,7 @@ export const variantFontRole: Record<keyof typeof typographyVariants, FontRole> 
   h4: "medium",
   h5: "medium",
   h6: "medium",
+  bodyReadable: "regular",
   bodyLarge: "regular",
   body: "regular",
   bodySmall: "regular",

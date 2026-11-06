@@ -14,9 +14,17 @@ export interface SectionHeaderProps {
   action?: SectionHeaderAction;
   className?: string;
   testID?: string;
+  variant?: "default" | "mobile";
 }
 
-function SectionHeader({ title, subtitle, action, className, testID }: SectionHeaderProps) {
+function SectionHeader({
+  title,
+  subtitle,
+  action,
+  className,
+  testID,
+  variant = "default",
+}: SectionHeaderProps) {
   return (
     <View
       className={cn("flex-row items-center justify-between px-4 py-2", className)}
@@ -27,22 +35,32 @@ function SectionHeader({ title, subtitle, action, className, testID }: SectionHe
           accessibilityRole="header"
           className="text-text-primary"
           semibold
-          variant="subtitle"
+          variant={variant === "mobile" ? "bodyReadable" : "subtitle"}
         >
           {title}
         </Typography.Text>
         {subtitle ? (
-          <Typography.Text className="text-text-secondary" variant="bodySmall">
+          <Typography.Text
+            className="text-text-secondary"
+            variant={variant === "mobile" ? "bodyLarge" : "bodySmall"}
+          >
             {subtitle}
           </Typography.Text>
         ) : null}
       </View>
       {action ? (
         <Pressable
+          accessibilityLabel={action.label}
           accessibilityRole="button"
           hitSlop={8}
           onPress={action.onPress}
-          style={{ minHeight: 48, justifyContent: "center", marginLeft: 12 }}
+          style={{
+            minHeight: 48,
+            minWidth: 48,
+            justifyContent: "center",
+            marginLeft: 12,
+            flexShrink: 1,
+          }}
         >
           <Typography.Text className="text-text-accent text-sm font-semibold">
             {action.label}

@@ -4,9 +4,10 @@ import BoxTimeIcon from "@sincpro/mobile-ui/icons/BoxTimeIcon";
 import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
 import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
 import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, TextInput, View } from "react-native";
 
 const meta: Meta = { title: "Components/Actions" };
 export default meta;
@@ -115,6 +116,97 @@ export const FilterButtons: Story = {
   name: "FilterButton",
   render: () => <FilterDemo />,
 };
+
+export const ActionDock: Story = {
+  name: "Dock — swipe-expandable fixed action",
+  parameters: { layout: "fullscreen", ownsScroll: true },
+  render: () => <ActionDockDemo />,
+};
+
+function ActionDockDemo() {
+  const [confirmed, setConfirmed] = useState(false);
+  const [reviewed, setReviewed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [note, setNote] = useState("");
+
+  return (
+    <View className="relative flex-1 bg-bg-page">
+      <ScrollView
+        contentContainerStyle={{ gap: 12, padding: 20, paddingBottom: 180 }}
+        style={{ flex: 1 }}
+      >
+        <Display.SectionHeader
+          subtitle="El resumen se despliega sobre el contenido sin mover el botón fijo."
+          title="Pedido #1024"
+        />
+        <Typography.Text className="text-text-secondary" variant="body">
+          Desliza la manija hacia arriba o toca “Más opciones”. Desliza hacia abajo para
+          contraer. El panel superpuesto mantiene visible la acción principal.
+        </Typography.Text>
+        {confirmed ? <Display.Tag dotColor="#16A34A" label="Pedido confirmado" /> : null}
+        {reviewed ? <Display.Tag label="Pedido revisado" /> : null}
+        <Typography.Text variant="body">
+          {note ? `Nota: ${note}` : "Sin nota"}
+        </Typography.Text>
+        <Typography.Text className="text-text-secondary" variant="body">
+          Este contenido puede desplazarse debajo del Dock; el panel se muestra encima sin
+          recortar la pantalla.
+        </Typography.Text>
+        <Typography.Text className="text-text-secondary" variant="body">
+          Prueba también un gesto diagonal: no debería abrir o cerrar accidentalmente el
+          panel.
+        </Typography.Text>
+      </ScrollView>
+      <Actions.Dock
+        expanded={expanded}
+        maxExpandedHeightRatio={0.45}
+        onExpandedChange={setExpanded}
+        primaryAction={
+          <Actions.Button
+            disabled={confirmed}
+            onPress={() => {
+              setConfirmed(true);
+              setExpanded(false);
+            }}
+            title={confirmed ? "Confirmado" : "Confirmar pedido"}
+          />
+        }
+        summary={
+          <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
+            <Display.AmountSummary.Total label="Total" value={128.5} />
+          </Display.AmountSummary.Root>
+        }
+        testID="story-dock"
+        title="Detalle del pedido"
+      >
+        <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
+          <Display.AmountSummary.Row label="Subtotal" value={120} />
+          <Display.AmountSummary.Row label="Envío" value={8.5} />
+          <Display.AmountSummary.Total label="Total" value={128.5} />
+        </Display.AmountSummary.Root>
+        <Actions.Button
+          className="mt-3"
+          onPress={() => setReviewed((value) => !value)}
+          title={reviewed ? "Quitar revisión" : "Marcar como revisado"}
+          variant="secondary"
+        />
+        <TextInput
+          accessibilityLabel="Nota del pedido"
+          className="my-3 min-h-12 rounded-lg border border-border-light px-3 text-text-primary"
+          onChangeText={setNote}
+          placeholder="Nota del pedido"
+          testID="dock-note"
+          value={note}
+        />
+        {Array.from({ length: 8 }, (_, index) => (
+          <Typography.Text className="py-3" key={index} variant="body">
+            {`Opción adicional ${index + 1}`}
+          </Typography.Text>
+        ))}
+      </Actions.Dock>
+    </View>
+  );
+}
 
 // ─── CircleButton ─────────────────────────────────────────────────────────────
 

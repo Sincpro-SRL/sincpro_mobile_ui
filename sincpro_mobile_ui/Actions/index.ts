@@ -1,4 +1,5 @@
 import ButtonWithIcon from "@sincpro/mobile-ui/Actions/Actions.Button";
+import Dock from "@sincpro/mobile-ui/Actions/Actions.Dock";
 import FAB from "@sincpro/mobile-ui/Actions/Actions.FAB";
 import {
   FilterButton,
@@ -9,6 +10,8 @@ import IconButton from "@sincpro/mobile-ui/Actions/Actions.IconButton";
 export const Actions = {
   /** Primary action button. The filled one is gold; navy is text. Supports confirm dialog. */
   Button: ButtonWithIcon,
+  /** Compact primary-action dock with additional options in a dismissible sheet. */
+  Dock,
   /** Small icon-only tap target — ghost, primary, secondary, tertiary variants. */
   IconButton,
   /** Floating Action Button — fixed bottom-right/left, label-optional. */
@@ -20,6 +23,7 @@ export const Actions = {
 };
 
 export type { ButtonIconProps, ButtonProps } from "@sincpro/mobile-ui/Actions/Actions.Button";
+export type { DockProps } from "@sincpro/mobile-ui/Actions/Actions.Dock";
 export type { FABProps } from "@sincpro/mobile-ui/Actions/Actions.FAB";
 export type {
   FilterButtonGroupProps,

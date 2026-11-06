@@ -54,6 +54,7 @@ export function toRowItem<T>(item: T, index: number, mapKeys?: RowKeys<T>): IRow
   if (typeof item === "string" || typeof item === "number") {
     return {
       id: item,
+      index,
       rowTitle: String(item),
       rowSubtitle: undefined,
       readonly: false,
@@ -62,11 +63,11 @@ export function toRowItem<T>(item: T, index: number, mapKeys?: RowKeys<T>): IRow
 
   const rowItem = Object.create(Object.getPrototypeOf(item));
   Object.assign(rowItem, item, {
-    id: item[mapper.id!] || "N/A",
-    index: index,
-    rowTitle: item[mapper.rowTitle!] || "N/A",
-    rowSubtitle: item[mapper.rowSubtitle!] || undefined,
-    readonly: item[mapper.readOnly!] || false,
+    id: item[mapper.id!] ?? index,
+    index,
+    rowTitle: item[mapper.rowTitle!] ?? "N/A",
+    rowSubtitle: item[mapper.rowSubtitle!] ?? undefined,
+    readonly: item[mapper.readOnly!] ?? false,
   });
 
   return rowItem as IRowItem<T>;

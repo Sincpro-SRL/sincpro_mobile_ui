@@ -23,6 +23,8 @@ export interface SheetProps {
   visible: boolean;
   onClose: () => void;
   children: ReactNode;
+  footer?: ReactNode;
+  footerClassName?: string;
   title?: string;
   /** Max sheet height (fraction of the screen). Default 0.9. */
   maxHeightRatio?: number;
@@ -44,6 +46,8 @@ function Sheet({
   visible,
   onClose,
   children,
+  footer,
+  footerClassName,
   title,
   maxHeightRatio = 0.9,
   dismissOnBackdrop = false,
@@ -157,9 +161,23 @@ function Sheet({
               ) : null}
             </View>
           ) : null}
-          <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 4 }}>
+          <ScrollView
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingTop: 4,
+              paddingBottom: footer ? 12 : 0,
+            }}
+            style={{ flexShrink: 1 }}
+          >
             {children}
           </ScrollView>
+          {footer ? (
+            <View
+              className={`border-t border-border-light px-4 pt-3 ${footerClassName ?? ""}`}
+            >
+              {footer}
+            </View>
+          ) : null}
         </Animated.View>
       </View>
     </Modal>

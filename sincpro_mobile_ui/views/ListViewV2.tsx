@@ -188,6 +188,11 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
   const { name, onSearch } = useListView();
   const [query, setQuery] = useState<string>(searchQuery);
   const [debouncedQuery, setDebouncedQuery] = useState<string>(searchQuery);
+  const onSearchRef = React.useRef(onSearch);
+
+  useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -198,10 +203,10 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
   }, [query]);
 
   useEffect(() => {
-    if (onSearch && debouncedQuery !== undefined) {
-      onSearch(debouncedQuery);
+    if (debouncedQuery !== undefined) {
+      onSearchRef.current?.(debouncedQuery);
     }
-  }, [debouncedQuery, onSearch]);
+  }, [debouncedQuery]);
 
   if (!onSearch) {
     return null;
@@ -483,7 +488,7 @@ function ContentList({
         data={rowItems}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        keyExtractor={(item) => String(item.index)}
+        keyExtractor={(item) => String(item.id ?? item.index)}
         ListFooterComponent={
           loadingMore ? (
             <View className="py-4">

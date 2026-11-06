@@ -1,0 +1,41 @@
+appId: host.exp.Exponent
+name: Dock overlay, gestures, keyboard and persistent action
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=components-actions--action-dock"
+- assertVisible: "Pedido #1024"
+- swipe:
+    from:
+      id: "story-dock-handle"
+    direction: UP
+    duration: 600
+- assertVisible: "Detalle del pedido"
+- tapOn: "Marcar como revisado"
+- scrollUntilVisible:
+    element:
+      id: "dock-note"
+- tapOn:
+    id: "dock-note"
+- inputText: "Entrega por la tarde"
+- tapOn: "Ocultar opciones"
+- assertVisible: "Pedido revisado"
+- assertVisible: "Nota: Entrega por la tarde"
+- tapOn: "Más opciones"
+- assertVisible: "Detalle del pedido"
+- tapOn:
+    point: "50%, 15%"
+- assertNotVisible: "Detalle del pedido"
+- tapOn: "Más opciones"
+- scrollUntilVisible:
+    element: "Opción adicional 8"
+- assertVisible: "Confirmar pedido"
+- swipe:
+    from:
+      id: "story-dock-handle"
+    direction: DOWN
+    duration: 600
+- assertNotVisible: "Detalle del pedido"
+- tapOn: "Más opciones"
+- tapOn: "Confirmar pedido"
+- assertVisible: "Pedido confirmado"
+- assertNotVisible: "Detalle del pedido"

@@ -1,0 +1,47 @@
+appId: host.exp.Exponent
+name: Record list, copy, edit and cancel
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-record-detail--list-to-detail"
+- assertVisible: "Registros"
+- tapOn: "Ver ORD-000123"
+- assertVisible: "Detalle del registro"
+- tapOn: "Copiar Referencia"
+- assertVisible: "Copiar Referencia.*Copiado"
+- scrollUntilVisible:
+    element: "Editar cliente"
+- tapOn: "Editar cliente"
+- scrollUntilVisible:
+    element: "Nombre del cliente"
+- tapOn:
+    id: "ux-client-input"
+- eraseText
+- inputText: "Cliente actualizado"
+- assertVisible: "Cliente actualizado"
+- hideKeyboard
+- scrollUntilVisible:
+    element: "Guardar cambios"
+- tapOn: "Guardar cambios"
+- scrollUntilVisible:
+    element: "Cambios guardados"
+- assertVisible: "Cambios guardados"
+- scrollUntilVisible:
+    element: "Volver a registros"
+- tapOn: "Volver a registros"
+- assertVisible: "Cliente actualizado"
+- tapOn: "Ver ORD-000123"
+- scrollUntilVisible:
+    element: "Editar cliente"
+- tapOn: "Editar cliente"
+- scrollUntilVisible:
+    element: "Nombre del cliente"
+- tapOn:
+    id: "ux-client-input"
+- eraseText
+- inputText: "Cambio descartado"
+- assertVisible: "Cambio descartado"
+- hideKeyboard
+- scrollUntilVisible:
+    element: "Cancelar"
+- tapOn: "Cancelar"
+- assertNotVisible: "Cambio descartado"

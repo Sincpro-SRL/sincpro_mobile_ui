@@ -16,6 +16,8 @@ export interface SwipeRowAction {
 
 export interface SwipeableRowProps {
   children: ReactNode;
+  /** Visible alternative for essential swipe actions. */
+  visibleActions?: ReactNode;
   rightActions?: SwipeRowAction[];
   leftActions?: SwipeRowAction[];
   testID?: string;
@@ -62,7 +64,13 @@ function ActionButtons({
   );
 }
 
-function SwipeableRow({ children, rightActions, leftActions, testID }: SwipeableRowProps) {
+function SwipeableRow({
+  children,
+  visibleActions,
+  rightActions,
+  leftActions,
+  testID,
+}: SwipeableRowProps) {
   const ref = useRef<SwipeableMethods>(null);
   const close = () => ref.current?.close();
 
@@ -82,6 +90,7 @@ function SwipeableRow({ children, rightActions, leftActions, testID }: Swipeable
       testID={testID}
     >
       {children}
+      {visibleActions ? <View className="flex-row">{visibleActions}</View> : null}
     </Swipeable>
   );
 }

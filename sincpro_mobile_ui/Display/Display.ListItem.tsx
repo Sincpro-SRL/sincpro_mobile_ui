@@ -19,6 +19,8 @@ export interface ListItemProps {
   showDivider?: boolean;
   className?: string;
   testID?: string;
+  accessibleSizing?: boolean;
+  accessibilityLabel?: string;
 }
 
 function ListItem({
@@ -31,6 +33,8 @@ function ListItem({
   showDivider = true,
   className,
   testID,
+  accessibleSizing = false,
+  accessibilityLabel,
 }: ListItemProps) {
   const right =
     trailing ??
@@ -41,7 +45,7 @@ function ListItem({
       <View className="flex-1 gap-0.5">
         <Typography.Text
           className="text-text-primary"
-          numberOfLines={1}
+          numberOfLines={accessibleSizing ? undefined : 1}
           semibold
           variant="body"
         >
@@ -50,7 +54,7 @@ function ListItem({
         {subtitle ? (
           <Typography.Text
             className="text-text-secondary"
-            numberOfLines={1}
+            numberOfLines={accessibleSizing ? undefined : 1}
             variant="bodySmall"
           >
             {subtitle}
@@ -69,7 +73,13 @@ function ListItem({
 
   if (onPress) {
     return (
-      <Pressable className={base} onPress={onPress} testID={testID}>
+      <Pressable
+        accessibilityLabel={accessibilityLabel}
+        className={base}
+        onPress={onPress}
+        style={accessibleSizing ? { minHeight: 48 } : undefined}
+        testID={testID}
+      >
         {content}
       </Pressable>
     );

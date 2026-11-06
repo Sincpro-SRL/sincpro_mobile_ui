@@ -1,10 +1,11 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { vars } from "nativewind";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Modal, Pressable as RNPressable, ScrollView, View } from "react-native";
+import { Animated, Modal, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface SelectOption<T extends string | number> {
@@ -20,8 +21,10 @@ export interface SelectProps<T extends string | number> {
   placeholder?: string;
   title?: string;
   disabled?: boolean;
+  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
+  showCloseButton?: boolean;
 }
 
 function Select<T extends string | number>({
@@ -32,9 +35,12 @@ function Select<T extends string | number>({
   placeholder = "Seleccionar…",
   title,
   disabled = false,
+  accessibleSizing = false,
   className,
   testID,
+  showCloseButton = accessibleSizing,
 }: SelectProps<T>) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value) ?? null;
@@ -64,10 +70,17 @@ function Select<T extends string | number>({
 
       <Pressable
         accessibilityHint="Abre la lista de opciones"
-        accessibilityLabel={label ?? placeholder}
+        accessibilityLabel={
+          label
+            ? `${label}: ${selected?.label ?? placeholder}`
+            : (selected?.label ?? placeholder)
+        }
         accessibilityRole="button"
-        accessibilityState={{ disabled }}
-        className="flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3 min-h-[44px]"
+        accessibilityState={{ disabled, expanded: open }}
+        className={cn(
+          "flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3",
+          accessibleSizing ? "min-h-[48px]" : "min-h-[44px]",
+        )}
         disabled={disabled}
         onPress={() => setOpen(true)}
       >
@@ -76,7 +89,8 @@ function Select<T extends string | number>({
             "flex-1 text-sm",
             selected ? "text-text-primary" : "text-text-tertiary",
           )}
-          numberOfLines={1}
+          numberOfLines={accessibleSizing ? undefined : 1}
+          style={accessibleSizing ? { paddingVertical: 12 } : undefined}
         >
           {selected ? selected.label : placeholder}
         </Typography.Text>
@@ -90,63 +104,92 @@ function Select<T extends string | number>({
         transparent
         visible={open}
       >
-        <RNPressable
-          className="flex-1 justify-end bg-black/50"
-          onPress={() => setOpen(false)}
-        >
-          <Animated.View style={{ transform: [{ translateY }] }}>
-            <RNPressable
-              className="rounded-t-3xl"
-              style={{
+        <View className="flex-1 justify-end">
+          <View
+            accessibilityElementsHidden
+            className="absolute inset-0 bg-black/50"
+            importantForAccessibility="no-hide-descendants"
+            onResponderRelease={() => setOpen(false)}
+            onStartShouldSetResponder={() => true}
+          />
+          <Animated.View
+            accessibilityViewIsModal
+            className="rounded-t-3xl"
+            importantForAccessibility="yes"
+            onAccessibilityEscape={() => setOpen(false)}
+            style={[
+              vars(themeToVars(theme)),
+              {
+                transform: [{ translateY }],
+                maxHeight: "70%",
                 backgroundColor: theme.bg.card,
                 paddingBottom: insets.bottom + 8,
-                maxHeight: "70%",
-              }}
-            >
-              <View className="items-center pt-3 pb-1">
-                <View className="w-10 h-1 rounded-full bg-border-strong" />
-              </View>
-              {title ? (
+              },
+            ]}
+          >
+            <View className="items-center pt-3 pb-1">
+              <View className="w-10 h-1 rounded-full bg-border-strong" />
+            </View>
+            {title || showCloseButton ? (
+              <View className="flex-row items-center justify-between px-4">
                 <Typography.Text
-                  className="text-text-primary px-4 py-2"
+                  accessibilityRole="header"
+                  className="flex-1 text-text-primary py-2"
                   semibold
                   variant="body"
                 >
-                  {title}
+                  {title ?? label ?? "Seleccionar"}
                 </Typography.Text>
-              ) : null}
-              <ScrollView>
-                {options.map((option) => {
-                  const isSelected = option.value === value;
-                  return (
-                    <Pressable
-                      accessibilityRole="menuitem"
-                      accessibilityState={{ selected: isSelected }}
-                      className="flex-row items-center justify-between px-4 py-3 border-b border-border-light"
-                      key={String(option.value)}
-                      onPress={() => {
-                        onChange(option.value);
-                        setOpen(false);
-                      }}
+                {showCloseButton ? (
+                  <Pressable
+                    accessibilityLabel="Cerrar opciones"
+                    onPress={() => setOpen(false)}
+                    style={{
+                      minWidth: 48,
+                      minHeight: 48,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography.Text className="text-text-accent" variant="bodySmall">
+                      Cerrar
+                    </Typography.Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            ) : null}
+            <ScrollView>
+              {options.map((option) => {
+                const isSelected = option.value === value;
+                return (
+                  <Pressable
+                    accessibilityRole="menuitem"
+                    accessibilityState={{ selected: isSelected }}
+                    className="flex-row items-center justify-between px-4 py-3 border-b border-border-light"
+                    key={String(option.value)}
+                    onPress={() => {
+                      onChange(option.value);
+                      setOpen(false);
+                    }}
+                    style={accessibleSizing ? { minHeight: 48 } : undefined}
+                  >
+                    <Typography.Text
+                      className={cn(
+                        "flex-1 text-sm",
+                        isSelected ? "text-text-accent font-semibold" : "text-text-primary",
+                      )}
                     >
-                      <Typography.Text
-                        className={cn(
-                          "flex-1 text-sm",
-                          isSelected ? "text-text-accent font-semibold" : "text-text-primary",
-                        )}
-                      >
-                        {option.label}
-                      </Typography.Text>
-                      {isSelected ? (
-                        <Icon color={theme.text.accent} name="checkmark" size={18} />
-                      ) : null}
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </RNPressable>
+                      {option.label}
+                    </Typography.Text>
+                    {isSelected ? (
+                      <Icon color={theme.text.accent} name="checkmark" size={18} />
+                    ) : null}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </Animated.View>
-        </RNPressable>
+        </View>
       </Modal>
     </View>
   );

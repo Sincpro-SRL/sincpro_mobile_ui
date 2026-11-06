@@ -52,7 +52,12 @@ function Banner({
   const icon = iconByTone[tone ?? "info"];
 
   return (
-    <View className={styles.root({ className })} testID={testID}>
+    <View
+      accessibilityLiveRegion={tone === "danger" ? "assertive" : "polite"}
+      accessibilityRole={tone === "danger" ? "alert" : undefined}
+      className={styles.root({ className })}
+      testID={testID}
+    >
       <Icon color={icon.color} name={icon.name} size={20} />
       <View className="flex-1 gap-0.5">
         {title ? <Typography.Text className={styles.title()}>{title}</Typography.Text> : null}
@@ -60,7 +65,12 @@ function Banner({
         {action ? <View className="mt-2">{action}</View> : null}
       </View>
       {onClose ? (
-        <Pressable accessibilityLabel="Cerrar" hitSlop={8} onPress={onClose}>
+        <Pressable
+          accessibilityLabel="Cerrar"
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={onClose}
+        >
           <Icon color={theme.icon.secondary} name="close" size={18} />
         </Pressable>
       ) : null}

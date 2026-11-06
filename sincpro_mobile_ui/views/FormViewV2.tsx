@@ -26,10 +26,35 @@ interface FormViewProps<T> {
   errorMessage?: string;
   readonly?: boolean;
   onRefresh?: () => Promise<void>;
+  onRefreshError?: (error: unknown) => void;
   onRetry?: () => void;
   onBack?: () => void;
   withContainer?: boolean;
   children: ReactNode;
+}
+
+const RefreshErrorContext = React.createContext<((error: unknown) => void) | undefined>(
+  undefined,
+);
+
+export async function refreshFormData(
+  onRefresh: (() => Promise<void>) | undefined,
+  onRefreshError: ((error: unknown) => void) | undefined,
+  setShowRefreshing: (value: boolean) => void,
+): Promise<void> {
+  setShowRefreshing(true);
+  try {
+    await onRefresh?.();
+  } catch (error) {
+    console.error("[FormViewV2] Refresh failed", error);
+    try {
+      onRefreshError?.(error);
+    } catch (callbackError) {
+      console.error("[FormViewV2] onRefreshError callback failed", callbackError);
+    }
+  } finally {
+    setShowRefreshing(false);
+  }
 }
 
 function FormViewRoot<T>({
@@ -42,6 +67,7 @@ function FormViewRoot<T>({
   errorMessage,
   readonly = false,
   onRefresh,
+  onRefreshError,
   onRetry,
   onBack,
   withContainer = true,
@@ -66,9 +92,11 @@ function FormViewRoot<T>({
       onRetry={onRetry}
       readonly={readonly}
     >
-      <ErrorBoundary>
-        <Wrapper {...wrapperProps}>{children}</Wrapper>
-      </ErrorBoundary>
+      <RefreshErrorContext.Provider value={onRefreshError}>
+        <ErrorBoundary>
+          <Wrapper {...wrapperProps}>{children}</Wrapper>
+        </ErrorBoundary>
+      </RefreshErrorContext.Provider>
     </FormViewProvider>
   );
 }
@@ -169,14 +197,11 @@ function Content({
   } = useFormView();
   const bottomInset = useBottomInset();
   const theme = useTheme();
+  const onRefreshError = React.useContext(RefreshErrorContext);
 
   const handleRefresh = React.useCallback(async () => {
-    setShowRefreshing(true);
-    if (onRefresh) {
-      await onRefresh();
-    }
-    setShowRefreshing(false);
-  }, [onRefresh, setShowRefreshing]);
+    await refreshFormData(onRefresh, onRefreshError, setShowRefreshing);
+  }, [onRefresh, onRefreshError, setShowRefreshing]);
 
   const isCenteredContent = isLoading || isEmpty || !item || hasError;
 

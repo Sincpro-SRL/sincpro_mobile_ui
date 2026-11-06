@@ -29,6 +29,8 @@ export interface AppBarActionProps {
   onDark?: boolean;
   /** Drop the contained surface → bare icon/text (iOS-style plain back/action). */
   bare?: boolean;
+  /** Increase the action target to 48 points. */
+  accessibleSizing?: boolean;
   testID?: string;
 }
 
@@ -46,6 +48,7 @@ function AppBarAction({
   tone = "plain",
   onDark = false,
   bare = false,
+  accessibleSizing = false,
   testID,
 }: AppBarActionProps) {
   const theme = useTheme();
@@ -76,7 +79,7 @@ function AppBarAction({
         hitSlop={6}
         onPress={onPress}
         style={{
-          height: 36,
+          height: accessibleSizing ? 48 : 36,
           paddingHorizontal: 14,
           borderRadius: 999,
           backgroundColor: bg,
@@ -100,8 +103,8 @@ function AppBarAction({
       hitSlop={6}
       onPress={onPress}
       style={{
-        width: 40,
-        height: 40,
+        width: accessibleSizing ? 48 : 40,
+        height: accessibleSizing ? 48 : 40,
         borderRadius: 12,
         backgroundColor: bg,
         ...(showBorder ? { borderWidth: 1, borderColor: theme.border.light } : null),
@@ -146,6 +149,8 @@ export interface AppBarProps {
   border?: boolean;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
+  /** Increase the back-action target to 48 points. */
+  accessibleSizing?: boolean;
   /**
    * [large variant] Extra top padding (px) above the large title row.
    * Default is 8. Use ~16–24 on root/home screens without a back button.
@@ -223,6 +228,7 @@ function AppBar({
   backVariant = "contained",
   border = true,
   safeArea = true,
+  accessibleSizing = false,
   topSpacing,
   background,
   bottomDivider,
@@ -325,6 +331,7 @@ function AppBar({
             {onBack ? (
               <AppBarAction
                 accessibilityLabel="Volver"
+                accessibleSizing={accessibleSizing}
                 bare={backVariant === "plain"}
                 icon="chevron-back"
                 onDark={dark || gradient || hasBackground}
@@ -337,6 +344,7 @@ function AppBar({
           <View className={cn("flex-1", centered && "items-center")}>
             {title ? (
               <Typography.Text
+                accessibilityRole="header"
                 className={colored ? "" : "text-text-primary"}
                 numberOfLines={1}
                 semibold
@@ -373,6 +381,7 @@ function AppBar({
           {onBack ? (
             <AppBarAction
               accessibilityLabel="Volver"
+              accessibleSizing={accessibleSizing}
               bare={backVariant === "plain"}
               icon="chevron-back"
               onDark={dark || gradient || hasBackground}
@@ -393,6 +402,7 @@ function AppBar({
           ) : null}
           <View className="flex-1">
             <Typography.Text
+              accessibilityRole="header"
               className={colored ? "" : "text-text-primary"}
               style={titleStyle}
               variant="h2"

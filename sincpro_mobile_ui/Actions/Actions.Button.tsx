@@ -5,8 +5,8 @@ import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { FC, useCallback } from "react";
+import type { AccessibilityProps } from "react-native";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
-import { runOnJS } from "react-native-reanimated";
 
 // ─── Style variants ───────────────────────────────────────────────────────────
 
@@ -163,7 +163,7 @@ const textVariantMap = {
 
 // ─── Button ───────────────────────────────────────────────────────────────────
 
-export interface ButtonProps extends VariantProps<typeof button> {
+export interface ButtonProps extends VariantProps<typeof button>, AccessibilityProps {
   title: string;
   onPress?: () => void;
   confirm?: string;
@@ -171,6 +171,8 @@ export interface ButtonProps extends VariantProps<typeof button> {
   disabled?: boolean;
   className?: string;
   icon?: React.ReactNode;
+  testID?: string;
+  accessibleSizing?: boolean;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -183,6 +185,11 @@ const Button: FC<ButtonProps> = ({
   disabled = false,
   className,
   icon,
+  testID,
+  accessibleSizing = false,
+  accessibilityLabel,
+  accessibilityState,
+  ...accessibilityProps
 }) => {
   const { show, hide } = useConfirmationContext();
   const textColorClass = textColor({ variant: variant as any, disabled });
@@ -198,12 +205,12 @@ const Button: FC<ButtonProps> = ({
         cancelText: "Cancelar",
         onConfirm: () => {
           hide();
-          runOnJS(onPress)();
+          onPress();
         },
         onCancel: () => hide(),
       });
     } else if (onPress) {
-      runOnJS(onPress)();
+      onPress();
     }
   }, [onPress, confirm, show, hide]);
 
@@ -214,6 +221,20 @@ const Button: FC<ButtonProps> = ({
         className={className}
         disabled={disabled || loading}
         onPress={handlePress}
+        {...accessibilityProps}
+        accessibilityLabel={accessibilityLabel ?? title}
+        accessibilityRole="button"
+        accessibilityState={{
+          ...accessibilityState,
+          disabled: disabled || loading,
+          busy: loading,
+        }}
+        style={
+          accessibleSizing
+            ? { minHeight: 48, minWidth: 48, justifyContent: "center" }
+            : undefined
+        }
+        testID={testID}
       >
         {loading ? (
           <ActivityIndicator color={loadingColorValue} size="small" />
@@ -234,6 +255,16 @@ const Button: FC<ButtonProps> = ({
       className={button({ variant, size, disabled, className })}
       disabled={disabled || loading}
       onPress={handlePress}
+      {...accessibilityProps}
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityRole="button"
+      accessibilityState={{
+        ...accessibilityState,
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      testID={testID}
     >
       {loading ? (
         <ActivityIndicator color={loadingColorValue} size="small" />
@@ -241,10 +272,10 @@ const Button: FC<ButtonProps> = ({
         <>
           {icon ? <View className="mr-2">{icon}</View> : null}
           <Typography.Text
-            allowFontScaling={false}
+            allowFontScaling={accessibleSizing}
             className={textColorClass}
             ellipsizeMode="tail"
-            numberOfLines={1}
+            numberOfLines={accessibleSizing ? undefined : 1}
             semibold={emphasize}
             variant={textVariantValue}
           >
@@ -258,13 +289,15 @@ const Button: FC<ButtonProps> = ({
 
 // ─── ButtonIcon ───────────────────────────────────────────────────────────────
 
-export interface ButtonIconProps extends VariantProps<typeof buttonIcon> {
+export interface ButtonIconProps extends VariantProps<typeof buttonIcon>, AccessibilityProps {
   icon: string;
   onPress?: () => void;
   confirm?: string;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
+  testID?: string;
+  accessibleSizing?: boolean;
 }
 
 const ButtonIcon: FC<ButtonIconProps> = ({
@@ -276,6 +309,10 @@ const ButtonIcon: FC<ButtonIconProps> = ({
   loading = false,
   disabled = false,
   className,
+  testID,
+  accessibleSizing = false,
+  accessibilityState,
+  ...accessibilityProps
 }) => {
   const { show, hide } = useConfirmationContext();
   const iconColorValue = getIconColor(variant as any, disabled);
@@ -291,12 +328,12 @@ const ButtonIcon: FC<ButtonIconProps> = ({
         cancelText: "Cancelar",
         onConfirm: () => {
           hide();
-          runOnJS(onPress)();
+          onPress();
         },
         onCancel: () => hide(),
       });
     } else if (onPress) {
-      runOnJS(onPress)();
+      onPress();
     }
   }, [onPress, confirm, show, hide]);
 
@@ -306,6 +343,15 @@ const ButtonIcon: FC<ButtonIconProps> = ({
       className={buttonIcon({ variant, size, disabled, className })}
       disabled={disabled || loading}
       onPress={handlePress}
+      {...accessibilityProps}
+      accessibilityRole="button"
+      accessibilityState={{
+        ...accessibilityState,
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      testID={testID}
     >
       {loading ? (
         <ActivityIndicator color={loadingColorValue} size="small" />

@@ -1,7 +1,8 @@
-import { Display } from "@sincpro/mobile-ui/Display";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { IconType } from "@sincpro/mobile-ui/utils/icon";
+import type { AccessibilityProps } from "react-native";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 
 const iconButton = tv({
@@ -33,13 +34,15 @@ const iconButton = tv({
   },
 });
 
-export interface IconButtonProps extends VariantProps<typeof iconButton> {
+export interface IconButtonProps extends VariantProps<typeof iconButton>, AccessibilityProps {
   icon?: string;
   type?: IconType;
   onPress: () => void;
   loading?: boolean;
   iconColor?: string;
   className?: string;
+  testID?: string;
+  accessibleSizing?: boolean;
 }
 
 function IconButton({
@@ -53,6 +56,10 @@ function IconButton({
   rounded = false,
   iconColor,
   className,
+  testID,
+  accessibleSizing = false,
+  accessibilityState,
+  ...accessibilityProps
 }: IconButtonProps) {
   const resolvedColor = iconColor ?? theme.text.accent;
 
@@ -62,11 +69,20 @@ function IconButton({
       className={iconButton({ variant, size, rounded, disabled, className })}
       disabled={disabled || loading}
       onPress={onPress}
+      {...accessibilityProps}
+      accessibilityRole="button"
+      accessibilityState={{
+        ...accessibilityState,
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      testID={testID}
     >
       {loading ? (
         <ActivityIndicator color={resolvedColor} size="small" />
       ) : (
-        <Display.Icon color={resolvedColor} name={icon} size={24} type={type} />
+        <Icon color={resolvedColor} name={icon} size={24} type={type} />
       )}
     </TouchableOpacity>
   );

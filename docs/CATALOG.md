@@ -15,9 +15,22 @@
 
 ## Components
 
+### Typography
+
+`Typography.Text`, `Typography.Heading`, `Typography.SelectableText`.
+`SelectableText value` uses a read-only multiline native control with range handles and no
+keyboard, preserving configured fonts and tokens. Use it for passages where selecting a
+fragment matters. On iOS, `Text selectable` only offers full-paragraph copying.
+
 ### Actions
 
 `Actions.Button` (variants primary/cta/secondary/outline/…), `Actions.IconButton`, `Actions.FAB`, `Navigation.AppBar.Action`. (`Form.Button` / `Form.IconButton` / `Form.FAB` exist as deprecated aliases.)
+
+Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
+alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
+alternative. Existing variants are retained; `primary` and `cta` currently share styling.
+Use `accessibleSizing` on buttons/icon buttons for a 48-point minimum, multiline/scaled
+button text, and a supplied accessible name for icon-only actions.
 
 ### Inputs (`Form`)
 
@@ -26,6 +39,13 @@
 ### Data Display (`Display`)
 
 `Card`, `Chip`, `Tag`, `Badge`, `Avatar`, `AvatarGroup`, `Accordion`, `ListItem`, `KeyValue`, `DataTable`, `Stat`, `StatCard`, `Rating`, `SwipeableRow`, `SectionHeader`, `Timeline`, `Image`, `Carousel`, `Tooltip`, `StatusDot` (presence), `Divider`, `Monetary`, `Date` (variants `inline`/`withIcon`/`pill` + `relative`), `CopyableText`, `CountRecords`, `Logo`, `Icon`, `IconBadge` (icon + count/dot).
+
+`CopyableText` presents short values as tap-to-copy text with a familiar copy icon,
+pending spinner and transient checkmark without layout shift. `selectable` preserves native
+selection of longer text and separates the full-copy action; failures remain visible/retryable
+and results are announced. `KeyValue copyable` requires a string or number and forwards
+`selectable`; `align="auto"` stacks on narrow screens or enlarged text.
+`SectionHeader` exposes header semantics.
 
 ### Commerce (`Display`)
 
@@ -47,6 +67,22 @@
 
 `Sheet` (bottom sheet on RN Modal — subpath `Dialog/Sheet`, swipe-down to close), `ActionSheet`, `Confirmation` (+`ConfirmationProvider`), `EditValue`.
 
+`NativeSheet` — optional subpath `Dialog/NativeSheet`, backed by Expo 58
+`@expo/ui/community/bottom-sheet`. SwiftUI presentation on iOS and Material3 on Android,
+with tokenized React Native content, visible close action and scrolling. Requires the optional
+`@expo/ui` peer installed in the host. Intentionally absent from root/category barrels.
+Its two detents are 60%/90% on iOS; Android uses native partial/expanded states rather than
+arbitrary percentages. This is additive; it does not replace `Sheet`.
+
+Use `Sheet showCloseButton` for a visible, named close action; accessible escape is also
+supported. Essential swipe actions must have an equivalent visible action:
+`SwipeableRow visibleActions` provides a composition slot.
+
+`ActionSheet` uses named actions, 48-point targets, scrollable choices and persistent
+cancellation. Theme variables are reapplied inside native modal portals. Stories under
+`Patterns/UX/Mobile tasks` demonstrate explicit row actions, undo, draft filters and
+selection cancellation; do not nest sheets.
+
 ### Layout (`…/layouts`)
 
 `Container`, `ScrollContainer`, `GradientContainer`, `AuthContainer`, `PlainLayout`.
@@ -58,13 +94,13 @@
 
 ## Legacy (deprecated — `@deprecated`, still exported)
 
-| Piece                                                                              | Replacement                                 |
-| ---------------------------------------------------------------------------------- | ------------------------------------------- |
-| `Navigation.Header`, `HeaderToolbar`, `widgets.ScreenHeader`, `widgets.HomeHeader` | `Navigation.AppBar`                         |
-| `widgets.CircleButton`                                                             | `Actions.IconButton` / `AppBar.Action`      |
-| `Form.SearchBar`                                                                   | `Navigation.SearchBar`                      |
+| Piece                                                                              | Replacement                                             |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `Navigation.Header`, `HeaderToolbar`, `widgets.ScreenHeader`, `widgets.HomeHeader` | `Navigation.AppBar`                                     |
+| `widgets.CircleButton`                                                             | `Actions.IconButton` / `AppBar.Action`                  |
+| `Form.SearchBar`                                                                   | `Navigation.SearchBar`                                  |
 | `Form.Button` / `Form.IconButton` / `Form.FAB`                                     | `Actions.Button` / `Actions.IconButton` / `Actions.FAB` |
-| `layouts.TabNavigatorLayout`                                                       | `Navigation.BottomNav` + core router layout |
-| `Dialog.BottomSheet` (custom)                                                      | `Dialog.Sheet` (RN Modal)                   |
+| `layouts.TabNavigatorLayout`                                                       | `Navigation.BottomNav` + core router layout             |
+| `Dialog.BottomSheet` (custom)                                                      | `Dialog.Sheet` (RN Modal)                               |
 
 `*` optional peer (`@react-native-community/slider`, `@react-native-community/datetimepicker`). `@expo/ui` is an optional peer for future native primitives (Switch/ContextMenu). `Dialog.Sheet` needs no native deps (RN Modal).

@@ -22,6 +22,7 @@ interface FormInputProps extends TextInputProps {
   error?: string;
   tooltip?: string;
   className?: string;
+  accessibleSizing?: boolean;
 }
 
 function FormInput({
@@ -34,6 +35,7 @@ function FormInput({
   onFocus,
   onBlur,
   className,
+  accessibleSizing = false,
   ...props
 }: FormInputProps) {
   const [isFocused, setIsFocused] = useState(false);
@@ -62,6 +64,8 @@ function FormInput({
       </Typography.Text>
       <View className={inputContainer({ state: getState() })}>
         <TextInput
+          accessibilityHint={error || tooltip}
+          accessibilityLabel={label}
           className={cn(
             "px-3 py-2.5 text-sm min-h-[44px] text-text-primary",
             multiline && "min-h-[64px] pt-2.5",
@@ -72,13 +76,18 @@ function FormInput({
           onFocus={handleFocus}
           placeholderTextColor={theme.text.tertiary}
           selectionColor={theme.primary}
+          style={[accessibleSizing ? { minHeight: 48 } : undefined, style]}
           textAlignVertical={multiline ? "top" : "center"}
           underlineColorAndroid="transparent"
           {...props}
         />
       </View>
       {hasError && (
-        <Typography.Text className="mt-0.5 text-danger" variant="bodySmall">
+        <Typography.Text
+          accessibilityLiveRegion="polite"
+          className="mt-0.5 text-danger"
+          variant="bodySmall"
+        >
           {error}
         </Typography.Text>
       )}

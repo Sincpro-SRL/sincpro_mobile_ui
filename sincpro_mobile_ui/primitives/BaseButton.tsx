@@ -4,6 +4,7 @@ import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
 import { FC } from "react";
+import type { AccessibilityProps } from "react-native";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 
 // ============================================================================
@@ -213,13 +214,15 @@ function getTextVariant(size: string): "buttonSmall" | "button" | "buttonLarge" 
 // BASE BUTTON COMPONENT (NO Dialog dependency)
 // ============================================================================
 
-export interface BaseButtonProps extends VariantProps<typeof button> {
+export interface BaseButtonProps extends VariantProps<typeof button>, AccessibilityProps {
   title: string;
   onPress?: () => void;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
   icon?: React.ReactNode;
+  accessibleSizing?: boolean;
+  testID?: string;
 }
 
 export const BaseButton: FC<BaseButtonProps> = ({
@@ -231,6 +234,11 @@ export const BaseButton: FC<BaseButtonProps> = ({
   disabled = false,
   className,
   icon,
+  accessibleSizing = false,
+  testID,
+  accessibilityLabel,
+  accessibilityState,
+  ...accessibilityProps
 }) => {
   const textColorClass = textColor({
     variant: (variant as any) ?? "primary",
@@ -246,6 +254,20 @@ export const BaseButton: FC<BaseButtonProps> = ({
         className={className}
         disabled={disabled || loading}
         onPress={onPress}
+        {...accessibilityProps}
+        accessibilityLabel={accessibilityLabel ?? title}
+        accessibilityRole="button"
+        accessibilityState={{
+          ...accessibilityState,
+          disabled: disabled || loading,
+          busy: loading,
+        }}
+        style={
+          accessibleSizing
+            ? { minHeight: 48, minWidth: 48, justifyContent: "center" }
+            : undefined
+        }
+        testID={testID}
       >
         {loading ? (
           <ActivityIndicator color={loadingColorValue} size="small" />
@@ -264,6 +286,16 @@ export const BaseButton: FC<BaseButtonProps> = ({
       className={button({ variant, size, disabled, className })}
       disabled={disabled || loading}
       onPress={onPress}
+      {...accessibilityProps}
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityRole="button"
+      accessibilityState={{
+        ...accessibilityState,
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      testID={testID}
     >
       {icon && !loading && <View className="mr-2">{icon}</View>}
       {loading ? (
@@ -285,12 +317,15 @@ export const BaseButton: FC<BaseButtonProps> = ({
 // BASE BUTTON ICON COMPONENT (NO Dialog dependency)
 // ============================================================================
 
-export interface BaseButtonIconProps extends VariantProps<typeof buttonIcon> {
+export interface BaseButtonIconProps
+  extends VariantProps<typeof buttonIcon>, AccessibilityProps {
   icon: string;
   onPress?: () => void;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
+  accessibleSizing?: boolean;
+  testID?: string;
 }
 
 export const BaseButtonIcon: FC<BaseButtonIconProps> = ({
@@ -301,6 +336,10 @@ export const BaseButtonIcon: FC<BaseButtonIconProps> = ({
   loading = false,
   disabled = false,
   className,
+  accessibleSizing = false,
+  testID,
+  accessibilityState,
+  ...accessibilityProps
 }) => {
   const iconColorValue = getIconColor((variant as any) ?? "primary", disabled);
   const loadingColorValue = getLoadingColor((variant as any) ?? "primary");
@@ -312,6 +351,15 @@ export const BaseButtonIcon: FC<BaseButtonIconProps> = ({
       className={buttonIcon({ variant, size, disabled, className })}
       disabled={disabled || loading}
       onPress={onPress}
+      {...accessibilityProps}
+      accessibilityRole="button"
+      accessibilityState={{
+        ...accessibilityState,
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      testID={testID}
     >
       {loading ? (
         <ActivityIndicator color={loadingColorValue} size="small" />

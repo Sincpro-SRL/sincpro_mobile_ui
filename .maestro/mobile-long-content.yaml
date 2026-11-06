@@ -1,0 +1,25 @@
+appId: host.exp.Exponent
+name: Long native summary keeps readable content and visible close
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-mobile-tasks--long-records"
+- assertVisible: "Registros"
+- tapOn:
+    id: "storybook-theme-toggle"
+- assertVisible: "Activar tema claro"
+- scrollUntilVisible:
+    element: "Abrir resumen del registro"
+- tapOn: "Abrir resumen del registro"
+- assertVisible: "Resumen del registro"
+- assertVisible: "Registro con una referencia descriptiva extensa.*"
+- scrollUntilVisible:
+    element: "Copiar Referencia"
+- tapOn: "Copiar Referencia"
+- assertVisible: "Copiar Referencia.*Copiado"
+- tapOn: "Cerrar"
+- scrollUntilVisible:
+    element:
+      id: "storybook-theme-toggle"
+    direction: UP
+- tapOn:
+    id: "storybook-theme-toggle"

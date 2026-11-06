@@ -62,6 +62,8 @@ export interface BottomNavProps {
   bordered?: boolean;
   /** Token for the active color. `primary` (default) or `accent` (e.g. green CTA brand). */
   activeColor?: "primary" | "accent";
+  /** Increase each tab's target to at least 48 points. */
+  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
 }
@@ -83,6 +85,7 @@ function BottomNav({
   indicator = "none",
   bordered = true,
   activeColor = "primary",
+  accessibleSizing = false,
   className,
   testID,
 }: BottomNavProps) {
@@ -158,7 +161,11 @@ function BottomNav({
             className="flex-row items-center px-4 py-2"
             key={item.key}
             onPress={() => onChange(item.key)}
-            style={{ borderRadius: 999, backgroundColor: activeTint }}
+            style={{
+              borderRadius: 999,
+              backgroundColor: activeTint,
+              ...(accessibleSizing ? { minHeight: 48, minWidth: 48 } : null),
+            }}
           >
             {renderIconNode(item, true, onActive)}
             {item.label ? (
@@ -179,6 +186,7 @@ function BottomNav({
           className="items-center justify-center px-3 py-2"
           key={item.key}
           onPress={() => onChange(item.key)}
+          style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
         >
           {renderIconNode(item, false, inactiveColor)}
         </Pressable>
@@ -204,6 +212,7 @@ function BottomNav({
         className="flex-1 items-center justify-center py-1.5"
         key={item.key}
         onPress={() => onChange(item.key)}
+        style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
       >
         {indicator === "bar" && active ? (
           <View
@@ -294,6 +303,7 @@ function BottomNav({
 
   return (
     <View
+      accessibilityRole="tablist"
       className={cn("flex-row items-center", justify, className)}
       style={containerStyle}
       testID={testID}

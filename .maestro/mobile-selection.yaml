@@ -1,0 +1,13 @@
+appId: host.exp.Exponent
+name: Mobile selection opens and dismisses without changing the value
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-mobile-tasks--long-selection"
+- assertVisible: "Preferencias"
+- tapOn: "Canal de aviso: Seleccionar.*"
+- assertVisible: "Elegir canal de aviso"
+- tapOn: "Cerrar opciones"
+- assertVisible: "No has elegido un canal."
+- tapOn: "Canal de aviso: Seleccionar.*"
+- tapOn: "Correo electrónico"
+- assertVisible: "Canal elegido: Correo electrónico"

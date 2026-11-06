@@ -21,7 +21,7 @@ const NEXT_LABEL: Record<ThemeKey, string> = {
   dark: "☀ Light",
 };
 
-function ThemeFrame({ children }: { children: ReactNode }) {
+function ThemeFrame({ children, screen = false }: { children: ReactNode; screen?: boolean }) {
   const [mode, setMode] = useState<ThemeKey>("light");
   const tokens = THEMES[mode];
 
@@ -32,7 +32,31 @@ function ThemeFrame({ children }: { children: ReactNode }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: tokens.bg.page }}>
+      <Pressable
+        accessibilityLabel={mode === "light" ? "Activar tema oscuro" : "Activar tema claro"}
+        accessibilityRole="button"
+        onPress={toggle}
+        style={{
+          position: screen ? "relative" : "absolute",
+          alignSelf: "flex-end",
+          zIndex: 1,
+          top: screen ? undefined : 8,
+          right: screen ? undefined : 8,
+          margin: screen ? 8 : undefined,
+          minHeight: screen ? 48 : undefined,
+          justifyContent: "center",
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 999,
+          backgroundColor: mode === "dark" ? "#F1F5F9" : "#0F172A",
+        }}
+        testID="storybook-theme-toggle"
+      >
+        <Text style={{ color: mode === "dark" ? "#0F172A" : "#F1F5F9", fontSize: 12 }}>
+          {NEXT_LABEL[mode]}
+        </Text>
+      </Pressable>
       {/*
         Scrollable canvas: short stories stay vertically centered (flexGrow:1 +
         justifyContent:center), tall ones (e.g. AppBar's stacked frames) scroll to the
@@ -42,7 +66,7 @@ function ThemeFrame({ children }: { children: ReactNode }) {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          justifyContent: "center",
+          justifyContent: screen ? "flex-start" : "center",
           padding: 16,
         }}
         key={mode}
@@ -51,31 +75,14 @@ function ThemeFrame({ children }: { children: ReactNode }) {
       >
         {children}
       </ScrollView>
-      <Pressable
-        accessibilityRole="button"
-        onPress={toggle}
-        style={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          paddingHorizontal: 12,
-          paddingVertical: 6,
-          borderRadius: 999,
-          backgroundColor: mode === "dark" ? "#F1F5F9" : "#0F172A",
-        }}
-      >
-        <Text style={{ color: mode === "dark" ? "#0F172A" : "#F1F5F9", fontSize: 12 }}>
-          {NEXT_LABEL[mode]}
-        </Text>
-      </Pressable>
     </View>
   );
 }
 
 const preview: Preview = {
   decorators: [
-    (Story) => (
-      <ThemeFrame>
+    (Story, context) => (
+      <ThemeFrame screen={context.parameters.layout === "fullscreen"}>
         <ConfirmationProvider>
           <Story />
         </ConfirmationProvider>

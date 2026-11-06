@@ -18,10 +18,10 @@ const ConfirmationDialog: React.FC<Props> = ({
   visible,
   onCancel,
   onConfirm,
-  auxTitle = "cambios",
-  subtitle = "¿Estás seguro de que quieres descartar los cambios realizados?",
-  confirmButtonText = "Sí",
-  cancelButtonText = "No, continuar aquí",
+  auxTitle = "Descartar cambios",
+  subtitle = "¿Quieres descartar los cambios realizados?",
+  confirmButtonText = "Descartar cambios",
+  cancelButtonText = "Seguir editando",
 }) => {
   return (
     <Modal
@@ -35,6 +35,7 @@ const ConfirmationDialog: React.FC<Props> = ({
         <View className="flex-1 justify-center items-center p-6 bg-black/50">
           <TouchableWithoutFeedback>
             <View
+              accessibilityViewIsModal
               className="p-3 w-full max-w-xs mx-auto"
               style={{
                 borderRadius: 16,
@@ -42,7 +43,11 @@ const ConfirmationDialog: React.FC<Props> = ({
                 ...theme.shadow.md,
               }}
             >
-              <Typography className="mb-1.5 text-sm" variant="body">
+              <Typography
+                accessibilityRole="header"
+                className="mb-1.5 text-sm"
+                variant="body"
+              >
                 <Typography semibold variant="body">
                   {auxTitle}
                 </Typography>

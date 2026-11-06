@@ -63,6 +63,24 @@ export function resetFonts(): void {
   Object.assign(fontFamilies, DEFAULT_FONT_FAMILIES);
 }
 
+export function resolveTextFontFamily(
+  variant: keyof typeof typographyVariants,
+  bold = false,
+  semibold = false,
+): string {
+  const variantFamily =
+    fontFamilies[variantFontRole[variant]] ?? typographyVariants[variant].fontFamily;
+  const isBrandedFace =
+    !variantFamily.startsWith("Inter_") && !variantFamily.startsWith("IBMPlexSans_");
+  return isBrandedFace
+    ? variantFamily
+    : bold
+      ? fontFamilies.extraBold
+      : semibold
+        ? fontFamilies.semiBold
+        : variantFamily;
+}
+
 export const fontWeights = {
   light: "300",
   regular: "400",

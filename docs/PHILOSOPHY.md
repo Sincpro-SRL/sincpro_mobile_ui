@@ -24,6 +24,38 @@
 
 Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibilityState`, `hitSlop` en táctiles, `testID`, soporte dark (vía tokens), estados (loading/empty/error/disabled donde aplique) y una story que lo muestra en light/dark.
 
+### Contratos de interacción
+
+- **Jerarquía:** título de pantalla, sección, etiqueta, valor y ayuda deben distinguirse sin
+  depender exclusivamente del color. Títulos con semántica de header.
+- **Énfasis:** una acción de máximo énfasis por contexto de tarea. Un modal es otro contexto;
+  las excepciones se justifican. Las acciones secundarias no compiten con la principal.
+- **Tacto:** objetivo efectivo de 44×44 puntos en iOS y 48×48 dp en Android. El modo
+  `accessibleSizing` usa 48 en ambas plataformas sin cambiar el tamaño legacy por defecto.
+  `hitSlop` no sustituye verificar límites del padre y solapamiento con otros controles.
+- **Lectura:** probar texto al 200%, contenido largo y pantalla estrecha. El contenido
+  esencial debe seguir disponible; no resolver problemas ocultándolo o desactivando scaling.
+- **Feedback:** copiar o guardar comunica resultado solo después de completar la operación.
+  Un fallo conserva el trabajo y ofrece recuperación, sin éxito ficticio.
+- **Texto y datos:** un valor corto usa el icono conocido de copia y tap sobre el dato;
+  el check confirma sin agregar bloques ni mover el layout. Texto largo conserva selección
+  nativa con una acción separada para copiar todo. El consumidor elige `selectable`
+  según la tarea, no por una heurística de longitud o supuestos de dominio.
+  `Typography.SelectableText` usa texto nativo de solo lectura sin teclado: en iOS
+  `Text selectable` solo copia el párrafo completo y no permite seleccionar un fragmento.
+- **Tareas acotadas:** action sheet para pocas decisiones; sheet para una tarea relacionada
+  con la pantalla, sin apilar hojas. Filtros tienen borrador/confirmación; archivar reversible
+  ofrece Deshacer en vez de confirmaciones rutinarias que el usuario aprende a ignorar.
+- **Gestos:** acciones esenciales tienen alternativa visible al swipe o pulsación larga.
+- **Validación:** pruebas de props y capturas no certifican VoiceOver/TalkBack ni usabilidad.
+  Se complementan con revisión nativa y pruebas de tareas.
+
+El [plan UX/UI](./UX-UI-PLAN.md) separa implementación, validación pendiente y adopción.
+
+`Dialog/NativeSheet` adopta el bottom sheet nativo de Expo 58 por subpath opcional:
+presentación SwiftUI/Material3 y contenido de marca con tokens. El tema se reinyecta dentro
+del portal nativo; no se reemplaza todo el catálogo por controles visualmente ajenos.
+
 ## Lenguaje visual (estilo objetivo 2026)
 
 > El DS arrastra un look heredado de "app X" con **gradientes forzados** (botones `primary`/`accent` con `LinearGradient`, headers con `GradientContainer`). **No es el estilo objetivo.** El lenguaje moderno es:

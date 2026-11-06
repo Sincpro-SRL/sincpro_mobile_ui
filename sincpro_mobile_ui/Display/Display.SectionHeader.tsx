@@ -23,7 +23,12 @@ function SectionHeader({ title, subtitle, action, className, testID }: SectionHe
       testID={testID}
     >
       <View className="flex-1">
-        <Typography.Text className="text-text-primary" semibold variant="subtitle">
+        <Typography.Text
+          accessibilityRole="header"
+          className="text-text-primary"
+          semibold
+          variant="subtitle"
+        >
           {title}
         </Typography.Text>
         {subtitle ? (
@@ -33,7 +38,12 @@ function SectionHeader({ title, subtitle, action, className, testID }: SectionHe
         ) : null}
       </View>
       {action ? (
-        <Pressable accessibilityRole="button" hitSlop={8} onPress={action.onPress}>
+        <Pressable
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={action.onPress}
+          style={{ minHeight: 48, justifyContent: "center", marginLeft: 12 }}
+        >
           <Typography.Text className="text-text-accent text-sm font-semibold">
             {action.label}
           </Typography.Text>

@@ -18,6 +18,7 @@ lint:
 
 typecheck:
 	@npx tsc --noEmit
+	@npx tsc -p tsconfig.build.json --noEmit
 
 storybook-check:
 	@echo "🔎 Validando stories (tsconfig.stories.json)..."

@@ -42,10 +42,11 @@ wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` 
 horizontal scrolling or wrapping; the default remains its legacy row layout.
 `Actions.Dock` defaults to a fixed bottom bar with a primary action and optional summary.
 Swipe up on its handle (or press “Más opciones”) to reveal secondary content above the bar;
-the primary action stays fixed, and swipe down or “Ocultar opciones” collapses it. Mount it
-in a full-screen safe-area container and reserve bottom space in scrolling content. Set
-`placement="footer"` inside `FormViewV2.Footer` to use its existing sticky layout without
-nesting another fixed bar. It owns no business calculations or submission state.
+the panel fits its content up to `maxExpandedHeightRatio` (default 0.6), then scrolls.
+The primary action stays fixed, and swipe down or “Ocultar opciones” collapses the panel.
+Mount it in a full-screen safe-area container and reserve bottom space in scrolling content.
+Set `placement="footer"` inside `FormViewV2.Footer` to use its existing sticky layout
+without nesting another fixed bar. It owns no business calculations or submission state.
 
 ### Inputs (`Form`)
 

@@ -1,7 +1,7 @@
 import { expect, test } from "@jest/globals";
 import Dock from "@sincpro/mobile-ui/Actions/Actions.Dock";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Text } from "react-native";
 
 test("expands details while the primary action stays fixed and supports accessible collapse", async () => {
@@ -22,10 +22,20 @@ test("expands details while the primary action stays fixed and supports accessib
 
   expect(screen.getByText("Resumen")).toBeTruthy();
   await fireEvent.press(screen.getByRole("button", { name: "Más opciones" }));
+  await act(async () => {
+    screen
+      .getByTestId("checkout-dock-scroll", { includeHiddenElements: true })
+      .props.onContentSizeChange(320, 120);
+  });
+  expect(
+    screen.getByTestId("checkout-dock-expanded-content", { includeHiddenElements: true })
+      .props.style.height,
+  ).toBe(152);
   expect(screen.getByText("Opciones adicionales")).toBeTruthy();
   expect(screen.getByRole("button", { name: "Confirmar" })).toBeTruthy();
   expect(
-    screen.getByRole("button", { name: "Ocultar opciones" }).props.accessibilityState.expanded,
+    screen.getByRole("button", { name: "Ocultar opciones" }).props.accessibilityState
+      .expanded,
   ).toBe(true);
 
   expect(

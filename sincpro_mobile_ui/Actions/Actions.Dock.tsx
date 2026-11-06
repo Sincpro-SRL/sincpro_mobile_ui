@@ -15,6 +15,7 @@ export interface DockProps {
   title?: string;
   moreLabel?: string;
   collapseLabel?: string;
+  maxExpandedHeightRatio?: number;
   placement?: "fixed" | "footer";
   className?: string;
   testID?: string;
@@ -27,6 +28,7 @@ function Dock({
   title = "Más opciones",
   moreLabel = "Más opciones",
   collapseLabel = "Ocultar opciones",
+  maxExpandedHeightRatio = 0.6,
   placement = "fixed",
   className,
   testID,
@@ -36,17 +38,33 @@ function Dock({
   expandedRef.current = expanded;
   const theme = useTheme();
   const { height } = useWindowDimensions();
-  const maxExpandedHeight = Math.round(height * 0.6);
-  const translateY = useRef(new Animated.Value(maxExpandedHeight)).current;
+  const resolvedRatio = Number.isFinite(maxExpandedHeightRatio)
+    ? Math.min(0.9, Math.max(0.1, maxExpandedHeightRatio))
+    : 0.6;
+  const maxExpandedHeight = Math.round(height * resolvedRatio);
+  const [panelHeight, setPanelHeight] = useState(0);
+  const [hasMeasuredContent, setHasMeasuredContent] = useState(false);
+  const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.spring(translateY, {
-      toValue: expanded ? 0 : maxExpandedHeight,
+      toValue: expanded ? 0 : panelHeight,
       useNativeDriver: true,
       damping: 24,
       stiffness: 260,
     }).start();
-  }, [expanded, maxExpandedHeight, translateY]);
+  }, [expanded, panelHeight, translateY]);
+
+  const handleContentSizeChange = (_: number, contentHeight: number) => {
+    const nextPanelHeight = Math.min(contentHeight + 32, maxExpandedHeight);
+    setHasMeasuredContent(true);
+    setPanelHeight((currentHeight) =>
+      currentHeight === nextPanelHeight ? currentHeight : nextPanelHeight,
+    );
+    if (!expandedRef.current) {
+      translateY.setValue(nextPanelHeight);
+    }
+  };
 
   const toggleExpanded = () => setExpanded((current) => !current);
   const [pan] = useState(() =>
@@ -86,13 +104,16 @@ function Dock({
         accessibilityElementsHidden={!expanded}
         className="overflow-hidden rounded-t-2xl border border-border-light bg-bg-card p-4"
         importantForAccessibility={expanded ? "auto" : "no-hide-descendants"}
+        onAccessibilityEscape={() => setExpanded(false)}
         pointerEvents={expanded ? "auto" : "none"}
         style={{
           position: "absolute",
           bottom: "100%",
           left: 0,
           right: 0,
-          height: maxExpandedHeight,
+          height: panelHeight,
+          maxHeight: maxExpandedHeight,
+          opacity: hasMeasuredContent ? 1 : 0,
           transform: [{ translateY }],
         }}
         testID={testID ? `${testID}-expanded-content` : undefined}
@@ -101,7 +122,9 @@ function Dock({
           className="flex-1"
           contentContainerStyle={{ paddingBottom: 12 }}
           nestedScrollEnabled
+          onContentSizeChange={handleContentSizeChange}
           showsVerticalScrollIndicator={false}
+          testID={testID ? `${testID}-scroll` : undefined}
         >
           {title ? (
             <Typography.Text

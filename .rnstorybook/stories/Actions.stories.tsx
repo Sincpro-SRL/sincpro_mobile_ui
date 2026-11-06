@@ -4,9 +4,10 @@ import BoxTimeIcon from "@sincpro/mobile-ui/icons/BoxTimeIcon";
 import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
 import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
 import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 
 const meta: Meta = { title: "Components/Actions" };
 export default meta;
@@ -117,27 +118,61 @@ export const FilterButtons: Story = {
 };
 
 export const ActionDock: Story = {
-  name: "Dock — primary action and expandable details",
-  render: () => (
-    <View style={{ minHeight: 300, justifyContent: "flex-end" }}>
+  name: "Dock — swipe-expandable fixed action",
+  render: () => <ActionDockDemo />,
+};
+
+function ActionDockDemo() {
+  const { height } = useWindowDimensions();
+  const [confirmed, setConfirmed] = useState(false);
+
+  return (
+    <View
+      className="relative overflow-hidden rounded-xl border border-border-light bg-bg-page"
+      style={{ height: Math.max(360, Math.min(height - 180, 640)) }}
+    >
+      <View className="flex-1 gap-3 p-5">
+        <Display.SectionHeader
+          subtitle="El resumen se despliega sobre el contenido sin mover el botón fijo."
+          title="Pedido #1024"
+        />
+        <Typography.Text className="text-text-secondary" variant="body">
+          Desliza la manija hacia arriba o toca “Más opciones”. Desliza hacia abajo para
+          contraer.
+        </Typography.Text>
+        {confirmed ? <Display.Tag dotColor="#16A34A" label="Pedido confirmado" /> : null}
+      </View>
       <Actions.Dock
-        primaryAction={<Actions.Button onPress={() => {}} title="Confirmar pedido" />}
+        maxExpandedHeightRatio={0.45}
+        primaryAction={
+          <Actions.Button
+            disabled={confirmed}
+            onPress={() => setConfirmed(true)}
+            title={confirmed ? "Confirmado" : "Confirmar pedido"}
+          />
+        }
         summary={
           <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
             <Display.AmountSummary.Total label="Total" value={128.5} />
           </Display.AmountSummary.Root>
         }
-        title="Resumen del pedido"
+        title="Detalle del pedido"
       >
-        <Display.AmountSummary.Root currencySymbol="Bs">
+        <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
           <Display.AmountSummary.Row label="Subtotal" value={120} />
           <Display.AmountSummary.Row label="Envío" value={8.5} />
           <Display.AmountSummary.Total label="Total" value={128.5} />
         </Display.AmountSummary.Root>
+        <Actions.Button
+          className="mt-3"
+          onPress={() => setConfirmed((value) => !value)}
+          title={confirmed ? "Quitar confirmación" : "Marcar como revisado"}
+          variant="secondary"
+        />
       </Actions.Dock>
     </View>
-  ),
-};
+  );
+}
 
 // ─── CircleButton ─────────────────────────────────────────────────────────────
 

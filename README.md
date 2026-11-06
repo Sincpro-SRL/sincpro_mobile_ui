@@ -583,7 +583,8 @@ business states. `KeyValue copyable` remains the reusable copy affordance for id
 “Más opciones” to reveal additional content above it; the primary action remains fixed.
 Swipe down or press “Ocultar opciones” to collapse. Mount it in a full-screen safe-area
 container and reserve bottom space in scrolling content. Inside `FormViewV2.Footer`, set
-`placement="footer"` to reuse that view's sticky layout.
+`placement="footer"` to reuse that view's sticky layout. The expanded panel sizes to its
+content up to `maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside the panel.
 
 ---
 

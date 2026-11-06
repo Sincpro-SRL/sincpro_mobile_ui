@@ -13,6 +13,10 @@
     "sourceMap": false,
     "declarationMap": false
   },
-  "include": ["sincpro_mobile_ui/**/*.ts", "sincpro_mobile_ui/**/*.tsx"],
+  "include": [
+    "sincpro_mobile_ui/**/*.ts",
+    "sincpro_mobile_ui/**/*.tsx",
+    "sincpro_mobile_ui/nativewind-env.d.ts"
+  ],
   "exclude": ["node_modules", "dist", "**/__tests__", "**/*.test.*"]
 }

@@ -1,10 +1,12 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import type React from "react";
 import { useEffect } from "react";
-import { ActivityIndicator, View, type ViewStyle } from "react-native";
+import { ActivityIndicator, View, type ViewProps } from "react-native";
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -19,9 +21,10 @@ import Animated, {
 interface DotsProps {
   color: string;
   size: "small" | "large";
+  animated: boolean;
 }
 
-function DotsLoader({ color, size }: DotsProps) {
+function DotsLoader({ color, size, animated }: DotsProps) {
   const dotSize = size === "large" ? 11 : 8;
   const bounce = size === "large" ? 13 : 9;
   const dot = {
@@ -36,6 +39,10 @@ function DotsLoader({ color, size }: DotsProps) {
   const y3 = useSharedValue(0);
 
   useEffect(() => {
+    y1.value = 0;
+    y2.value = 0;
+    y3.value = 0;
+    if (!animated) return;
     const seq = withRepeat(
       withSequence(
         withTiming(-bounce, { duration: 280, easing: Easing.out(Easing.quad) }),
@@ -48,7 +55,12 @@ function DotsLoader({ color, size }: DotsProps) {
     y1.value = withDelay(0, seq);
     y2.value = withDelay(160, seq);
     y3.value = withDelay(320, seq);
-  }, []);
+    return () => {
+      cancelAnimation(y1);
+      cancelAnimation(y2);
+      cancelAnimation(y3);
+    };
+  }, [animated, bounce, y1, y2, y3]);
 
   const s1 = useAnimatedStyle(() => ({ transform: [{ translateY: y1.value }] }));
   const s2 = useAnimatedStyle(() => ({ transform: [{ translateY: y2.value }] }));
@@ -68,15 +80,19 @@ function DotsLoader({ color, size }: DotsProps) {
 interface RippleProps {
   color: string;
   size: "small" | "large";
+  animated: boolean;
 }
 
-function RippleLoader({ color, size }: RippleProps) {
+function RippleLoader({ color, size, animated }: RippleProps) {
   const base = size === "large" ? 48 : 32;
 
   const scale = useSharedValue(0.2);
   const opacity = useSharedValue(0.85);
 
   useEffect(() => {
+    scale.value = animated ? 0.2 : 1;
+    opacity.value = 0.85;
+    if (!animated) return;
     scale.value = withRepeat(
       withTiming(2.6, { duration: 1400, easing: Easing.out(Easing.quad) }),
       -1,
@@ -87,7 +103,11 @@ function RippleLoader({ color, size }: RippleProps) {
       -1,
       false,
     );
-  }, []);
+    return () => {
+      cancelAnimation(scale);
+      cancelAnimation(opacity);
+    };
+  }, [animated, scale, opacity]);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -119,36 +139,68 @@ function RippleLoader({ color, size }: RippleProps) {
 
 export type SpinnerVariant = "spinner" | "dots" | "ripple";
 
-export interface SpinnerProps {
+export interface SpinnerProps extends Omit<
+  ViewProps,
+  "children" | "accessibilityRole" | "accessibilityState"
+> {
   /** Visual style of the loading indicator. Defaults to `"spinner"`. */
   variant?: SpinnerVariant;
   size?: "small" | "large";
   color?: string;
   text?: string;
-  style?: ViewStyle;
   className?: string;
+  animated?: boolean;
 }
 
 const Spinner: React.FC<SpinnerProps> = ({
   variant = "spinner",
   size = "large",
-  color = theme.primary,
+  color,
   text,
   style,
   className,
+  animated = true,
+  accessibilityLabel = text ?? "Cargando",
+  ...props
 }) => {
+  const theme = useTheme();
+  const reducedMotion = useReducedMotion();
+  const shouldAnimate = animated && !reducedMotion;
+  const resolvedColor = color ?? theme.primary;
+  const staticSize = size === "large" ? 36 : 20;
   const indicator =
     variant === "dots" ? (
-      <DotsLoader color={color} size={size} />
+      <DotsLoader animated={shouldAnimate} color={resolvedColor} size={size} />
     ) : variant === "ripple" ? (
-      <RippleLoader color={color} size={size} />
+      <RippleLoader animated={shouldAnimate} color={resolvedColor} size={size} />
+    ) : shouldAnimate ? (
+      <ActivityIndicator color={resolvedColor} size={size} />
     ) : (
-      <ActivityIndicator color={color} size={size} />
+      <View
+        style={{
+          width: staticSize,
+          height: staticSize,
+          borderRadius: staticSize / 2,
+          borderWidth: 2,
+          borderColor: resolvedColor,
+          borderTopColor: "transparent",
+        }}
+      />
     );
 
   return (
-    <View className={cn("items-center justify-center", className)} style={style}>
-      {indicator}
+    <View
+      {...props}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="progressbar"
+      accessibilityState={{ busy: true }}
+      accessible
+      className={cn("items-center justify-center", className)}
+      style={style}
+    >
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {indicator}
+      </View>
       {text && (
         <Typography.Text className="mt-2.5 text-base" variant="body">
           {text}

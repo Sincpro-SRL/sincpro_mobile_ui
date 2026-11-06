@@ -161,6 +161,22 @@ Existing `FormViewV2.Content`, `AuthFormView` and `AuthContainer` opt in with
 `keyboardToolbar`; existing defaults are preserved. Avoid nesting vertical scrolls.
 Story: `Patterns/Forms/Keyboard navigation`.
 
+### Controlled reordering (optional widget)
+
+`widgets/ReorderableList` is imported by its own subpath, **not** the general widgets
+barrel. Optional peer `react-native-sortables` uses the host's Gesture Handler/Reanimated
+runtime. It supports a controlled, variable-height single-column short list with a drag
+handle, up/down alternatives, native adjustable actions and immutable order events.
+
+`renderItem` owns arbitrary content; `renderControls`/`renderHandleContent` customize
+controls without replacing the gesture engine. Root/item/content/controls/handle/action
+styles, localized labels and `sortableProps` remain public. See the README contract,
+especially stable keys, synchronous controlled updates, autoscroll refs and external
+changes during drag. No persistence or business rules live in the widget.
+
+`Patterns/Collections/Reordering` includes default/custom/long/conflict examples.
+Not a virtualized list or a universal cross-container drag framework.
+
 ## Legacy (deprecated — `@deprecated`, still exported)
 
 | Piece                                                                              | Replacement                                             |

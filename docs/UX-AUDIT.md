@@ -305,6 +305,62 @@ del editor de consultas, fuentes arbitrarias de consumidores, validación de con
 temas personalizados, Android runtime y pruebas de usabilidad con personas. El manifiesto
 sigue siendo objetivo; ni el número de tests ni estas capturas certifican todo el design system.
 
+## Octavo lote: reordenamiento componible, no otro motor de drag
+
+No había issues abiertos al iniciar este lote. Se tomó el problema concreto solicitado:
+ordenar listas cortas conservando acciones dentro de sus filas y libertad de composición.
+No se reabrió un rediseño visual general ni se inventó una auditoría de todo el catálogo.
+
+### Decisión técnica y contrato
+
+- Se contrastó `@expo/ui` instalado: SwiftUI ofrece `List.ForEach.onMove`, pero no se
+  presupone paridad universal ni que sus filas sean un contenedor para cualquier árbol RN.
+  Para este contrato de contenido arbitrario/cross-platform se eligió
+  [react-native-sortables](https://github.com/MatiPl01/react-native-sortables), versión
+  publicada 1.10.1 verificada, MIT, con soporte de Gesture Handler 3/Reanimated 4.
+  [Documentación del motor](https://react-native-sortables-docs.vercel.app/).
+- `widgets/ReorderableList`: adapter opcional por subpath, fuera del barrel general.
+  Un solo orden controlado y una columna, alturas medidas, sin otro motor de gestos.
+  Contenido arbitrario, controles reemplazables y handle dedicado no interactivo.
+- Alternativas visibles arriba/abajo, targets de 48, acciones nativas increment/decrement,
+  nombres traducibles y anuncio de posición; no se exige arrastrar para ordenar.
+- Callbacks inmutables con identidad y origen; no-op no dispara cambios. La app actualiza
+  estado sincrónicamente y decide guardar, confirmar, cancelar o deshacer.
+- Claves duplicadas/vacías fallan explícitamente. Cambios de contenido mantienen objetos
+  actuales; insertar, eliminar, reordenar externamente o deshabilitar durante un drag
+  cancela inmediatamente, conserva los datos nuevos y muestra/anuncia el conflicto.
+  El reset del motor en conflicto puede remontar contenido; estado persistente en el host.
+- `style` y estilos independientes de fila/contenido/controles/handle/acciones, render
+  callbacks y props públicas del motor para spacing, decoraciones, activación y scroll.
+  No se instala otra paleta, una fuente nueva ni un template obligatorio.
+
+### Evidencia
+
+- 63 tests de lógica/tokens + 113 nativos (176); 25 suites Jest. Incluyen orden exacto,
+  identidad, inmutabilidad, no-op, controles/bordes, localización, estilos y contenido,
+  cancelación por datos externos y eliminación del item activo sin bloquear los restantes.
+- Drag real iOS por handle: Entrada pasa del primer lugar al último y el orden observado
+  es Revisión, Completados, Entrada. Tap simple no cambia orden; drag deshabilitado tampoco.
+  No se usa un callback JS simulado o una flecha como sustituto de probar el gesto.
+- Tres flujos nuevos normales pasan: drag real, controles default/custom y actualización
+  externa durante un drag real. La receta de texto largo/dark también pasa.
+- Regresiones existentes de formulario/teclado, listado con teclado y consulta estructurada
+  pasan. Con `accessibility-large` pasan texto largo/dark de reordenamiento y toolbar
+  personalizada. Se inspeccionaron capturas y se restauró la categoría `large`.
+- Build y export Android pasan como validación de tipos/empaque/bundling; no runtime Android.
+  La suite contiene ahora 21 flujos; las ejecuciones de este lote fueron selectivas, no
+  se presentan como una nueva corrida completa de los 21.
+
+### Límites definidos
+
+No virtualización para feeds largos, kanban/múltiples contenedores, archivos, cross-app
+drag, persistencia, permisos ni undo implícito. Autoscroll se habilita con el ref estable
+del scroll animado real, propiedad del consumidor; no añade un scroll anidado.
+Las interrupciones del SO siguen la finalización del motor; una transacción con
+confirmar/cancelar pertenece al estado draft del host, no a una promesa de rollback nativo.
+No se certifican VoiceOver/TalkBack, ergonomía con usuarios o fuentes/temas arbitrarios.
+Estas limitaciones están documentadas antes de usarlo como default de producto.
+
 ## Adopción y límites
 
 1. Usar las APIs accesibles en pantallas nuevas y adoptar las existentes por lotes.

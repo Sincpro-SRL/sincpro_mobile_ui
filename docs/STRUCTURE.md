@@ -51,6 +51,10 @@ UX es un criterio transversal, no una carpeta para ejemplos heterogéneos.
   `Patterns/Collections`, `Patterns/Profiles`; templates existentes en `Patterns/Views`.
 - Una receta no es automáticamente un componente público. El builder y las opciones de
   colección son widgets genéricos; evaluar/paginar/persistir datos pertenece al host.
+- `widgets/ReorderableList` es una composición opcional por subpath: usa un motor mantenido,
+  no otro sistema de gestos. No agregarlo al barrel general, para no hacer obligatorio
+  `react-native-sortables` a quienes solo usan los otros widgets. Orden/persistencia
+  pertenecen al host; contenido y controles se reemplazan por API pública.
 - Formularios que poseen scroll usan `parameters.ownsScroll = true` para no anidar otro
   scroll del canvas. El resto del canvas es keyboard-aware.
 - Un test revisa todas las stories para impedir raíces nuevas o el catch-all `UX`.

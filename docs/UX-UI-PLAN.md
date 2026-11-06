@@ -19,6 +19,27 @@ No se declara completada una auditoría de extensibilidad de todo el catálogo.
 - Templates form/auth exponen opciones y ref del scroll; listado permite controlar
   el comportamiento del teclado sin otro layout.
 
+### Capacidades meta y límites de composición
+
+| Problema común                                               | Pieza reutilizable                                    | Qué controla la app                                                               |
+| ------------------------------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Campo/cursor tapado por teclado y navegación entre campos    | KeyboardForm/KeyboardToolbar y refs nativas           | Layout, contenido, labels, estilos, scroll y activación opt-in                    |
+| Copia de identificador frente a selección de un texto largo  | CopyableText/SelectableText                           | Dato, formato, contenido y acciones                                               |
+| Jerarquía y agrupación sin agrandar todo                     | ListGroup/ListItem/SectionHeader + roles tipográficos | Slots, densidad, fuentes, pesos, formas, padding y superficie                     |
+| Búsqueda, filtros, orden, grupos y guardados                 | FilterBar/FilterBuilder/CollectionOptions             | Estado, ejecución, persistencia, permisos y reglas                                |
+| Reordenar sin secuestrar botones internos ni exigir un gesto | ReorderableList opcional por subpath                  | Contenido, controles, orden controlado, scroll, draft/apply/cancel y persistencia |
+
+El octavo lote añade reordenamiento corto de una columna sobre un motor mantenido,
+sin otro motor propio de gestos ni un paquete de drag obligatorio para todos.
+La demo no se convierte en el estilo de las apps. No se conectan automáticamente
+los templates existentes a la nueva dependencia.
+
+Esta tabla define responsabilidades, no certifica todas las combinaciones posibles.
+Otro meta-componente necesita una tarea concreta, ejemplo de composición libre,
+alternativa accesible, contrato de error/cancelación y prueba de su comportamiento real.
+No se amplía indefinidamente el catálogo solo porque exista una tendencia nueva.
+Siguen pendientes validación de apps consumidoras, runtime Android y lectores de pantalla.
+
 ## Implementación inicial
 
 - Contratos de interacción incorporados a `PHILOSOPHY.md`; README actualizado a Expo 58.

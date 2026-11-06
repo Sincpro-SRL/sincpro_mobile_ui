@@ -1,0 +1,32 @@
+appId: host.exp.Exponent
+name: Controlled ordering preserves buttons, custom controls and independent content actions
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-reordering--default"
+- assertVisible: "Organizar secciones"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- tapOn: "Abrir Entrada"
+- assertVisible: "Abierto: Entrada"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- tapOn: "Bajar Entrada"
+- assertVisible: "Orden: Revisión, Entrada, Completados"
+- assertVisible: "Cambio por botón"
+- tapOn: "Subir Entrada"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- tapOn: "Bloquear orden"
+- tapOn: "Bajar Entrada"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- tapOn: "Permitir ordenar"
+- tapOn: "Subir Completados"
+- assertVisible: "Orden: Entrada, Completados, Revisión"
+- tapOn: "Restablecer orden"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- takeScreenshot: reorder-default
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-reordering--customized"
+- assertVisible: "Organizar secciones"
+- tapOn: "Posponer Entrada"
+- assertVisible: "Orden: Revisión, Entrada, Completados"
+- tapOn: "Priorizar Entrada"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- takeScreenshot: reorder-customized

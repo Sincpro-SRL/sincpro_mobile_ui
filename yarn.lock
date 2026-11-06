@@ -8146,6 +8146,11 @@ react-native-gesture-handler@~3.3.0:
     "@types/react-test-renderer" "^19.1.0"
     invariant "^2.2.4"
 
+react-native-haptic-feedback@>=2.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-3.0.0.tgz#a1e144c491885e65917cafb0c17d4ad2891ecc7e"
+  integrity sha512-yxBQFHhXU8S0xupGtzDRToGw5yMWezUdLzxtlx2Oi9YpjPwprWZWCw8foPt0S2t84B0ZikzZYyOHiMSXIelUxg==
+
 react-native-is-edge-to-edge@^1.2.1, react-native-is-edge-to-edge@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.3.1.tgz#feb9a6a8faf0874298947edd556e5af22044e139"
@@ -8177,6 +8182,13 @@ react-native-safe-area-context@~5.11.1:
   version "5.11.1"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.11.1.tgz#f1b653eb454fd282dcd73339d6ced909e74de330"
   integrity sha512-yCltXXwhwp42vMqfhAsH5BWgAysbLNgwfn3PDwNpOn/CgwfM+eMWgScZIbHbMzJYNLi5bKJEOIUEG4RwKNiECA==
+
+react-native-sortables@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-sortables/-/react-native-sortables-1.10.1.tgz#1093522f4d6fe441fd293257a2523d6bfad15d23"
+  integrity sha512-3M+OnzE2zgN2meECvd5cGQrm5oFQSQ34HPm3DSLAo8Xaif9+Zvtv5V4uX8u/HmBtI+v1gEuw7rjuYWqvUhZB9Q==
+  optionalDependencies:
+    react-native-haptic-feedback ">=2.0.0"
 
 react-native-svg@15.16.0:
   version "15.16.0"

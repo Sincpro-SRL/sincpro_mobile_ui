@@ -83,6 +83,21 @@ sorting priority/direction, explicit save failure/retry and external-tree recove
 Autocomplete tests cover focus, selection and loading/error/retry/empty states.
 The taxonomy test permits only Foundations/Components/Patterns/Legacy, not an UX bucket.
 
+Reordering tests validate immutable insertion at exact final indices, stable unique keys,
+no-op drops, controlled callbacks, boundary buttons, native adjustable actions, translated
+announcements and styling/content/handle overrides. Concurrent content changes retain
+new objects; insert/remove/external reordering/disable during drag cancels instead of
+overwriting host data. Cancellation restores usable controls even if the dragged item
+disappears. Mocks test the adapter, not native gesture recognition.
+
+`collection-drag.yaml` separately verifies an actual pointer-driven native handle drag and
+the exact resulting order, plus disabled drag. Its deliberately slow swipe gives the
+long-press activation time without replacing the gesture with a button callback.
+`collection-reorder.yaml` exercises default/custom alternatives and independent actions.
+`reorder-concurrent.yaml` injects an external update during a real drag;
+`reorder-large-text.yaml` checks long rows/dark and is also run at `accessibility-large`.
+Do not present passing arrows or a successful JS event mock as proof of drag support.
+
 `make storybook-e2e` runs the `.maestro/` flows against an isolated Expo Go server on
 port 8082. See the README for setup. Simulator E2E covers actual clipboard interaction,
 keyboard editing, cancel, retry and long-content/dark mode. Flows also cover mobile

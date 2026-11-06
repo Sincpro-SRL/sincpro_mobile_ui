@@ -228,6 +228,60 @@ Use virtualized lists for production-sized collections.
 Dependencies follow the latest stable version compatible with Expo 58, not unbounded
 upgrades. Validate with `CI=1 npx expo install --check` in addition to the quality gates.
 
+### Controlled reordering without a closed row design
+
+Optional import: `@sincpro/mobile-ui/widgets/ReorderableList`. Install
+`react-native-sortables@^1.10.1` in the host; it uses the host's Gesture Handler 3.3+,
+Reanimated 4.7+ and Worklets setup. Wrap the app in `GestureHandlerRootView`.
+The adapter is deliberately **not** in the generic widgets/root barrels: applications
+that do not use drag-and-drop do not need to resolve this optional peer.
+
+```tsx
+import ReorderableList from "@sincpro/mobile-ui/widgets/ReorderableList";
+
+<ReorderableList
+  items={sections}
+  keyExtractor={(item) => item.id}
+  getItemLabel={(item) => item.name}
+  onChange={(next) => setSections(next)}
+  renderItem={({ item }) => <MySectionContent section={item} />}
+  itemStyle={{ borderRadius: 16, padding: 8 }}
+/>;
+```
+
+- A one-column, **non-virtualized short-list** adapter with variable-height content.
+  It does not own screen scrolling, persistence, confirmation or domain rules.
+  Do not use it as an unbounded feed, kanban board, file drop zone or cross-app drag API.
+- Only the dedicated handle starts drag. Default arrows and the handle's native
+  increment/decrement actions offer alternatives; content can retain buttons, inputs
+  or any custom layout. Drag/drop uses insertion, not swapping.
+- `onChange(next, { key, fromIndex, toIndex, source })` delivers an immutable order
+  (`source` is `drag` or `button`). Update controlled state synchronously; persist later,
+  showing save failures/retry in the host. A drop in the original position emits no change.
+  Draft/apply/cancel/undo can be built by owning that state, without replacing the gesture.
+- Keys must be unique non-empty strings, stable across renders, never array indices.
+  Content updates with the same keys preserve current objects. Insert/remove/external
+  reorder or disabling **during** drag cancels the gesture, retains host data and shows
+  an accessible error. `onReorderRejected` reports `data-changed` or `disabled`.
+  The gesture engine remounts on rejection; keep persistent item state in the host.
+- `renderItem` controls content. `renderControls` receives `dragHandle`, movement
+  callbacks and boundary flags; keep that handle and an accessible non-drag alternative
+  when replacing controls. `renderHandleContent` replaces **noninteractive** handle
+  contents only, keeping the gesture, accessible name and adjustable actions.
+- Root `className`/`style`, `itemStyle`, `contentStyle`, `controlsStyle`, `handleStyle`
+  and `actionStyle` accept local layout/shape/spacing. Child content owns typography.
+  `labels` localizes controls, announcements and conflict errors.
+- `sortableProps` forwards engine options such as activation delay, row gap, decorations,
+  animation settings and autoscroll, while the adapter owns identity, single-column
+  insertion and controlled callbacks. Provide a stable Reanimated `scrollableRef` to
+  the **actual Animated.ScrollView** for autoscroll; do not nest another scroll container
+  or attach the ref to a different view. Native scroll props/ref belong to the host.
+  Custom motion, targets and colors still require accessibility validation.
+
+`Patterns/Collections/Reordering` demonstrates default, custom content/controls, long
+rows and an external-update conflict. Only this recipe uses the new dependency;
+existing form/list/query templates keep their behavior.
+
 ### Keyboard-aware forms and field navigation
 
 Expo 58 does not automatically make arbitrary form layouts keyboard-safe.

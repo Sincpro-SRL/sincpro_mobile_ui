@@ -7,7 +7,7 @@ import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { useWindowDimensions, View } from "react-native";
+import { ScrollView, useWindowDimensions, View } from "react-native";
 
 const meta: Meta = { title: "Components/Actions" };
 export default meta;
@@ -128,20 +128,31 @@ function ActionDockDemo() {
 
   return (
     <View
-      className="relative overflow-hidden rounded-xl border border-border-light bg-bg-page"
+      className="relative rounded-xl border border-border-light bg-bg-page"
       style={{ height: Math.max(360, Math.min(height - 180, 640)) }}
     >
-      <View className="flex-1 gap-3 p-5">
+      <ScrollView
+        contentContainerStyle={{ gap: 12, padding: 20, paddingBottom: 180 }}
+        style={{ flex: 1 }}
+      >
         <Display.SectionHeader
           subtitle="El resumen se despliega sobre el contenido sin mover el botón fijo."
           title="Pedido #1024"
         />
         <Typography.Text className="text-text-secondary" variant="body">
           Desliza la manija hacia arriba o toca “Más opciones”. Desliza hacia abajo para
-          contraer.
+          contraer. El panel superpuesto mantiene visible la acción principal.
         </Typography.Text>
         {confirmed ? <Display.Tag dotColor="#16A34A" label="Pedido confirmado" /> : null}
-      </View>
+        <Typography.Text className="text-text-secondary" variant="body">
+          Este contenido puede desplazarse debajo del Dock; el panel se muestra encima sin
+          recortar la pantalla.
+        </Typography.Text>
+        <Typography.Text className="text-text-secondary" variant="body">
+          Prueba también un gesto diagonal: no debería abrir o cerrar accidentalmente el
+          panel.
+        </Typography.Text>
+      </ScrollView>
       <Actions.Dock
         maxExpandedHeightRatio={0.45}
         primaryAction={

@@ -6,7 +6,15 @@ import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { Animated, PanResponder, ScrollView, useWindowDimensions, View } from "react-native";
+import {
+  Animated,
+  type GestureResponderEvent,
+  PanResponder,
+  type PanResponderGestureState,
+  ScrollView,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 export interface DockProps {
   primaryAction: ReactNode;
@@ -43,6 +51,8 @@ function Dock({
     : 0.6;
   const maxExpandedHeight = Math.round(height * resolvedRatio);
   const [panelHeight, setPanelHeight] = useState(0);
+  const panelHeightRef = useRef(panelHeight);
+  panelHeightRef.current = panelHeight;
   const [hasMeasuredContent, setHasMeasuredContent] = useState(false);
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -67,17 +77,42 @@ function Dock({
   };
 
   const toggleExpanded = () => setExpanded((current) => !current);
+  const shouldHandleSwipe = (_: GestureResponderEvent, gesture: PanResponderGestureState) => {
+    const isVerticalSwipe =
+      Math.abs(gesture.dy) > 8 && Math.abs(gesture.dy) > Math.abs(gesture.dx);
+    return isVerticalSwipe && (expandedRef.current ? gesture.dy > 0 : gesture.dy < 0);
+  };
+  const settleAfterSwipe = (nextExpanded: boolean) => {
+    if (expandedRef.current === nextExpanded) {
+      Animated.spring(translateY, {
+        toValue: nextExpanded ? 0 : panelHeightRef.current,
+        useNativeDriver: true,
+        damping: 24,
+        stiffness: 260,
+      }).start();
+      return;
+    }
+    setExpanded(nextExpanded);
+  };
   const [pan] = useState(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gesture) =>
-        expandedRef.current ? gesture.dy > 5 : gesture.dy < -5,
+      onMoveShouldSetPanResponder: shouldHandleSwipe,
+      onMoveShouldSetPanResponderCapture: shouldHandleSwipe,
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderMove: (_, gesture) => {
+        const currentPanelHeight = panelHeightRef.current;
+        const startY = expandedRef.current ? 0 : currentPanelHeight;
+        translateY.setValue(Math.max(0, Math.min(currentPanelHeight, startY + gesture.dy)));
+      },
       onPanResponderRelease: (_, gesture) => {
-        if (expandedRef.current && (gesture.dy > 40 || gesture.vy > 0.5)) {
-          setExpanded(false);
-        } else if (!expandedRef.current && (gesture.dy < -40 || gesture.vy < -0.5)) {
-          setExpanded(true);
-        }
+        const nextExpanded = expandedRef.current
+          ? !(gesture.dy > 40 || gesture.vy > 0.5)
+          : gesture.dy < -40 || gesture.vy < -0.5;
+        settleAfterSwipe(nextExpanded);
+      },
+      onPanResponderTerminate: () => {
+        settleAfterSwipe(expandedRef.current);
       },
     }),
   );
@@ -90,11 +125,11 @@ function Dock({
           "absolute bottom-0 left-0 right-0 z-20 border-t border-border-light bg-bg-card px-4 pb-2 pt-3",
         className,
       )}
-      style={placement === "fixed" ? { elevation: 10 } : undefined}
+      style={placement === "fixed" ? { elevation: 10, zIndex: 20 } : undefined}
       testID={testID}
     >
       <View
-        className="items-center py-1"
+        className="min-h-11 items-center justify-center py-2"
         {...pan.panHandlers}
         testID={testID ? `${testID}-handle` : undefined}
       >
@@ -114,6 +149,8 @@ function Dock({
           height: panelHeight,
           maxHeight: maxExpandedHeight,
           opacity: hasMeasuredContent ? 1 : 0,
+          zIndex: 21,
+          elevation: 11,
           transform: [{ translateY }],
         }}
         testID={testID ? `${testID}-expanded-content` : undefined}

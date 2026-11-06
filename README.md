@@ -581,10 +581,13 @@ import { Display } from "@sincpro/mobile-ui/Display";
 business states. `KeyValue copyable` remains the reusable copy affordance for identifiers.
 `Actions.Dock` defaults to a fixed bottom action bar. Swipe up on its handle or press
 “Más opciones” to reveal additional content above it; the primary action remains fixed.
-Swipe down or press “Ocultar opciones” to collapse. Mount it in a full-screen safe-area
-container and reserve bottom space in scrolling content. Inside `FormViewV2.Footer`, set
-`placement="footer"` to reuse that view's sticky layout. The expanded panel sizes to its
-content up to `maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside the panel.
+The handle captures vertical swipes without taking diagonal gestures, and the panel follows
+the finger before settling open or closed. The expanded panel overlays the screen content;
+it does not dim the background. Mount the fixed Dock as a direct child of a full-screen
+safe-area screen container, outside scroll views and ancestors that clip overflow, and reserve
+bottom space in scrolling content. Inside `FormViewV2.Footer`, set `placement="footer"` to
+reuse that view's sticky layout. The expanded panel sizes to its content up to
+`maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside the panel.
 
 ---
 
@@ -597,7 +600,7 @@ content up to `maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside 
 | `Actions.Button`            | Primary action — gradient, outline, flat, link variants; optional confirm dialog |
 | `Actions.IconButton`        | Icon-only tap target — ghost, primary, secondary, tertiary variants              |
 | `Actions.FAB`               | Floating Action Button — fixed position, optional label                          |
-| `Actions.Dock`              | Fixed primary action with swipe-expandable content and persistent CTA             |
+| `Actions.Dock`              | Fixed primary action with swipe-expandable content and persistent CTA            |
 | `Actions.FilterButton`      | Chip-style active/inactive toggle                                                |
 | `Actions.FilterButtonGroup` | Horizontal scroll container for filter chips                                     |
 
@@ -608,7 +611,7 @@ content up to `maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside 
 | `Display.Badge`                               | Status badge — success, warning, danger, info, neutral |
 | `Display.Card`                                | Surface container with optional shadow and padding     |
 | `Display.KeyValue`                            | Label + value row, optional clipboard copy             |
-| `Display.AmountSummary`                       | Composable monetary rows and total                      |
+| `Display.AmountSummary`                       | Composable monetary rows and total                     |
 | `Display.Stat`                                | KPI cell — label, value, optional trend indicator      |
 | `Display.StatCard`                            | Card-wrapped KPI                                       |
 | `Display.Monetary`                            | Formatted monetary amount using mono typography        |
@@ -675,20 +678,20 @@ content up to `maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside 
 
 ### Navigation
 
-| Component                         | Description                           |
-| --------------------------------- | ------------------------------------- |
-| `Navigation.AppBar`               | Top navigation bar with action slots  |
-| `Navigation.BottomNav`            | Bottom tab bar                        |
-| `Navigation.Header`               | Screen header                         |
-| `Navigation.HeaderToolbar`        | Header with left, center, right slots |
-| `Navigation.CollapsingHeader`     | Header that collapses on scroll       |
-| `Navigation.FloatingBar`          | Floating action bar                   |
-| `Navigation.SearchBar`            | Navigation-level search input         |
+| Component                         | Description                                       |
+| --------------------------------- | ------------------------------------------------- |
+| `Navigation.AppBar`               | Top navigation bar with action slots              |
+| `Navigation.BottomNav`            | Bottom tab bar                                    |
+| `Navigation.Header`               | Screen header                                     |
+| `Navigation.HeaderToolbar`        | Header with left, center, right slots             |
+| `Navigation.CollapsingHeader`     | Header that collapses on scroll                   |
+| `Navigation.FloatingBar`          | Floating action bar                               |
+| `Navigation.SearchBar`            | Navigation-level search input                     |
 | `Navigation.Search`               | Compound field, filters, history and filter sheet |
-| `Navigation.SegmentedControl`     | Segmented control switcher            |
-| `Navigation.Tabs`                 | Tab navigation container              |
-| `Navigation.Steps`                | Step indicator / breadcrumb           |
-| `Navigation.Menu` / `MenuSection` | Dropdown menu with sections           |
+| `Navigation.SegmentedControl`     | Segmented control switcher                        |
+| `Navigation.Tabs`                 | Tab navigation container                          |
+| `Navigation.Steps`                | Step indicator / breadcrumb                       |
+| `Navigation.Menu` / `MenuSection` | Dropdown menu with sections                       |
 
 ### Dialog
 

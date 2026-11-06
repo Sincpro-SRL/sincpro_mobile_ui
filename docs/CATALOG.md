@@ -58,20 +58,30 @@ and results are announced. `KeyValue copyable` requires a string or number and f
 
 `ListGroup` groups short settings/data lists using a title, optional description/action/footer,
 one inset surface or `surface="plain"`, and hairline separators between direct children.
-No shadows or per-row cards. Customize `className`, `contentClassName`, slots and
-`separators`; colors inherit existing theme variables.
+No shadows or per-row cards. Customize `className`, `contentClassName`, slots,
+`separators`, `headerProps` and `footerTextProps`; colors inherit existing theme variables.
+Default header is 16 points, description/footer 13, preserving distinct reading roles.
 Use one direct child per row; a Fragment counts as one child, not a list of rows.
 Use FlatList/SectionList for large collections, not this non-virtualized wrapper.
 
-`ListItem variant="mobile"` opts into readable 17-point titles/values, wrapping, 48-point
+`ListItem variant="mobile"` opts into regular 14-point titles/values, 13-point help, wrapping, 48-point
 actions and tonal press highlighting instead of opacity/scale feedback. `value`, `disabled`,
 `accessibilityHint` and `layout="auto|row|stacked"` support navigation/settings rows.
 Auto stacks accessories below text on screens under 360 points or font scales above 1.3;
 choose stacked explicitly for narrow embedded containers. A trailing control belongs in
-a row without `onPress`. Existing ListItem defaults stay unchanged.
+a row without `onPress`. Existing legacy ListItem defaults stay unchanged.
+`density="comfortable"` explicitly selects the earlier 17/16-point mobile presentation.
+Container `style` and `titleTextProps`/`subtitleTextProps`/`valueTextProps` allow local fonts,
+sizes, colors and weight without replacing interaction logic.
 Mobile rows omit their own dividers so ListGroup can manage them; `showDivider` explicitly
 enables a standalone row divider when needed.
 `SectionHeader variant="mobile"` uses the same reading variant.
+Header title/subtitle text props can override its type roles; header semantics stay intact.
+Group `style`, `contentStyle` and `separatorStyle` expose local spacing, shape and separators.
+Header `style`, `contentStyle`, `actionStyle` and `actionTextProps` expose its layout and action.
+`Foundations/Typography` includes compact/comfortable hierarchy examples with identical content.
+Icons without an explicit color follow live theme changes; consumer-supplied colors/custom
+icon renderers retain control.
 
 ### Commerce (`Display`)
 

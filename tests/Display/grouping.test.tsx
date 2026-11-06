@@ -2,7 +2,11 @@ import { afterEach, expect, jest, test } from "@jest/globals";
 import ListGroup from "@sincpro/mobile-ui/Display/Display.ListGroup";
 import ListItem from "@sincpro/mobile-ui/Display/Display.ListItem";
 import { DEFAULT_THEME, setActiveTheme } from "@sincpro/mobile-ui/theme";
-import { configureFonts, resetFonts } from "@sincpro/mobile-ui/theme/typography";
+import {
+  configureFonts,
+  fontFamilies,
+  resetFonts,
+} from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import * as ReactNative from "react-native";
@@ -27,8 +31,9 @@ test("grouping adds one header and separators only between visible rows", async 
   expect(screen.getByRole("header", { name: "Preferencias" })).toBeTruthy();
   expect(screen.getByText("Ayuda del grupo")).toBeTruthy();
   expect(
-    screen.getByTestId("group-separator-0", { includeHiddenElements: true }).props.style
-      .height,
+    ReactNative.StyleSheet.flatten(
+      screen.getByTestId("group-separator-0", { includeHiddenElements: true }).props.style,
+    ).height,
   ).toBe(ReactNative.StyleSheet.hairlineWidth);
   expect(
     screen.getByTestId("group-separator-1", { includeHiddenElements: true }),
@@ -154,4 +159,137 @@ test("group header actions remain named and independent from row actions", async
   await fireEvent.press(screen.getByRole("button", { name: "Editar grupo" }));
   expect(edit).toHaveBeenCalledTimes(1);
   expect(open).not.toHaveBeenCalled();
+});
+
+test("compact groups distinguish section, regular row and quiet supporting roles", async () => {
+  await render(
+    <ListGroup description="Descripción" footer="Pie" title="Sección">
+      <ListItem subtitle="Ayuda" title="Fila" value="Dato" variant="mobile" />
+    </ListGroup>,
+  );
+  const textStyle = (text: string) =>
+    ReactNative.StyleSheet.flatten(screen.getByText(text).props.style);
+  expect(textStyle("Sección")).toMatchObject({ fontSize: 16 });
+  expect(textStyle("Fila")).toMatchObject({
+    fontSize: 14,
+    fontWeight: "400",
+    fontFamily: fontFamilies.regular,
+  });
+  expect(textStyle("Sección").fontFamily).not.toBe(textStyle("Fila").fontFamily);
+  for (const text of ["Descripción", "Ayuda", "Pie"]) {
+    expect(textStyle(text)).toMatchObject({ fontSize: 13, fontWeight: "400" });
+    expect(screen.getByText(text).props.className).toContain("text-text-secondary");
+  }
+  expect(textStyle("Dato")).toMatchObject({ fontSize: 14, fontWeight: "400" });
+});
+
+test("comfortable mobile density explicitly preserves the previous 17/16 reading roles", async () => {
+  await render(
+    <ListItem
+      density="comfortable"
+      subtitle="Ayuda"
+      title="Lectura"
+      value="Valor"
+      variant="mobile"
+    />,
+  );
+  for (const text of ["Lectura", "Valor"]) {
+    expect(ReactNative.StyleSheet.flatten(screen.getByText(text).props.style).fontSize).toBe(
+      17,
+    );
+  }
+  expect(ReactNative.StyleSheet.flatten(screen.getByText("Ayuda").props.style).fontSize).toBe(
+    16,
+  );
+});
+
+test("text and container overrides use native style precedence without losing content or actions", async () => {
+  const open = jest.fn();
+  const styles = ReactNative.StyleSheet.create({ title: { fontSize: 19, lineHeight: 26 } });
+  await render(
+    <ListGroup
+      footer="Personalizado"
+      footerTextProps={{ style: { fontSize: 12, fontStyle: "italic" } }}
+      headerProps={{ titleTextProps: { variant: "h4", style: { fontSize: 21 } } }}
+      title="Mi sección"
+    >
+      <ListItem
+        onPress={open}
+        style={{ borderRadius: 24 }}
+        subtitle="Mi ayuda"
+        subtitleTextProps={{ style: { fontFamily: "Brand-Reading", fontSize: 15 } }}
+        title="Mi fila"
+        titleTextProps={{ semibold: true, style: [styles.title, [{ fontSize: 18 }]] }}
+        value="Mi valor"
+        valueTextProps={{ variant: "caption", style: { fontSize: 12 } }}
+        variant="mobile"
+      />
+    </ListGroup>,
+  );
+  const style = (text: string) =>
+    ReactNative.StyleSheet.flatten(screen.getByText(text).props.style);
+  expect(style("Mi sección").fontSize).toBe(21);
+  expect(screen.getByRole("header", { name: "Mi sección" })).toBeTruthy();
+  expect(style("Mi fila")).toMatchObject({ fontSize: 18, lineHeight: 26 });
+  expect(style("Mi ayuda")).toMatchObject({ fontSize: 15, fontFamily: "Brand-Reading" });
+  expect(style("Mi valor").fontSize).toBe(12);
+  expect(style("Personalizado")).toMatchObject({ fontSize: 12, fontStyle: "italic" });
+  expect(
+    ReactNative.StyleSheet.flatten(screen.getByRole("button").props.style),
+  ).toMatchObject({
+    borderRadius: 24,
+    minHeight: 48,
+    minWidth: 48,
+  });
+  await fireEvent.press(screen.getByRole("button", { name: "Mi fila" }));
+  expect(open).toHaveBeenCalledTimes(1);
+});
+
+test("group and header styles remain independently extensible", async () => {
+  const edit = jest.fn();
+  await render(
+    <ListGroup
+      action={{ label: "Editar", onPress: edit }}
+      contentStyle={{ borderRadius: 6, paddingVertical: 3 }}
+      headerProps={{
+        testID: "custom-header",
+        style: { paddingHorizontal: 10 },
+        contentStyle: { gap: 6 },
+        actionStyle: { borderRadius: 20 },
+        actionTextProps: { style: { fontFamily: "Brand-Action", fontSize: 15 } },
+      }}
+      separatorStyle={{ marginHorizontal: 6, backgroundColor: "purple" }}
+      style={{ gap: 10 }}
+      testID="custom-group"
+      title="Mi grupo"
+    >
+      <ListItem title="Primera" variant="mobile" />
+      <ListItem title="Segunda" variant="mobile" />
+    </ListGroup>,
+  );
+  expect(
+    ReactNative.StyleSheet.flatten(screen.getByTestId("custom-group").props.style),
+  ).toMatchObject({ gap: 10 });
+  expect(
+    ReactNative.StyleSheet.flatten(screen.getByTestId("custom-group-content").props.style),
+  ).toMatchObject({ borderRadius: 6, paddingVertical: 3 });
+  expect(
+    ReactNative.StyleSheet.flatten(screen.getByTestId("custom-header").props.style),
+  ).toMatchObject({ paddingHorizontal: 10 });
+  expect(
+    ReactNative.StyleSheet.flatten(
+      screen.getByTestId("custom-group-separator-0", { includeHiddenElements: true }).props
+        .style,
+    ),
+  ).toMatchObject({ marginHorizontal: 6, backgroundColor: "purple" });
+  expect(
+    ReactNative.StyleSheet.flatten(screen.getByText("Editar").props.style),
+  ).toMatchObject({ fontFamily: "Brand-Action", fontSize: 15 });
+  expect(
+    ReactNative.StyleSheet.flatten(
+      screen.getByRole("button", { name: "Editar" }).props.style,
+    ),
+  ).toMatchObject({ borderRadius: 20, minHeight: 48 });
+  await fireEvent.press(screen.getByRole("button", { name: "Editar" }));
+  expect(edit).toHaveBeenCalledTimes(1);
 });

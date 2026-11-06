@@ -1,7 +1,8 @@
+import { Display } from "@sincpro/mobile-ui/Display";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
-import type { ReactNode } from "react";
-import { View } from "react-native";
+import { type ReactNode, useState } from "react";
+import { useWindowDimensions, View } from "react-native";
 
 const meta = {
   title: "Foundations/Typography",
@@ -20,6 +21,65 @@ export const Body: Story = {};
 export const Heading: Story = { args: { children: "Título", variant: "h3", bold: true } };
 export const Caption: Story = {
   args: { children: "22 jun 2026 · 14:32 · SKU-00917", variant: "caption" },
+};
+
+function HierarchyExample({ comfortable = false }: { comfortable?: boolean }) {
+  const { fontScale } = useWindowDimensions();
+  const [selected, setSelected] = useState("Ningún documento abierto");
+  return (
+    <View style={{ gap: 16 }}>
+      <View style={{ gap: 4 }}>
+        <Typography.Heading variant="h4">Mi espacio</Typography.Heading>
+        <Typography.Text className="text-text-secondary" variant="bodySmall">
+          Documentos y actividad del equipo
+        </Typography.Text>
+      </View>
+      <View className="flex-row items-center gap-3">
+        <Display.Avatar initials="AP" size={Math.ceil(36 * Math.max(1, fontScale))} />
+        <View className="flex-1 gap-0.5">
+          <Typography.Text variant="label">Ana Pérez</Typography.Text>
+          <Typography.Text className="text-text-secondary" variant="bodySmall">
+            Administración · Sincpro
+          </Typography.Text>
+        </View>
+      </View>
+      <Display.ListGroup
+        description="3 documentos disponibles"
+        footer="Sincronizado hace 2 minutos"
+        title="Recientes"
+      >
+        {[
+          ["Reporte mensual", "Hoy · Finanzas", "document-text-outline"],
+          ["Inventario", "Ayer · Operaciones", "cube-outline"],
+          ["Guía del equipo", "4 nov · General", "book-outline"],
+        ].map(([title, subtitle, icon]) => (
+          <Display.ListItem
+            chevron
+            density={comfortable ? "comfortable" : "compact"}
+            key={title}
+            leading={<Display.Icon name={icon} size={20} />}
+            onPress={() => setSelected(`Abierto: ${title}`)}
+            subtitle={subtitle}
+            title={title}
+            variant="mobile"
+          />
+        ))}
+      </Display.ListGroup>
+      <Typography.Text accessibilityLiveRegion="polite" variant="caption">
+        {selected}
+      </Typography.Text>
+    </View>
+  );
+}
+
+export const CompactHierarchy: Story = {
+  parameters: { layout: "fullscreen" },
+  render: () => <HierarchyExample />,
+};
+
+export const ComfortableHierarchy: Story = {
+  parameters: { layout: "fullscreen" },
+  render: () => <HierarchyExample comfortable />,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

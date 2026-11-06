@@ -3,8 +3,14 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type { ReactNode } from "react";
-import { Pressable as NativePressable, useWindowDimensions, View } from "react-native";
+import type { ComponentProps, ReactNode } from "react";
+import {
+  Pressable as NativePressable,
+  type StyleProp,
+  useWindowDimensions,
+  View,
+  type ViewStyle,
+} from "react-native";
 
 export interface ListItemProps {
   title: string;
@@ -26,6 +32,11 @@ export interface ListItemProps {
   variant?: "default" | "mobile";
   value?: string;
   layout?: "auto" | "row" | "stacked";
+  density?: "compact" | "comfortable";
+  style?: StyleProp<ViewStyle>;
+  titleTextProps?: Omit<ComponentProps<typeof Typography.Text>, "children">;
+  subtitleTextProps?: Omit<ComponentProps<typeof Typography.Text>, "children">;
+  valueTextProps?: Omit<ComponentProps<typeof Typography.Text>, "children">;
 }
 
 function ListItem({
@@ -45,10 +56,16 @@ function ListItem({
   variant = "default",
   value,
   layout = "auto",
+  density = "compact",
+  style,
+  titleTextProps,
+  subtitleTextProps,
+  valueTextProps,
 }: ListItemProps) {
   const theme = useTheme();
   const { width, fontScale } = useWindowDimensions();
   const mobile = variant === "mobile";
+  const comfortable = mobile && density === "comfortable";
   const stacked =
     mobile &&
     (value !== undefined || trailing != null) &&
@@ -60,7 +77,8 @@ function ListItem({
         {value ? (
           <Typography.Text
             className="text-text-secondary flex-shrink"
-            variant={mobile ? "bodyReadable" : "body"}
+            variant={comfortable ? "bodyReadable" : "body"}
+            {...valueTextProps}
           >
             {value}
           </Typography.Text>
@@ -79,8 +97,9 @@ function ListItem({
         <Typography.Text
           className={mobile && disabled ? "text-text-disabled" : "text-text-primary"}
           numberOfLines={mobile || accessibleSizing ? undefined : 1}
-          semibold
-          variant={mobile ? "bodyReadable" : "body"}
+          semibold={!mobile || comfortable}
+          variant={comfortable ? "bodyReadable" : "body"}
+          {...titleTextProps}
         >
           {title}
         </Typography.Text>
@@ -88,7 +107,8 @@ function ListItem({
           <Typography.Text
             className="text-text-secondary"
             numberOfLines={mobile || accessibleSizing ? undefined : 1}
-            variant={mobile ? "bodyLarge" : "bodySmall"}
+            variant={comfortable ? "bodyLarge" : "bodySmall"}
+            {...subtitleTextProps}
           >
             {subtitle}
           </Typography.Text>
@@ -107,7 +127,8 @@ function ListItem({
   );
 
   const base = cn(
-    "flex-row items-center py-3 px-4",
+    "flex-row items-center px-4",
+    mobile && !comfortable ? "py-2" : "py-3",
     !mobile && "bg-bg-card",
     (showDivider ?? !mobile) && "border-b border-border-default",
     disabled && !mobile && "opacity-50",
@@ -126,11 +147,14 @@ function ListItem({
           className={base}
           disabled={disabled}
           onPress={onPress}
-          style={({ pressed }) => ({
-            minHeight: 48,
-            minWidth: 48,
-            backgroundColor: pressed ? theme.bg.hover : undefined,
-          })}
+          style={({ pressed }) => [
+            {
+              minHeight: 48,
+              minWidth: 48,
+              backgroundColor: pressed ? theme.bg.hover : undefined,
+            },
+            style,
+          ]}
           testID={testID}
         >
           {content}
@@ -144,7 +168,7 @@ function ListItem({
         className={base}
         disabled={disabled}
         onPress={onPress}
-        style={accessibleSizing ? { minHeight: 48 } : undefined}
+        style={[accessibleSizing ? { minHeight: 48 } : undefined, style]}
         testID={testID}
       >
         {content}
@@ -153,7 +177,7 @@ function ListItem({
   }
 
   return (
-    <View className={base} testID={testID}>
+    <View className={base} style={style} testID={testID}>
       {content}
     </View>
   );

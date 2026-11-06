@@ -1,0 +1,39 @@
+appId: host.exp.Exponent
+name: Compact hierarchy preserves reading roles and native row actions
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=foundations-typography--compact-hierarchy"
+- assertVisible: "Mi espacio"
+- assertVisible: "Ana Pérez"
+- assertVisible: "Recientes"
+- scrollUntilVisible:
+    element: "Reporte mensual"
+- tapOn: "Reporte mensual"
+- scrollUntilVisible:
+    element: "Abierto: Reporte mensual"
+- assertVisible: "Abierto: Reporte mensual"
+- scrollUntilVisible:
+    element: "Mi espacio"
+    direction: UP
+- takeScreenshot: hierarchy-compact-light
+- tapOn:
+    id: "storybook-theme-toggle"
+- assertVisible: "Activar tema claro"
+- takeScreenshot: hierarchy-compact-dark
+- scrollUntilVisible:
+    element: "Abierto: Reporte mensual"
+- assertVisible: "Abierto: Reporte mensual"
+- takeScreenshot: hierarchy-compact-selected
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=foundations-typography--comfortable-hierarchy"
+- assertVisible: "Mi espacio"
+- scrollUntilVisible:
+    element: "Guía del equipo"
+- tapOn: "Guía del equipo"
+- scrollUntilVisible:
+    element: "Abierto: Guía del equipo"
+- assertVisible: "Abierto: Guía del equipo"
+- scrollUntilVisible:
+    element: "Mi espacio"
+    direction: UP
+- takeScreenshot: hierarchy-comfortable

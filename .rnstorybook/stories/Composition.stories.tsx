@@ -8,7 +8,6 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import DisplayImage from "@sincpro/mobile-ui/Display/Display.Image";
 import ListGroup from "@sincpro/mobile-ui/Display/Display.ListGroup";
 import ListItem from "@sincpro/mobile-ui/Display/Display.ListItem";
-import Stat from "@sincpro/mobile-ui/Display/Display.Stat";
 import EmptyState from "@sincpro/mobile-ui/Feedback/Feedback.EmptyState";
 import Checkbox from "@sincpro/mobile-ui/Form/Form.Checkbox";
 import { useTheme } from "@sincpro/mobile-ui/theme";
@@ -149,10 +148,6 @@ export function CollectionRecipe({
         }}
         testID="collection-filters"
       />
-      <View className="flex-row flex-wrap gap-6 border-b border-border-default pb-4">
-        <Stat align="start" label="Disponibles" value={records.length} />
-        <Stat align="start" label="Guardados" value={saved.length} />
-      </View>
       {visible.length === 0 ? (
         <EmptyState
           accessibleSizing
@@ -171,10 +166,8 @@ export function CollectionRecipe({
               <View className="flex-row items-start gap-3">
                 {thumbnail(record.image)}
                 <View className="flex-1 gap-1">
-                  <Typography.Text semibold variant="bodyReadable">
-                    {record.title}
-                  </Typography.Text>
-                  <Typography.Text className="text-text-secondary" variant="bodyLarge">
+                  <Typography.Text variant="body">{record.title}</Typography.Text>
+                  <Typography.Text className="text-text-secondary" variant="bodySmall">
                     {record.subtitle}
                   </Typography.Text>
                 </View>

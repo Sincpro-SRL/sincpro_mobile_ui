@@ -236,6 +236,75 @@ Evidencia de este lote, separada de los resultados históricos anteriores:
   y cursor por encima de la barra; el tamaño `large` se restaura al terminar.
 - El export Android pasa como smoke de bundling, no como prueba de runtime.
 
+## Séptimo lote: auditoría de jerarquía, no otro rediseño general
+
+### Alcance y método
+
+Se compararon los cinco referentes aportados (jerarquía y composición, no diseños para
+copiar), la escala de `origin/main`, los grupos de ajustes y la colección nuevos, y las
+APIs de `Text`, `ListItem`, `ListGroup` y `SectionHeader`. Se capturaron ambas recetas
+en iPhone 17 Pro con tamaño de texto `large` y tema claro antes de editar. La comprobación
+de Bold Text no devolvió una preferencia configurada: no se usa como explicación del problema.
+Esto es una auditoría focalizada, no una aprobación visual de todo el catálogo.
+
+| Hallazgo comprobado                                                                                                         | Origen                                                           | Decisión                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Sección y filas a 17 puntos semibold; descripción, subtítulo y footer a 16                                                  | Nuevas piezas móviles del tercer lote                            | Diferenciar sección 16, fila regular 14 y apoyo 13; conservar 17/16 como densidad explícita                               |
+| Conteo de resultados seguido de dos cifras grandes y otro título antes de las filas                                         | Nueva receta de colección                                        | Quitar métricas redundantes, no reducir targets ni eliminar búsqueda/filtros                                              |
+| Cards nuevas reutilizaban 17 semibold/16 para toda la descripción                                                           | Nueva receta de colección                                        | Usar los roles originales body/bodySmall; mantener slots y comportamiento                                                 |
+| Las filas no exponían estilos propios de título/subtítulo/valor                                                             | API de fila existente y ampliada                                 | Añadir props de texto y estilo de contenedor, sin exigir un fork                                                          |
+| El merge de estilos de Text no resolvía arrays anidados/estilos registrados                                                 | Limitación preexistente, relevante a las APIs nuevas             | Usar StyleSheet.flatten y probar precedencia con arrays anidados                                                          |
+| Ejemplo de “jerarquía” describía tamaños grandes aislados, no contenido real                                                | Nueva story                                                      | Añadir el mismo contexto de perfil/documentos en compacto y cómodo, dentro de Foundations/Typography                      |
+| El fondo del canvas cambiaba a oscuro pero texto/superficies retenían colores claros; las aserciones de visibilidad pasaban | Variables NativeWind sobre el scroll de terceros del canvas      | Mover variables a un View nativo común; sincronizar el tema y conservar estado local al alternarlo, sin remontar la story |
+| Iconos sin color explícito retenían el tema anterior si no se remontaban                                                    | Limitación preexistente de Icon, descubierta al conservar estado | Suscribir Icon al tema activo; probar actualización en vivo sin alterar color explícito ni renderers custom               |
+
+No se sustituyó globalmente el body original de 14 puntos, sus headings ni las fuentes de
+marca. No sería correcto atribuir todo lo observado a una migración global: parte procede
+de cómo se combinaron las variantes nuevas. Tampoco se confunde target táctil con tamaño
+del texto: las acciones móviles conservan 48 puntos, wrapping y Dynamic Type.
+
+### Criterio y fuentes
+
+- [Apple HIG Typography](https://developer.apple.com/design/human-interface-guidelines/typography):
+  jerarquía mediante tamaño, peso y color; mantener distinción al ampliar texto. Recomienda
+  17 puntos como default iOS, no que todos los roles de interfaz midan 17/16. Los 14/13 aquí
+  preservan la escala compacta del producto y requieren validar legibilidad en la app destino.
+- [Expo design-system skill](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-design-system)
+  y su referencia de auditoría: extender el sistema existente, no introducir otra escala,
+  verificar representación además de buscar tokens, adoptar incrementalmente.
+- [Expo native-ui skill](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-native-ui):
+  contenido móvil, accesibilidad y elección de controles nativos, no copiar convenciones web.
+  Se consultaron las fuentes oficiales como material de auditoría; no se instaló un skill
+  externo ni se presenta su lectura como activación automática. Repositorio oficial verificado;
+  no se inventan cifras de instalación o certificaciones de UX.
+
+### Ejemplos y límites
+
+`Foundations/Typography/CompactHierarchy` muestra título 20, sección 16, filas regulares 14
+y apoyo 13 con identidad, iconos pequeños y acciones reales; `ComfortableHierarchy` cambia
+la densidad de las mismas filas. Son recetas opcionales, no nuevos templates obligatorios.
+`Patterns/Forms/Settings/Customized` demuestra variantes y estilos locales de título,
+valor y footer además de cambiar la superficie. Grupo, contenido, separadores y acciones
+del encabezado admiten estilos nativos independientes; no quedan fijados a la receta.
+
+Evidencia de este lote:
+
+- 60 tests de lógica/tokens + 104 nativos (164); 24 suites Jest. Se comprueban tamaños,
+  familias/pesos, compatibilidad legacy, targets, precedencia de estilos y suscripción del icono.
+- Suite completa iOS: 17/17 flujos, no una selección presentada como suite completa.
+- Tres tareas afectadas pasan con `accessibility-large`: jerarquía, ajustes largos/dark y
+  colección larga/dark. Se inspeccionaron capturas; el tamaño normal se restaura al terminar.
+- El avatar del ejemplo adapta su diámetro al escalado del texto para que las iniciales
+  no desborden su círculo. Es composición local, no otro cambio global de Avatar.
+- Build de librería y export Android pasan; el segundo no acredita runtime Android.
+- Las capturas anteriores a corregir el canvas documentan el fallo de dark mode, no una
+  aprobación. Aserciones nativas de visibilidad por sí solas no bastan como validación visual.
+
+Quedan fuera de esta aprobación: todas las variantes legacy, una auditoría visual exhaustiva
+del editor de consultas, fuentes arbitrarias de consumidores, validación de contraste de
+temas personalizados, Android runtime y pruebas de usabilidad con personas. El manifiesto
+sigue siendo objetivo; ni el número de tests ni estas capturas certifican todo el design system.
+
 ## Adopción y límites
 
 1. Usar las APIs accesibles en pantallas nuevas y adoptar las existentes por lotes.

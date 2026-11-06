@@ -1,7 +1,8 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { View } from "react-native";
+import type { ComponentProps } from "react";
+import { type StyleProp, View, type ViewStyle } from "react-native";
 
 export interface SectionHeaderAction {
   label: string;
@@ -15,6 +16,15 @@ export interface SectionHeaderProps {
   className?: string;
   testID?: string;
   variant?: "default" | "mobile";
+  titleTextProps?: Omit<
+    ComponentProps<typeof Typography.Text>,
+    "children" | "accessibilityRole"
+  >;
+  subtitleTextProps?: Omit<ComponentProps<typeof Typography.Text>, "children">;
+  style?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
+  actionStyle?: StyleProp<ViewStyle>;
+  actionTextProps?: Omit<ComponentProps<typeof Typography.Text>, "children">;
 }
 
 function SectionHeader({
@@ -24,18 +34,26 @@ function SectionHeader({
   className,
   testID,
   variant = "default",
+  titleTextProps,
+  subtitleTextProps,
+  style,
+  contentStyle,
+  actionStyle,
+  actionTextProps,
 }: SectionHeaderProps) {
   return (
     <View
       className={cn("flex-row items-center justify-between px-4 py-2", className)}
+      style={style}
       testID={testID}
     >
-      <View className="flex-1">
+      <View className="flex-1" style={contentStyle}>
         <Typography.Text
           accessibilityRole="header"
           className="text-text-primary"
           semibold
           variant={variant === "mobile" ? "bodyReadable" : "subtitle"}
+          {...titleTextProps}
         >
           {title}
         </Typography.Text>
@@ -43,6 +61,7 @@ function SectionHeader({
           <Typography.Text
             className="text-text-secondary"
             variant={variant === "mobile" ? "bodyLarge" : "bodySmall"}
+            {...subtitleTextProps}
           >
             {subtitle}
           </Typography.Text>
@@ -54,15 +73,21 @@ function SectionHeader({
           accessibilityRole="button"
           hitSlop={8}
           onPress={action.onPress}
-          style={{
-            minHeight: 48,
-            minWidth: 48,
-            justifyContent: "center",
-            marginLeft: 12,
-            flexShrink: 1,
-          }}
+          style={[
+            {
+              minHeight: 48,
+              minWidth: 48,
+              justifyContent: "center",
+              marginLeft: 12,
+              flexShrink: 1,
+            },
+            actionStyle,
+          ]}
         >
-          <Typography.Text className="text-text-accent text-sm font-semibold">
+          <Typography.Text
+            className="text-text-accent text-sm font-semibold"
+            {...actionTextProps}
+          >
             {action.label}
           </Typography.Text>
         </Pressable>

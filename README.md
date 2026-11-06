@@ -154,23 +154,37 @@ optional description/footer/action and hairline separators only between rows. Ch
 </Display.ListGroup>
 ```
 
-- `ListItem variant="mobile"` opts into 17-point reading text, wrapping, a 48-point target,
+- `ListItem variant="mobile"` opts into wrapping, a 48-point target,
   tonal row press feedback and adaptive accessories. `layout="auto"` stacks values/controls
   below the text on narrow screens or enlarged text; use `layout="stacked"` for narrow
   embedded containers. Navigation values are also exposed as native accessibility values.
+- New mobile rows default to `density="compact"`: regular 14-point titles/values,
+  13-point supporting text and 8-point vertical padding. `density="comfortable"` restores
+  the earlier PR's 17/16-point reading presentation and 12-point padding.
+  Legacy rows (`variant="default"`) keep their original appearance.
 - Put a toggle/checkbox in a **non-pressable** row; do not nest a second action inside a
   pressable row. The leading/trailing slots remain consumer-owned.
 - `Typography.Text variant="bodyReadable"` and `Typography.SelectableText` with the same
   variant opt into 17 points while retaining `configureFonts` and system font scaling.
   The 14-point `body` and existing ListItem appearance remain unchanged.
 - Customize per instance with `className`, `contentClassName`, slots, surface and separators.
+  Rows also accept `style`, `titleTextProps`, `subtitleTextProps` and `valueTextProps`.
+  Text props accept typography variants, weights, font families and native style arrays.
+  `ListGroup.headerProps` forwards header styling/text props; `footerTextProps` controls
+  string footers. Default groups use a 16-point section heading and 13-point description/footer.
+  Group `style`, `contentStyle` and `separatorStyle` control spacing, surface and dividers.
+  Headers expose `style`, `contentStyle`, `actionStyle` and `actionTextProps` as well.
+  For example, `titleTextProps={{ style: { fontFamily: "MyLoadedFont", fontSize: 15 } }}`
+  changes only one row, without copying its focus, accessibility or press behavior.
   Customize branding centrally with `buildThemeFromBrand`/`extendTheme`, `setActiveTheme`
   and `themeToVars` on the host, plus `configureFonts` for already-loaded font families.
   Do not introduce a competing palette or hardcode colors in every screen.
 - This group is not virtualized: use FlatList/SectionList for large or unbounded collections.
 
 Stories: `Patterns/Forms/Settings` shows Sincpro defaults, long content, customized
-surfaces and the opt-in reading hierarchy. Customization is not a complete visual approval.
+surfaces and text roles. `Foundations/Typography/CompactHierarchy` and
+`ComfortableHierarchy` show the same content at two densities, not two mandatory screens.
+Customization is not a complete visual approval.
 
 ### Compose collections, not a prescribed screen
 

@@ -47,6 +47,13 @@ range selection on iOS.
 Grouping tests cover separators, independently accessible child actions, disabled rows,
 legacy/readable typography, configured fonts, class override precedence and settings tasks.
 Native flows exercise both default and customized surfaces and long grouped settings.
+Hierarchy tests measure section/row/supporting roles (16/14/13), preserve explicit
+comfortable 17/16 density and legacy row defaults, and verify local font, size, shape,
+spacing and action styling. Nested/registered text styles retain native precedence.
+`typography-hierarchy.yaml` exercises identical compact/comfortable content and captures
+light/dark presentation; captures must be visually inspected, not just asserted visible.
+Icon tests cover live theme subscriptions without remounting and retain explicit color/custom
+renderer overrides. The Storybook theme toggle must preserve local interaction state.
 Filter/search tests cover named inputs, clear/submit, 48-point targets, disabled/selected
 chips, legacy search triggers and auto-layout at font scales 1.3/1.31.
 Composition tests exercise actual local query/filter results, empty reset, independent

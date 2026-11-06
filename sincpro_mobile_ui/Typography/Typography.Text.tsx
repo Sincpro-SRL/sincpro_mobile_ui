@@ -5,7 +5,7 @@ import {
   typographyVariants,
 } from "@sincpro/mobile-ui/theme/typography";
 import type React from "react";
-import { Text, type TextProps, type TextStyle } from "react-native";
+import { StyleSheet, Text, type TextProps, type TextStyle } from "react-native";
 
 /**
  * Typography.Text - Hybrid component (NativeWind + Style)
@@ -63,7 +63,7 @@ function AppText({
     ...baseStyle,
     ...(color ? { color } : {}),
     fontFamily: resolveTextFontFamily(variant, bold, semibold),
-    ...(Array.isArray(style) ? Object.assign({}, ...style) : style),
+    ...StyleSheet.flatten(style),
   };
 
   return (

@@ -34,7 +34,11 @@ export function GroupedSettings({
       <Typography.Heading variant="h3">Preferencias</Typography.Heading>
       <ListGroup
         contentClassName={customized ? "rounded-lg bg-bg-muted" : undefined}
+        contentStyle={customized ? { borderRadius: 10 } : undefined}
         footer="Estos ajustes pertenecen a esta demostración."
+        footerTextProps={customized ? { style: { fontStyle: "italic" } } : undefined}
+        headerProps={customized ? { titleTextProps: { variant: "h5" } } : undefined}
+        separatorStyle={customized ? { marginHorizontal: 24 } : undefined}
         testID="preferences-group"
         title="Tu espacio"
       >
@@ -54,6 +58,9 @@ export function GroupedSettings({
               : "Espacio de trabajo"
           }
           title="Sincpro"
+          titleTextProps={
+            customized ? { variant: "label", style: { letterSpacing: 0.6 } } : undefined
+          }
           variant="mobile"
         />
         <ListItem
@@ -63,6 +70,7 @@ export function GroupedSettings({
           subtitle="Idioma de la interfaz"
           title="Idioma"
           value={language}
+          valueTextProps={customized ? { variant: "caption" } : undefined}
           variant="mobile"
         />
       </ListGroup>
@@ -123,17 +131,19 @@ export const ReadingHierarchy: Story = {
   render: () => (
     <View style={{ gap: 24 }}>
       <Typography.Heading variant="h3">Jerarquía de lectura</Typography.Heading>
-      <Typography.Text variant="bodyReadable">
-        Texto principal a 17 puntos: conserva la fuente de marca y la escala del sistema.
+      <Typography.Text variant="subtitle">Sección: 16 puntos, peso medio.</Typography.Text>
+      <Typography.Text variant="body">
+        Contenido de interfaz: 14 puntos, peso regular.
       </Typography.Text>
-      <Typography.Text className="text-text-secondary" variant="bodyLarge">
-        Ayuda secundaria a 16 puntos; no compite con el contenido.
+      <Typography.Text className="text-text-secondary" variant="bodySmall">
+        Ayuda: 13 puntos, peso regular y color secundario.
       </Typography.Text>
       <Typography.Text variant="caption">
         REF-001 · metadatos en la familia mono de Sincpro
       </Typography.Text>
-      <Typography.Text variant="body">
-        El body legacy conserva sus 14 puntos. Las pantallas existentes no cambian.
+      <Typography.Text variant="bodyReadable">
+        Lectura amplia a 17 puntos: una opción para pasajes de texto, no un tamaño obligatorio
+        para etiquetas, filas y metadatos.
       </Typography.Text>
     </View>
   ),

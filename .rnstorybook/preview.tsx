@@ -7,7 +7,7 @@ import {
 } from "@sincpro/mobile-ui/theme";
 import type { Preview } from "@storybook/react-native";
 import { vars } from "nativewind";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useLayoutEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
@@ -33,15 +33,15 @@ function ThemeFrame({
 }) {
   const [mode, setMode] = useState<ThemeKey>("light");
   const tokens = THEMES[mode];
+  useLayoutEffect(() => setActiveTheme(tokens), [tokens]);
 
   const toggle = () => {
     const next = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
-    setActiveTheme(THEMES[next]);
     setMode(next);
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.bg.page }}>
+    <View style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}>
       <Pressable
         accessibilityLabel={mode === "light" ? "Activar tema oscuro" : "Activar tema claro"}
         accessibilityRole="button"
@@ -66,16 +66,8 @@ function ThemeFrame({
           {NEXT_LABEL[mode]}
         </Text>
       </Pressable>
-      {/*
-        Scrollable canvas: short stories stay vertically centered (flexGrow:1 +
-        justifyContent:center), tall ones (e.g. AppBar's stacked frames) scroll to the
-        end instead of overflowing off-screen. The theme `vars()` go on the ScrollView so
-        they cascade to all story descendants.
-      */}
       {ownsScroll ? (
-        <View key={mode} style={[vars(themeToVars(tokens)), { flex: 1 }]}>
-          {children}
-        </View>
+        <View style={{ flex: 1 }}>{children}</View>
       ) : (
         <KeyboardAwareScrollView
           bottomOffset={20}
@@ -84,10 +76,9 @@ function ThemeFrame({
             justifyContent: screen ? "flex-start" : "center",
             padding: 16,
           }}
-          key={mode}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
+          style={{ flex: 1, backgroundColor: tokens.bg.page }}
         >
           {children}
         </KeyboardAwareScrollView>

@@ -7,7 +7,7 @@ import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { ScrollView, useWindowDimensions, View } from "react-native";
+import { ScrollView, TextInput, View } from "react-native";
 
 const meta: Meta = { title: "Components/Actions" };
 export default meta;
@@ -119,18 +119,18 @@ export const FilterButtons: Story = {
 
 export const ActionDock: Story = {
   name: "Dock — swipe-expandable fixed action",
+  parameters: { layout: "fullscreen", ownsScroll: true },
   render: () => <ActionDockDemo />,
 };
 
 function ActionDockDemo() {
-  const { height } = useWindowDimensions();
   const [confirmed, setConfirmed] = useState(false);
+  const [reviewed, setReviewed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [note, setNote] = useState("");
 
   return (
-    <View
-      className="relative rounded-xl border border-border-light bg-bg-page"
-      style={{ height: Math.max(360, Math.min(height - 180, 640)) }}
-    >
+    <View className="relative flex-1 bg-bg-page">
       <ScrollView
         contentContainerStyle={{ gap: 12, padding: 20, paddingBottom: 180 }}
         style={{ flex: 1 }}
@@ -144,6 +144,10 @@ function ActionDockDemo() {
           contraer. El panel superpuesto mantiene visible la acción principal.
         </Typography.Text>
         {confirmed ? <Display.Tag dotColor="#16A34A" label="Pedido confirmado" /> : null}
+        {reviewed ? <Display.Tag label="Pedido revisado" /> : null}
+        <Typography.Text variant="body">
+          {note ? `Nota: ${note}` : "Sin nota"}
+        </Typography.Text>
         <Typography.Text className="text-text-secondary" variant="body">
           Este contenido puede desplazarse debajo del Dock; el panel se muestra encima sin
           recortar la pantalla.
@@ -154,11 +158,16 @@ function ActionDockDemo() {
         </Typography.Text>
       </ScrollView>
       <Actions.Dock
+        expanded={expanded}
         maxExpandedHeightRatio={0.45}
+        onExpandedChange={setExpanded}
         primaryAction={
           <Actions.Button
             disabled={confirmed}
-            onPress={() => setConfirmed(true)}
+            onPress={() => {
+              setConfirmed(true);
+              setExpanded(false);
+            }}
             title={confirmed ? "Confirmado" : "Confirmar pedido"}
           />
         }
@@ -167,6 +176,7 @@ function ActionDockDemo() {
             <Display.AmountSummary.Total label="Total" value={128.5} />
           </Display.AmountSummary.Root>
         }
+        testID="story-dock"
         title="Detalle del pedido"
       >
         <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
@@ -176,10 +186,23 @@ function ActionDockDemo() {
         </Display.AmountSummary.Root>
         <Actions.Button
           className="mt-3"
-          onPress={() => setConfirmed((value) => !value)}
-          title={confirmed ? "Quitar confirmación" : "Marcar como revisado"}
+          onPress={() => setReviewed((value) => !value)}
+          title={reviewed ? "Quitar revisión" : "Marcar como revisado"}
           variant="secondary"
         />
+        <TextInput
+          accessibilityLabel="Nota del pedido"
+          className="my-3 min-h-12 rounded-lg border border-border-light px-3 text-text-primary"
+          onChangeText={setNote}
+          placeholder="Nota del pedido"
+          testID="dock-note"
+          value={note}
+        />
+        {Array.from({ length: 8 }, (_, index) => (
+          <Typography.Text className="py-3" key={index} variant="body">
+            {`Opción adicional ${index + 1}`}
+          </Typography.Text>
+        ))}
       </Actions.Dock>
     </View>
   );

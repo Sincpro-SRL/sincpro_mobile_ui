@@ -42,14 +42,18 @@ wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` 
 horizontal scrolling or wrapping; the default remains its legacy row layout.
 `Actions.Dock` defaults to a fixed bottom bar with a primary action and optional summary.
 Swipe up on its handle (or press “Más opciones”) to reveal secondary content above the bar;
-vertical swipes capture from the handle while diagonal gestures pass through, and the panel
-tracks the finger before settling. The panel overlays the screen without dimming it, fits its
-content up to `maxExpandedHeightRatio` (default 0.6), then scrolls. The primary action stays
-fixed, and swipe down or “Ocultar opciones” collapses the panel. Mount fixed placement as a
-direct child of a full-screen safe-area screen container, outside scroll views and ancestors
-that clip overflow; reserve bottom space in scrolling content. Set `placement="footer"` inside
-`FormViewV2.Footer` to use its existing sticky layout without nesting another fixed bar.
-It owns no business calculations or submission state.
+the 48-point handle claims touches immediately to prevent ancestor scroll competition.
+Expansion uses a native modal with a dim blocking backdrop, safe-area insets and keyboard
+avoidance. The content fits `maxExpandedHeightRatio` (default 0.6) and remaining screen
+height, then scrolls; the primary action is outside the scrolling panel.
+Swipe down, accessible escape, native Back, “Ocultar opciones” or the backdrop close it;
+`dismissOnBackdrop={false}` disables only backdrop dismissal.
+`expanded` / `onExpandedChange` support host control; `defaultExpanded` initializes
+uncontrolled state. The app must provide `SafeAreaProvider`. Keep collapsed fixed placement
+outside scroll views and reserve space below list content. `placement="footer"` reuses
+`FormViewV2.Footer`'s layout. Slots remount when moving between the screen and modal:
+keep drafts and submission state in the host.
+See [migration and adoption order](MOBILE_UX_MIGRATION.md).
 
 Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
 alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive

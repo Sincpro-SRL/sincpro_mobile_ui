@@ -581,13 +581,20 @@ import { Display } from "@sincpro/mobile-ui/Display";
 business states. `KeyValue copyable` remains the reusable copy affordance for identifiers.
 `Actions.Dock` defaults to a fixed bottom action bar. Swipe up on its handle or press
 “Más opciones” to reveal additional content above it; the primary action remains fixed.
-The handle captures vertical swipes without taking diagonal gestures, and the panel follows
-the finger before settling open or closed. The expanded panel overlays the screen content;
-it does not dim the background. Mount the fixed Dock as a direct child of a full-screen
-safe-area screen container, outside scroll views and ancestors that clip overflow, and reserve
-bottom space in scrolling content. Inside `FormViewV2.Footer`, set `placement="footer"` to
-reuse that view's sticky layout. The expanded panel sizes to its content up to
-`maxExpandedHeightRatio` (default `0.6`); overflow scrolls inside the panel.
+The dedicated 48-point handle owns the touch from its start, so an ancestor scroll view
+cannot steal it. Swipe up opens a native modal; swipe down on the panel handle closes it.
+The expanded panel blocks and dims the underlying screen, while the primary action remains
+outside its scrolling content. Back, accessible escape, the collapse button and backdrop
+close it (`dismissOnBackdrop={false}` disables only backdrop dismissal).
+Use `expanded` / `onExpandedChange` for host-controlled state, or `defaultExpanded` for
+uncontrolled initial state. Wrap the app in `SafeAreaProvider`. Keep the collapsed fixed
+bar outside scroll views, within the screen's safe area, and reserve space below list content.
+Inside `FormViewV2.Footer`, set `placement="footer"` to reuse its sticky layout.
+The panel fits its content up to `maxExpandedHeightRatio` (default `0.6`) and available screen
+space; overflow scrolls and the modal avoids the keyboard.
+
+This changes the Dock's former inline expansion behavior. See
+[the migration guide](docs/MOBILE_UX_MIGRATION.md) before adopting it in core or host apps.
 
 ---
 

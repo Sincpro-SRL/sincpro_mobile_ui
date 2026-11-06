@@ -1,20 +1,22 @@
 /* eslint-disable react-hooks/refs */
-// useRef(new Animated.Value()).current and PanResponder-in-useState are intentional RN patterns.
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { useTheme } from "@sincpro/mobile-ui/theme";
+import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { vars } from "nativewind";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   Animated,
-  type GestureResponderEvent,
+  KeyboardAvoidingView,
+  Modal,
   PanResponder,
-  type PanResponderGestureState,
+  Platform,
   ScrollView,
   useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface DockProps {
   primaryAction: ReactNode;
@@ -23,6 +25,11 @@ export interface DockProps {
   title?: string;
   moreLabel?: string;
   collapseLabel?: string;
+  backdropLabel?: string;
+  expanded?: boolean;
+  defaultExpanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+  dismissOnBackdrop?: boolean;
   maxExpandedHeightRatio?: number;
   placement?: "fixed" | "footer";
   className?: string;
@@ -36,155 +43,96 @@ function Dock({
   title = "Más opciones",
   moreLabel = "Más opciones",
   collapseLabel = "Ocultar opciones",
+  backdropLabel = "Cerrar panel",
+  expanded: controlledExpanded,
+  defaultExpanded = false,
+  onExpandedChange,
+  dismissOnBackdrop = true,
   maxExpandedHeightRatio = 0.6,
   placement = "fixed",
   className,
   testID,
 }: DockProps) {
-  const [expanded, setExpanded] = useState(false);
-  const expandedRef = useRef(expanded);
-  expandedRef.current = expanded;
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+  const expanded = controlledExpanded ?? internalExpanded;
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
+  const [barHeight, setBarHeight] = useState(0);
+  const translateY = useRef(new Animated.Value(0)).current;
+  const requestExpanded = (next: boolean) => {
+    if (next === expanded) return;
+    if (controlledExpanded === undefined) setInternalExpanded(next);
+    onExpandedChange?.(next);
+  };
+  const gestureRef = useRef({ expanded, requestExpanded });
+  gestureRef.current = { expanded, requestExpanded };
   const resolvedRatio = Number.isFinite(maxExpandedHeightRatio)
     ? Math.min(0.9, Math.max(0.1, maxExpandedHeightRatio))
     : 0.6;
-  const maxExpandedHeight = Math.round(height * resolvedRatio);
-  const [panelHeight, setPanelHeight] = useState(0);
-  const panelHeightRef = useRef(panelHeight);
-  panelHeightRef.current = panelHeight;
-  const [hasMeasuredContent, setHasMeasuredContent] = useState(false);
-  const translateY = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
+  const maxPanelHeight = Math.max(
+    0,
+    Math.min(height * resolvedRatio, height - insets.top - insets.bottom - barHeight),
+  );
+  const resetDrag = () => {
     Animated.spring(translateY, {
-      toValue: expanded ? 0 : panelHeight,
+      toValue: 0,
       useNativeDriver: true,
       damping: 24,
       stiffness: 260,
     }).start();
-  }, [expanded, panelHeight, translateY]);
-
-  const handleContentSizeChange = (_: number, contentHeight: number) => {
-    const nextPanelHeight = Math.min(contentHeight + 32, maxExpandedHeight);
-    setHasMeasuredContent(true);
-    setPanelHeight((currentHeight) =>
-      currentHeight === nextPanelHeight ? currentHeight : nextPanelHeight,
-    );
-    if (!expandedRef.current) {
-      translateY.setValue(nextPanelHeight);
-    }
   };
 
-  const toggleExpanded = () => setExpanded((current) => !current);
-  const shouldHandleSwipe = (_: GestureResponderEvent, gesture: PanResponderGestureState) => {
-    const isVerticalSwipe =
-      Math.abs(gesture.dy) > 8 && Math.abs(gesture.dy) > Math.abs(gesture.dx);
-    return isVerticalSwipe && (expandedRef.current ? gesture.dy > 0 : gesture.dy < 0);
-  };
-  const settleAfterSwipe = (nextExpanded: boolean) => {
-    if (expandedRef.current === nextExpanded) {
-      Animated.spring(translateY, {
-        toValue: nextExpanded ? 0 : panelHeightRef.current,
-        useNativeDriver: true,
-        damping: 24,
-        stiffness: 260,
-      }).start();
-      return;
-    }
-    setExpanded(nextExpanded);
-  };
+  useEffect(() => {
+    translateY.setValue(0);
+  }, [expanded, translateY]);
+
   const [pan] = useState(() =>
     PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: shouldHandleSwipe,
-      onMoveShouldSetPanResponderCapture: shouldHandleSwipe,
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => translateY.stopAnimation(),
       onPanResponderTerminationRequest: () => false,
       onPanResponderMove: (_, gesture) => {
-        const currentPanelHeight = panelHeightRef.current;
-        const startY = expandedRef.current ? 0 : currentPanelHeight;
-        translateY.setValue(Math.max(0, Math.min(currentPanelHeight, startY + gesture.dy)));
+        if (gestureRef.current.expanded) translateY.setValue(Math.max(0, gesture.dy));
       },
       onPanResponderRelease: (_, gesture) => {
-        const nextExpanded = expandedRef.current
-          ? !(gesture.dy > 40 || gesture.vy > 0.5)
+        const isVertical = Math.abs(gesture.dy) > Math.abs(gesture.dx);
+        const shouldChange = gestureRef.current.expanded
+          ? gesture.dy > 40 || gesture.vy > 0.5
           : gesture.dy < -40 || gesture.vy < -0.5;
-        settleAfterSwipe(nextExpanded);
+        if (isVertical && shouldChange) {
+          gestureRef.current.requestExpanded(!gestureRef.current.expanded);
+        }
+        resetDrag();
       },
-      onPanResponderTerminate: () => {
-        settleAfterSwipe(expandedRef.current);
-      },
+      onPanResponderTerminate: resetDrag,
     }),
   );
 
-  return (
+  const handle = (
     <View
-      className={cn(
-        "gap-3",
-        placement === "fixed" &&
-          "absolute bottom-0 left-0 right-0 z-20 border-t border-border-light bg-bg-card px-4 pb-2 pt-3",
-        className,
-      )}
-      style={placement === "fixed" ? { elevation: 10, zIndex: 20 } : undefined}
-      testID={testID}
+      className="min-h-12 items-center justify-center"
+      {...pan.panHandlers}
+      testID={testID ? `${testID}-handle` : undefined}
     >
-      <View
-        className="min-h-11 items-center justify-center py-2"
-        {...pan.panHandlers}
-        testID={testID ? `${testID}-handle` : undefined}
-      >
-        <View className="h-1 w-10 rounded-full bg-border-strong" />
-      </View>
-      <Animated.View
-        accessibilityElementsHidden={!expanded}
-        className="overflow-hidden rounded-t-2xl border border-border-light bg-bg-card p-4"
-        importantForAccessibility={expanded ? "auto" : "no-hide-descendants"}
-        onAccessibilityEscape={() => setExpanded(false)}
-        pointerEvents={expanded ? "auto" : "none"}
-        style={{
-          position: "absolute",
-          bottom: "100%",
-          left: 0,
-          right: 0,
-          height: panelHeight,
-          maxHeight: maxExpandedHeight,
-          opacity: hasMeasuredContent ? 1 : 0,
-          zIndex: 21,
-          elevation: 11,
-          transform: [{ translateY }],
-        }}
-        testID={testID ? `${testID}-expanded-content` : undefined}
-      >
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ paddingBottom: 12 }}
-          nestedScrollEnabled
-          onContentSizeChange={handleContentSizeChange}
-          showsVerticalScrollIndicator={false}
-          testID={testID ? `${testID}-scroll` : undefined}
-        >
-          {title ? (
-            <Typography.Text
-              accessibilityRole="header"
-              className="pb-2 text-text-primary"
-              semibold
-              variant="subtitle"
-            >
-              {title}
-            </Typography.Text>
-          ) : null}
-          {children}
-        </ScrollView>
-      </Animated.View>
+      <View className="h-1 w-10 rounded-full bg-border-strong" />
+    </View>
+  );
+  const bar = (
+    <View
+      className={cn("gap-3 border-t border-border-light bg-bg-card px-4 pb-2", className)}
+      onLayout={(event) => setBarHeight(event.nativeEvent.layout.height)}
+      testID={testID ? `${testID}-bar` : undefined}
+    >
+      {!expanded ? handle : null}
       {summary}
       <View className="flex-row items-center gap-3">
         <Pressable
           accessibilityLabel={expanded ? collapseLabel : moreLabel}
           accessibilityRole="button"
           accessibilityState={{ expanded }}
-          className="min-h-11 flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-bg-muted px-3"
-          onPress={toggleExpanded}
-          style={{ minHeight: 44 }}
+          className="min-h-12 flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-bg-muted px-3"
+          onPress={() => requestExpanded(!expanded)}
           testID={testID ? `${testID}-more` : undefined}
         >
           <Typography.Text className="text-text-primary" variant="buttonSmall">
@@ -199,6 +147,88 @@ function Dock({
         <View className="flex-1">{primaryAction}</View>
       </View>
     </View>
+  );
+
+  return (
+    <>
+      <View
+        className={cn(placement === "fixed" && "absolute bottom-0 left-0 right-0 z-20")}
+        style={expanded ? { height: barHeight } : undefined}
+        testID={testID}
+      >
+        {!expanded ? bar : null}
+      </View>
+      <Modal
+        animationType="none"
+        onRequestClose={() => requestExpanded(false)}
+        presentationStyle="overFullScreen"
+        testID={testID ? `${testID}-modal` : undefined}
+        transparent
+        visible={expanded}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          testID={testID ? `${testID}-keyboard` : undefined}
+        >
+          <View accessibilityViewIsModal style={{ flex: 1, justifyContent: "flex-end" }}>
+            <Pressable
+              accessibilityLabel={backdropLabel}
+              accessibilityRole="button"
+              className="absolute inset-0 bg-black/50"
+              disabled={!dismissOnBackdrop}
+              onPress={dismissOnBackdrop ? () => requestExpanded(false) : undefined}
+              testID={testID ? `${testID}-backdrop` : undefined}
+            />
+            <View
+              onAccessibilityEscape={() => requestExpanded(false)}
+              style={[
+                vars(themeToVars(theme)),
+                {
+                  paddingBottom: insets.bottom,
+                  backgroundColor: theme.bg.card,
+                  maxHeight: height - insets.top,
+                  flexShrink: 1,
+                },
+              ]}
+            >
+              <View style={{ overflow: "hidden", flexShrink: 1 }}>
+                <Animated.View
+                  style={{
+                    maxHeight: maxPanelHeight,
+                    flexShrink: 1,
+                    transform: [{ translateY }],
+                  }}
+                  testID={testID ? `${testID}-expanded-content` : undefined}
+                >
+                  {handle}
+                  <ScrollView
+                    contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+                    keyboardShouldPersistTaps="handled"
+                    nestedScrollEnabled
+                    style={{ flexShrink: 1 }}
+                    testID={testID ? `${testID}-scroll` : undefined}
+                  >
+                    {title ? (
+                      <Typography.Text
+                        accessibilityRole="header"
+                        className="pb-2 text-text-primary"
+                        semibold
+                        variant="subtitle"
+                      >
+                        {title}
+                      </Typography.Text>
+                    ) : null}
+                    {children}
+                  </ScrollView>
+                </Animated.View>
+              </View>
+              {bar}
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+    </>
   );
 }
 

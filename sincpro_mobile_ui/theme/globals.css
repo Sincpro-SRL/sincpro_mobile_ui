@@ -4,72 +4,72 @@
 
 :root {
   /* Fallback CSS vars — runtime source of truth is themeToVars(activeTheme). */
-  --primary: 201 168 76;
-  --secondary: 139 105 20;
-  --accent: 201 168 76;
+  --primary: 42 74 133;
+  --secondary: 28 55 101;
+  --accent: 200 155 60;
 
-  --bg-page: 250 248 243;
+  --bg-page: 250 249 247;
   --bg-card: 255 255 255;
   --bg-popover: 255 255 255;
-  --bg-muted: 241 236 223;
-  --bg-accent: 253 243 200;
-  --bg-hover: 237 230 210;
-  --bg-disabled: 229 222 200;
-  --bg-container-lowest: 250 248 243;
-  --bg-container: 241 236 223;
-  --bg-container-high: 229 222 200;
+  --bg-muted: 243 240 234;
+  --bg-accent: 232 236 245;
+  --bg-hover: 235 230 222;
+  --bg-disabled: 228 223 215;
+  --bg-container-lowest: 250 249 247;
+  --bg-container: 243 240 234;
+  --bg-container-high: 228 223 215;
 
-  --text-primary: 10 10 10;
-  --text-secondary: 74 49 0;
-  --text-tertiary: 160 144 96;
-  --text-muted: 107 90 46;
-  --text-accent: 139 105 20;
+  --text-primary: 26 23 20;
+  --text-secondary: 107 100 89;
+  --text-tertiary: 163 155 144;
+  --text-muted: 107 100 89;
+  --text-accent: 42 74 133;
   --text-inverse: 255 255 255;
-  --text-disabled: 154 139 92;
-  --text-on-primary: 10 10 10;
+  --text-disabled: 163 155 144;
+  --text-on-primary: 255 255 255;
   --text-on-secondary: 255 255 255;
-  --text-on-accent: 10 10 10;
+  --text-on-accent: 26 23 20;
   --text-on-danger: 255 255 255;
   --text-on-success: 255 255 255;
 
-  --icon-primary: 10 10 10;
-  --icon-secondary: 107 90 46;
-  --icon-tertiary: 160 144 96;
+  --icon-primary: 26 23 20;
+  --icon-secondary: 107 100 89;
+  --icon-tertiary: 163 155 144;
   --icon-inverse: 255 255 255;
-  --icon-disabled: 154 139 92;
+  --icon-disabled: 163 155 144;
 
-  --border-default: 229 222 200;
-  --border-light: 241 236 223;
-  --border-strong: 201 192 162;
-  --border-focus: 139 105 20;
+  --border-default: 228 223 215;
+  --border-light: 243 240 234;
+  --border-strong: 213 206 194;
+  --border-focus: 42 74 133;
 
-  --ring: 139 105 20;
-  --input: 229 222 200;
+  --ring: 42 74 133;
+  --input: 228 223 215;
 
-  --success: 21 128 61;
-  --warning: 180 83 9;
-  --danger: 185 28 28;
-  --info: 29 78 216;
+  --success: 47 107 60;
+  --warning: 126 94 18;
+  --danger: 155 59 48;
+  --info: 15 92 110;
 
-  --success-light: 220 252 231;
-  --warning-light: 254 243 199;
-  --danger-light: 254 226 226;
-  --info-light: 219 234 254;
+  --success-light: 232 240 234;
+  --warning-light: 245 236 214;
+  --danger-light: 246 232 229;
+  --info-light: 226 238 241;
 
-  --container-primary: 253 243 200;
-  --container-on-primary: 139 105 20;
-  --container-secondary: 245 236 210;
-  --container-on-secondary: 74 49 0;
-  --container-accent: 253 243 200;
-  --container-on-accent: 139 105 20;
-  --container-success: 220 252 231;
-  --container-on-success: 21 128 61;
-  --container-warning: 254 243 199;
-  --container-on-warning: 180 83 9;
-  --container-danger: 254 226 226;
-  --container-on-danger: 185 28 28;
-  --container-info: 219 234 254;
-  --container-on-info: 29 78 216;
+  --container-primary: 232 236 245;
+  --container-on-primary: 28 55 101;
+  --container-secondary: 226 232 242;
+  --container-on-secondary: 26 23 20;
+  --container-accent: 248 240 220;
+  --container-on-accent: 26 23 20;
+  --container-success: 232 240 234;
+  --container-on-success: 47 107 60;
+  --container-warning: 245 236 214;
+  --container-on-warning: 126 94 18;
+  --container-danger: 246 232 229;
+  --container-on-danger: 155 59 48;
+  --container-info: 226 238 241;
+  --container-on-info: 15 92 110;
 
   --state-hover: 0.08;
   --state-press: 0.12;

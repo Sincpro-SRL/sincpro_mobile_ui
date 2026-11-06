@@ -2,7 +2,6 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { LinearGradient } from "expo-linear-gradient";
 import type React from "react";
 import { FC } from "react";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
@@ -12,12 +11,12 @@ import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 // ============================================================================
 
 const button = tv({
-  base: "rounded-lg items-center justify-center flex-row min-h-[44px]",
+  base: "rounded-md items-center justify-center flex-row min-h-[44px]",
   variants: {
     variant: {
-      primary: "shadow-sm",
-      accent: "shadow-sm",
-      secondary: "bg-bg-card border border-primary shadow-sm",
+      primary: "bg-accent",
+      accent: "bg-transparent",
+      secondary: "bg-bg-muted border border-border-strong",
       outline: "bg-transparent border border-primary",
       outlineDanger: "bg-transparent border border-danger",
       outlineBlack: "bg-transparent border border-border-strong",
@@ -41,12 +40,12 @@ const button = tv({
 });
 
 const buttonIcon = tv({
-  base: "rounded-lg items-center justify-center aspect-square",
+  base: "rounded-md items-center justify-center aspect-square",
   variants: {
     variant: {
-      primary: "shadow-sm",
-      accent: "shadow-sm",
-      secondary: "bg-bg-card border border-primary shadow-sm",
+      primary: "bg-accent",
+      accent: "bg-transparent",
+      secondary: "bg-bg-muted border border-border-strong",
       outline: "bg-transparent border border-primary",
       outlineDanger: "bg-transparent border border-danger",
       outlineBlack: "bg-transparent border border-border-strong",
@@ -72,9 +71,9 @@ const buttonIcon = tv({
 const textColor = tv({
   variants: {
     variant: {
-      primary: "text-text-on-primary",
-      accent: "text-text-on-accent",
-      secondary: "text-text-accent",
+      primary: "text-text-on-accent",
+      accent: "text-text-accent",
+      secondary: "text-text-primary",
       outline: "text-text-accent",
       outlineDanger: "text-danger",
       outlineBlack: "text-text-primary",
@@ -90,12 +89,12 @@ const textColor = tv({
     {
       variant: "primary",
       disabled: true,
-      className: "text-text-on-primary",
+      className: "text-text-on-accent",
     },
     {
       variant: "accent",
       disabled: true,
-      className: "text-text-on-accent",
+      className: "text-text-accent",
     },
     {
       variant: "transparent",
@@ -135,9 +134,9 @@ const textColor = tv({
 
 function getLoadingColorDynamic(variant: string): string {
   const map: Record<string, string> = {
-    primary: theme.text.onPrimary,
-    accent: theme.text.onAccent,
-    secondary: theme.text.accent,
+    primary: theme.text.onAccent,
+    accent: theme.text.accent,
+    secondary: theme.text.primary,
     outline: theme.text.accent,
     outlineDanger: theme.danger,
     outlineBlack: theme.text.primary,
@@ -151,8 +150,8 @@ function getLoadingColorDynamic(variant: string): string {
 function getIconColorDynamic(variant: string, disabled: boolean): string {
   if (disabled) {
     const disabledMap: Record<string, string> = {
-      primary: theme.text.onPrimary + "70",
-      accent: theme.text.onAccent + "70",
+      primary: theme.text.onAccent + "70",
+      accent: theme.text.accent + "70",
       secondary: theme.icon.disabled,
       outline: theme.icon.disabled,
       outlineDanger: theme.danger + "7f",
@@ -165,9 +164,9 @@ function getIconColorDynamic(variant: string, disabled: boolean): string {
   }
 
   const enabledMap: Record<string, string> = {
-    primary: theme.text.onPrimary,
-    accent: theme.text.onAccent,
-    secondary: theme.text.accent,
+    primary: theme.text.onAccent,
+    accent: theme.text.accent,
+    secondary: theme.text.primary,
     outline: theme.text.accent,
     outlineDanger: theme.danger,
     outlineBlack: theme.text.primary,
@@ -259,47 +258,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
     );
   }
 
-  if (variant === "primary" || variant === "accent") {
-    const gradientColors: readonly [string, string] =
-      variant === "primary" ? theme.gradient.primary : theme.gradient.accent;
-
-    const hasFlex = className?.includes("flex-1");
-
-    return (
-      <View className={className} style={hasFlex ? { flex: 1 } : undefined}>
-        <LinearGradient
-          colors={gradientColors}
-          end={{ x: 1, y: 1 }}
-          start={{ x: 0, y: 0 }}
-          style={{
-            borderRadius: 8,
-            opacity: disabled ? 0.7 : 1,
-          }}
-        >
-          <TouchableOpacity
-            activeOpacity={0.8}
-            disabled={disabled || loading}
-            onPress={onPress}
-          >
-            <View
-              className={button({ size, disabled })}
-              style={{ backgroundColor: "transparent" }}
-            >
-              {icon && !loading && <View className="mr-2">{icon}</View>}
-              {loading ? (
-                <ActivityIndicator color={loadingColorValue} size="small" />
-              ) : (
-                <Typography.Text className={textColorClass} variant={textVariantValue}>
-                  {title}
-                </Typography.Text>
-              )}
-            </View>
-          </TouchableOpacity>
-        </LinearGradient>
-      </View>
-    );
-  }
-
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -311,7 +269,11 @@ export const BaseButton: FC<BaseButtonProps> = ({
       {loading ? (
         <ActivityIndicator color={loadingColorValue} size="small" />
       ) : (
-        <Typography.Text className={textColorClass} variant={textVariantValue}>
+        <Typography.Text
+          className={textColorClass}
+          semibold={variant === "primary"}
+          variant={textVariantValue}
+        >
           {title}
         </Typography.Text>
       )}
@@ -343,40 +305,6 @@ export const BaseButtonIcon: FC<BaseButtonIconProps> = ({
   const iconColorValue = getIconColor((variant as any) ?? "primary", disabled);
   const loadingColorValue = getLoadingColor((variant as any) ?? "primary");
   const iconSizeValue = getIconSize((size as any) ?? "medium");
-
-  if (variant === "primary" || variant === "accent") {
-    const gradientColors: readonly [string, string] =
-      variant === "primary" ? theme.gradient.primary : theme.gradient.accent;
-
-    return (
-      <LinearGradient
-        colors={gradientColors}
-        end={{ x: 1, y: 1 }}
-        start={{ x: 0, y: 0 }}
-        style={{
-          borderRadius: 8,
-          opacity: disabled ? 0.7 : 1,
-        }}
-      >
-        <TouchableOpacity
-          activeOpacity={0.8}
-          disabled={disabled || loading}
-          onPress={onPress}
-        >
-          <View
-            className={buttonIcon({ size, disabled })}
-            style={{ backgroundColor: "transparent" }}
-          >
-            {loading ? (
-              <ActivityIndicator color={loadingColorValue} size="small" />
-            ) : (
-              <Icon color={iconColorValue} name={icon} size={iconSizeValue} />
-            )}
-          </View>
-        </TouchableOpacity>
-      </LinearGradient>
-    );
-  }
 
   return (
     <TouchableOpacity

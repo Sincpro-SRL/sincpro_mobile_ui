@@ -39,7 +39,7 @@ describe("theme/css-vars", () => {
   it("converts 6-digit hex to space-separated RGB triplet", async () => {
     const { cssVars, defaults } = await loadModules();
     const out = cssVars.themeToVars(defaults.DEFAULT_THEME);
-    assert.equal(out["--primary"], "201 168 76");
+    assert.equal(out["--primary"], "42 74 133");
     assert.equal(out["--bg-card"], "255 255 255");
   });
 

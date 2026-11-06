@@ -29,13 +29,13 @@ export const Gradients: Story = {
     <View style={{ gap: 14, padding: 4 }}>
       <Label>warm (default brand preset)</Label>
       <Display.GradientSurface preset="warm" style={{ height: 90 }} />
-      <Label>neon-teal (#22E584 → #0FB8A0)</Label>
+      <Label>info (#0F5C6E → #5CC4D8)</Label>
       <Display.GradientSurface preset="neon-teal" style={{ height: 90 }} />
-      <Label>night-green (#0B1410 → #08120D)</Label>
+      <Label>chrome (#0B101E → #18223A)</Label>
       <Display.GradientSurface preset="night-green" style={{ height: 90 }} />
-      <Label>mesh / aurora (ink + emerald + indigo)</Label>
+      <Label>navy (#1C3765 → #8FA9E8)</Label>
       <Display.GradientSurface preset="mesh" style={{ height: 90 }} />
-      <Label>emerald (#00C357 → #00A862)</Label>
+      <Label>good (#2F6B3C → #6FCF8B)</Label>
       <Display.GradientSurface preset="emerald" style={{ height: 90 }} />
     </View>
   ),
@@ -53,7 +53,7 @@ export const Textures: Story = {
           backgroundColor: "#0B1410",
         }}
       >
-        <Display.Pattern color="#22E584" kind="dots" opacity={0.5} />
+        <Display.Pattern color="#2A4A85" kind="dots" opacity={0.5} />
       </View>
       <Label>grilla (sobre superficie clara)</Label>
       <View
@@ -75,7 +75,7 @@ export const Textures: Story = {
           backgroundColor: "#0B1410",
         }}
       >
-        <Display.Pattern color="#22E584" kind="diagonals" opacity={0.25} />
+        <Display.Pattern color="#2A4A85" kind="diagonals" opacity={0.25} />
       </View>
     </View>
   ),

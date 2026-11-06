@@ -7,7 +7,7 @@ import {
 import IconButton from "@sincpro/mobile-ui/Actions/Actions.IconButton";
 
 export const Actions = {
-  /** Primary action button — gradient, outline, flat, link variants. Supports confirm dialog. */
+  /** Primary action button. The filled one is gold; navy is text. Supports confirm dialog. */
   Button: ButtonWithIcon,
   /** Small icon-only tap target — ghost, primary, secondary, tertiary variants. */
   IconButton,

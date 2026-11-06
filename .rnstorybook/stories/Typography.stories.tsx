@@ -56,7 +56,7 @@ export const Roles: Story = {
   render: () => (
     <View style={{ gap: 20 }}>
       {/* ── SATOSHI (título de marca) ─────────────────────────────── */}
-      <Divider title="Satoshi · roles de título" />
+      <Divider title="IBM Plex Sans · roles de título" />
 
       <Row label="display · 48 / Black">
         <Typography.Text variant="display">Sincpro</Typography.Text>
@@ -137,7 +137,7 @@ export const Roles: Story = {
       </Row>
 
       {/* ── EN CONTEXTO (las 3 fuentes trabajando juntas) ─────────── */}
-      <Divider title="En contexto · Satoshi + Inter + Fira Code" />
+      <Divider title="En contexto · IBM Plex Sans + IBM Plex Mono" />
 
       <View
         className="bg-bg-card"

@@ -237,7 +237,7 @@ function MenuButton({
         <Switch
           onValueChange={toggle.onToggle}
           thumbColor={theme.bg.card}
-          trackColor={{ false: theme.border.strong, true: theme.accent }}
+          trackColor={{ false: theme.border.strong, true: theme.primary }}
           value={toggle.value}
         />
       );

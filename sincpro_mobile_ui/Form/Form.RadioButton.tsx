@@ -14,9 +14,9 @@ const radioButton = tv({
   variants: {
     selected: {
       true: {
-        container: "border-accent bg-accent/10",
-        radioCircle: "border-accent",
-        radioInner: "bg-accent",
+        container: "border-primary bg-primary/10",
+        radioCircle: "border-primary",
+        radioInner: "bg-primary",
         label: "text-text-primary font-semibold",
       },
       false: {

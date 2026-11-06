@@ -226,12 +226,12 @@ interface FilterChipProps {
   onPress: () => void;
 }
 
-// Modern filter pills (2026): rounded-full, active = accent (green), inactive = muted track.
+// Active filter uses the action color. The capsule is a pill; the rest of the chrome is not.
 const filterChip = tv({
   base: "py-1.5 px-3.5 items-center justify-center rounded-full",
   variants: {
     active: {
-      true: "bg-accent",
+      true: "bg-primary",
       false: "bg-bg-muted",
     },
   },
@@ -241,7 +241,7 @@ const filterChip = tv({
 const filterChipText = tv({
   variants: {
     active: {
-      true: "text-text-inverse font-semibold",
+      true: "text-text-on-primary font-semibold",
       false: "text-text-secondary",
     },
   },
@@ -434,7 +434,7 @@ function ContentList({
             <View className="py-4">
               <Feedback.Spinner size="small" />
             </View>
-          ) : null
+          ) : undefined
         }
         onEndReached={onLoadMore ? () => onLoadMore() : undefined}
         onEndReachedThreshold={0.5}

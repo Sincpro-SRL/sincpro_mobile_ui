@@ -3,7 +3,9 @@ import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import Swipeable, {
+  type SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 
 export interface SwipeRowAction {
   label?: string;
@@ -61,7 +63,7 @@ function ActionButtons({
 }
 
 function SwipeableRow({ children, rightActions, leftActions, testID }: SwipeableRowProps) {
-  const ref = useRef<Swipeable>(null);
+  const ref = useRef<SwipeableMethods>(null);
   const close = () => ref.current?.close();
 
   return (

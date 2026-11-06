@@ -1,19 +1,22 @@
-import { FiraCode_400Regular, FiraCode_500Medium } from "@expo-google-fonts/fira-code";
 import {
-  Inter_300Light,
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_800ExtraBold,
+  IBMPlexMono_400Regular,
+  IBMPlexMono_500Medium,
+} from "@expo-google-fonts/ibm-plex-mono";
+import {
+  IBMPlexSans_300Light,
+  IBMPlexSans_400Regular,
+  IBMPlexSans_500Medium,
+  IBMPlexSans_600SemiBold,
+  IBMPlexSans_700Bold,
   useFonts,
-} from "@expo-google-fonts/inter";
+} from "@expo-google-fonts/ibm-plex-sans";
 import type { TextStyle } from "react-native";
 
 /* -------------------- Font Families ----------------------------------------
  * The DS ships NO font files — it only holds FAMILY NAME strings per role.
  * Each app (or Storybook) loads its own font files and wires them in via
- * `configureFonts({...})`. Safe defaults: Inter (body) + Fira Code (mono);
- * the "title" roles fall back to Inter until the app sets its brand typeface.
+ * `configureFonts({...})`. Safe defaults: IBM Plex Sans and IBM Plex Mono,
+ * the same pair web UI uses. Title roles stay on Plex until an app overrides them.
  *
  * `fontFamilies` is a MUTABLE singleton: `configureFonts` does Object.assign
  * in-place so components that read it at render time see the updated values. */
@@ -31,18 +34,17 @@ export type FontRole =
   | "titleBlack";
 
 const DEFAULT_FONT_FAMILIES: Record<FontRole, string> = {
-  light: "Inter_300Light",
-  regular: "Inter_400Regular",
-  medium: "Inter_500Medium",
-  semiBold: "Inter_600SemiBold",
-  extraBold: "Inter_800ExtraBold",
-  mono: "FiraCode_400Regular",
-  monoMedium: "FiraCode_500Medium",
-  // Title roles default to Inter until the app wires its brand typeface via configureFonts.
-  titleRegular: "Inter_400Regular",
-  titleMedium: "Inter_500Medium",
-  title: "Inter_600SemiBold",
-  titleBlack: "Inter_800ExtraBold",
+  light: "IBMPlexSans_300Light",
+  regular: "IBMPlexSans_400Regular",
+  medium: "IBMPlexSans_500Medium",
+  semiBold: "IBMPlexSans_600SemiBold",
+  extraBold: "IBMPlexSans_700Bold",
+  mono: "IBMPlexMono_400Regular",
+  monoMedium: "IBMPlexMono_500Medium",
+  titleRegular: "IBMPlexSans_400Regular",
+  titleMedium: "IBMPlexSans_500Medium",
+  title: "IBMPlexSans_600SemiBold",
+  titleBlack: "IBMPlexSans_700Bold",
 };
 
 export const fontFamilies: Record<FontRole, string> = { ...DEFAULT_FONT_FAMILIES };
@@ -56,7 +58,7 @@ export function configureFonts(overrides: Partial<Record<FontRole, string>>): vo
   Object.assign(fontFamilies, overrides);
 }
 
-/** Reset all font roles to the defaults (Inter + Fira Code). Useful in tests and stories. */
+/** Reset all font roles to the defaults (IBM Plex Sans + IBM Plex Mono). Useful in tests and stories. */
 export function resetFonts(): void {
   Object.assign(fontFamilies, DEFAULT_FONT_FAMILIES);
 }
@@ -352,18 +354,17 @@ export const createCustomTextStyle = (
 export { useFonts };
 
 /* -------------------- Font Loader (optional, convenience) ------------------
- * Loads the recommended base fonts (Inter + Fira Code) declared as peer deps.
- * The "title" role is loaded and wired by the app/Storybook via
- * `configureFonts` — the DS never bundles font files. */
+ * Loads IBM Plex Sans and IBM Plex Mono, the same faces web UI uses.
+ * An app can still point a role at another loaded family with `configureFonts`. */
 export const useAppFonts = () => {
   const [loaded] = useFonts({
-    FiraCode_400Regular,
-    FiraCode_500Medium,
-    Inter_300Light,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_800ExtraBold,
+    IBMPlexMono_400Regular,
+    IBMPlexMono_500Medium,
+    IBMPlexSans_300Light,
+    IBMPlexSans_400Regular,
+    IBMPlexSans_500Medium,
+    IBMPlexSans_600SemiBold,
+    IBMPlexSans_700Bold,
   });
   return loaded;
 };

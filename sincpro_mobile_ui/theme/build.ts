@@ -30,10 +30,10 @@ const STATE_DARK = { hover: 0.1, press: 0.16, focus: 0.14, drag: 0.2 } as const;
 const MATERIAL_LIGHT = { blur: 24, opacity: 0.78, borderOpacity: 0.18 } as const;
 const MATERIAL_DARK = { blur: 28, opacity: 0.62, borderOpacity: 0.22 } as const;
 
-const SUCCESS = "#15803D";
-const WARNING = "#B45309";
-const DANGER = "#B91C1C";
-const INFO = "#1D4ED8";
+const SUCCESS = "#2F6B3C";
+const WARNING = "#7E5E12";
+const DANGER = "#9B3B30";
+const INFO = "#0F5C6E";
 
 function deriveBrandText(brand: string, mode: BrandThemeMode): string {
   if (mode === "light") {

@@ -3,7 +3,7 @@ import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useRef } from "react";
-import { TextInput, View } from "react-native";
+import { TextInput, type TextInputInstance, View } from "react-native";
 
 export interface PinInputProps {
   value: string;
@@ -26,7 +26,7 @@ function PinInput({
   className,
   testID,
 }: PinInputProps) {
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const chars = value.split("");
 
   const handleChange = (text: string) => {

@@ -2,13 +2,16 @@ import { containerPair } from "@sincpro/mobile-ui/theme/color";
 import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
-const PRIMARY = "#C9A84C";
-const SECONDARY = "#8B6914";
-const ACCENT = "#F0D060";
-const SUCCESS = "#15803D";
-const WARNING = "#B45309";
-const DANGER = "#B91C1C";
-const INFO = "#1D4ED8";
+/** Web UI dark palette. The same roles, measured on #181614. */
+const PRIMARY = "#8FA9E8";
+const SECONDARY = "#B0C3F1";
+const ACCENT = "#C89B3C";
+const SUCCESS = "#6FCF8B";
+const WARNING = "#E3B341";
+const DANGER = "#F08D7F";
+const INFO = "#5CC4D8";
+const INK = "#ECE8E1";
+const MUTED = "#A39B90";
 
 const primaryC = containerPair(PRIMARY, "dark");
 const secondaryC = containerPair(SECONDARY, "dark");
@@ -28,24 +31,24 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
   secondary: SECONDARY,
   accent: ACCENT,
   bg: {
-    page: "#0C0C0C",
-    card: "#161616",
-    popover: "#161616",
-    muted: "#1E1E1E",
-    accent: "#3D2F0A",
-    hover: "#262626",
-    disabled: "#2A2A2A",
-    inverse: "#FAF8F3",
-    containerLowest: "#0A0A0A",
-    container: "#1E1E1E",
-    containerHigh: "#2A2A2A",
+    page: "#181614",
+    card: "#221F1C",
+    popover: "#221F1C",
+    muted: "#302C28",
+    accent: primaryC.container,
+    hover: "#2A2622",
+    disabled: "#302C28",
+    inverse: "#FAF9F7",
+    containerLowest: "#141210",
+    container: "#221F1C",
+    containerHigh: "#302C28",
   },
   text: {
-    primary: "#FDF3C8",
-    secondary: "#C9A84C",
-    tertiary: "#8B6914",
-    muted: "#9A8B5C",
-    accent: ACCENT,
+    primary: INK,
+    secondary: MUTED,
+    tertiary: "#8A8178",
+    muted: MUTED,
+    accent: PRIMARY,
     inverse: "#0A0A0A",
     disabled: "#8A8A8A",
     onPrimary: resolveOnColor(PRIMARY),
@@ -55,16 +58,16 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
     onSuccess: resolveOnColor(SUCCESS),
   },
   icon: {
-    primary: "#FDF3C8",
-    secondary: "#C9A84C",
-    tertiary: "#8B6914",
+    primary: INK,
+    secondary: MUTED,
+    tertiary: "#8A8178",
     inverse: "#0A0A0A",
     disabled: "#8A8A8A",
   },
   border: {
-    default: "#262626",
-    light: "#1E1E1E",
-    strong: "#3A3A3A",
+    default: "#302C28",
+    light: "#221F1C",
+    strong: "#443F38",
     focus: PRIMARY,
   },
   success: SUCCESS,
@@ -94,10 +97,10 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
   state: { hover: 0.1, press: 0.16, focus: 0.14, drag: 0.2 },
   material: { blur: 28, opacity: 0.62, borderOpacity: 0.22 },
   ring: PRIMARY,
-  input: "#262626",
+  input: "#302C28",
   gradient: {
-    primary: [ACCENT, PRIMARY],
-    accent: [PRIMARY, SECONDARY],
+    primary: ["#1C3765", PRIMARY],
+    accent: [ACCENT, "#DBB055"],
   },
   shadow: {
     sm: {

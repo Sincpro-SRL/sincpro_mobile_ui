@@ -123,41 +123,43 @@ export const LightVsDark: Story = {
 // Proposed brand palette (reference only — apps override via createTheme). Mirrors the
 // handoff spec so designers/devs/AI share one source of truth for the SINCPRO look.
 const BRAND_PALETTE = [
-  { hex: "#00C357", label: "primary · CTA", note: "verde marca" },
-  { hex: "#FFFFFF", label: "on-primary", note: "texto sobre CTA" },
-  { hex: "#000000", label: "bg", note: "base negra" },
-  { hex: "#FAFAFA", label: "surface", note: "tarjetas / UI light" },
-  { hex: "#0B0B0B", label: "ink", note: "texto" },
-  { hex: "#6B6963", label: "muted", note: "texto secundario" },
-  { hex: "#E4E2DD", label: "border", note: "bordes" },
-  { hex: "#00C357", label: "success", note: "semántico" },
-  { hex: "#FFB020", label: "warning", note: "semántico" },
-  { hex: "#201DC4", label: "info", note: "semántico" },
-  { hex: "#FF4D1F", label: "danger", note: "semántico" },
+  { hex: "#2A4A85", label: "primary", note: "acción" },
+  { hex: "#FFFFFF", label: "on-primary", note: "texto sobre la acción" },
+  { hex: "#FAF9F7", label: "ground", note: "fondo" },
+  { hex: "#FFFFFF", label: "surface", note: "tarjeta" },
+  { hex: "#1A1714", label: "ink", note: "texto" },
+  { hex: "#6B6459", label: "muted", note: "texto secundario" },
+  { hex: "#E4DFD7", label: "line", note: "borde" },
+  { hex: "#C89B3C", label: "accent", note: "relleno del botón, no borde" },
+  { hex: "#2F6B3C", label: "good", note: "estado" },
+  { hex: "#7E5E12", label: "warn", note: "estado" },
+  { hex: "#0F5C6E", label: "info", note: "estado" },
+  { hex: "#9B3B30", label: "danger", note: "estado" },
 ];
 
 const HANDOFF_SPEC = `:root {
-  /* Marca · base negra, UI light */
-  --color-bg:        #000000;
-  --color-surface:   #FAFAFA;
-  --color-ink:       #0B0B0B;
-  --color-muted:     #6B6963;
-  --color-border:    #E4E2DD;
+  /* Web UI light */
+  --color-bg:        #FAF9F7;
+  --color-surface:   #FFFFFF;
+  --color-ink:       #1A1714;
+  --color-muted:     #6B6459;
+  --color-border:    #E4DFD7;
 
-  /* Acción · CTA */
-  --color-primary:    #00C357;
+  /* Acción */
+  --color-primary:    #2A4A85;
   --color-on-primary: #FFFFFF;
+  --color-accent:     #C89B3C;
 
   /* Semánticos */
-  --color-success: #00C357;
-  --color-warning: #FFB020;
-  --color-info:    #201DC4;
-  --color-danger:  #FF4D1F;
+  --color-success: #2F6B3C;
+  --color-warning: #7E5E12;
+  --color-info:    #0F5C6E;
+  --color-danger:  #9B3B30;
 
   /* Tipografía por rol */
-  --font-title:   "Satoshi";
-  --font-body:    "Inter";
-  --font-caption: "Fira Code";
+  --font-title:   "IBM Plex Sans";
+  --font-body:    "IBM Plex Sans";
+  --font-caption: "IBM Plex Mono";
 
   /* Radios */
   --radius-card: 16px;

@@ -1,0 +1,29 @@
+appId: host.exp.Exponent
+name: Sincpro grouped settings preserve independent controls and cancellation
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-settings--default"
+- assertVisible: "Tu espacio"
+- assertVisible: "Español"
+- tapOn: "Cambiar idioma.*"
+- tapOn: "Cancelar"
+- assertVisible: "Español"
+- tapOn: "Cambiar idioma.*"
+- tapOn: "English"
+- assertVisible: "English"
+- scrollUntilVisible:
+    element: "Recibir avisos importantes"
+- tapOn: "Recibir avisos importantes"
+- assertVisible: "Los avisos están desactivados"
+- tapOn: "Recibir avisos importantes"
+- assertVisible: "Los avisos están activados"
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-settings--customized"
+- assertVisible: "Tu espacio"
+- tapOn: "Cambiar idioma.*"
+- tapOn: "English"
+- assertVisible: "English"
+- scrollUntilVisible:
+    element: "Recibir avisos importantes"
+- tapOn: "Recibir avisos importantes"
+- assertVisible: "Los avisos están desactivados"

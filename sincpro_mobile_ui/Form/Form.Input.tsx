@@ -1,7 +1,7 @@
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type React from "react";
+import type { ComponentRef, Ref } from "react";
 import { useState } from "react";
 import { TextInput, type TextInputProps, View } from "react-native";
 
@@ -18,10 +18,12 @@ const inputContainer = tv({
 });
 
 interface FormInputProps extends TextInputProps {
+  ref?: Ref<ComponentRef<typeof TextInput>>;
   label: string;
   error?: string;
   tooltip?: string;
   className?: string;
+  accessibleSizing?: boolean;
 }
 
 function FormInput({
@@ -34,17 +36,19 @@ function FormInput({
   onFocus,
   onBlur,
   className,
+  accessibleSizing = false,
+  ref,
   ...props
 }: FormInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const hasError = Boolean(error);
 
-  const handleFocus = (e: any) => {
+  const handleFocus: NonNullable<TextInputProps["onFocus"]> = (e) => {
     setIsFocused(true);
     onFocus?.(e);
   };
 
-  const handleBlur = (e: any) => {
+  const handleBlur: NonNullable<TextInputProps["onBlur"]> = (e) => {
     setIsFocused(false);
     onBlur?.(e);
   };
@@ -62,6 +66,8 @@ function FormInput({
       </Typography.Text>
       <View className={inputContainer({ state: getState() })}>
         <TextInput
+          accessibilityHint={error || tooltip}
+          accessibilityLabel={label}
           className={cn(
             "px-3 py-2.5 text-sm min-h-[44px] text-text-primary",
             multiline && "min-h-[64px] pt-2.5",
@@ -71,14 +77,20 @@ function FormInput({
           onBlur={handleBlur}
           onFocus={handleFocus}
           placeholderTextColor={theme.text.tertiary}
+          ref={ref}
           selectionColor={theme.primary}
+          style={[accessibleSizing ? { minHeight: 48 } : undefined, style]}
           textAlignVertical={multiline ? "top" : "center"}
           underlineColorAndroid="transparent"
           {...props}
         />
       </View>
       {hasError && (
-        <Typography.Text className="mt-0.5 text-danger" variant="bodySmall">
+        <Typography.Text
+          accessibilityLiveRegion="polite"
+          className="mt-0.5 text-danger"
+          variant="bodySmall"
+        >
           {error}
         </Typography.Text>
       )}

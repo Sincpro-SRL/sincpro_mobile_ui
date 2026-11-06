@@ -12,7 +12,7 @@ import { View } from "react-native";
 
 import { SectionLabel } from "./views.helpers";
 
-const meta: Meta = { title: "Views/Form/Content" };
+const meta: Meta = { title: "Patterns/Views/Form/Content" };
 export default meta;
 type Story = StoryObj;
 

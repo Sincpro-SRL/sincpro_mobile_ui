@@ -16,6 +16,7 @@ export interface EmptyStateProps {
   children?: ReactNode;
   className?: string;
   testID?: string;
+  accessibleSizing?: boolean;
 }
 
 function EmptyState({
@@ -28,6 +29,7 @@ function EmptyState({
   children,
   className,
   testID,
+  accessibleSizing = false,
 }: EmptyStateProps) {
   return (
     <View
@@ -42,6 +44,7 @@ function EmptyState({
         </View>
       )}
       <Typography.Text
+        accessibilityRole="header"
         align="center"
         className="text-text-primary"
         semibold
@@ -56,7 +59,12 @@ function EmptyState({
       ) : null}
       {actionLabel && onAction ? (
         <View className="mt-2">
-          <BaseButton onPress={onAction} title={actionLabel} variant="primary" />
+          <BaseButton
+            accessibleSizing={accessibleSizing}
+            onPress={onAction}
+            title={actionLabel}
+            variant="primary"
+          />
         </View>
       ) : null}
       {children}

@@ -24,6 +24,8 @@ export interface SegmentedControlProps<T extends string> {
    * - `"left"` — icon inline left of the label (compact, single-line).
    */
   iconLayout?: "top" | "left";
+  /** Increase each option's target to at least 48 points. */
+  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
 }
@@ -33,6 +35,7 @@ function SegmentedControl<T extends string>({
   value,
   onChange,
   iconLayout = "top",
+  accessibleSizing = false,
   className,
   testID,
 }: SegmentedControlProps<T>) {
@@ -61,6 +64,7 @@ function SegmentedControl<T extends string>({
             onPress={() => onChange(option.value)}
             style={{
               flex: 1,
+              minHeight: accessibleSizing ? 48 : undefined,
               flexDirection: inline ? "row" : "column",
               alignItems: "center",
               justifyContent: "center",

@@ -13,7 +13,10 @@ interface RowCheckBoxProps {
   isChecked?: boolean;
   onCheck?: (isChecked: boolean) => void;
   disabled?: boolean;
+  accessibilityLabel?: string;
+  accessibleSizing?: boolean;
   className?: string;
+  testID?: string;
 }
 
 function RowCheckBox({
@@ -25,7 +28,10 @@ function RowCheckBox({
   isChecked = false,
   onCheck = () => {},
   disabled = false,
+  accessibilityLabel,
+  accessibleSizing = false,
   className,
+  testID,
 }: RowCheckBoxProps) {
   const handlePress = () => {
     if (!disabled) {
@@ -61,6 +67,11 @@ function RowCheckBox({
 
   return (
     <Pressable
+      accessibilityLabel={
+        accessibilityLabel ?? [mainText, subText, rightText].filter(Boolean).join(", ")
+      }
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isChecked, disabled }}
       className={cn(
         "flex-row justify-between items-center",
         disabled && "opacity-50",
@@ -68,6 +79,8 @@ function RowCheckBox({
       )}
       disabled={disabled}
       onPress={handlePress}
+      style={accessibleSizing ? { minHeight: 48, paddingVertical: 8 } : undefined}
+      testID={testID}
     >
       <View>{renderLeftComponent()}</View>
 

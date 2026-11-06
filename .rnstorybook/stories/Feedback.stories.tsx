@@ -2,12 +2,41 @@ import { Feedback } from "@sincpro/mobile-ui/Feedback";
 import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
+import { useState } from "react";
 import { View } from "react-native";
 
 const meta: Meta = { title: "Components/Feedback" };
 export default meta;
 
 type Story = StoryObj;
+
+function RecoveryExample({ failure = false }: { failure?: boolean }) {
+  const [recovered, setRecovered] = useState(false);
+  if (recovered)
+    return (
+      <Typography.Text accessibilityLiveRegion="polite">
+        {failure ? "Información cargada" : "Primer registro creado"}
+      </Typography.Text>
+    );
+  return failure ? (
+    <Feedback.Error
+      accessibleSizing
+      message="No se pudo cargar la información. Puedes volver a intentarlo."
+      onRetry={() => setRecovered(true)}
+    />
+  ) : (
+    <Feedback.EmptyState
+      accessibleSizing
+      actionLabel="Crear primer registro"
+      description="Los registros que crees aparecerán aquí."
+      onAction={() => setRecovered(true)}
+      title="Todavía no hay registros"
+    />
+  );
+}
+
+export const EmptyRecovery: Story = { render: () => <RecoveryExample /> };
+export const RecoverableFailure: Story = { render: () => <RecoveryExample failure /> };
 
 export const Loading: Story = {
   render: () => (

@@ -19,6 +19,7 @@ lint:
 typecheck:
 	@npx tsc --noEmit
 	@npx tsc -p tsconfig.build.json --noEmit
+	@npx tsc -p tsconfig.tests.json --noEmit
 
 storybook-check:
 	@echo "🔎 Validando stories (tsconfig.stories.json)..."
@@ -38,6 +39,12 @@ storybook-ios:
 	@echo "📚 Storybook → iOS (build nativo)..."
 	@npx expo run:ios
 
+STORYBOOK_URL ?= exp://127.0.0.1:8082
+
+storybook-e2e:
+	@command -v maestro >/dev/null || { echo >&2 "Instala Maestro antes de ejecutar storybook-e2e."; exit 1; }
+	@MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true maestro test -e STORYBOOK_URL=$(STORYBOOK_URL) .maestro/
+
 build:
 	@echo "🏗️  Compilando @sincpro/mobile-ui -> dist (tsc + tsc-alias)..."
 	@rm -rf dist
@@ -48,8 +55,9 @@ build:
 
 doctor:
 	@bash scripts/doctor.sh
+	@CI=1 npx expo install --check
 
-verify-format: format typecheck storybook-check doctor
+verify-format: format typecheck storybook-check doctor test
 	@if ! git diff --quiet; then \
 	  echo >&2 "✘ El formateo ha modificado archivos. Por favor agrégalos al commit."; \
 	  git --no-pager diff --name-only HEAD -- >&2; \
@@ -89,5 +97,6 @@ clean:
 test:
 	@echo "🧪 Running node:test (runtime, tests/ at repo root)..."
 	@./node_modules/.bin/tsx --test 'tests/**/*.test.ts'
+	@./node_modules/.bin/jest --runInBand
 
-.PHONY: prepare-environment init format format-check lint typecheck check verify build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios
+.PHONY: prepare-environment init format format-check lint typecheck check verify build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios storybook-e2e

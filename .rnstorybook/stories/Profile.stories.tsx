@@ -22,7 +22,7 @@ import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
 import { View } from "react-native";
 
-const meta: Meta = { title: "Templates/Profile" };
+const meta: Meta = { title: "Patterns/Profiles/Overview" };
 export default meta;
 type Story = StoryObj;
 

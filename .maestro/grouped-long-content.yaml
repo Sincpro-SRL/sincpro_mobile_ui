@@ -1,0 +1,25 @@
+appId: host.exp.Exponent
+name: Long grouped settings stay usable in dark mode and enlarged text
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-settings--long-content"
+- tapOn:
+    id: "storybook-theme-toggle"
+- assertVisible: "Activar tema claro"
+- scrollUntilVisible:
+    element: "Cambiar idioma.*"
+- tapOn: "Cambiar idioma.*"
+- tapOn: "English"
+- scrollUntilVisible:
+    element: "Recibir avisos importantes"
+- tapOn: "Recibir avisos importantes"
+- assertVisible: "Los avisos están desactivados"
+- scrollUntilVisible:
+    element: "Resumen semanal no disponible"
+- assertVisible: "Resumen semanal no disponible"
+- scrollUntilVisible:
+    element:
+      id: "storybook-theme-toggle"
+    direction: UP
+- tapOn:
+    id: "storybook-theme-toggle"

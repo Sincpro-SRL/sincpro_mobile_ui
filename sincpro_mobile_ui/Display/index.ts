@@ -19,6 +19,7 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import IconBadge from "@sincpro/mobile-ui/Display/Display.IconBadge";
 import DisplayImage from "@sincpro/mobile-ui/Display/Display.Image";
 import KeyValue from "@sincpro/mobile-ui/Display/Display.KeyValue";
+import ListGroup from "@sincpro/mobile-ui/Display/Display.ListGroup";
 import ListItem from "@sincpro/mobile-ui/Display/Display.ListItem";
 import Logo from "@sincpro/mobile-ui/Display/Display.Logo";
 import MediaCard from "@sincpro/mobile-ui/Display/Display.MediaCard";
@@ -61,6 +62,7 @@ export const Display = {
   StoryTray,
   StoryViewer,
   ListItem,
+  ListGroup,
   KeyValue,
   DataTable,
   Stat,
@@ -92,6 +94,8 @@ export const Display = {
 
 export { type BadgeProps, BadgeVariants };
 export type { CircleButtonProps } from "@sincpro/mobile-ui/Display/Display.CircleButton";
+export type { ListGroupProps } from "@sincpro/mobile-ui/Display/Display.ListGroup";
+export type { ListItemProps } from "@sincpro/mobile-ui/Display/Display.ListItem";
 export type { MenuCardProps } from "@sincpro/mobile-ui/Display/Display.MenuCard";
 export type { MenuGridItem } from "@sincpro/mobile-ui/Display/Display.MenuGrid";
 

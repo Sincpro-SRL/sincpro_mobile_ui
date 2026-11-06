@@ -1,0 +1,11 @@
+appId: host.exp.Exponent
+name: List template handles row selection on first tap while search keyboard is open
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-views-list--keyboard-interaction"
+- assertVisible: "Buscar Inventario"
+- tapOn: "Buscar Inventario"
+- inputText: "Caf"
+- assertVisible: "Café molido premium"
+- tapOn: "Café molido premium"
+- assertVisible: "Seleccionado: Café molido premium"

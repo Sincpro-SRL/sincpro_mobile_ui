@@ -8,7 +8,7 @@ import {
   MaterialIcons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { IconType } from "@sincpro/mobile-ui/utils/icon";
 import { ComponentType, FC } from "react";
 import { View } from "react-native";
@@ -30,6 +30,7 @@ const Icon: FC<IconProps> = ({
   customIcon,
   className,
 }) => {
+  const theme = useTheme();
   const iconColor = color || theme.text.primary;
 
   const renderIcon = () => {

@@ -1,0 +1,34 @@
+appId: host.exp.Exponent
+name: Long reorder rows preserve controls and independent actions in dark and enlarged text
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-reordering--long-content"
+- assertVisible: "Organizar secciones"
+- tapOn:
+    id: "storybook-theme-toggle"
+- assertVisible: "Activar tema claro"
+- scrollUntilVisible:
+    element: "Bajar Entrada"
+- tapOn: "Bajar Entrada"
+- scrollUntilVisible:
+    element:
+      id: "reorder-order"
+    direction: UP
+- assertVisible: "Orden: Revisión, Entrada, Completados"
+- scrollUntilVisible:
+    element: "Abrir Entrada"
+- tapOn: "Abrir Entrada"
+- scrollUntilVisible:
+    element: "Abierto: Entrada"
+- assertVisible: "Abierto: Entrada"
+- scrollUntilVisible:
+    element: "Subir Entrada"
+    direction: UP
+- takeScreenshot: reorder-dark-controls
+- tapOn: "Subir Entrada"
+- scrollUntilVisible:
+    element:
+      id: "reorder-order"
+    direction: UP
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- takeScreenshot: reorder-dark-top

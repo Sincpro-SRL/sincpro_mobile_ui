@@ -1,0 +1,32 @@
+appId: host.exp.Exponent
+name: Long content and dark theme remain usable
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-detail--long-content"
+- assertVisible: "Detalle del registro"
+- tapOn:
+    id: "storybook-theme-toggle"
+- assertVisible: "Activar tema claro"
+- scrollUntilVisible:
+    element: "Copiar Correo electrónico"
+- tapOn: "Copiar Correo electrónico"
+- assertVisible: "Copiar Correo electrónico.*Copiado"
+- scrollUntilVisible:
+    element:
+      id: "ux-edit"
+    centerElement: true
+- tapOn:
+    id: "ux-edit"
+    retryTapIfNoChange: true
+- scrollUntilVisible:
+    element:
+      id: "ux-client-input"
+- scrollUntilVisible:
+    element: "Cancelar"
+- tapOn: "Cancelar"
+- scrollUntilVisible:
+    element:
+      id: "storybook-theme-toggle"
+    direction: UP
+- tapOn:
+    id: "storybook-theme-toggle"

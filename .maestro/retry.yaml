@@ -1,0 +1,30 @@
+appId: host.exp.Exponent
+name: Failed save preserves edits and permits retry
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-detail--recoverable-error"
+- assertVisible: "Detalle del registro"
+- scrollUntilVisible:
+    element: "Editar cliente"
+- tapOn: "Editar cliente"
+- scrollUntilVisible:
+    element: "Nombre del cliente"
+- tapOn:
+    id: "ux-client-input"
+- eraseText
+- inputText: "Cambio conservado"
+- assertVisible: "Cambio conservado"
+- hideKeyboard
+- scrollUntilVisible:
+    element: "Guardar cambios"
+- tapOn: "Guardar cambios"
+- assertNotVisible: "Cambios guardados"
+- scrollUntilVisible:
+    element: "No se pudo guardar.*"
+- assertVisible: "No se pudo guardar.*"
+- scrollUntilVisible:
+    element: "Reintentar guardar"
+- tapOn: "Reintentar guardar"
+- scrollUntilVisible:
+    element: "Cambios guardados"
+- assertVisible: "Cambios guardados"

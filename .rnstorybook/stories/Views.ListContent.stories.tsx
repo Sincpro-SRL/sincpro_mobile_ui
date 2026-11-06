@@ -12,7 +12,7 @@ import { View } from "react-native";
 
 import { LeadingIcon } from "./views.helpers";
 
-const meta: Meta = { title: "Views/List/Content" };
+const meta: Meta = { title: "Patterns/Views/List/Content" };
 export default meta;
 type Story = StoryObj;
 

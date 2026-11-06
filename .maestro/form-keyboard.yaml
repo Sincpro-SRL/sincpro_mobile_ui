@@ -1,0 +1,31 @@
+appId: host.exp.Exponent
+name: Form keyboard navigation scrolls fields above the keyboard and skips read-only inputs
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-keyboard-navigation--contact-form"
+- assertVisible:
+    id: "contact-name"
+- tapOn:
+    id: "contact-name"
+- inputText: "Ada"
+- assertVisible: "Campo siguiente"
+- tapOn: "Campo siguiente"
+- inputText: "ada@example.test"
+- assertVisible: "ada@example.test"
+- tapOn: "Campo siguiente"
+- inputText: "70012345"
+- assertVisible: "70012345"
+- tapOn: "Campo siguiente"
+- inputText: "Notas visibles sobre el teclado"
+- assertVisible: "Notas visibles sobre el teclado"
+- takeScreenshot: keyboard-notes-visible
+- tapOn: "Campo anterior"
+- eraseText: 8
+- inputText: "70099999"
+- assertVisible: "70099999"
+- tapOn: "Ocultar teclado"
+- assertNotVisible: "Campo siguiente"
+- scrollUntilVisible:
+    element: "Guardar contacto de ejemplo"
+- tapOn: "Guardar contacto de ejemplo"
+- assertVisible: "Contacto guardado en esta demostración"

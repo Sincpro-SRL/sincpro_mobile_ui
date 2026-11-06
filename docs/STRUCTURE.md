@@ -11,22 +11,22 @@
 
 ## Tiers (de fundamento a producto)
 
-| Carpeta       | Responsabilidad                                           | Qué vive acá                                                                                                             | Qué NO va acá                              |
-| ------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
-| `tokens/`     | Valores de diseño en TS que `className` no puede expresar | `motion` (duration/easing/spring). zIndex/opacity → **clases** del preset, no acá                                        | colores/spacing/radius (→ preset/CSS-vars) |
-| `theme/`      | Runtime del tema                                          | `active`, `useTheme`, `define/extend/merge`, `css-vars`, `tw` (cn/tv), `dark`/`default`                                  | componentes                                |
-| `primitives/` | Átomos estructurales sin semántica de dominio             | `Box`, `Row`, `Stack`, `BaseButton`, `Pressable`, `Spacer`, `AspectRatio`                                              | nada con estado de negocio                 |
-| `Typography/` | Texto                                                     | `Text`, `Heading`                                                                                                        |                                            |
-| `Display/`    | **Mostrar datos** (presentacional puro)                   | `Badge`, `Avatar`, `Card`, `Chip`, `Accordion`, `ListItem`, `Icon`, `Monetary`, `Date`, `Divider`, `CopyableText`        | estado de app, inputs                      |
-| `Form/`       | **Entrada de datos**                                      | `Input`, `Button`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `SearchBar`, `Monetary/QuantityInput`, `Controlled*` | display puro                               |
-| `Feedback/`   | **Comunicar estado de la app**                            | `Loading`, `Spinner`, `Skeleton`, `Progress`, `Banner`, `Empty`, `Error`, `Toast` (Provider+hook), `ErrorBoundary`       | datos del dominio                          |
-| `Dialog/`     | Overlays modales                                          | `Confirmation`, `EditValue`, `BottomSheet`                                                                               |                                            |
-| `Navigation/` | Navegación intra-pantalla / barras                        | `AppBar`, `BottomNav`, `TabItem`, `RowItem`, `SegmentedControl`, `Tabs`, `FloatingBar`, `CollapsingHeader`, `Steps`, `Menu`, `SearchBar` | layouts de ruta (van en el core)           |
-| `layouts/`    | Contenedores presentacionales                             | `Container`, `ScrollContainer`, `GradientContainer`, `AuthContainer`, `PlainLayout`, `TabNavigatorLayout`                | layouts router-aware (core)                |
-| `views/`      | Templates compuestos (patrones de pantalla)               | `FormViewV2`, `ListViewV2`, `AuthFormView`, `AppSplashView`, `Wizard`                                                    |                                            |
-| `widgets/`    | Composiciones genéricas listas                            | `MenuGrid`, `MenuCard`, `MenuSection`, `PromoBanner`, `PromoModal`, `QuickActions`, `HomeHeader`*, `ScreenHeader`*, `CircleButton`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer` |                                            |
-| `icons/`      | Iconos SVG                                                | componentes de icono                                                                                                     | lógica de dominio                          |
-| `utils/`      | Helpers genéricos                                         | `date`, `monetary`, `quantity`, `serializer`, `timezone`, `icon`                                                         |                                            |
+| Carpeta       | Responsabilidad                                           | Qué vive acá                                                                                                                                                                              | Qué NO va acá                              |
+| ------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `tokens/`     | Valores de diseño en TS que `className` no puede expresar | `motion` (duration/easing/spring). zIndex/opacity → **clases** del preset, no acá                                                                                                         | colores/spacing/radius (→ preset/CSS-vars) |
+| `theme/`      | Runtime del tema                                          | `active`, `useTheme`, `define/extend/merge`, `css-vars`, `tw` (cn/tv), `dark`/`default`                                                                                                   | componentes                                |
+| `primitives/` | Átomos estructurales sin semántica de dominio             | `Box`, `Row`, `Stack`, `BaseButton`, `Pressable`, `Spacer`, `AspectRatio`                                                                                                                 | nada con estado de negocio                 |
+| `Typography/` | Texto                                                     | `Text`, `Heading`                                                                                                                                                                         |                                            |
+| `Display/`    | **Mostrar datos** (presentacional puro)                   | `Badge`, `Avatar`, `Card`, `Chip`, `Accordion`, `ListItem`, `Icon`, `Monetary`, `Date`, `Divider`, `CopyableText`                                                                         | estado de app, inputs                      |
+| `Form/`       | **Entrada de datos**                                      | `Input`, `Button`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `SearchBar`, `Monetary/QuantityInput`, `Controlled*`                                                                  | display puro                               |
+| `Feedback/`   | **Comunicar estado de la app**                            | `Loading`, `Spinner`, `Skeleton`, `Progress`, `Banner`, `Empty`, `Error`, `Toast` (Provider+hook), `ErrorBoundary`                                                                        | datos del dominio                          |
+| `Dialog/`     | Overlays modales                                          | `Confirmation`, `EditValue`, `BottomSheet`                                                                                                                                                |                                            |
+| `Navigation/` | Navegación intra-pantalla / barras                        | `AppBar`, `BottomNav`, `TabItem`, `RowItem`, `SegmentedControl`, `Tabs`, `FloatingBar`, `CollapsingHeader`, `Steps`, `Menu`, `SearchBar`                                                  | layouts de ruta (van en el core)           |
+| `layouts/`    | Contenedores presentacionales                             | `Container`, `ScrollContainer`, `GradientContainer`, `AuthContainer`, `PlainLayout`, `TabNavigatorLayout`                                                                                 | layouts router-aware (core)                |
+| `views/`      | Templates compuestos (patrones de pantalla)               | `FormViewV2`, `ListViewV2`, `AuthFormView`, `AppSplashView`, `Wizard`                                                                                                                     |                                            |
+| `widgets/`    | Composiciones genéricas listas                            | `MenuGrid`, `MenuCard`, `MenuSection`, `PromoBanner`, `PromoModal`, `QuickActions`, `HomeHeader`_, `ScreenHeader`_, `CircleButton`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer` |                                            |
+| `icons/`      | Iconos SVG                                                | componentes de icono                                                                                                                                                                      | lógica de dominio                          |
+| `utils/`      | Helpers genéricos                                         | `date`, `monetary`, `quantity`, `serializer`, `timezone`, `icon`                                                                                                                          |                                            |
 
 `*` = piezas con estética vieja, mantenidas por **retrocompat**; el rumbo es un Header de estilo propio (ver plan UD6).
 
@@ -39,6 +39,25 @@
 5. ¿**Muestra** datos (badge, card, fila, chip)? → `Display/`.
 6. ¿Es overlay modal? → `Dialog/`. ¿Navegación intra-pantalla? → `Navigation/`.
 7. ¿Es una pantalla-template? → `views/`. ¿Composición lista de varios? → `widgets/`.
+
+## Taxonomía de Storybook
+
+Solo cuatro raíces: `Foundations`, `Components`, `Patterns`, `Legacy`.
+UX es un criterio transversal, no una carpeta para ejemplos heterogéneos.
+
+- Estados, jerarquía y fallos de una pieza van con esa pieza: `Components/Actions/Button`,
+  `Components/Data Display/CopyableText`, `Components/Inputs/Select`, `Components/Feedback`.
+- Recetas con varias piezas se clasifican por tarea: `Patterns/Forms`, `Patterns/Records`,
+  `Patterns/Collections`, `Patterns/Profiles`; templates existentes en `Patterns/Views`.
+- Una receta no es automáticamente un componente público. El builder y las opciones de
+  colección son widgets genéricos; evaluar/paginar/persistir datos pertenece al host.
+- `widgets/ReorderableList` es una composición opcional por subpath: usa un motor mantenido,
+  no otro sistema de gestos. No agregarlo al barrel general, para no hacer obligatorio
+  `react-native-sortables` a quienes solo usan los otros widgets. Orden/persistencia
+  pertenecen al host; contenido y controles se reemplazan por API pública.
+- Formularios que poseen scroll usan `parameters.ownsScroll = true` para no anidar otro
+  scroll del canvas. El resto del canvas es keyboard-aware.
+- Un test revisa todas las stories para impedir raíces nuevas o el catch-all `UX`.
 
 ## Reglas transversales (todo componente)
 

@@ -26,7 +26,7 @@ import {
   VariantFrame,
 } from "./views.helpers";
 
-const meta: Meta = { title: "Views/List" };
+const meta: Meta = { title: "Patterns/Views/List" };
 export default meta;
 type Story = StoryObj;
 
@@ -99,6 +99,34 @@ function ListViewLargeHeaderStory() {
 }
 
 export const LargeHeader: Story = { render: () => <ListViewLargeHeaderStory /> };
+
+export const KeyboardInteraction: Story = {
+  parameters: { layout: "fullscreen", ownsScroll: true },
+  render: function KeyboardInteraction() {
+    const [selected, setSelected] = useState("");
+    const [query, setQuery] = useState("");
+    const items = INVENTORY_ITEMS.filter((item) =>
+      item.name.toLowerCase().includes(query.toLowerCase()),
+    );
+    return (
+      <ListViewV2.Root
+        items={items}
+        name="Inventario"
+        onPressItem={(item) => setSelected(item.name)}
+        onSearch={setQuery}
+        withContainer={false}
+      >
+        <ListViewV2.Header variant="default">
+          <ListViewV2.Header.Search />
+          <Typography.Text accessibilityLiveRegion="polite">
+            {selected ? `Seleccionado: ${selected}` : "Sin selección"}
+          </Typography.Text>
+        </ListViewV2.Header>
+        <ListViewV2.Content keyboardDismissMode="on-drag" testID="keyboard-list" />
+      </ListViewV2.Root>
+    );
+  },
+};
 
 /**
  * API: variant="default" · ActionsBar como SIBLING (no children del Header) · rows checkables

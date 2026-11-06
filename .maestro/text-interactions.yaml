@@ -1,0 +1,11 @@
+appId: host.exp.Exponent
+name: Short values copy on tap and long text keeps native selection
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=components-data-display-copyabletext--short-and-long-text"
+- assertVisible: "Datos y texto seleccionable"
+- tapOn: "Copiar referencia"
+- assertVisible: "Copiar referencia.*Copiado"
+- longPressOn: "Esta descripción.*"
+- assertVisible: "Copy"
+- tapOn: "Copy"

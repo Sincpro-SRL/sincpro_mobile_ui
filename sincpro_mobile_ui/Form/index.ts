@@ -15,6 +15,8 @@ import FractionalQuantityInput from "@sincpro/mobile-ui/Form/Form.FractionalQuan
 import IconButton from "@sincpro/mobile-ui/Form/Form.IconButton";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
 import InputField from "@sincpro/mobile-ui/Form/Form.InputField";
+import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import KeyboardToolbar from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 import MonetaryInput from "@sincpro/mobile-ui/Form/Form.MonetaryInput";
 import PasswordInput from "@sincpro/mobile-ui/Form/Form.PasswordInput";
 import PinInput from "@sincpro/mobile-ui/Form/Form.PinInput";
@@ -30,6 +32,8 @@ export const Form = {
   TextInput,
   Input,
   InputField,
+  KeyboardForm,
+  KeyboardToolbar,
   Button: ButtonWithIcon,
   IconButton,
   PasswordInput,
@@ -56,5 +60,10 @@ export const Form = {
 };
 
 export { type DropdownOption };
+export type { KeyboardFormProps } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+export type {
+  KeyboardToolbarAction,
+  KeyboardToolbarProps,
+} from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 
 export default Form;

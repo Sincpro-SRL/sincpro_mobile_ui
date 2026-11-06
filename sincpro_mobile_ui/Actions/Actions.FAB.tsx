@@ -12,6 +12,8 @@ export interface FABProps {
   position?: "bottom-right" | "bottom-left";
   className?: string;
   testID?: string;
+  accessibilityLabel?: string;
+  accessibleSizing?: boolean;
 }
 
 function FAB({
@@ -21,16 +23,22 @@ function FAB({
   position = "bottom-right",
   className,
   testID,
+  accessibilityLabel,
+  accessibleSizing = false,
 }: FABProps) {
   const insets = useSafeAreaInsets();
 
   return (
     <Pressable
-      accessibilityLabel={label ?? "Acción"}
+      accessibilityLabel={accessibilityLabel ?? label ?? "Acción"}
       accessibilityRole="button"
       className={cn(
         "absolute flex-row items-center justify-center rounded-full bg-primary",
-        label ? "h-14 px-5 gap-2" : "w-14 h-14",
+        label
+          ? accessibleSizing
+            ? "min-h-14 px-5 py-3 gap-2"
+            : "h-14 px-5 gap-2"
+          : "w-14 h-14",
         className,
       )}
       onPress={onPress}
@@ -44,7 +52,10 @@ function FAB({
     >
       <Icon color={theme.icon.inverse} name={icon} size={24} />
       {label ? (
-        <Typography.Text className="text-text-on-primary font-semibold">
+        <Typography.Text
+          className="text-text-on-primary font-semibold"
+          style={accessibleSizing ? { flexShrink: 1 } : undefined}
+        >
           {label}
         </Typography.Text>
       ) : null}

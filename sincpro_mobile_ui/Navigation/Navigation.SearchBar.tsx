@@ -1,10 +1,17 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import SearchSuggestions, {
+  type SearchSuggestionsProps,
+} from "@sincpro/mobile-ui/Navigation/Navigation.SearchSuggestions";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
+import {
+  resolveTextFontFamily,
+  typographyVariants,
+} from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useState } from "react";
-import { TextInput, View } from "react-native";
+import { Keyboard, TextInput, View } from "react-native";
 
 export interface SearchBarProps {
   value: string;
@@ -17,6 +24,10 @@ export interface SearchBarProps {
   onPress?: () => void;
   className?: string;
   testID?: string;
+  accessibleSizing?: boolean;
+  accessibilityLabel?: string;
+  clearAccessibilityLabel?: string;
+  suggestions?: SearchSuggestionsProps;
 }
 
 /**
@@ -34,7 +45,12 @@ function SearchBar({
   onPress,
   className,
   testID,
+  accessibleSizing = false,
+  accessibilityLabel,
+  clearAccessibilityLabel = "Limpiar",
+  suggestions,
 }: SearchBarProps) {
+  const theme = useTheme();
   const [focused, setFocused] = useState(false);
   const body = (
     <View
@@ -44,20 +60,23 @@ function SearchBar({
         className,
       )}
       style={{
-        height: 44,
+        ...(accessibleSizing ? { minHeight: 48 } : { height: 44 }),
         borderWidth: 1,
         borderColor: focused ? theme.border.focus : "transparent",
       }}
     >
-      <Icon
-        color={focused ? theme.border.focus : theme.icon.tertiary}
-        name="search"
-        size={18}
-      />
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <Icon
+          color={focused ? theme.border.focus : theme.icon.tertiary}
+          name="search"
+          size={18}
+        />
+      </View>
       {editable ? (
         <TextInput
+          accessibilityLabel={accessibilityLabel ?? placeholder}
           autoFocus={autoFocus}
-          className="flex-1 text-sm text-text-primary"
+          className={cn("flex-1 text-text-primary", !accessibleSizing && "text-sm")}
           onBlur={() => setFocused(false)}
           onChangeText={onChangeText}
           onFocus={() => setFocused(true)}
@@ -66,22 +85,47 @@ function SearchBar({
           placeholderTextColor={theme.text.tertiary}
           returnKeyType="search"
           selectionColor={theme.primary}
+          style={
+            accessibleSizing
+              ? {
+                  ...typographyVariants.bodyReadable,
+                  fontFamily: resolveTextFontFamily("bodyReadable"),
+                  minHeight: 48,
+                  paddingVertical: 8,
+                }
+              : undefined
+          }
+          testID={testID ? `${testID}-input` : undefined}
           underlineColorAndroid="transparent"
           value={value}
         />
       ) : (
-        <Typography.Text className="flex-1 text-text-tertiary text-sm" numberOfLines={1}>
+        <Typography.Text
+          className={cn("flex-1 text-text-tertiary", !accessibleSizing && "text-sm")}
+          numberOfLines={accessibleSizing ? undefined : 1}
+          variant={accessibleSizing ? "bodyReadable" : "body"}
+        >
           {value || placeholder}
         </Typography.Text>
       )}
       {editable && value.length > 0 ? (
         <Pressable
-          accessibilityLabel="Limpiar"
+          accessibilityLabel={clearAccessibilityLabel}
           hitSlop={8}
           onPress={() => {
             onChangeText("");
             onClear?.();
           }}
+          style={
+            accessibleSizing
+              ? {
+                  minHeight: 48,
+                  minWidth: 48,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }
+              : undefined
+          }
         >
           <Icon color={theme.icon.tertiary} name="close-circle" size={18} />
         </Pressable>
@@ -92,7 +136,7 @@ function SearchBar({
   if (!editable && onPress) {
     return (
       <Pressable
-        accessibilityLabel={placeholder}
+        accessibilityLabel={accessibilityLabel ?? placeholder}
         accessibilityRole="search"
         onPress={onPress}
         testID={testID}
@@ -102,7 +146,21 @@ function SearchBar({
     );
   }
 
-  return <View testID={testID}>{body}</View>;
+  return (
+    <View testID={testID}>
+      {body}
+      {focused && suggestions ? (
+        <SearchSuggestions
+          {...suggestions}
+          onSelect={(suggestion) => {
+            suggestions.onSelect(suggestion);
+            setFocused(false);
+            Keyboard.dismiss();
+          }}
+        />
+      ) : null}
+    </View>
+  );
 }
 
 export default SearchBar;

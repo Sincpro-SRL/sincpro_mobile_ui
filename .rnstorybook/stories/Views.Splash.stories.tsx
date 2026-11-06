@@ -2,7 +2,7 @@ import { AppSplashView } from "@sincpro/mobile-ui/views/AppSplashView";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { View } from "react-native";
 
-const meta: Meta = { title: "Views/Splash" };
+const meta: Meta = { title: "Patterns/Views/Splash" };
 export default meta;
 
 type Story = StoryObj;

@@ -13,7 +13,7 @@ export interface TypographyProps extends TextProps {
 }
 
 const Heading: FC<TypographyProps> = ({ variant = "h1", ...props }) => {
-  return <AppText variant={variant} {...props} />;
+  return <AppText accessibilityRole="header" variant={variant} {...props} />;
 };
 
 export default Heading;

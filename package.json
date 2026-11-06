@@ -19,6 +19,7 @@
     "./Dialog": "./dist/Dialog/index.js",
     "./Dialog/BottomSheet": "./dist/Dialog/BottomSheet/index.js",
     "./Dialog/Sheet": "./dist/Dialog/Dialog.Sheet.js",
+    "./Dialog/NativeSheet": "./dist/Dialog/Dialog.NativeSheet.js",
     "./Actions": "./dist/Actions/index.js",
     "./Display": "./dist/Display/index.js",
     "./Feedback": "./dist/Feedback/index.js",
@@ -28,6 +29,7 @@
     "./primitives": "./dist/primitives/index.js",
     "./tokens": "./dist/tokens/index.js",
     "./widgets": "./dist/widgets/index.js",
+    "./widgets/ReorderableList": "./dist/widgets/ReorderableList.js",
     "./views/Wizard": "./dist/views/Wizard/index.js",
     "./tailwind.preset": "./tailwind.preset.js",
     "./theme/globals.css": "./dist/theme/globals.css",
@@ -67,14 +69,19 @@
     "react-hook-form": ">=7",
     "react-native": ">=0.88",
     "react-native-currency-input": ">=1.1",
+    "react-native-gesture-handler": ">=3.3",
     "react-native-keyboard-controller": ">=1.22",
     "react-native-reanimated": ">=4.7",
     "react-native-safe-area-context": ">=5.11",
+    "react-native-sortables": ">=1.10.1 <2",
     "react-native-svg": ">=15.16",
     "react-native-worklets": ">=0.13"
   },
   "peerDependenciesMeta": {
     "@expo/ui": {
+      "optional": true
+    },
+    "react-native-sortables": {
       "optional": true
     }
   },
@@ -86,6 +93,12 @@
     "tailwind-variants": "^3.2.2"
   },
   "devDependencies": {
+    "@jest/globals": "^30.0.0",
+    "@testing-library/react-native": "14.1.0",
+    "@react-native/jest-preset": "^0.88.1",
+    "jest": "^30.0.0",
+    "jest-expo": "~58.0.14",
+    "test-renderer": "^1.0.0",
     "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
     "@expo-google-fonts/ibm-plex-sans": "^0.4.1",
     "@expo/ui": "~58.0.27",
@@ -125,6 +138,7 @@
     "react-native-keyboard-controller": "1.22.7",
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.11.1",
+    "react-native-sortables": "^1.10.1",
     "react-native-svg": "15.16.0",
     "react-native-worklets": "0.13.0",
     "storybook": "10.6.6",

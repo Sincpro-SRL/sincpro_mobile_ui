@@ -1,0 +1,22 @@
+appId: host.exp.Exponent
+name: External list updates during drag are retained and rejected visibly instead of overwritten
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-reordering--concurrent-update"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- swipe:
+    from:
+      id: "sections-reorder-handle-inbox"
+    direction: DOWN
+    duration: 20000
+- scrollUntilVisible:
+    element: "La lista cambió durante el arrastre.*"
+- assertVisible: "La lista cambió durante el arrastre.*"
+- scrollUntilVisible:
+    element:
+      id: "reorder-order"
+    direction: UP
+- assertVisible: "Orden: Entrada, Revisión, Completados, Nuevo"
+- scrollUntilVisible:
+    element: "Actualización externa conservada"
+- assertVisible: "Actualización externa conservada"

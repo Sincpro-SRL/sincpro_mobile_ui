@@ -1,0 +1,28 @@
+appId: host.exp.Exponent
+name: Native handle drag commits order without turning content presses into drags
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-reordering--default"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- tapOn:
+    id: "sections-reorder-handle-inbox"
+- assertVisible: "Orden: Entrada, Revisión, Completados"
+- swipe:
+    from:
+      id: "sections-reorder-handle-inbox"
+    direction: DOWN
+    duration: 20000
+- assertVisible: "Cambio por arrastre"
+- assertVisible: "Orden: Revisión, Completados, Entrada"
+- tapOn: "Abrir Entrada"
+- assertVisible: "Abierto: Entrada"
+- assertVisible: "Orden: Revisión, Completados, Entrada"
+- takeScreenshot: native-reordered
+- tapOn: "Restablecer orden"
+- tapOn: "Bloquear orden"
+- swipe:
+    from:
+      id: "sections-reorder-handle-inbox"
+    direction: DOWN
+    duration: 20000
+- assertVisible: "Orden: Entrada, Revisión, Completados"

@@ -16,11 +16,20 @@ import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import { IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   FlatList,
   RefreshControl,
   ScrollView,
+  type ScrollViewProps,
   StyleProp,
   TouchableOpacity,
   View,
@@ -37,6 +46,7 @@ interface ListViewProps<T> {
   errorMessage?: string;
   readonly?: boolean;
   onRefresh?: () => Promise<void>;
+  onRefreshError?: (error: unknown) => void;
   onRetry?: () => void;
   onPressItem?: (item: T) => void;
   onDeleteItem?: (item: T) => void;
@@ -51,6 +61,28 @@ interface ListViewProps<T> {
   children: ReactNode;
 }
 
+const RefreshErrorContext = createContext<((error: unknown) => void) | undefined>(undefined);
+
+export async function refreshListData(
+  onRefresh: (() => Promise<void>) | undefined,
+  onRefreshError: ((error: unknown) => void) | undefined,
+  setShowRefreshing: (value: boolean) => void,
+): Promise<void> {
+  setShowRefreshing(true);
+  try {
+    await onRefresh?.();
+  } catch (error) {
+    console.error("[ListViewV2] Refresh failed", error);
+    try {
+      onRefreshError?.(error);
+    } catch (callbackError) {
+      console.error("[ListViewV2] onRefreshError callback failed", callbackError);
+    }
+  } finally {
+    setShowRefreshing(false);
+  }
+}
+
 function ListViewRoot<T>({
   name,
   description,
@@ -60,6 +92,7 @@ function ListViewRoot<T>({
   errorMessage,
   readonly = false,
   onRefresh,
+  onRefreshError,
   onRetry,
   onPressItem,
   onDeleteItem,
@@ -95,9 +128,11 @@ function ListViewRoot<T>({
       onSearch={onSearch}
       readonly={readonly}
     >
-      <ErrorBoundary>
-        <Wrapper {...wrapperProps}>{children}</Wrapper>
-      </ErrorBoundary>
+      <RefreshErrorContext.Provider value={onRefreshError}>
+        <ErrorBoundary>
+          <Wrapper {...wrapperProps}>{children}</Wrapper>
+        </ErrorBoundary>
+      </RefreshErrorContext.Provider>
     </ListViewProvider>
   );
 }
@@ -275,13 +310,21 @@ function FilterChips({ children }: { children: ReactNode }) {
   );
 }
 
+type ListScrollProps = Pick<
+  ScrollViewProps,
+  "keyboardShouldPersistTaps" | "keyboardDismissMode" | "testID"
+>;
+
 function Content({
   children,
   withMargin = true,
+  keyboardShouldPersistTaps = "handled",
+  keyboardDismissMode = "none",
+  testID,
 }: {
   children?: (item: any) => ReactNode;
   withMargin?: boolean;
-}) {
+} & ListScrollProps) {
   const {
     name,
     items,
@@ -297,14 +340,11 @@ function Content({
 
   const bottomInset = useBottomInset();
   const theme = useTheme();
+  const onRefreshError = useContext(RefreshErrorContext);
 
   const handleRefresh = useCallback(async () => {
-    setShowRefreshing(true);
-    if (onRefresh) {
-      await onRefresh();
-    }
-    setShowRefreshing(false);
-  }, [onRefresh, setShowRefreshing]);
+    await refreshListData(onRefresh, onRefreshError, setShowRefreshing);
+  }, [onRefresh, onRefreshError, setShowRefreshing]);
 
   if (isLoading) {
     return <Feedback.Loading message={`Cargando ${name}...`} />;
@@ -319,6 +359,8 @@ function Content({
           alignItems: "center",
           paddingBottom: bottomInset,
         }}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}
@@ -327,6 +369,7 @@ function Content({
           />
         }
         style={{ backgroundColor: theme.bg.page }}
+        testID={testID}
       >
         <Feedback.Error message={errorMessage} onBack={onBack} onRetry={onRetry} />
       </ScrollView>
@@ -342,6 +385,8 @@ function Content({
           alignItems: "center",
           paddingBottom: bottomInset,
         }}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}
@@ -350,6 +395,7 @@ function Content({
           />
         }
         style={{ backgroundColor: theme.bg.page }}
+        testID={testID}
       >
         <Feedback.Empty />
       </ScrollView>
@@ -359,7 +405,14 @@ function Content({
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg.page }}>
       <Display.CountRecords count={items.length || 0} name={name} />
-      <ContentList contentWithMargin={withMargin}>{children}</ContentList>
+      <ContentList
+        contentWithMargin={withMargin}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        testID={testID}
+      >
+        {children}
+      </ContentList>
     </View>
   );
 }
@@ -367,10 +420,13 @@ function Content({
 function ContentList({
   children,
   contentWithMargin,
+  keyboardShouldPersistTaps,
+  keyboardDismissMode,
+  testID,
 }: {
   children?: (item: any) => ReactNode;
   contentWithMargin: boolean;
-}) {
+} & ListScrollProps) {
   const {
     items,
     onRefresh,
@@ -385,14 +441,11 @@ function ContentList({
   const bottomInset = useBottomInset();
   const theme = useTheme();
   const rowItems = useMemo(() => toRowItems(items), [items]);
+  const onRefreshError = useContext(RefreshErrorContext);
 
   const handleRefresh = useCallback(async () => {
-    setShowRefreshing(true);
-    if (onRefresh) {
-      await onRefresh();
-    }
-    setShowRefreshing(false);
-  }, [onRefresh, setShowRefreshing]);
+    await refreshListData(onRefresh, onRefreshError, setShowRefreshing);
+  }, [onRefresh, onRefreshError, setShowRefreshing]);
 
   const renderItem = useCallback(
     ({ item }: { item: IRowItem<any> }) => {
@@ -428,6 +481,8 @@ function ContentList({
       <FlatList
         contentContainerStyle={bottomInset ? { paddingBottom: bottomInset } : undefined}
         data={rowItems}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         keyExtractor={(item) => String(item.index)}
         ListFooterComponent={
           loadingMore ? (
@@ -448,6 +503,7 @@ function ContentList({
         renderItem={renderItem}
         scrollEnabled={true}
         showsVerticalScrollIndicator={false}
+        testID={testID}
       />
     </View>
   );

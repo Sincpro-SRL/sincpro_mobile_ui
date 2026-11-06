@@ -1,0 +1,22 @@
+appId: host.exp.Exponent
+name: Mobile filter labels remain reachable in dark mode and enlarged text
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-browsing--long-content"
+- tapOn:
+    id: "storybook-theme-toggle"
+- assertVisible: "Activar tema claro"
+- scrollUntilVisible:
+    element:
+      id: "collection-filters-pending"
+- tapOn:
+    id: "collection-filters-pending"
+- scrollUntilVisible:
+    element: "2 resultados"
+- assertVisible: "2 resultados"
+- scrollUntilVisible:
+    element: "Abrir Notas del equipo"
+- tapOn: "Abrir Notas del equipo"
+- scrollUntilVisible:
+    element: "Copiar REF-NOTES"
+- assertVisible: "Copiar REF-NOTES"

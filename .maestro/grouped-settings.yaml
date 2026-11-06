@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Sincpro grouped settings preserve independent controls and cancellation
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-grouped-settings--default"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-settings--default"
 - assertVisible: "Tu espacio"
 - assertVisible: "Español"
 - tapOn: "Cambiar idioma.*"
@@ -18,7 +18,7 @@ name: Sincpro grouped settings preserve independent controls and cancellation
 - tapOn: "Recibir avisos importantes"
 - assertVisible: "Los avisos están activados"
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-grouped-settings--customized"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-settings--customized"
 - assertVisible: "Tu espacio"
 - tapOn: "Cambiar idioma.*"
 - tapOn: "English"

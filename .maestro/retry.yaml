@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Failed save preserves edits and permits retry
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-record-detail--recoverable-error"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-detail--recoverable-error"
 - assertVisible: "Detalle del registro"
 - scrollUntilVisible:
     element: "Editar cliente"

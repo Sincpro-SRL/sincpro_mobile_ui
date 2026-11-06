@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Long content and dark theme remain usable
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-record-detail--long-content"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-detail--long-content"
 - assertVisible: "Detalle del registro"
 - tapOn:
     id: "storybook-theme-toggle"

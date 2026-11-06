@@ -1,7 +1,7 @@
 import { expect, jest, test } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { GroupedSettings } from "../../.rnstorybook/stories/UX.Grouped.stories";
+import { GroupedSettings } from "../../.rnstorybook/stories/Forms.Settings.stories";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("react-native-safe-area-context", () => ({

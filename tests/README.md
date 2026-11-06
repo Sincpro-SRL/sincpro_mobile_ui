@@ -58,6 +58,18 @@ native detail sheet to reach its copy action.
 They mock device services where needed; they do not replace VoiceOver/TalkBack or
 multiplatform device validation.
 
+Keyboard tests cover avoidance props/clearance, first-tap controls, named 48-point toolbar
+actions and native input ref forwarding. The iOS flow additionally types through
+name → email → phone → multiline using the actual toolbar, skips a read-only field,
+returns to phone, dismisses and saves. Unit mocks do not claim to verify native focus.
+
+Criteria tests cover immutable nested updates, all/any/none descriptions, arity, zero,
+finite numbers, range ordering, calendar dates and configured operators/choice values.
+Workspace tests cover unfinished-draft gating, cancel/apply, saved configuration loading,
+sorting priority/direction, explicit save failure/retry and external-tree recovery.
+Autocomplete tests cover focus, selection and loading/error/retry/empty states.
+The taxonomy test permits only Foundations/Components/Patterns/Legacy, not an UX bucket.
+
 `make storybook-e2e` runs the `.maestro/` flows against an isolated Expo Go server on
 port 8082. See the README for setup. Simulator E2E covers actual clipboard interaction,
 keyboard editing, cancel, retry and long-content/dark mode. Flows also cover mobile

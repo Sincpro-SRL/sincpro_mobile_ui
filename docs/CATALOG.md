@@ -88,6 +88,9 @@ enables a standalone row divider when needed.
 `SearchBar accessibleSizing` opts into readable 17-point text and 48-point input/clear
 targets. Name search and clear independently with `accessibilityLabel` and
 `clearAccessibilityLabel`. Legacy height remains 44.
+`suggestions` accepts host-owned items `{id,label,description?}`, `onSelect`, loading,
+error/retry and empty copy. Suggestions appear on focus; selecting one does not guess
+which field to search or mutate the query. `Navigation.SearchSuggestions` is also composable.
 
 ### Overlays (`Dialog`)
 
@@ -106,7 +109,7 @@ supported. Essential swipe actions must have an equivalent visible action:
 
 `ActionSheet` uses named actions, 48-point targets, scrollable choices and persistent
 cancellation. Theme variables are reapplied inside native modal portals. Stories under
-`Patterns/UX/Mobile tasks` demonstrate explicit row actions, undo, draft filters and
+`Patterns/Records/Actions` demonstrate explicit row actions, undo, draft filters and
 selection cancellation; do not nest sheets.
 
 ### Layout (`…/layouts`)
@@ -124,9 +127,25 @@ quick chips, an advanced-filter action, results and clear. Controlled `filters` 
 the host. `onClearFilters` clears filters only, not the query. Customize labels, classes,
 theme and layout; auto wraps above font scale 1.3, otherwise scrolls horizontally.
 It does not fetch, filter, paginate or own advanced drafts.
-`Patterns/Composition/Mobile collection` demonstrates rows/cards, fixed 56-point decorative
+`Patterns/Collections/Browsing` demonstrates rows/cards, fixed 56-point decorative
 artwork, icon fallbacks, metrics, independent open/save actions, actual local filtering,
 empty recovery and staged advanced filters. Adapt or replace any part of the recipe.
+
+`FilterBuilder` edits configured text/number/date/choice conditions and nested
+all/any/none groups, with single-group drill-down instead of excessive mobile indentation.
+Operators and value arity come from field metadata. Invalid values remain recoverable.
+`CollectionOptions` combines its draft with multi-field sorting, ordered group levels,
+and callback-owned saved configurations in a full-screen keyboard-aware workspace.
+Load does not apply; Cancel discards and Apply commits. The host owns data execution,
+persistence and backend adapters. No relational model explorer or JSON editor is provided.
+Story: `Patterns/Collections/Query configuration`.
+
+`Form.KeyboardForm` combines an aware scroll, scoped native input group and named
+previous/next/dismiss toolbar. `Form.KeyboardToolbar` is separately composable.
+Requires a root KeyboardProvider and a runtime with keyboard-controller included.
+Existing `FormViewV2.Content`, `AuthFormView` and `AuthContainer` opt in with
+`keyboardToolbar`; existing defaults are preserved. Avoid nesting vertical scrolls.
+Story: `Patterns/Forms/Keyboard navigation`.
 
 ## Legacy (deprecated — `@deprecated`, still exported)
 

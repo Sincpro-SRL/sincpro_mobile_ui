@@ -115,7 +115,7 @@ El tamaño de una captura de pantalla no representa el tamaño físico de estos 
 - Se conserva la identidad actual: fondos cálidos, azul de acciones, oro tonal acotado y
   tipografía de marca, sin cambiar la paleta. `surface`, `contentClassName`, `className`,
   slots, `separators` y los helpers de tema/fuentes permiten extenderla sin un segundo tema.
-- Stories `Patterns/UX/Grouped settings`: defaults Sincpro, contenido largo, superficies
+- Stories `Patterns/Forms/Settings`: defaults Sincpro, contenido largo, superficies
   personalizadas y jerarquía de lectura. Los cambios de idioma/avisos son estado local
   de demostración, no preferencias persistentes ni traducción de toda la pantalla.
 
@@ -148,6 +148,46 @@ o lectores de pantalla.
 - 53 tests de lógica/tokens + 71 nativos (124), tipos/stories, build y export Android pasan.
   La suite Maestro contiene once flujos. No equivale a aprobación visual o runtime Android.
 
+## Quinto lote: catálogo, teclado y consultas estructuradas
+
+- Se elimina el cajón genérico `Patterns/UX`: componentes en `Components`, recetas
+  en `Patterns/Records`, `Patterns/Forms`, `Patterns/Collections`, `Patterns/Views`
+  y `Patterns/Profiles`. Un test impide reintroducir la categoría UX sin responsabilidad.
+- Expo 58 no resuelve automáticamente el teclado de cualquier formulario:
+  `Form.KeyboardForm` combina un único scroll consciente del teclado y un grupo nativo;
+  `Form.KeyboardToolbar` permite anterior/siguiente/ocultar con labels configurables.
+  `FormViewV2.Content`, `AuthContainer` y `AuthFormView` lo ofrecen opt-in.
+  Requiere `KeyboardProvider` y el módulo nativo de keyboard-controller en el runtime.
+- El formulario real recorre nombre, correo, teléfono y notas multilínea, omite el campo
+  de solo lectura y conserva lo escrito. Se comprobó en iOS a tamaño normal y con
+  `accessibility-large`, incluida la escritura visible sobre el teclado, volver al
+  teléfono, ocultar y guardar. El ejemplo prioriza campos, no explicaciones extensas.
+  La prueba espera que cargue el primer input antes de interactuar; no desplaza la app
+  mientras Expo todavía muestra su pantalla de apertura.
+- La revisión de la captura encontró una línea de notas tapada aunque el assert de
+  visibilidad pasaba. La barra ahora usa `KeyboardStickyView`, foco/grupos nativos y
+  altura medida: compensa la distancia entre su contenedor y el borde de la ventana.
+  El scroll reserva esa altura ampliable más 24 puntos. Se comprobó después que ambas
+  líneas y el cursor permanecen por encima de la barra; no se fijó un offset mayor a ciegas.
+- `FilterBuilder` edita condiciones tipadas y grupos anidados todas/cualquiera/ninguna,
+  navegando un grupo a la vez. Valida operadores, aridad, números, fechas y rangos;
+  un borrador incompleto bloquea aplicar o cambiar de sección.
+- `CollectionOptions` conserva un borrador cancelable, orden multi-campo con prioridades,
+  niveles de agrupación ordenados y configuraciones guardadas mediante callbacks del host.
+  El fallo al guardar conserva el trabajo y permite reintentar.
+- `SearchBar.suggestions` presenta resultados, carga, vacío y error/reintento del host.
+  La receta filtra, ordena y agrupa registros locales reales; no se limita a chips decorativos.
+- La prueba con texto ampliado encontró un encabezado cuyo botón largo comprimía el título.
+  Se sustituyó por un cierre nombrado de 48 puntos, sin reducir fuente ni impedir escalado.
+  El flujo de consultas guardadas y agrupación pasa también en dark ampliado.
+- 60 tests de lógica/tokens + 85 nativos (145), build de librería y export Android pasan.
+  La suite local iOS contiene catorce flujos.
+
+Esto no implementa toda la paridad web: no hay descubrimiento de modelos/relaciones,
+editor JSON ni ejecución o persistencia remota dentro del design system.
+La demo conserva configuraciones solo en memoria; la aplicación decide cómo almacenarlas
+y cómo ejecutar consultas. No se añadieron dependencias para este lote.
+
 Además de acciones/copia/jerarquía, se implementaron los hallazgos del muestreo de
 Checkbox, Select, Sheet, Confirmation, Banner, refresh, navegación y SwipeableRow.
 El tamaño accesible y los controles visibles nuevos son opt-in cuando cambian el layout.
@@ -156,11 +196,12 @@ El tamaño accesible y los controles visibles nuevos son opt-in cuando cambian e
 - `make verify-format`: formato, tipos de librería/stories/tests, doctor, matriz Expo y tests.
   El último paso exige cambios registrados; no confundir un worktree modificado con un fallo de tipos.
 - `make build`: build de la librería y resolución de aliases.
-- `make storybook-e2e`: once flujos: lista/detalle/editar/cancelar, error/retry,
+- `make storybook-e2e`: catorce flujos: lista/detalle/editar/cancelar, error/retry,
   contenido largo/dark, tareas/undo/filtros, selección/cancelación,
   resumen nativo largo/dark, texto con selección de fragmentos y dos flujos de
   agrupación/ajustes/personalización/contenido largo, más dos flujos de
-  colección/búsqueda/filtros/acciones independientes/texto largo.
+  colección/búsqueda/filtros/acciones independientes/texto largo, navegación del teclado,
+  consultas estructuradas y consultas guardadas/agrupación/dark.
 - Export Android de Expo 58: smoke de bundling, no validación de comportamiento en Android.
 
 Los E2E usan estado local ficticio. No certifican persistencia, red, dominio ni integración
@@ -170,7 +211,8 @@ El simulador debe volver a su categoría original al terminar.
 ## Adopción y límites
 
 1. Usar las APIs accesibles en pantallas nuevas y adoptar las existentes por lotes.
-2. Revisar las stories `Patterns/UX` y la receta de perfil para no volver a duplicar filas.
+2. Revisar las stories `Patterns/Records`, `Patterns/Forms`, `Patterns/Collections`
+   y la receta de perfil para no volver a duplicar filas.
 3. Probar cada cambio de apariencia en una app consumidora antes de publicarlo.
 4. Separar aprobación visual de validación nativa y de una prueba de tareas con usuarios.
 

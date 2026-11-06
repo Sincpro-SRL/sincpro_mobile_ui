@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Long grouped settings stay usable in dark mode and enlarged text
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-grouped-settings--long-content"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-settings--long-content"
 - tapOn:
     id: "storybook-theme-toggle"
 - assertVisible: "Activar tema claro"

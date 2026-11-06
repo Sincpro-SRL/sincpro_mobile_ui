@@ -1,0 +1,25 @@
+appId: host.exp.Exponent
+name: Saved mobile query and grouping remain reachable in dark mode and enlarged text
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-query-configuration--complete-query"
+- tapOn:
+    id: "storybook-theme-toggle"
+- scrollUntilVisible:
+    element: "Filtros, orden y agrupación"
+- tapOn: "Filtros, orden y agrupación"
+- tapOn: "Guardados"
+- scrollUntilVisible:
+    element: "Cargar Pendientes por importe"
+- tapOn: "Cargar Pendientes por importe"
+- tapOn: "Aplicar configuración"
+- scrollUntilVisible:
+    element: "2 resultados"
+    direction: UP
+- assertVisible: "2 resultados"
+- scrollUntilVisible:
+    element: "Agrupación: Región"
+- assertVisible: "Agrupación: Región"
+- scrollUntilVisible:
+    element: "Notas del equipo"
+- assertVisible: "Notas del equipo"

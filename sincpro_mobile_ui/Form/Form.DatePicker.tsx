@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useState } from "react";
@@ -17,6 +17,7 @@ export interface DatePickerProps {
   minimumDate?: Date;
   maximumDate?: Date;
   disabled?: boolean;
+  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
 }
@@ -49,10 +50,12 @@ function DatePicker({
   minimumDate,
   maximumDate,
   disabled = false,
+  accessibleSizing = false,
   className,
   testID,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
   const fmt = format ?? ((d: Date) => defaultFormat(d, mode));
 
   const handleValueChange = (_event: unknown, date: Date) => {
@@ -73,9 +76,11 @@ function DatePicker({
         accessibilityLabel={label ?? placeholder}
         accessibilityRole="button"
         accessibilityState={{ disabled }}
+        accessibilityValue={{ text: value ? fmt(value) : placeholder }}
         className="flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3 min-h-[44px]"
         disabled={disabled}
         onPress={() => setOpen(true)}
+        style={accessibleSizing ? { minHeight: 48 } : undefined}
       >
         <Typography.Text
           className={cn("flex-1 text-sm", value ? "text-text-primary" : "text-text-tertiary")}

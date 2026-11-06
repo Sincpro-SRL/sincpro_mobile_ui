@@ -80,7 +80,7 @@ Without a design system, every developer makes local decisions: which shade of g
 ## Philosophy
 
 The [UX/UI evolution plan](docs/UX-UI-PLAN.md) tracks the rollout. The first native pilot
-is in Storybook under `Patterns/UX/Record detail`: list, detail, copy, edit, cancel and
+is in Storybook under `Patterns/Records/Detail`: list, detail, copy, edit, cancel and
 recoverable error. It uses fictional data and local state, not persistence or a backend.
 
 ### Accessible interaction
@@ -163,12 +163,12 @@ optional description/footer/action and hairline separators only between rows. Ch
   Do not introduce a competing palette or hardcode colors in every screen.
 - This group is not virtualized: use FlatList/SectionList for large or unbounded collections.
 
-Stories: `Patterns/UX/Grouped settings` shows Sincpro defaults, long content, customized
+Stories: `Patterns/Forms/Settings` shows Sincpro defaults, long content, customized
 surfaces and the opt-in reading hierarchy. Customization is not a complete visual approval.
 
 ### Compose collections, not a prescribed screen
 
-`Patterns/Composition/Mobile collection` shows the same local data as rows, cards and
+`Patterns/Collections/Browsing` shows the same local data as rows, cards and
 long-label variants. It combines icons, bounded 56-point artwork, readable text, metrics,
 independent open/save actions and a native detail sheet. These are recipes to adapt,
 not new domain-specific screen components or a web toolbar squeezed onto a phone.
@@ -207,6 +207,79 @@ Use virtualized lists for production-sized collections.
 
 Dependencies follow the latest stable version compatible with Expo 58, not unbounded
 upgrades. Validate with `CI=1 npx expo install --check` in addition to the quality gates.
+
+### Keyboard-aware forms and field navigation
+
+Expo 58 does not automatically make arbitrary form layouts keyboard-safe.
+The host must include `react-native-keyboard-controller` and its `KeyboardProvider` at
+the app root. Use a development build when the runtime does not include that native module.
+
+```tsx
+<Form.KeyboardForm contentContainerStyle={{ padding: 16, gap: 16 }}>
+  {fields}
+</Form.KeyboardForm>
+```
+
+`KeyboardForm` owns the scroll and scopes editable inputs with `KeyboardToolbar.Group`.
+Its toolbar provides previous/next/dismiss actions, including phone/number keyboards.
+The scroll reserves the measured toolbar height plus 24 points (normally 72 total);
+it grows with enlarged text. Override `bottomOffset` for additional accessories.
+`toolbar={false}` keeps automatic avoidance without the toolbar.
+Customize `toolbarLabels` or compose `Form.KeyboardToolbar` with an existing aware scroll,
+using `onHeightChange` to reserve its measured height. The toolbar compensates for space
+below its parent, such as a safe area or form footer, instead of floating over the caret.
+Do not nest this component inside another vertical ScrollView.
+
+For existing templates, opt into `FormViewV2.Content keyboardToolbar` or
+`AuthFormView keyboardToolbar` / `AuthContainer keyboardToolbar`; defaults stay unchanged.
+`Form.Input` forwards its native ref for explicit return-key navigation:
+`onSubmitEditing={() => nextRef.current?.focus()}` with `submitBehavior="submit"`.
+Multiline Return remains a newline; dismissing the keyboard does not submit the form.
+Story: `Patterns/Forms/Keyboard navigation`.
+
+### Structured queries, not just quick chips
+
+`widgets.FilterBuilder` edits a controlled `CriteriaGroup`: nested `all`/`any`/`none`
+groups and configured conditions. Supply fields with their label, type, permitted
+operators and arity (`none`, `one`, `range`); choice values are explicit. Numbers remain
+editable strings until validated/committed, date fields use the native picker, and invalid
+conditions produce visible errors. The mobile editor opens one group at a time instead of
+squeezing an arbitrarily indented desktop tree into the screen.
+
+`widgets.CollectionOptions` is a full-screen, keyboard-aware workspace:
+
+```tsx
+<CollectionOptions
+  visible={open}
+  value={query}
+  fields={filterFields}
+  sortFields={sortFields}
+  groupFields={groupFields}
+  savedQueries={savedQueries}
+  onApply={applyQuery}
+  onClose={closeOptions}
+  onSave={saveQuery}
+/>
+```
+
+`CollectionQuery` contains `search`, `filter`, ordered `sort` entries and ordered
+`groupBy` field IDs. Order and grouping priorities have explicit move/remove actions;
+dragging is not required. Loading a saved configuration changes the draft only;
+Apply commits all dimensions together, Cancel discards the draft. Save errors keep the
+draft/name for retry. The host owns saving/loading and closes the workspace after Apply.
+
+The DS does not fetch models, evaluate filters, sort a page as if it were the full dataset,
+persist favorites or translate this tree into a backend query language. Relational paths,
+remote model discovery and a JSON editor are not implemented here. The web builder is a
+semantic reference, not a component copied into mobile.
+
+`Navigation.SearchBar suggestions={{ items, onSelect, loading, error, onRetry }}` shows
+host-supplied autocomplete while focused. Choosing a suggestion calls `onSelect` without
+silently rewriting the query. A host may complete a title or create a field-specific
+condition; it owns matching, request cancellation and stale responses.
+
+Story: `Patterns/Collections/Query configuration` exercises actual local filtering,
+multiple sorting priorities, grouping levels and saving/loading configurations.
 
 ### Native E2E
 
@@ -819,6 +892,15 @@ Stories are organized into four groups:
 | **Legacy**      | Deprecated components kept for backwards compatibility  |
 
 Stories live in `.rnstorybook/stories/**/*.stories.tsx`. The Storybook harness is excluded from the published package (`files: ["dist", ...]`) and never lands in consumer bundles.
+
+UX is a cross-cutting quality, not another catalog category. Component states live with
+their component (`Actions/Button`, `Data Display/CopyableText`, `Inputs/Select`, `Feedback`);
+task compositions live under named `Patterns/Forms`, `Patterns/Records`,
+`Patterns/Collections`, `Patterns/Views` and `Patterns/Profiles`.
+The former `Patterns/UX`, top-level `Views` and `Templates` story IDs changed;
+package exports did not. The taxonomy is regression-tested.
+Stories that own a full-screen scroll set `parameters.ownsScroll = true`; the canvas does
+not wrap them in a second vertical scroll. Other canvases use keyboard-aware scrolling.
 
 ---
 

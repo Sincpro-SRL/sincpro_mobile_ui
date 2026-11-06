@@ -9,7 +9,7 @@ import { useState } from "react";
 import { View } from "react-native";
 
 const meta = {
-  title: "Patterns/UX/Record detail",
+  title: "Patterns/Records/Detail",
   excludeStories: ["RecordDetail"],
   parameters: { layout: "fullscreen" },
 } satisfies Meta;

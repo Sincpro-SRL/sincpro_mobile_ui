@@ -1,5 +1,6 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
+import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
@@ -13,7 +14,6 @@ import { useTheme } from "@sincpro/mobile-ui/theme";
 import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
 import React, { ReactNode } from "react";
 import { type ImageSourcePropType, RefreshControl, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import type { Edge } from "react-native-safe-area-context";
 
 interface FormViewProps<T> {
@@ -177,9 +177,11 @@ function HeaderSegmented<T extends string>(props: SegmentedControlProps<T>) {
 
 function Content({
   withMargin = false,
+  keyboardToolbar = false,
   children,
 }: {
   withMargin?: boolean;
+  keyboardToolbar?: boolean;
   children: ReactNode;
 }) {
   const {
@@ -206,8 +208,7 @@ function Content({
   const isCenteredContent = isLoading || isEmpty || !item || hasError;
 
   return (
-    <KeyboardAwareScrollView
-      bottomOffset={20}
+    <KeyboardForm
       contentContainerStyle={{
         flexGrow: 1,
         justifyContent: isCenteredContent ? "center" : "flex-start",
@@ -223,6 +224,7 @@ function Content({
         />
       }
       style={{ flex: 1, backgroundColor: theme.bg.page }}
+      toolbar={keyboardToolbar}
     >
       {isCenteredContent ? (
         <>
@@ -237,7 +239,7 @@ function Content({
       ) : (
         <View style={withMargin ? { paddingHorizontal: 16 } : undefined}>{children}</View>
       )}
-    </KeyboardAwareScrollView>
+    </KeyboardForm>
   );
 }
 

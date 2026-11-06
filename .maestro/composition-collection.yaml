@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Mobile collection combines search, independent actions and staged filters
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-composition-mobile-collection--rows"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-browsing--rows"
 - assertVisible: "Explorar"
 - tapOn: "Buscar recursos"
 - inputText: "visual"
@@ -41,7 +41,7 @@ name: Mobile collection combines search, independent actions and staged filters
 - assertVisible: "Copiar REF-REFERENCE. Copiado"
 - assertVisible: "Guardar en mi selección"
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-composition-mobile-collection--cards"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-browsing--cards"
 - scrollUntilVisible:
     element: "Guardar Guía de inicio"
 - tapOn: "Guardar Guía de inicio"

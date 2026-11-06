@@ -1,7 +1,8 @@
 import { expect, jest, test } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { MobileRecords, MobileSelection } from "../../.rnstorybook/stories/UX.Mobile.stories";
+import { MobileRecords } from "../../.rnstorybook/stories/Records.Actions.stories";
+import { MobileSelection } from "../../.rnstorybook/stories/Forms.Selection.stories";
 
 jest.mock("@sincpro/mobile-ui/Dialog/Confirmation.context", () => ({
   useConfirmationContext: () => ({ show: jest.fn(), hide: jest.fn() }),
@@ -15,7 +16,8 @@ jest.mock("@sincpro/mobile-ui/Dialog/Dialog.NativeSheet", () => {
   const { View } = require("react-native");
   return {
     __esModule: true,
-    default: ({ visible, children }: { visible: boolean; children: React.ReactNode }) => visible ? mockReact.createElement(View, {}, children) : null,
+    default: ({ visible, children }: { visible: boolean; children: React.ReactNode }) =>
+      visible ? mockReact.createElement(View, {}, children) : null,
   };
 });
 
@@ -38,7 +40,10 @@ test("filter drafts do not change the list until Apply and dismiss discards them
   await fireEvent.press(screen.getByRole("button", { name: "Cerrar" }));
   expect(screen.getByRole("button", { name: "Abrir resumen del registro" })).toBeTruthy();
   await fireEvent.press(screen.getByRole("button", { name: "Filtrar registros" }));
-  expect(screen.getByRole("checkbox", { name: "Solo pendientes" }).props.accessibilityState.checked).toBe(false);
+  expect(
+    screen.getByRole("checkbox", { name: "Solo pendientes" }).props.accessibilityState
+      .checked,
+  ).toBe(false);
   await fireEvent.press(screen.getByRole("checkbox", { name: "Solo pendientes" }));
   await fireEvent.press(screen.getByRole("button", { name: "Aplicar filtros" }));
   expect(screen.getByText("Sin resultados")).toBeTruthy();

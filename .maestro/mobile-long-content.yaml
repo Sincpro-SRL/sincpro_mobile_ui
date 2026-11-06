@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Long native summary keeps readable content and visible close
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-mobile-tasks--long-records"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-actions--long-records"
 - assertVisible: "Registros"
 - tapOn:
     id: "storybook-theme-toggle"

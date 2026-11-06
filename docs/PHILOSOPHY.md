@@ -42,6 +42,16 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
   al tocar; decisiones avanzadas usan borrador y confirmación. Mostrar selección, resultado
   y recuperación. `FilterBar` compone controles, pero no conoce datos ni reglas de negocio.
   Auto usa scroll horizontal y pasa a wrap con fuente ampliada; el consumidor puede elegir.
+- **Consulta estructurada:** no confundir chips con un builder. Campos/operadores vienen
+  de la configuración; grupos expresan todas/cualquiera/ninguna. Ordenar y agrupar tienen
+  prioridades visibles y acciones de mover sin depender de drag. Guardados conservan
+  búsqueda, filtros, orden y niveles; cargar no equivale a aplicar. El host ejecuta/persiste.
+- **Teclado y formularios:** un único scroll consciente del teclado mantiene visible el
+  campo activo; anterior/siguiente/ocultar siguen disponibles en teclados sin Return.
+  Agrupar los campos navegables, omitir solo lectura y conservar newline en multiline.
+  No confundir ocultar teclado con guardar. No anidar un scroll de canvas con el del form.
+- **Catálogo por responsabilidad:** estados con su componente y recetas por tarea.
+  UX es transversal; no justifica otra categoría de stories con piezas sin relación.
 - **Énfasis:** una acción de máximo énfasis por contexto de tarea. Un modal es otro contexto;
   las excepciones se justifican. Las acciones secundarias no compiten con la principal.
 - **Tacto:** objetivo efectivo de 44×44 puntos en iOS y 48×48 dp en Android. El modo

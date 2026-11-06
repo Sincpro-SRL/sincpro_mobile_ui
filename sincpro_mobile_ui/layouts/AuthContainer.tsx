@@ -1,6 +1,7 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
+import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -12,7 +13,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface AuthContainerProps {
@@ -20,6 +20,7 @@ interface AuthContainerProps {
   children: ReactNode;
   onBackPress?: () => void;
   className?: string;
+  keyboardToolbar?: boolean;
   /** Gradient + optional texture surface for the header area. Defaults to the `warm`
    *  preset. Set `background.pattern` to opt-in a texture (`dots` / `grid` /
    *  `diagonals`); compose `<Display.Pattern kind="mesh" />` outside if you want the
@@ -33,6 +34,7 @@ function AuthContainer({
   onBackPress,
   background,
   className,
+  keyboardToolbar = false,
 }: AuthContainerProps) {
   const { height: screenHeight } = useWindowDimensions();
   const theme = useTheme();
@@ -81,16 +83,17 @@ function AuthContainer({
             className="flex-1 bg-bg-card rounded-t-3xl shadow-lg"
             style={{ minHeight: screenHeight * 0.7 }}
           >
-            <KeyboardAwareScrollView
-              bottomOffset={50}
+            <KeyboardForm
+              bottomOffset={keyboardToolbar ? undefined : 50}
               bounces={false}
               className="flex-1"
               contentContainerClassName="flex-grow pb-10"
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
+              toolbar={keyboardToolbar}
             >
               <View className="p-4">{children}</View>
-            </KeyboardAwareScrollView>
+            </KeyboardForm>
           </View>
         </View>
       </SafeAreaView>

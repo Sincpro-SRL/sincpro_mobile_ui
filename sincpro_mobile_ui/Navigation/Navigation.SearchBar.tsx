@@ -1,4 +1,7 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import SearchSuggestions, {
+  type SearchSuggestionsProps,
+} from "@sincpro/mobile-ui/Navigation/Navigation.SearchSuggestions";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -8,7 +11,7 @@ import {
 } from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useState } from "react";
-import { TextInput, View } from "react-native";
+import { Keyboard, TextInput, View } from "react-native";
 
 export interface SearchBarProps {
   value: string;
@@ -24,6 +27,7 @@ export interface SearchBarProps {
   accessibleSizing?: boolean;
   accessibilityLabel?: string;
   clearAccessibilityLabel?: string;
+  suggestions?: SearchSuggestionsProps;
 }
 
 /**
@@ -44,6 +48,7 @@ function SearchBar({
   accessibleSizing = false,
   accessibilityLabel,
   clearAccessibilityLabel = "Limpiar",
+  suggestions,
 }: SearchBarProps) {
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
@@ -141,7 +146,21 @@ function SearchBar({
     );
   }
 
-  return <View testID={testID}>{body}</View>;
+  return (
+    <View testID={testID}>
+      {body}
+      {focused && suggestions ? (
+        <SearchSuggestions
+          {...suggestions}
+          onSelect={(suggestion) => {
+            suggestions.onSelect(suggestion);
+            setFocused(false);
+            Keyboard.dismiss();
+          }}
+        />
+      ) : null}
+    </View>
+  );
 }
 
 export default SearchBar;

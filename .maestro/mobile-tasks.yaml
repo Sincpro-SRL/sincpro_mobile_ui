@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Mobile actions, native summary, staged filters and undo
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-mobile-tasks--records"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-actions--records"
 - assertVisible: "Registros"
 - tapOn: "Abrir resumen del registro"
 - assertVisible: "Resumen del registro"

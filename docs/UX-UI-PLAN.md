@@ -11,7 +11,7 @@ Fecha: 2026-11-06.
 - Copia con affordance, confirmación, fallo visible y reintento; `KeyValue copyable`.
 - Semántica de títulos y estados accesibles de acciones; sizing de 48 opt-in y texto ampliable.
 - Inputs con nombre accesible, anuncio de error y sizing opt-in.
-- Piloto en `Patterns/UX/Record detail`: lista, detalle, copiar, editar, cancelar y error recuperable.
+- Piloto en `Patterns/Records/Detail`: lista, detalle, copiar, editar, cancelar y error recuperable.
   Usa estado local de demostración, no simula persistencia real ni acceso a un servidor.
 - Jest Expo 58 + React Native Testing Library: 33 pruebas nativas, además de las 53 existentes.
 - Checkbox/Select con nombre y estado; navegación con jerarquía y sizing opt-in.
@@ -67,6 +67,26 @@ El [informe de auditoría](./UX-AUDIT.md) registra los patrones revisados y sus 
   con `accessibility-large`, alcanzando la acción de copia mediante scroll nativo.
 
 No se eliminan variantes legacy ni se cambian automáticamente apps consumidoras.
+
+### Quinto lote: taxonomía, teclado y consulta estructurada
+
+- Se eliminó el bucket `Patterns/UX`: estados regresan a su componente, recetas a
+  Forms/Records/Collections/Views/Profiles. Un test valida las cuatro raíces del catálogo.
+  Cambian IDs internos de stories, no exports de consumidores.
+- `KeyboardForm` y toolbar sobre la dependencia ya existente: scroll consciente del teclado,
+  navegación anterior/siguiente acotada al formulario y dismiss nombrado. Templates de
+  formulario/auth optan con `keyboardToolbar`. El canvas deja de duplicar scroll en
+  recetas con scroll propio; `Form.Input` reenvía refs para Return → siguiente.
+- Se revisó el builder web: árbol de condiciones y grupos, favoritos y prioridad de
+  orden/agrupado son capacidades distintas de los chips rápidos.
+- `FilterBuilder` y `CollectionOptions`: grupos all/any/none, campos/operadores configurados,
+  valores tipados/validados, fechas nativas, orden por varios campos, niveles de agrupación
+  y guardados por callback. Borrador, cancelar, aplicar y fallo/reintento explícitos.
+- Autocompletado controlado de SearchBar con loading/error/empty y elección por callback.
+- La receta aplica consultas a datos locales completos; el DS no ejecuta consultas ni
+  persiste favoritos. No hay aún exploración de relaciones/modelos remotos/editor JSON:
+  no se declara paridad total con web.
+
 Android runtime, VoiceOver/TalkBack y pruebas con usuarios no se pudieron verificar en esta
 ejecución: no había dispositivo/emulador Android configurado ni usuarios de prueba.
 

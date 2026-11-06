@@ -15,6 +15,7 @@ interface AuthFormProps {
   onBack?: () => void;
   FormNode: ReactNode;
   background?: AppBarBackground;
+  keyboardToolbar?: boolean;
 }
 
 function AuthFormView({
@@ -24,6 +25,7 @@ function AuthFormView({
   onBack,
   FormNode,
   background,
+  keyboardToolbar,
 }: AuthFormProps) {
   const renderTitle = () => {
     if (!title) return null;
@@ -43,6 +45,7 @@ function AuthFormView({
     <AuthContainer
       background={background}
       header={<Logo size="large" source={logoSource} />}
+      keyboardToolbar={keyboardToolbar}
       onBackPress={onBack}
     >
       <View className="m-4">

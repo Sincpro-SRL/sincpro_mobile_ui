@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Record list, copy, edit and cancel
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-ux-record-detail--list-to-detail"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-records-detail--list-to-detail"
 - assertVisible: "Registros"
 - tapOn: "Ver ORD-000123"
 - assertVisible: "Detalle del registro"

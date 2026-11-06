@@ -10,7 +10,7 @@ import { useState } from "react";
 import { View } from "react-native";
 
 const meta = {
-  title: "Patterns/UX/Grouped settings",
+  title: "Patterns/Forms/Settings",
   excludeStories: ["GroupedSettings"],
   parameters: { layout: "fullscreen" },
 } satisfies Meta;

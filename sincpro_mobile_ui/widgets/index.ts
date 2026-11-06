@@ -1,9 +1,29 @@
+export type {
+  CollectionField,
+  CollectionQuery,
+  CollectionSort,
+  CriteriaCondition,
+  CriteriaField,
+  CriteriaGroup,
+  CriteriaNode,
+  CriteriaOperator,
+  CriteriaValue,
+  SavedCollectionQuery,
+} from "@sincpro/mobile-ui/utils/criteria";
 export { CircleButton } from "@sincpro/mobile-ui/widgets/CircleButton";
+export {
+  default as CollectionOptions,
+  type CollectionOptionsProps,
+} from "@sincpro/mobile-ui/widgets/CollectionOptions";
 export {
   FilterBar,
   type FilterBarOption,
   type FilterBarProps,
 } from "@sincpro/mobile-ui/widgets/FilterBar";
+export {
+  default as FilterBuilder,
+  type FilterBuilderProps,
+} from "@sincpro/mobile-ui/widgets/FilterBuilder";
 export { default as GeoPermissionCard } from "@sincpro/mobile-ui/widgets/GeoPermissionCard";
 export { HomeHeader } from "@sincpro/mobile-ui/widgets/HomeHeader";
 export { MenuCard } from "@sincpro/mobile-ui/widgets/MenuCard";

@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 name: Mobile filter labels remain reachable in dark mode and enlarged text
 ---
 - stopApp
-- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-composition-mobile-collection--long-content"
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-collections-browsing--long-content"
 - tapOn:
     id: "storybook-theme-toggle"
 - assertVisible: "Activar tema claro"

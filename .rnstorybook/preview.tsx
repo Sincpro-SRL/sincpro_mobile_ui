@@ -8,7 +8,8 @@ import {
 import type { Preview } from "@storybook/react-native";
 import { vars } from "nativewind";
 import { type ReactNode, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const THEMES = {
   light: DEFAULT_THEME,
@@ -21,7 +22,15 @@ const NEXT_LABEL: Record<ThemeKey, string> = {
   dark: "☀ Light",
 };
 
-function ThemeFrame({ children, screen = false }: { children: ReactNode; screen?: boolean }) {
+function ThemeFrame({
+  children,
+  screen = false,
+  ownsScroll = false,
+}: {
+  children: ReactNode;
+  screen?: boolean;
+  ownsScroll?: boolean;
+}) {
   const [mode, setMode] = useState<ThemeKey>("light");
   const tokens = THEMES[mode];
 
@@ -63,19 +72,26 @@ function ThemeFrame({ children, screen = false }: { children: ReactNode; screen?
         end instead of overflowing off-screen. The theme `vars()` go on the ScrollView so
         they cascade to all story descendants.
       */}
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: screen ? "flex-start" : "center",
-          padding: 16,
-        }}
-        key={mode}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
-      >
-        {children}
-      </ScrollView>
+      {ownsScroll ? (
+        <View key={mode} style={[vars(themeToVars(tokens)), { flex: 1 }]}>
+          {children}
+        </View>
+      ) : (
+        <KeyboardAwareScrollView
+          bottomOffset={20}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: screen ? "flex-start" : "center",
+            padding: 16,
+          }}
+          key={mode}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
+        >
+          {children}
+        </KeyboardAwareScrollView>
+      )}
     </View>
   );
 }
@@ -83,7 +99,10 @@ function ThemeFrame({ children, screen = false }: { children: ReactNode; screen?
 const preview: Preview = {
   decorators: [
     (Story, context) => (
-      <ThemeFrame screen={context.parameters.layout === "fullscreen"}>
+      <ThemeFrame
+        ownsScroll={context.parameters.ownsScroll === true}
+        screen={context.parameters.layout === "fullscreen"}
+      >
         <ConfirmationProvider>
           <Story />
         </ConfirmationProvider>

@@ -33,6 +33,27 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+export const ActionHierarchy: Story = {
+  render: () => (
+    <View style={{ gap: 16 }}>
+      <Form.Button accessibleSizing title="Guardar cambios" />
+      <Form.Button accessibleSizing title="Cancelar edición" variant="secondary" />
+      <Form.Button accessibleSizing title="Ver historial" variant="link" />
+      <Form.Button accessibleSizing title="Eliminar registro" variant="outlineDanger" />
+    </View>
+  ),
+};
+
+export const BusyAndDisabled: Story = {
+  render: () => (
+    <View style={{ gap: 16 }}>
+      <Form.Button accessibleSizing loading title="Guardando cambios" />
+      <Form.Button accessibleSizing disabled title="Continuar" />
+      <Typography.Text>Completa los campos obligatorios para continuar.</Typography.Text>
+    </View>
+  ),
+};
+
 export const Playground: Story = {};
 
 export const AllVariants: Story = {

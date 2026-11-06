@@ -26,7 +26,7 @@ import {
   VariantFrame,
 } from "./views.helpers";
 
-const meta: Meta = { title: "Views/List" };
+const meta: Meta = { title: "Patterns/Views/List" };
 export default meta;
 type Story = StoryObj;
 

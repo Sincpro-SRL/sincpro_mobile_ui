@@ -19,7 +19,7 @@ import { useState } from "react";
 import { Keyboard, View } from "react-native";
 
 const meta = {
-  title: "Patterns/Composition/Mobile collection",
+  title: "Patterns/Collections/Browsing",
   excludeStories: ["CollectionRecipe"],
   parameters: { layout: "fullscreen" },
 } satisfies Meta;

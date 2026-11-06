@@ -1,5 +1,5 @@
 import { expect, jest, test } from "@jest/globals";
-import { RecordDetail } from "../../.rnstorybook/stories/UX.Detail.stories";
+import { RecordDetail } from "../../.rnstorybook/stories/Records.Detail.stories";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 jest.mock("@sincpro/mobile-ui/Dialog/Confirmation.context", () => ({

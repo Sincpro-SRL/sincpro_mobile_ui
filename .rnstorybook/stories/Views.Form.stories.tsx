@@ -32,7 +32,7 @@ import {
   VariantFrame,
 } from "./views.helpers";
 
-const meta: Meta = { title: "Views/Form" };
+const meta: Meta = { title: "Patterns/Views/Form" };
 export default meta;
 type Story = StoryObj;
 

@@ -76,14 +76,39 @@ o lectura; quitar un flag no certifica personalizaciones arbitrarias.
 Revisar padding de pantallas, barras y footers con las nuevas alturas; no reducir targets
 para evitar ajustar el layout. Probar contenido largo, pantalla estrecha y fuente al 200%.
 
-## 4. Lo que no cambia
+## 4. Feedback e interacción móvil
+
+- `DomainSplashScreen` ya no inventa progreso ni se oculta tras 2500 ms mientras la app
+  sigue cargando. El host debe cambiar `isLoading` a false; `minDuration` ahora se respeta.
+  El contenido sigue montado para conservar borradores. `onComplete` es una notificación
+  posterior, una vez por ciclo; no lo uses para finalizar el fetch. `renderLoading` y
+  estilos permiten cambiar el diseño sin rehacer ese ciclo.
+- Toast temporal incluye cierre visible por defecto. La opción `dismissible: false` lo elimina
+  explícitamente; un `render` custom sigue siendo responsable de sus acciones de cierre.
+  Slots admiten props/estilos nativos y siguen el tema/preferencia vivos.
+- `Sheet` RN y BottomSheet legacy notifican `onClose` inmediatamente, sin esperar el
+  timing decorativo. No encadenar limpieza de datos suponiendo un retraso de 200 ms.
+  Springs/transiciones de overlays respetan Reducir movimiento en vivo.
+- Carousel incluye controles anterior/siguiente por defecto, además de swipe.
+  `renderControls` permite reemplazarlos conservando la navegación; el renderer custom
+  debe proveer nombres, disabled y una alternativa a gestos. `index` controlado requiere
+  `onIndexChange`; los swipes rechazados restauran la posición aceptada.
+  Keys deben ser strings únicos no vacíos y `itemWidth`/`gap` valores finitos válidos.
+  Usar esos props para geometría; `itemStyle` no sustituye el ancho/gap de snap.
+- Dropdown soporta Back/Escape, opciones scrollables, contenido custom y props nativas.
+  Pulsar una opción disabled o el cuerpo de Confirmation no debe activar el backdrop.
+- Nuevo `Form.ErrorSummary`: conecta `onSelectError(id)` al ref nativo `.focus()`, reutiliza
+  los mensajes inline y conserva los valores controlados. Sus slots cambian contenido,
+  no el comportamiento de foco/selección.
+
+## 5. Lo que no cambia
 
 ListView continúa con FlatList y conserva sus APIs de virtualización, selección y
 paginación. Una autorización para breaking changes no demuestra que FlashList sea más
 rápido en las apps; se mantiene como evaluación condicionada a benchmarks release.
 No se incorpora router, red, caché de negocio ni persistencia a los componentes.
 
-## 5. Validación antes de adoptar
+## 6. Validación antes de adoptar
 
 Tipos/build/tests y bundling cubren cableado y contratos. En cada host: validar carga/
 fallo/retry/cambio de fuente, imágenes animadas bajo Reducir movimiento, targets efectivos,

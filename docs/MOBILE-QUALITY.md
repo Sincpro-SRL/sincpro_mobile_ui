@@ -21,6 +21,7 @@ La guía para apps consumidoras es [MIGRATION-V2](./MIGRATION-V2.md).
 | [Apple Design Awards 2025](https://www.apple.com/newsroom/2025/06/apple-unveils-winners-and-finalists-of-the-2025-apple-design-awards/) | Speechify y Art of Fauna premiados en Inclusivity                                   | Accesibilidad como parte de la tarea, no solo roles aislados                         |
 | [Expo Haptics](https://docs.expo.dev/versions/latest/sdk/haptics/)                                                                      | Feedback de selección/resultado, sujeto a disponibilidad del sistema                | Refuerzo opcional; nunca sustituir señal visual/VoiceOver ni vibrar cada interacción |
 | [React Native AccessibilityInfo](https://reactnative.dev/docs/accessibilityinfo)                                                        | Preferencias del sistema y eventos de cambio                                        | Reutilizar useReducedMotion para transiciones/playback, no solo spinners             |
+| [GOV.UK Error summary](https://design-system.service.gov.uk/components/error-summary/)                                                  | Resumen ordenado, mensajes inline iguales y retorno al campo                        | Adaptar con refs nativos `.focus()` y KeyboardForm, conservando borradores           |
 
 Expo Image es first-party, pero **no se asume instalado por usar Expo**: el host debe
 instalarlo. Es un peer requerido y devDependency de este repo para build/stories.
@@ -40,6 +41,29 @@ apps. Ese resultado necesita medición en release y dispositivos reales.
    conservando fuentes/paleta configurables y estados disabled accesibles.
 5. **Testing e iteración:** comprobar contratos reales, corregir fallos encontrados,
    validar tipos/stories/build y gate; separar mocks de validación nativa pendiente.
+
+## Segunda iteración: APIs abiertas con comportamiento compartido
+
+1. **Movimiento vivo:** un store compartido sustituye queries/listeners por hook. Una prueba
+   con 100 consumidores exige exactamente una consulta y una suscripción nativa. Eventos
+   nuevos ganan a consultas tardías; un árbol desmontado no modifica un nuevo ciclo.
+   Sheets reutilizan un helper de animación/cancelación. Modals RN, toast, accordion,
+   dropdown, dock y overlays relacionados respetan cambios en vivo.
+2. **Carga honesta:** DomainSplashScreen solo termina con `isLoading=false`, respeta
+   `minDuration`, conserva hijos/borradores y limpia callbacks/timers/animación.
+3. **Navegación sin gestos obligatorios:** Carousel añade controles/estado controlado,
+   labels y slots. Las pruebas cubren rechazo repetido de swipes, geometría al reducir
+   datos y espacio final medido para cards menores que el viewport.
+4. **Recuperación de formulario:** ErrorSummary adapta el patrón GOV.UK con refs nativos,
+   selección ordenada, anuncio oportuno y drafts conservados dentro de KeyboardForm.
+5. **Customización sin forks de lógica:** slots de header/error/loading/controls, estilos y
+   props nativas. La app conserva tipografía y contenido; callbacks, ciclo, selección y
+   validación viven fuera de los renderers. Controles completamente custom mantienen sus
+   responsabilidades de nombres, disabled y accesibilidad.
+
+También se corrigió el backdrop ancestro de Dropdown/Confirmation: taps interiores,
+especialmente en opciones disabled, no deben provocar un cierre exterior accidental.
+No se añadió ningún peer ni se cambió el motor de listas.
 
 ## Contrato de listas
 
@@ -73,10 +97,9 @@ al fontScale. Es un fixture de validación, no evidencia de fluidez ni datos de 
 | --------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P1        | Perfilado en apps release                  | 1000/5000 registros reales, memoria pico/estable, frames JS/UI y arranque; mismo dispositivo/dataset/cache antes/después                              |
 | P1        | TalkBack/VoiceOver + lectura al 200%       | Abrir, seleccionar, cargar, fallar, reintentar y cancelar sin gestos obligatorios ni truncar información esencial                                     |
-| P1        | Movimiento en overlays, toast y carousel   | Inventario completo y preferencia viva; distinguir gestos esenciales de animación decorativa                                                          |
+| P1        | Auditoría de movimiento restante           | Validar motor nativo opcional y renderers propios; rutas RN/toast/carousel implementadas, sin afirmar cobertura exhaustiva                            |
 | P2        | FlashList opcional                         | Adoptar solo si mediciones muestran cuello de botella que FlatList configurable no resuelve; contrato de reciclado y alternativa accesible            |
 | P2        | Multi-selección recuperable                | Estado controlado, seleccionar/limpiar visibles, resumen, conservar selección tras error; primero receta, componente solo si varias apps lo necesitan |
-| P2        | Resumen de errores de formulario           | Lista enlazada al foco real, orden de campos y anuncio sin perder borrador; reutilizar KeyboardForm                                                   |
 | P2        | Política háptica                           | Opt-in y señal redundante; probar sin motor disponible y errores, sin nuevas vibraciones por defecto                                                  |
 | P2        | Regression visual y contratos de extensión | Light/dark, texto largo, narrow y fonts locales en superficies prioritarias                                                                           |
 | P3        | Nuevas piezas por tendencia                | No agregar sin tarea concreta ni duplicar búsqueda, sheets, filtros o builders existentes                                                             |
@@ -102,3 +125,22 @@ de adoptar masivamente. No se declara ningún porcentaje de mejora de velocidad.
 Para adoptar ExpoImage en un development build existente, instalar `expo-image` y
 recompilar el binario nativo. El componente no instala módulos en runtime ni hace fallback
 silencioso si falta el peer.
+
+### Resultado de la segunda iteración
+
+- Gate completo: **67 pruebas de lógica + 255 de componentes = 322**, sin fallos.
+  Lint/formato, tipos de source/build/tests/stories, doctor y compatibilidad Expo pasan.
+- Build/dry-run de paquete: JS y tipos nuevos incluidos; **466 entradas**.
+- Exports finales **Android e iOS con Hermes** pasan en Expo **58.0.23** / RN **0.88.1**.
+- **3/3 flows Maestro pasan en Expo Go 58.0.7**, en un simulador iOS 26 dedicado:
+  resumen devuelve foco al input real con teclado y conserva drafts; controles default/
+  custom alcanzan la última card; carga real oculta campos, conserva borrador entre ciclos
+  y admite renderer custom. Flows persistidos en `.maestro/`.
+- El ciclo nativo detectó problemas que los mocks no ven: íconos de otra familia,
+  contenido de gradient sin altura y un scope modal global que ocultaba controles ajenos
+  a una carga local. Se corrigieron y se repitieron las pruebas, sin debilitar assertions.
+
+Esto comprueba interacciones reales en iOS, no ejecución nativa Android, VoiceOver/TalkBack,
+fuente al 200%, caché/decodificación real de imágenes ni FPS/memoria/arranque en release.
+Esos criterios siguen pendientes antes de certificar hosts. No se publica ningún porcentaje
+de mejora de rendimiento; la reducción de consultas/listeners sí tiene una assertion exacta.

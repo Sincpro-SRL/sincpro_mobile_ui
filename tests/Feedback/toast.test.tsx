@@ -1,12 +1,13 @@
-import { expect, jest, test } from "@jest/globals";
+import { afterEach, beforeEach, expect, jest, test } from "@jest/globals";
 import { Toast, ToastProvider, useToast } from "@sincpro/mobile-ui/Feedback/Toast.context";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { type ReactNode, useRef } from "react";
-import { Button } from "react-native";
+import { AccessibilityInfo, Button, StyleSheet, Text } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 jest.mock("react-native-reanimated", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  const { useRef } = jest.requireActual<typeof import("react")>("react");
   const transition = { duration: () => ({}) };
 
   return {
@@ -16,9 +17,28 @@ jest.mock("react-native-reanimated", () => {
     FadeInUp: transition,
     FadeOutDown: transition,
     FadeOutUp: transition,
+    Easing: { quad: "quad", in: () => "in", out: () => "out" },
+    useSharedValue: (value: number) => useRef({ value }).current,
+    useAnimatedStyle: (getStyle: () => object) => getStyle(),
+    withTiming: (value: number) => value,
+    withSequence: (...values: number[]) => values[values.length - 1],
+    withRepeat: (value: number) => value,
+    cancelAnimation: jest.fn(),
   };
 });
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
+
+let changeMotion: (enabled: boolean) => void;
+beforeEach(() => {
+  jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(false);
+  jest.spyOn(AccessibilityInfo, "addEventListener").mockImplementation((_event, listener) => {
+    changeMotion = listener;
+    return { remove: jest.fn() };
+  });
+});
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 interface PanGestureEndEvent {
   canceled: boolean;
@@ -172,4 +192,60 @@ test("swiping the toast up or down dismisses it", async () => {
     }),
   );
   expect(screen.queryByText("Desliza para cerrar")).toBeNull();
+});
+
+test("toast transitions follow live reduced motion and root native customization", async () => {
+  await render(
+    <Toast.Root onAccessibilityEscape={jest.fn()} style={{ borderRadius: 30 }} testID="toast">
+      <Text>Guardado</Text>
+    </Toast.Root>,
+  );
+  expect(screen.getByTestId("toast").props.entering).toBeDefined();
+  await act(() => changeMotion(true));
+  expect(screen.getByTestId("toast").props.entering).toBeUndefined();
+  expect(screen.getByTestId("toast").props.exiting).toBeUndefined();
+  expect(StyleSheet.flatten(screen.getByTestId("toast").props.style).borderRadius).toBe(30);
+});
+
+test("auto-dismissing toasts have a visible close alternative by default", async () => {
+  await renderWithToastProvider(<ToastSwipeControls />);
+  await fireEvent.press(screen.getByRole("button", { name: "Mostrar swipe" }));
+  const close = screen.getByRole("button", { name: "Cerrar" });
+  expect(StyleSheet.flatten(close.props.style)).toMatchObject({
+    minWidth: 48,
+    minHeight: 48,
+  });
+  await fireEvent.press(close);
+  expect(screen.queryByText("Desliza para cerrar")).toBeNull();
+});
+
+test("native accessibility Escape dismisses a default toast", async () => {
+  await renderWithToastProvider(<ToastSwipeControls />);
+  await fireEvent.press(screen.getByRole("button", { name: "Mostrar swipe" }));
+  const surface = screen.container
+    .queryAll((node) => node.props.accessibilityRole === "alert")
+    .at(-1);
+  if (!surface) throw new Error("Expected the native toast alert surface.");
+  await fireEvent(surface, "accessibilityEscape");
+  expect(screen.queryByText("Desliza para cerrar")).toBeNull();
+});
+
+test("custom action geometry and native disabled state preserve the interaction contract", async () => {
+  const onPress = jest.fn();
+  const { rerender } = await render(
+    <Toast.Action disabled label="Deshacer" onPress={onPress} style={{ borderRadius: 18 }} />,
+  );
+  await fireEvent.press(screen.getByRole("button", { name: "Deshacer" }));
+  expect(onPress).not.toHaveBeenCalled();
+  await rerender(
+    <Toast.Action label="Deshacer" onPress={onPress} style={{ borderRadius: 18 }} />,
+  );
+  const action = screen.getByRole("button", { name: "Deshacer" });
+  expect(StyleSheet.flatten(action.props.style)).toMatchObject({
+    minHeight: 48,
+    minWidth: 48,
+    borderRadius: 18,
+  });
+  await fireEvent.press(action);
+  expect(onPress).toHaveBeenCalledTimes(1);
 });

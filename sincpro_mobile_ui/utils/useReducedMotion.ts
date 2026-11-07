@@ -1,35 +1,53 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { AccessibilityInfo } from "react-native";
 
-export function useReducedMotion(): boolean {
-  const [reducedMotion, setReducedMotion] = useState(true);
+const listeners = new Set<() => void>();
+let reducedMotion = true;
+let generation = 0;
+let subscription: ReturnType<typeof AccessibilityInfo.addEventListener> | undefined;
 
-  useEffect(() => {
-    let active = true;
+function publish(enabled: boolean) {
+  if (reducedMotion === enabled) return;
+  reducedMotion = enabled;
+  for (const listener of [...listeners]) listener();
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  if (listeners.size === 1) {
+    const request = ++generation;
     let receivedChange = false;
-    const subscription = AccessibilityInfo.addEventListener(
-      "reduceMotionChanged",
-      (enabled) => {
-        receivedChange = true;
-        setReducedMotion(enabled);
-      },
-    );
+    subscription = AccessibilityInfo.addEventListener("reduceMotionChanged", (enabled) => {
+      receivedChange = true;
+      publish(enabled);
+    });
 
     AccessibilityInfo.isReduceMotionEnabled().then(
       (enabled) => {
-        if (active && !receivedChange) setReducedMotion(enabled);
+        if (request === generation && !receivedChange) publish(enabled);
       },
       (error) => {
-        if (active)
+        if (request === generation)
           console.warn("[useReducedMotion] Could not read accessibility preference", error);
       },
     );
+  }
 
-    return () => {
-      active = false;
-      subscription.remove();
-    };
-  }, []);
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) {
+      generation += 1;
+      subscription?.remove();
+      subscription = undefined;
+      reducedMotion = true;
+    }
+  };
+}
 
-  return reducedMotion;
+export function useReducedMotion(): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    () => reducedMotion,
+    () => true,
+  );
 }

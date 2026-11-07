@@ -1,0 +1,22 @@
+appId: host.exp.Exponent
+name: Default and custom carousel controls reach the last narrow card
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=components-data-display--carousel"
+- assertVisible: "Elemento 1 de 3"
+- tapOn: "Elemento siguiente"
+- assertVisible: "Elemento 2 de 3"
+- tapOn: "Elemento siguiente"
+- assertVisible: "Elemento 3 de 3"
+- tapOn: "Elemento anterior"
+- assertVisible: "Elemento 2 de 3"
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=components-data-display--carousel-customized"
+- assertVisible: "Oferta 1/3"
+- tapOn: "Oferta siguiente"
+- assertVisible: "Oferta 2/3"
+- tapOn: "Oferta siguiente"
+- assertVisible: "Oferta 3/3"
+- takeScreenshot: carousel-custom-last-card
+- tapOn: "Volver al inicio"
+- assertVisible: "Oferta 1/3"

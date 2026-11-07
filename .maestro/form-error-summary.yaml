@@ -1,0 +1,19 @@
+appId: host.exp.Exponent
+name: Error summary focuses real fields without losing drafts
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-forms-validation--preset-errors"
+- assertVisible: "Nombre completo: Escribe un nombre.*"
+- tapOn: "Nombre completo: Escribe un nombre.*"
+- assertVisible: "Campo siguiente"
+- inputText: "a"
+- assertVisible: "Ana"
+- tapOn: "Correo electrónico: Escribe un correo.*"
+- inputText: "@example.test"
+- assertVisible: "ana@example.test"
+- tapOn: "Ocultar teclado"
+- tapOn: "Enviar borrador"
+- assertNotVisible: "Revisa los siguientes errores"
+- assertVisible: "Ana"
+- assertVisible: "ana@example.test"
+- takeScreenshot: error-summary-drafts-preserved

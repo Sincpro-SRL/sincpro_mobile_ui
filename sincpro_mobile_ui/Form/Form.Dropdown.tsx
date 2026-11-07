@@ -1,8 +1,19 @@
-import { Display } from "@sincpro/mobile-ui/Display";
-import { theme } from "@sincpro/mobile-ui/theme";
+import IconButton from "@sincpro/mobile-ui/Actions/Actions.IconButton";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { useTheme } from "@sincpro/mobile-ui/theme";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useState } from "react";
-import { Modal, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
+import { type ComponentProps, type ReactNode, useState } from "react";
+import {
+  Modal,
+  ScrollView,
+  TouchableOpacity,
+  type TouchableOpacityProps,
+  TouchableWithoutFeedback,
+  View,
+  type ViewProps,
+} from "react-native";
 import { tv } from "tailwind-variants";
 
 const dropdown = tv({
@@ -60,11 +71,20 @@ export interface DropdownOption {
   disabled?: boolean;
 }
 
-interface DropdownButtonProps {
+export interface DropdownButtonProps {
   title: string;
-  options: DropdownOption[];
+  options: readonly DropdownOption[];
   variant?: "primary" | "secondary" | "outline";
   size?: "xs" | "small" | "medium" | "large";
+  disabled?: boolean;
+  closeAccessibilityLabel?: string;
+  buttonProps?: Omit<TouchableOpacityProps, "children" | "onPress" | "disabled">;
+  contentProps?: Omit<ViewProps, "children">;
+  optionProps?: Omit<TouchableOpacityProps, "children" | "onPress" | "disabled">;
+  titleTextProps?: ComponentProps<typeof Typography.Text>;
+  optionTextProps?: ComponentProps<typeof Typography.Text>;
+  renderOption?: (option: DropdownOption) => ReactNode;
+  testID?: string;
 }
 
 function DropdownButton({
@@ -72,7 +92,18 @@ function DropdownButton({
   options,
   variant = "secondary",
   size = "small",
+  disabled = false,
+  closeAccessibilityLabel = "Cerrar opciones",
+  buttonProps,
+  contentProps,
+  optionProps,
+  titleTextProps,
+  optionTextProps,
+  renderOption,
+  testID,
 }: DropdownButtonProps) {
+  const theme = useTheme();
+  const reducedMotion = useReducedMotion();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOptionPress = (option: DropdownOption) => {
@@ -106,67 +137,113 @@ function DropdownButton({
   return (
     <>
       <TouchableOpacity
+        {...buttonProps}
+        accessibilityLabel={buttonProps?.accessibilityLabel ?? title}
+        accessibilityRole="button"
+        accessibilityState={{
+          ...buttonProps?.accessibilityState,
+          disabled,
+          expanded: isOpen,
+        }}
         activeOpacity={0.7}
-        className={styles.button()}
+        className={cn(styles.button(), buttonProps?.className)}
+        disabled={disabled}
         onPress={() => setIsOpen(true)}
+        style={[{ minHeight: 48, minWidth: 48 }, buttonProps?.style]}
+        testID={testID}
       >
         <Typography.Text className={textColorClass} variant={textVariant}>
           {title}
         </Typography.Text>
-        <Display.Icon color={iconColor} name="chevron-down" size={16} type="feather" />
+        <Icon color={iconColor} name="chevron-down" size={16} type="feather" />
       </TouchableOpacity>
 
       <Modal
-        animationType="fade"
+        animationType={reducedMotion ? "none" : "fade"}
+        onRequestClose={() => setIsOpen(false)}
         presentationStyle="overFullScreen"
         transparent
         visible={isOpen}
       >
-        <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
-          <View className={styles.overlay()}>
-            <TouchableWithoutFeedback>
-              <View
-                className={styles.dropdownContainer()}
-                style={{
-                  backgroundColor: theme.bg.popover,
-                  ...theme.shadow.lg,
-                }}
+        <View className={styles.overlay()}>
+          <TouchableWithoutFeedback accessible={false} onPress={() => setIsOpen(false)}>
+            <View className="absolute inset-0" />
+          </TouchableWithoutFeedback>
+          <View
+            {...contentProps}
+            accessibilityViewIsModal
+            className={cn(styles.dropdownContainer(), contentProps?.className)}
+            onAccessibilityEscape={() => setIsOpen(false)}
+            style={[
+              {
+                backgroundColor: theme.bg.popover,
+                ...theme.shadow.lg,
+              },
+              contentProps?.style,
+            ]}
+          >
+            <View className={styles.header()}>
+              <Typography.Text
+                {...titleTextProps}
+                accessibilityRole="header"
+                className={cn("text-text-primary", titleTextProps?.className)}
+                semibold={titleTextProps?.semibold ?? true}
+                variant={titleTextProps?.variant ?? "bodyLarge"}
               >
-                <View className={styles.header()}>
-                  <Typography.Text className="text-text-primary" semibold variant="bodyLarge">
-                    {title}
-                  </Typography.Text>
-                  <TouchableOpacity onPress={() => setIsOpen(false)}>
-                    <Display.Icon name="x" size={20} type="feather" />
-                  </TouchableOpacity>
-                </View>
+                {title}
+              </Typography.Text>
+              <IconButton
+                accessibilityLabel={closeAccessibilityLabel}
+                icon="close"
+                onPress={() => setIsOpen(false)}
+              />
+            </View>
 
-                <View className={styles.optionsList()}>
-                  {options.map((option, index) => (
-                    <View key={option.id}>
-                      <TouchableOpacity
-                        activeOpacity={0.7}
-                        className={dropdown({ disabled: option.disabled }).option()}
-                        disabled={option.disabled}
-                        onPress={() => handleOptionPress(option)}
+            <ScrollView
+              contentContainerClassName={styles.optionsList()}
+              keyboardShouldPersistTaps="handled"
+              style={{ flexShrink: 1 }}
+            >
+              {options.map((option, index) => (
+                <View key={option.id}>
+                  <TouchableOpacity
+                    {...optionProps}
+                    accessibilityLabel={option.title}
+                    accessibilityRole="button"
+                    accessibilityState={{
+                      ...optionProps?.accessibilityState,
+                      disabled: option.disabled,
+                    }}
+                    activeOpacity={0.7}
+                    className={cn(
+                      dropdown({ disabled: option.disabled }).option(),
+                      optionProps?.className,
+                    )}
+                    disabled={option.disabled}
+                    onPress={() => handleOptionPress(option)}
+                    style={[{ minHeight: 48, minWidth: 48 }, optionProps?.style]}
+                  >
+                    {renderOption ? (
+                      renderOption(option)
+                    ) : (
+                      <Typography.Text
+                        {...optionTextProps}
+                        className={cn(
+                          option.disabled ? "text-text-disabled" : "text-text-primary",
+                          optionTextProps?.className,
+                        )}
+                        variant={optionTextProps?.variant ?? "body"}
                       >
-                        <Typography.Text
-                          className={
-                            option.disabled ? "text-text-disabled" : "text-text-primary"
-                          }
-                          variant="body"
-                        >
-                          {option.title}
-                        </Typography.Text>
-                      </TouchableOpacity>
-                      {index < options.length - 1 && <View className={styles.separator()} />}
-                    </View>
-                  ))}
+                        {option.title}
+                      </Typography.Text>
+                    )}
+                  </TouchableOpacity>
+                  {index < options.length - 1 && <View className={styles.separator()} />}
                 </View>
-              </View>
-            </TouchableWithoutFeedback>
+              ))}
+            </ScrollView>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </Modal>
     </>
   );

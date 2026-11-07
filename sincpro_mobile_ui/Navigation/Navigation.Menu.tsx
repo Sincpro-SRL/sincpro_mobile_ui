@@ -3,6 +3,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { cloneElement, type ReactElement, type ReactNode, useRef, useState } from "react";
 import {
   Dimensions,
@@ -42,6 +43,7 @@ interface Anchor {
 
 function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
   const theme = useTheme();
+  const reducedMotion = useReducedMotion();
   const triggerRef = useRef<ViewInstance>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
@@ -67,13 +69,19 @@ function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
           accessibilityLabel="Más opciones"
           accessibilityRole="button"
           onPress={open}
+          style={{
+            minWidth: 48,
+            minHeight: 48,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Icon color={theme.icon.secondary} name="ellipsis-vertical" size={22} />
         </Pressable>
       )}
 
       <Modal
-        animationType="fade"
+        animationType={reducedMotion ? "none" : "fade"}
         onRequestClose={close}
         presentationStyle="overFullScreen"
         transparent
@@ -81,7 +89,9 @@ function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
       >
         <RNPressable onPress={close} style={{ flex: 1 }}>
           <View
+            accessibilityViewIsModal
             className="rounded-lg py-1"
+            onAccessibilityEscape={close}
             style={{
               position: "absolute",
               top,
@@ -100,6 +110,7 @@ function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
               const item = entry as MenuItem;
               return (
                 <Pressable
+                  accessibilityLabel={item.label}
                   accessibilityRole="menuitem"
                   accessibilityState={{ disabled: item.disabled }}
                   className="flex-row items-center gap-3 px-4 py-3"
@@ -109,6 +120,7 @@ function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
                     close();
                     item.onPress();
                   }}
+                  style={{ minHeight: 48 }}
                 >
                   {item.icon ? (
                     <Icon

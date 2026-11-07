@@ -4,6 +4,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { Modal, Pressable as RNPressable, View } from "react-native";
@@ -53,6 +54,7 @@ function StoryViewer({
   testID,
 }: StoryViewerProps) {
   const insets = useSafeAreaInsets();
+  const reducedMotion = useReducedMotion();
   const current = slides[index];
 
   const goPrev = () => {
@@ -67,7 +69,7 @@ function StoryViewer({
 
   return (
     <Modal
-      animationType="fade"
+      animationType={reducedMotion ? "none" : "fade"}
       onRequestClose={onClose}
       statusBarTranslucent
       transparent={false}

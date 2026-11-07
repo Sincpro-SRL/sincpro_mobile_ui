@@ -8,7 +8,7 @@ import { DEFAULT_DARK_THEME, DEFAULT_THEME, setActiveTheme } from "@sincpro/mobi
 import { normalizeProgress } from "@sincpro/mobile-ui/utils/progress";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { act, render, renderHook, screen } from "@testing-library/react-native";
-import { AccessibilityInfo, Animated, StyleSheet } from "react-native";
+import { AccessibilityInfo, Animated, StyleSheet, Text } from "react-native";
 import { cancelAnimation, withRepeat } from "react-native-reanimated";
 import type { TestInstance } from "test-renderer";
 
@@ -54,6 +54,11 @@ function nativeIndicators() {
   return screen.container.queryAll(
     (node) => node.props.color !== undefined && node.props.size !== undefined,
   );
+}
+
+function MotionReader() {
+  const reduced = useReducedMotion();
+  return <Text>{reduced ? "reduced" : "animated"}</Text>;
 }
 
 beforeEach(() => {
@@ -146,6 +151,44 @@ test("skeleton stops its pulse live and stays hidden from screen readers", async
   expect(startLoop).toHaveBeenCalledTimes(2);
   await unmount();
   expect(stopLoop).toHaveBeenCalledTimes(2);
+});
+
+test("100 consumers share one native query and one live subscription", async () => {
+  const { unmount } = await render(
+    <>
+      {Array.from({ length: 100 }, (_, index) => (
+        <MotionReader key={index} />
+      ))}
+    </>,
+  );
+  expect(AccessibilityInfo.isReduceMotionEnabled).toHaveBeenCalledTimes(1);
+  expect(
+    jest
+      .mocked(AccessibilityInfo.addEventListener)
+      .mock.calls.filter(([event]) => event === "reduceMotionChanged"),
+  ).toHaveLength(1);
+  await act(() => changeMotion(true));
+  expect(screen.getAllByText("reduced")).toHaveLength(100);
+  await unmount();
+  expect(removeListener).toHaveBeenCalledTimes(1);
+});
+
+test("a new subscription cannot receive a pending result from the last mounted tree", async () => {
+  let resolveOld!: (enabled: boolean) => void;
+  jest
+    .mocked(AccessibilityInfo.isReduceMotionEnabled)
+    .mockReturnValueOnce(
+      new Promise<boolean>((resolve) => {
+        resolveOld = resolve;
+      }),
+    )
+    .mockResolvedValue(true);
+  const first = await renderHook(useReducedMotion);
+  await first.unmount();
+  const next = await renderHook(useReducedMotion);
+  await act(() => resolveOld(false));
+  expect(next.result.current).toBe(true);
+  expect(AccessibilityInfo.isReduceMotionEnabled).toHaveBeenCalledTimes(2);
 });
 
 test("explicit animation opt-out remains static even when system motion is enabled", async () => {

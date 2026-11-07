@@ -74,6 +74,11 @@ No se añadió ningún peer ni se cambió el motor de listas.
 No permite reemplazar data/renderItem/keys/refresh por accidente.
 `listRef` permite scroll imperativo; `contentContainerStyle` permite personalizar contenido.
 
+- Los renderers de `Content` y los callbacks de Root reciben el item original, sin clonarlo
+  ni agregarle campos. Esto preserva getters, campos privados `#` y objetos congelados.
+  El segundo argumento del renderer contiene `{ item, id, index, rowTitle, rowSubtitle,
+readonly }`; `toRowItem` / `toRowItems` devuelven esos wrappers, no entidades extendidas.
+  Para metadatos usar `(item, row) => ...`, no `item.index` ni `item.rowTitle`.
 - Defaults de virtualización de RN preservados; threshold sigue siendo 0.5.
 - `getItemLayout` solo cuando altura y separadores son realmente conocidos. Revisar
   font scaling; una estimación incorrecta causa errores de scroll, no una optimización.
@@ -88,10 +93,68 @@ No permite reemplazar data/renderItem/keys/refresh por accidente.
 - El padding de safe-area existente se conserva por defecto. Si se sobrescribe
   paddingBottom, el host debe reservar el espacio requerido.
 
+`ListViewV2.Header` y `FormViewV2.Header` reservan el inset superior por defecto.
+Usar `safeArea={false}` cuando una cabecera nativa o un contenedor padre ya lo reserva.
+El `HomeHeader` legacy sigue el mismo contrato y conserva sus 40px de padding interno
+dentro del degradado, además del inset superior.
+`AuthContainer` usa el degradado `brand` por defecto (un `background` explícito lo
+sobrescribe): su encabezado ocupa 30% del espacio disponible después del safe-area y
+la tarjeta flexible recibe el resto, sin un `minHeight` basado en toda la ventana.
+
+### Barra de estado y edge-to-edge
+
+`Container` reserva los cuatro bordes por defecto y elige iconos blancos o negros
+según `theme.bg.page`; `ScrollContainer` usa `theme.bg.card`. Cambiar el tema actualiza
+los iconos sin remontar. No se fija un estilo blanco/oscuro independientemente del fondo.
+
+Una cabecera que reserva su propio inset (`AppBar`, `CollapsingHeader`, `HomeHeader`)
+controla también la barra de estado. `AuthContainer` / `AuthFormView` usan el color
+inicial del degradado, resuelto desde el mismo preset que dibuja el fondo.
+`ListViewV2.Header` y `FormViewV2.Header` propagan `barStyle` a AppBar.
+
+Cuando la cabecera dibuja detrás de la barra, usar `Container edges={["bottom", "left",
+"right"]}`: el contenedor no añade una franja superior ni monta otro StatusBar. Si el
+padre ya reserva el borde, usar `safeArea={false}` en la cabecera embebida.
+No se cambia el default de bordes de Container porque también sirve a pantallas sin header.
+
+`barStyle` explícito conserva precedencia, también sin inset superior.
+`statusBarHidden` conserva el control explícito de visibilidad de Container.
+Para fondos personalizados por `className` / `style`, degradados diagonales o varios
+colores con distinto contraste en el borde superior, indicar `barStyle` apropiado:
+la selección automática no puede resolver un CSS arbitrario ni garantizar contraste
+en cada píxel de un degradado. El host sigue siendo responsable del foco de las rutas
+que mantienen pantallas montadas y de la configuración de barras de su navegador.
+No se usan `backgroundColor` ni `translucent` de StatusBar, ignorados bajo edge-to-edge.
+
 La story Large List usa 2000 registros locales, selección externa y altura exacta ajustada
 al fontScale. Es un fixture de validación, no evidencia de fluidez ni datos de producción.
 
 ## Qué falta para un buen sistema móvil
+
+### Stack de estilos y APIs obsoletas
+
+El DS usa `Display.ExpoImage` sobre `expo-image`; no importa ni accede a
+`ReactNative.ImageBackground`. El contrato de imágenes verifica ambas restricciones.
+Para fondos con imágenes, componer un `View` con una imagen de Expo posicionada
+absolutamente, no reintroducir el componente nativo deprecado.
+
+NativeWind **4.2.7** y `react-native-css-interop` **0.2.7** son las versiones estables
+actuales. Su registro automático de `ImageBackground` accede al getter de React Native
+0.88 y genera una advertencia al importar el runtime, aunque no se renderice ese
+componente. `LogBox.ignoreLogs` solo filtra LogBox: no elimina la causa ni garantiza
+que el mensaje desaparezca de Metro. No atribuir esa advertencia a un uso del DS ni
+considerar su ocultación una corrección.
+
+NativeWind **5.0.0-rc.1** sigue siendo una RC y requiere `react-native-css`
+**3.1.0-rc.1** y Tailwind 4. Migrar exige revisar Metro/Babel, CSS/tokens y reemplazar
+`cssInterop` por la API nueva; no es un bump aislado. La documentación del RC describe
+un target probado en Expo 57, no una certificación completa del SDK 58.
+Ver [estado de v5](https://www.nativewind.dev/v5) y
+[migración desde v4](https://www.nativewind.dev/v5/guides/migrate-from-v4).
+
+Las exportaciones legacy se conservan por compatibilidad; no son la API recomendada
+para consumidores nuevos. Usar `Navigation.AppBar` y `Display.MenuGrid` en lugar de
+`widgets/HomeHeader` y `widgets/MenuGrid`.
 
 | Prioridad | Próximo trabajo                            | Criterio para aceptarlo                                                                                                                               |
 | --------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |

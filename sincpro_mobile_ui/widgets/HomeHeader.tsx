@@ -1,9 +1,11 @@
 import { Display, Typography } from "@sincpro/mobile-ui/index";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
-import { theme } from "@sincpro/mobile-ui/theme";
+import ScreenStatusBar from "@sincpro/mobile-ui/layouts/ScreenStatusBar";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import React, { ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface HomeHeaderProps {
   readonly title?: string;
@@ -11,6 +13,8 @@ interface HomeHeaderProps {
   readonly logoSource?: ImageSource;
   readonly backButton?: boolean;
   readonly onBack?: () => void;
+  readonly safeArea?: boolean;
+  readonly barStyle?: "light-content" | "dark-content";
 }
 
 /**
@@ -23,11 +27,21 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
   logoSource,
   backButton = false,
   onBack,
+  safeArea = true,
+  barStyle,
 }) => {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const handleBackPress = onBack ?? (() => {});
 
   return (
-    <GradientContainer className="pt-10 pb-4 px-4">
+    <GradientContainer
+      className="pb-4 px-4"
+      style={{ paddingTop: 40 + (safeArea ? insets.top : 0) }}
+    >
+      {safeArea || barStyle !== undefined ? (
+        <ScreenStatusBar backgroundColor={theme.gradient.primary[0]} barStyle={barStyle} />
+      ) : null}
       <View className="relative items-center justify-center">
         {backButton && (
           <TouchableOpacity

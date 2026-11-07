@@ -143,6 +143,9 @@ function ListViewRoot<T>({
 }
 
 interface HeaderProps {
+  /** Reserve the top inset; disable when the host already handles it. */
+  safeArea?: boolean;
+  barStyle?: "light-content" | "dark-content";
   /** AppBar display variant. `large` = big title (list/index). `center` = modal/detail. */
   variant?: "default" | "large" | "center";
   /** Surface tone. `dark` = always-dark hero. `gradient` = brand accent gradient. */
@@ -164,6 +167,8 @@ interface HeaderProps {
 }
 
 function Header({
+  safeArea = true,
+  barStyle,
   variant = "large",
   tone,
   actions,
@@ -177,8 +182,9 @@ function Header({
     <Navigation.AppBar
       actions={actions}
       background={background}
+      barStyle={barStyle}
       onBack={onBack}
-      safeArea={false}
+      safeArea={safeArea}
       subheader={children}
       subtitle={description ?? undefined}
       title={name}
@@ -360,7 +366,7 @@ function Content({
   listRef,
   contentContainerStyle,
 }: {
-  children?: (item: any) => ReactNode;
+  children?: (item: any, row: IRowItem<unknown>) => ReactNode;
   withMargin?: boolean;
 } & ListScrollProps &
   ListContentOptions) {
@@ -475,7 +481,7 @@ function ContentList({
   listRef,
   contentContainerStyle,
 }: {
-  children?: (item: any) => ReactNode;
+  children?: (item: any, row: IRowItem<unknown>) => ReactNode;
   contentWithMargin: boolean;
 } & ListScrollProps &
   ListContentOptions) {
@@ -501,18 +507,18 @@ function ContentList({
   }, [onRefresh, onRefreshError, setShowRefreshing]);
 
   const renderItem = useCallback(
-    ({ item }: { item: IRowItem<any> }) => {
+    ({ item }: { item: IRowItem<unknown> }) => {
       if (children) {
-        return <>{children(item)}</>;
+        return <>{children(item.item, item)}</>;
       }
 
-      const onPress = () => onPressItem?.(item);
-      const onDelete = () => onDeleteItem?.(item);
+      const onPress = () => onPressItem?.(item.item);
+      const onDelete = () => onDeleteItem?.(item.item);
       const isReadOnly = item.readonly || readonly || false;
 
       return (
         <Navigation.RowItem
-          item={{ ...item }}
+          item={item}
           onDelete={onDelete}
           onPress={onPress}
           readonly={isReadOnly}

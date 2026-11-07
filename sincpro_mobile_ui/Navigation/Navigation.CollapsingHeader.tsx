@@ -1,7 +1,8 @@
+import ScreenStatusBar from "@sincpro/mobile-ui/layouts/ScreenStatusBar";
 import AppBar, {
   type AppBarActionProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
 import { Animated, View } from "react-native";
@@ -17,6 +18,7 @@ export interface CollapsingHeaderProps {
   largeHeight?: number;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
+  barStyle?: "light-content" | "dark-content";
   testID?: string;
 }
 
@@ -44,8 +46,10 @@ function CollapsingHeader({
   actions,
   largeHeight = subtitle ? 72 : 56,
   safeArea = true,
+  barStyle,
   testID,
 }: CollapsingHeaderProps) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const largeOpacity = scrollY.interpolate({
@@ -71,6 +75,9 @@ function CollapsingHeader({
 
   return (
     <View style={{ backgroundColor: theme.bg.card }} testID={testID}>
+      {safeArea || barStyle !== undefined ? (
+        <ScreenStatusBar backgroundColor={theme.bg.card} barStyle={barStyle} />
+      ) : null}
       <View style={{ paddingTop: safeArea ? insets.top : 0 }}>
         <View className="flex-row items-center px-3 gap-2 min-h-[52px]">
           <View style={{ minWidth: 38 }}>

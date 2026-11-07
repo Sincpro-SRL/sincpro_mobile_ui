@@ -1,7 +1,11 @@
 import { expect, jest, test } from "@jest/globals";
 import ListView from "@sincpro/mobile-ui/views/ListViewV2";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
-import { type IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
+import {
+  type IRowItem,
+  toRowItem,
+  toRowItems,
+} from "@sincpro/mobile-ui/views/types/IListView";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Text } from "react-native";
 import { createRef, memo } from "react";
@@ -98,6 +102,100 @@ test("row mapping preserves zero IDs, empty values, and primitive list indexes",
     index: 0,
     rowTitle: "Pedido",
   });
+});
+
+test("row metadata wraps frozen entities without losing private fields or getters", () => {
+  class Event {
+    #label = "Pedido creado";
+    get id() {
+      return "event-1";
+    }
+    get name() {
+      return this.#label;
+    }
+    asJSON() {
+      return JSON.stringify({ label: this.#label });
+    }
+  }
+  const event = Object.freeze(new Event());
+  const row = toRowItem(event, 3);
+  expect(row.item).toBe(event);
+  expect(row.item.asJSON()).toBe('{"label":"Pedido creado"}');
+  expect(row).toMatchObject({ id: "event-1", index: 3, rowTitle: "Pedido creado" });
+  expect(Object.hasOwn(event, "index")).toBe(false);
+  expect(Object.hasOwn(row, "asJSON")).toBe(false);
+});
+
+test("custom key mapping keeps metadata separate from domain fields", () => {
+  const item = { uuid: "event-2", title: "", subtitle: "Detalle", locked: true, index: 99 };
+  const row = toRowItem(item, 2, {
+    id: "uuid",
+    rowTitle: "title",
+    rowSubtitle: "subtitle",
+    readOnly: "locked",
+  });
+  expect(row).toMatchObject({
+    item,
+    id: "event-2",
+    index: 2,
+    rowTitle: "",
+    rowSubtitle: "Detalle",
+    readonly: true,
+  });
+  expect(item.index).toBe(99);
+});
+
+test("unsupported rows and IDs fail explicitly", () => {
+  expect(() => toRowItem(null, 0)).toThrow(TypeError);
+  expect(() => toRowItem({ id: {} }, 0)).toThrow(TypeError);
+});
+
+test("custom renderers and default row actions receive original entities", async () => {
+  class Event {
+    readonly id = "event-1";
+    #label = "Pedido creado";
+    get name() {
+      return this.#label;
+    }
+    asJSON() {
+      return JSON.stringify({ label: this.#label });
+    }
+  }
+  const event = new Event();
+  const renderRow = jest.fn((item: Event, row: IRowItem<unknown>) => (
+    <Text>{`${row.index}: ${item.asJSON()}`}</Text>
+  ));
+  const onPress = jest.fn();
+  const onDelete = jest.fn();
+  const { rerender } = await render(
+    <ListView.Root items={[event]} name="Eventos" withContainer={false}>
+      <ListView.Content>{renderRow}</ListView.Content>
+    </ListView.Root>,
+  );
+  expect(screen.getByText('0: {"label":"Pedido creado"}')).toBeTruthy();
+  expect(renderRow.mock.calls[0][0]).toBe(event);
+  expect(renderRow.mock.calls[0][1].item).toBe(event);
+
+  await rerender(
+    <ListView.Root
+      items={[event]}
+      name="Eventos"
+      onDeleteItem={onDelete}
+      onPressItem={onPress}
+      withContainer={false}
+    >
+      <ListView.Content testID="original-rows" />
+    </ListView.Root>,
+  );
+  const list = screen.getByTestId("original-rows");
+  const row = list.props.renderItem({ item: list.props.data[0] });
+  await act(() => {
+    row.props.onPress();
+    row.props.onDelete();
+  });
+  expect(onPress.mock.calls[0][0]).toBe(event);
+  expect(onDelete.mock.calls[0][0]).toBe(event);
+  expect(Object.hasOwn(event, "index")).toBe(false);
 });
 
 test("FlatList keys rows by stable IDs rather than their current position", async () => {

@@ -17,6 +17,7 @@ interface AuthFormProps {
   onBack?: () => void;
   FormNode: ReactNode;
   background?: AppBarBackground;
+  barStyle?: "light-content" | "dark-content";
   keyboardToolbar?: boolean;
   keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
 }
@@ -28,6 +29,7 @@ function AuthFormView({
   onBack,
   FormNode,
   background,
+  barStyle,
   keyboardToolbar,
   keyboardFormProps,
 }: AuthFormProps) {
@@ -48,6 +50,7 @@ function AuthFormView({
   return (
     <AuthContainer
       background={background}
+      barStyle={barStyle}
       header={<Logo size="large" source={logoSource} />}
       keyboardFormProps={keyboardFormProps}
       keyboardToolbar={keyboardToolbar}

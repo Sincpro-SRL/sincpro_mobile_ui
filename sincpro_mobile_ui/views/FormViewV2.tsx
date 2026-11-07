@@ -105,6 +105,9 @@ function FormViewRoot<T>({
 }
 
 interface HeaderProps {
+  /** Reserve the top inset; disable when the host already handles it. */
+  safeArea?: boolean;
+  barStyle?: "light-content" | "dark-content";
   /** AppBar display variant. `large` = big title (list/index screens). `center` = modal/detail. */
   variant?: "default" | "large" | "center";
   /** Surface tone. `dark` = always-dark hero. `gradient` = brand accent gradient. */
@@ -128,6 +131,8 @@ interface HeaderProps {
 }
 
 function Header({
+  safeArea = true,
+  barStyle,
   variant = "default",
   tone,
   actions,
@@ -141,8 +146,9 @@ function Header({
     <AppBar
       actions={actions}
       background={background}
+      barStyle={barStyle}
       onBack={onBack}
-      safeArea={false}
+      safeArea={safeArea}
       subheader={children}
       subtitle={description ?? undefined}
       title={name}

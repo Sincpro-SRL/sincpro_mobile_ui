@@ -80,6 +80,16 @@ export interface GradientSurfaceProps extends VariantProps<typeof surface> {
   testID?: string;
 }
 
+export function resolveGradientPreset(preset: GradientPreset = "warm") {
+  const resolvedPreset = preset === "gold-mesh" ? DEPRECATED_PRESETS[preset] : preset;
+  const surface =
+    resolvedPreset === "brand" ? GRADIENT_PRESETS.warm : GRADIENT_PRESETS[resolvedPreset];
+  return {
+    ...surface,
+    colors: resolvedPreset === "brand" ? theme.gradient.primary : surface.colors,
+  };
+}
+
 /**
  * Modern gradient surface. Wraps `expo-linear-gradient` with named presets +
  * tokenized radius/padding. iOS + Android (no native dep beyond the already-peer
@@ -97,15 +107,8 @@ function GradientSurface({
   style,
   testID,
 }: GradientSurfaceProps) {
-  const resolvedPreset = (
-    preset in DEPRECATED_PRESETS
-      ? DEPRECATED_PRESETS[preset as keyof typeof DEPRECATED_PRESETS]
-      : preset
-  ) as keyof typeof GRADIENT_PRESETS | "brand";
-  const p =
-    resolvedPreset === "brand" ? GRADIENT_PRESETS.warm : GRADIENT_PRESETS[resolvedPreset];
-  const presetColors = resolvedPreset === "brand" ? theme.gradient.primary : p.colors;
-  const resolvedColors = (colors ?? presetColors) as readonly [string, string, ...string[]];
+  const p = resolveGradientPreset(preset);
+  const resolvedColors = colors ?? p.colors;
 
   return (
     <View

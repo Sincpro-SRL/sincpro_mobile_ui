@@ -1,13 +1,24 @@
 import { expect, jest, test } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { StyleSheet, Text } from "react-native";
+import { processColor, StyleSheet, Text } from "react-native";
 import AuthFormView from "@sincpro/mobile-ui/views/AuthFormView";
 import FormView from "@sincpro/mobile-ui/views/FormViewV2";
 import ListView from "@sincpro/mobile-ui/views/ListViewV2";
+import { HomeHeader } from "@sincpro/mobile-ui/widgets/HomeHeader";
 import { BottomInsetContext } from "@sincpro/mobile-ui/layouts/BottomInset";
+import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
+import { theme } from "@sincpro/mobile-ui/theme";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("@sincpro/mobile-ui/Display/Display.Logo", () => () => null);
+jest.mock("@sincpro/mobile-ui/index", () => ({
+  Display: jest.requireActual<typeof import("@sincpro/mobile-ui/Display")>(
+    "@sincpro/mobile-ui/Display",
+  ).Display,
+  Typography: jest.requireActual<typeof import("@sincpro/mobile-ui/Typography")>(
+    "@sincpro/mobile-ui/Typography",
+  ).Typography,
+}));
 jest.mock("@sincpro/mobile-ui/Feedback/Feedback.Spinner", () => () => null);
 jest.mock("@sincpro/mobile-ui/Feedback/Toast.context", () => ({
   useToast: () => ({}),
@@ -18,7 +29,7 @@ jest.mock("@sincpro/mobile-ui/Feedback/ErrorBoundary", () => ({
 jest.mock("react-native-safe-area-context", () => ({
   ...jest.requireActual<object>("react-native-safe-area-context"),
   SafeAreaView: require("react-native").View,
-  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+  useSafeAreaInsets: () => ({ top: 24, bottom: 0, left: 0, right: 0 }),
 }));
 jest.mock("react-native-gesture-handler/ReanimatedSwipeable", () => ({
   __esModule: true,
@@ -103,6 +114,64 @@ test("auth template keeps its original defaults and forwards keyboard configurat
   });
 });
 
+test("auth header uses available layout height and a branded surface with explicit overrides", async () => {
+  const content = (
+    <AuthContainer header={<Text>Logo</Text>}>
+      <Text>Formulario</Text>
+    </AuthContainer>
+  );
+  const { rerender } = await render(content);
+  const gradientColors = () =>
+    screen.root?.queryAll((node) => node.props.colors !== undefined)[0]?.props.colors;
+  expect(gradientColors()).toEqual(theme.gradient.primary.map(processColor));
+  const header = screen.getByText("Logo").parent;
+  expect(StyleSheet.flatten(header?.props.style)).toMatchObject({ height: "30%" });
+  const card = screen.getByTestId("template-scroll").parent;
+  expect(card?.props.className).toContain("flex-1");
+  expect(StyleSheet.flatten(card?.props.style)?.minHeight).toBeUndefined();
+  await rerender(
+    <AuthContainer background={{ surface: "warm" }} header={<Text>Logo</Text>}>
+      <Text>Formulario</Text>
+    </AuthContainer>,
+  );
+  expect(gradientColors()).toEqual(["#1A1714", "#C89B3C", "#B88A2E"].map(processColor));
+});
+
+test.each(["list", "form"] as const)(
+  "%s header reserves the top inset unless its host explicitly handles it",
+  async (kind) => {
+    const renderHeader = (safeArea?: boolean) =>
+      kind === "list" ? (
+        <ListView.Root items={[]} name="Registros" withContainer={false}>
+          <ListView.Header safeArea={safeArea} />
+        </ListView.Root>
+      ) : (
+        <FormView.Root item={{ id: 1 }} name="Registro" withContainer={false}>
+          <FormView.Header safeArea={safeArea} />
+        </FormView.Root>
+      );
+    const { rerender } = await render(renderHeader());
+    const insetViews = () =>
+      screen.root?.queryAll((node) => StyleSheet.flatten(node.props.style)?.paddingTop === 24);
+    expect(insetViews()).toHaveLength(1);
+    await rerender(renderHeader(false));
+    expect(insetViews()).toHaveLength(0);
+  },
+);
+
+test("legacy home header reserves its top inset inside the gradient", async () => {
+  const { rerender } = await render(<HomeHeader title="Tickets" />);
+  const viewsWithTopPadding = (paddingTop: number) =>
+    screen.root?.queryAll(
+      (node) => StyleSheet.flatten(node.props.style)?.paddingTop === paddingTop,
+      { includeSelf: true },
+    );
+  expect(viewsWithTopPadding(64)).toHaveLength(1);
+  await rerender(<HomeHeader safeArea={false} title="Tickets" />);
+  expect(viewsWithTopPadding(64)).toHaveLength(0);
+  expect(viewsWithTopPadding(40)).toHaveLength(1);
+});
+
 test.each(["populated", "empty", "error"] as const)(
   "list template exposes the same keyboard policy in its %s state",
   async (state) => {
@@ -158,6 +227,6 @@ test("default list row activates the host callback without changing the original
   );
   await fireEvent.press(screen.getByText("Registro original"));
   expect(press).toHaveBeenCalledTimes(1);
-  expect(press).toHaveBeenCalledWith(expect.objectContaining(item));
+  expect(press.mock.calls[0][0]).toBe(item);
   expect(item).toEqual({ id: 1, name: "Registro original" });
 });

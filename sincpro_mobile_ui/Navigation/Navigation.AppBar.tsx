@@ -1,8 +1,10 @@
 import GradientSurface, {
   type GradientPreset,
+  resolveGradientPreset,
 } from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
+import ScreenStatusBar from "@sincpro/mobile-ui/layouts/ScreenStatusBar";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -152,6 +154,7 @@ export interface AppBarProps {
   border?: boolean;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
+  barStyle?: "light-content" | "dark-content";
   /**
    * [large variant] Extra top padding (px) above the large title row.
    * Default is 8. Use ~16–24 on root/home screens without a back button.
@@ -229,6 +232,7 @@ function AppBar({
   backVariant = "contained",
   border = true,
   safeArea = true,
+  barStyle,
   topSpacing,
   background,
   bottomDivider,
@@ -269,6 +273,16 @@ function AppBar({
   // Large variant on a plain surface should feel like the page itself (no card surface, no
   // hairline). Compact variants (default/center) keep the card surface for detail screens.
   const largePlain = large && !colored;
+  const statusBarBackground = hasBackground
+    ? (background.colors?.[0] ??
+      resolveGradientPreset(background.surface ?? "warm").colors[0])
+    : gradient
+      ? theme.gradient.accent[0]
+      : dark
+        ? (theme.bg.inverse ?? HERO_DARK_FALLBACK)
+        : largePlain
+          ? theme.bg.page
+          : theme.bg.card;
   // bottomDivider controls the bottom edge decoration. When not set, fall back to the
   // legacy border prop (hairline for default/center on plain surfaces).
   const showBorder = bottomDivider
@@ -298,6 +312,9 @@ function AppBar({
       }}
       testID={testID}
     >
+      {safeArea || barStyle !== undefined ? (
+        <ScreenStatusBar backgroundColor={statusBarBackground} barStyle={barStyle} />
+      ) : null}
       {/* background prop: custom colors > named preset */}
       {hasBackground ? (
         <GradientSurface

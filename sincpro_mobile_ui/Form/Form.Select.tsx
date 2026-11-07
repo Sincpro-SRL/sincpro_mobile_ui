@@ -3,8 +3,9 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useSheetTranslation } from "@sincpro/mobile-ui/utils/useSheetTranslation";
 import { vars } from "nativewind";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Animated, Modal, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -42,21 +43,7 @@ function Select<T extends string | number>({
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value) ?? null;
-  // eslint-disable-next-line react-hooks/refs
-  const translateY = useRef(new Animated.Value(800)).current;
-
-  useEffect(() => {
-    if (open) {
-      Animated.spring(translateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        damping: 20,
-        stiffness: 300,
-      }).start();
-    } else {
-      translateY.setValue(800);
-    }
-  }, [open, translateY]);
+  const { translateY } = useSheetTranslation(open);
 
   return (
     <View className={cn("gap-1", className)} testID={testID}>

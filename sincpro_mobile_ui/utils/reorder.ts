@@ -1,14 +1,9 @@
+import { uniqueKeys } from "@sincpro/mobile-ui/utils/keys";
 export function reorderKeys<T>(
   items: readonly T[],
   keyExtractor: (item: T) => string,
 ): string[] {
-  const keys = items.map(keyExtractor);
-  if (
-    keys.some((key) => typeof key !== "string" || !key.trim()) ||
-    new Set(keys).size !== keys.length
-  )
-    throw new Error("ReorderableList requires unique, non-empty string keys.");
-  return keys;
+  return uniqueKeys(items, keyExtractor, "ReorderableList");
 }
 
 export function sameOrder(left: readonly string[], right: readonly string[]): boolean {

@@ -70,6 +70,14 @@ horizontal scrolling or wrapping; the default remains its legacy row layout.
 
 ### Data Display (`Display`)
 
+`Carousel` provides previous/next actions and a localized page label for short
+collections. `index`/`onIndexChange` support controlled navigation, including restoring
+rejected native swipes. Measured end spacing supports narrow cards and the final snap.
+`renderControls` receives validated navigation actions; it owns the custom controls'
+names/disabled states. Root native props, content/item/dot styles and text props keep
+the appearance open. Snap geometry belongs to `itemWidth`/`gap`, not `itemStyle`.
+It is a ScrollView, not a replacement for large virtualized lists.
+
 `Card`, `Chip`, `Tag`, `Badge`, `Avatar`, `AvatarGroup`, `Accordion`, `ListItem`, `KeyValue`, `AmountSummary`, `DataTable`, `Stat`, `StatCard`, `Rating`, `SwipeableRow`, `SectionHeader`, `Timeline`, `Image`, `Carousel`, `Tooltip`, `StatusDot` (presence), `Divider`, `Monetary`, `Date` (variants `inline`/`withIcon`/`pill` + `relative`), `CopyableText`, `CountRecords`, `Logo`, `Icon`, `IconBadge` (icon + count/dot).
 
 `CopyableText` presents short values as tap-to-copy text with a familiar copy icon,
@@ -181,8 +189,21 @@ Reduce Motion preference. `animated={false}` explicitly opts out; `true` never o
 the system setting. Indicators start static until the asynchronous preference is known;
 lookup failures warn and leave motion disabled. Skeletons remain hidden from screen readers.
 Static loading indicators retain their shape and busy semantics, not an invented percentage.
-This is limited to these components, not a system-wide motion certification.
+RN sheet/selection transitions, modal overlays, carousel navigation, dock, menus,
+accordion and toast now also follow the live setting. Gestures remain usable.
+The shared preference store makes one native request/listener for active consumers,
+ignores stale queries, and releases the listener after the last consumer leaves.
+This is not a system-wide motion certification, especially for custom renderers or
+the optional native Sheet engine.
 `useReducedMotion` is available from `…/Feedback` for other host-owned animations.
+
+`DomainSplashScreen` waits for real loading completion and `minDuration`, never inventing
+a percentage or hiding while `isLoading` remains true. Children stay mounted with input/
+accessibility blocked under the overlay. Completion is once per cycle with timer/animation
+cleanup. `renderLoading`, root/overlay styles and native test ID customize presentation.
+`Toast.Root`, `Toast.Action` and `Toast.Close` expose native props/styles; default temporary
+toasts include a visible close alternative and Escape dismissal. Theme and transitions
+update live. Custom toast renderers own their close alternative.
 
 `Spinner` uses `text` as its accessible name (fallback "Cargando"); `accessibilityLabel`
 overrides it. `Loading` forwards that name, `animated` and `testID` to its indicator.
@@ -293,6 +314,15 @@ Requires a root KeyboardProvider and a runtime with keyboard-controller included
 Existing `FormViewV2.Content`, `AuthFormView` and `AuthContainer` opt in with
 `keyboardToolbar`; existing defaults are preserved. Avoid nesting vertical scrolls.
 Story: `Patterns/Forms/Keyboard navigation`.
+
+`Form.ErrorSummary` presents ordered validation errors and requires
+`onSelectError(id)` for native field focus. Match inline messages and keep field drafts
+controlled; `KeyboardForm` handles the focused input/keyboard viewport.
+Header/error content slots, native root props, item styles and text overrides customize appearance while
+the summary retains selection semantics and 48-point targets. First appearance announces;
+editing ongoing errors does not repeatedly interrupt typing. `announce={false}` supports
+hosts already announcing their validation result.
+Story: `Patterns/Forms/Validation` includes default/custom content and retained drafts.
 
 ### Controlled reordering (optional widget)
 

@@ -102,6 +102,10 @@ export type {
   AmountSummaryRowProps,
   AmountSummaryTotalProps,
 } from "@sincpro/mobile-ui/Display/Display.AmountSummary";
+export type {
+  CarouselControlsProps,
+  CarouselProps,
+} from "@sincpro/mobile-ui/Display/Display.Carousel";
 export type { CircleButtonProps } from "@sincpro/mobile-ui/Display/Display.CircleButton";
 export type { ListGroupProps } from "@sincpro/mobile-ui/Display/Display.ListGroup";
 export type { ListItemProps } from "@sincpro/mobile-ui/Display/Display.ListItem";

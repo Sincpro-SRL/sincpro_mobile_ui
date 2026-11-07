@@ -4,6 +4,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { vars } from "nativewind";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
@@ -56,6 +57,7 @@ function Dock({
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const expanded = controlledExpanded ?? internalExpanded;
   const theme = useTheme();
+  const reducedMotion = useReducedMotion();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const [barHeight, setBarHeight] = useState(0);
@@ -65,8 +67,8 @@ function Dock({
     if (controlledExpanded === undefined) setInternalExpanded(next);
     onExpandedChange?.(next);
   };
-  const gestureRef = useRef({ expanded, requestExpanded });
-  gestureRef.current = { expanded, requestExpanded };
+  const gestureRef = useRef({ expanded, requestExpanded, reducedMotion });
+  gestureRef.current = { expanded, requestExpanded, reducedMotion };
   const resolvedRatio = Number.isFinite(maxExpandedHeightRatio)
     ? Math.min(0.9, Math.max(0.1, maxExpandedHeightRatio))
     : 0.6;
@@ -75,6 +77,11 @@ function Dock({
     Math.min(height * resolvedRatio, height - insets.top - insets.bottom - barHeight),
   );
   const resetDrag = () => {
+    translateY.stopAnimation();
+    if (gestureRef.current.reducedMotion) {
+      translateY.setValue(0);
+      return;
+    }
     Animated.spring(translateY, {
       toValue: 0,
       useNativeDriver: true,
@@ -84,8 +91,10 @@ function Dock({
   };
 
   useEffect(() => {
+    translateY.stopAnimation();
     translateY.setValue(0);
-  }, [expanded, translateY]);
+    return () => translateY.stopAnimation();
+  }, [expanded, reducedMotion, translateY]);
 
   const [pan] = useState(() =>
     PanResponder.create({

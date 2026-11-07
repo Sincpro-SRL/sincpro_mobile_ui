@@ -1,8 +1,9 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { type ReactNode, useState } from "react";
 import { LayoutAnimation, View } from "react-native";
 
@@ -22,19 +23,23 @@ function AccordionItem({
   testID,
 }: AccordionItemProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const theme = useTheme();
+  const reducedMotion = useReducedMotion();
 
   const toggle = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    if (!reducedMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setOpen((prev) => !prev);
   };
 
   return (
     <View className={cn("border-b border-border-default", className)} testID={testID}>
       <Pressable
+        accessibilityLabel={title}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
         className="flex-row items-center justify-between py-3"
         onPress={toggle}
+        style={{ minHeight: 48 }}
       >
         <Typography.Text className="flex-1 text-text-primary" semibold>
           {title}

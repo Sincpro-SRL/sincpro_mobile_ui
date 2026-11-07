@@ -1,24 +1,28 @@
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
-import { theme } from "@sincpro/mobile-ui/theme";
+import Progress from "@sincpro/mobile-ui/Feedback/Feedback.Progress";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type React from "react";
-import { ReactNode, useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-import { scheduleOnRN } from "react-native-worklets";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Animated, type StyleProp, StyleSheet, View, type ViewStyle } from "react-native";
 
-interface DomainSplashScreenProps {
+export interface DomainSplashRenderProps {
+  domainName: string;
+  isLoading: boolean;
+  reducedMotion: boolean;
+}
+
+export interface DomainSplashScreenProps {
   domainName: string;
   isLoading: boolean;
   children: ReactNode;
   onComplete?: () => void;
   minDuration?: number;
+  containerStyle?: StyleProp<ViewStyle>;
+  overlayStyle?: StyleProp<ViewStyle>;
+  renderLoading?: (props: DomainSplashRenderProps) => ReactNode;
+  testID?: string;
 }
 
 function DomainSplashScreen({
@@ -27,115 +31,129 @@ function DomainSplashScreen({
   children,
   onComplete,
   minDuration = 300,
+  containerStyle,
+  overlayStyle,
+  renderLoading,
+  testID,
 }: DomainSplashScreenProps) {
-  const progressValue = useSharedValue(0);
-  const opacityValue = useSharedValue(1);
-  const [isComplete, setIsComplete] = useState(false);
+  if (!Number.isFinite(minDuration) || minDuration < 0)
+    throw new RangeError(
+      "DomainSplashScreen minDuration must be a finite, non-negative number.",
+    );
 
-  const handleComplete = useCallback(() => {
-    if (onComplete) {
-      onComplete();
-    }
+  const theme = useTheme();
+  const reducedMotion = useReducedMotion();
+  const [opacity] = useState(() => new Animated.Value(isLoading ? 1 : 0));
+  const [visible, setVisible] = useState(isLoading);
+  const startedAt = useRef<number | null>(null);
+  const completed = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  const busy = isLoading || visible;
+  if (isLoading && !visible) setVisible(true);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
   }, [onComplete]);
 
   useEffect(() => {
-    if (!isLoading) {
-      progressValue.value = withTiming(100, {
-        duration: 300,
-        easing: Easing.out(Easing.ease),
-      });
-
-      setTimeout(() => {
-        opacityValue.value = withTiming(0, {
-          duration: 400,
-          easing: Easing.out(Easing.ease),
-        });
-      }, 100);
-      return;
+    if (isLoading) {
+      startedAt.current = Date.now();
+      completed.current = false;
     }
-
-    const startTime = Date.now();
-    const totalDuration = 2500;
-
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const newProgress = Math.min((elapsed / totalDuration) * 100, 100);
-      progressValue.value = newProgress;
-
-      if (newProgress >= 100) {
-        clearInterval(interval);
-        setIsComplete(true);
-        setTimeout(() => {
-          opacityValue.value = withTiming(
-            0,
-            {
-              duration: 800,
-              easing: Easing.out(Easing.ease),
-            },
-            (finished) => {
-              if (finished) {
-                scheduleOnRN(handleComplete);
-              }
-            },
-          );
-        }, 500);
-      }
-    }, 50);
-
-    return () => clearInterval(interval);
   }, [isLoading]);
 
-  const progressBarStyle = useAnimatedStyle(() => ({
-    width: `${progressValue.value}%`,
-  }));
-
-  const splashStyle = useAnimatedStyle(() => ({
-    opacity: opacityValue.value,
-  }));
+  useEffect(() => {
+    if (isLoading) {
+      opacity.stopAnimation();
+      opacity.setValue(1);
+      return;
+    }
+    if (startedAt.current === null || completed.current) return;
+    let active = true;
+    let animation: Animated.CompositeAnimation | undefined;
+    const finish = () => {
+      if (!active || completed.current) return;
+      completed.current = true;
+      setVisible(false);
+      onCompleteRef.current?.();
+    };
+    const timeout = setTimeout(
+      () => {
+        if (reducedMotion) {
+          opacity.setValue(0);
+          finish();
+        } else {
+          animation = Animated.timing(opacity, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+            isInteraction: false,
+          });
+          animation.start(({ finished }) => {
+            if (finished) finish();
+          });
+        }
+      },
+      Math.max(0, minDuration - (Date.now() - startedAt.current)),
+    );
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+      animation?.stop();
+    };
+  }, [isLoading, minDuration, opacity, reducedMotion]);
 
   return (
-    <View style={styles.container}>
-      {children}
-      <Animated.View
-        pointerEvents={isLoading ? "auto" : "none"}
-        style={[StyleSheet.absoluteFill, splashStyle]}
+    <View style={[styles.container, containerStyle]} testID={testID}>
+      <View
+        accessibilityElementsHidden={busy}
+        importantForAccessibility={busy ? "no-hide-descendants" : "auto"}
+        pointerEvents={busy ? "none" : "auto"}
+        style={styles.container}
+        testID={testID ? `${testID}-content` : undefined}
       >
-        <GradientSurface
-          preset="warm"
-          radius="none"
-          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+        {children}
+      </View>
+      {busy ? (
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFill,
+            { opacity: isLoading ? 1 : opacity },
+            overlayStyle,
+          ]}
+          testID={testID ? `${testID}-loading` : undefined}
         >
-          <Pattern color={theme.primary} kind="dots" opacity={0.14} size={26} />
-          <View className="flex-1 justify-center items-center px-8">
-            <View className="w-full items-center gap-5">
-              <Typography.Text
-                bold
-                style={{ color: "#FFFFFF", fontSize: 24, letterSpacing: 0.5 }}
-              >
-                {isComplete ? "¡Listo!" : `Cargando ${domainName}`}
-              </Typography.Text>
+          {renderLoading ? (
+            renderLoading({ domainName, isLoading, reducedMotion })
+          ) : (
+            <GradientSurface
+              className="flex-1"
+              preset="warm"
+              radius="none"
+              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+            >
+              <Pattern color={theme.primary} kind="dots" opacity={0.14} size={26} />
+              <View className="flex-1 justify-center items-center px-8">
+                <View className="w-full items-center gap-5">
+                  <Typography.Text
+                    bold
+                    style={{ color: "#FFFFFF", fontSize: 24, letterSpacing: 0.5 }}
+                  >
+                    {`Cargando ${domainName}`}
+                  </Typography.Text>
 
-              {!isComplete && (
-                <View
-                  className="w-full rounded-full h-1.5 overflow-hidden"
-                  style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
-                >
-                  <Animated.View
-                    className="rounded-full h-1.5"
-                    style={[{ backgroundColor: theme.primary }, progressBarStyle]}
+                  <Progress
+                    accessibilityLabel={`Cargando ${domainName}`}
+                    indeterminate
+                    indicatorStyle={{ backgroundColor: theme.primary }}
+                    style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
                   />
                 </View>
-              )}
-
-              {isComplete && (
-                <Typography.Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>
-                  Ya puedes comenzar a usar {domainName}.
-                </Typography.Text>
-              )}
-            </View>
-          </View>
-        </GradientSurface>
-      </Animated.View>
+              </View>
+            </GradientSurface>
+          )}
+        </Animated.View>
+      ) : null}
     </View>
   );
 }

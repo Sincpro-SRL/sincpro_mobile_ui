@@ -1,0 +1,29 @@
+appId: host.exp.Exponent
+name: Real loading blocks hidden fields, retains drafts and supports custom visuals
+---
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-feedback-loading-lifecycle--controlled-loading"
+- assertVisible: "Finalizar carga real"
+- assertVisible: "Cargando Tu espacio"
+- assertNotVisible: "Este borrador se conserva"
+- takeScreenshot: default-loading-active
+- tapOn: "Finalizar carga real"
+- assertVisible: "Este borrador se conserva"
+- assertVisible: "Cargas completadas: 1"
+- tapOn: "Este borrador se conserva"
+- eraseText: 80
+- inputText: "Borrador personalizado"
+- hideKeyboard
+- tapOn: "Volver a cargar"
+- assertNotVisible: "Borrador personalizado"
+- tapOn: "Finalizar carga real"
+- assertVisible: "Borrador personalizado"
+- assertVisible: "Cargas completadas: 2"
+- stopApp
+- openLink: "${STORYBOOK_URL}/--/?STORYBOOK_STORY_ID=patterns-feedback-loading-lifecycle--custom-loading"
+- assertVisible: "Tu diseño de carga"
+- assertVisible: "Esperando a la app"
+- tapOn: "Finalizar carga real"
+- assertVisible: "Este borrador se conserva"
+- assertVisible: "Cargas completadas: 1"
+- takeScreenshot: custom-loading-completed

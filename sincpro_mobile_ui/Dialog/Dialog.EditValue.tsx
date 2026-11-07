@@ -1,5 +1,6 @@
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import React, { useEffect, useRef } from "react";
 import {
   FlatList,
@@ -52,6 +53,7 @@ function EditableValueModal({
   testID,
 }: EditableValueModalProps) {
   const inputRef = useRef<TextInputInstance>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (visible && autoFocus) {
@@ -62,7 +64,7 @@ function EditableValueModal({
 
   return (
     <Modal
-      animationType="fade"
+      animationType={reducedMotion ? "none" : "fade"}
       onRequestClose={onCancel}
       presentationStyle="overFullScreen"
       transparent
@@ -70,7 +72,9 @@ function EditableValueModal({
     >
       <View className="flex-1 justify-center p-6 bg-black/40">
         <View
+          accessibilityViewIsModal
           className="p-4"
+          onAccessibilityEscape={onCancel}
           style={{ borderRadius: 16, backgroundColor: theme.bg.popover, ...theme.shadow.md }}
           testID={testID}
         >
@@ -79,6 +83,7 @@ function EditableValueModal({
           </Typography.Text>
           <View className="flex-row items-center">
             <TextInput
+              accessibilityLabel={title}
               className="flex-1 border border-input rounded-lg p-2.5 text-lg text-text-primary"
               keyboardType={keyboardType}
               onChangeText={onChangeValue}

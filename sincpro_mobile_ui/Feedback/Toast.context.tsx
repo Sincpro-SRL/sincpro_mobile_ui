@@ -1,8 +1,10 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
+import Pressable, { type PressableProps } from "@sincpro/mobile-ui/primitives/Pressable";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import {
   createContext,
   type ReactNode,
@@ -13,7 +15,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { ActivityIndicator, type StyleProp, View, type ViewStyle } from "react-native";
+import { type StyleProp, View, type ViewProps, type ViewStyle } from "react-native";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import Animated, {
   FadeInDown,
@@ -47,8 +49,7 @@ export interface ToastOptions {
   /** Stable id: calling show()/info()/… again with the same id updates the existing toast
    *  (and resets its timer) instead of stacking a duplicate. */
   id?: string;
-  /** Render a close (✕) button. Defaults to true for persistent toasts (duration 0 / loading),
-   *  false for auto-dismissing ones. */
+  /** Render a close (✕) button. Defaults to true, including auto-dismissing toasts. */
   dismissible?: boolean;
 }
 
@@ -61,7 +62,7 @@ interface ToastEntry extends ToastOptions {
   id: string;
 }
 
-export interface ToastRootProps {
+export interface ToastRootProps extends Omit<ViewProps, "children"> {
   children: ReactNode;
   accessibilityHint?: string;
   className?: string;
@@ -72,24 +73,27 @@ export interface ToastRootProps {
 
 function ToastRoot({
   children,
-  accessibilityHint = "Desliza hacia arriba o abajo para cerrar",
+  accessibilityHint = "Usa Cerrar o desliza hacia arriba o abajo para cerrar",
   className,
   position = "top",
   style,
   testID,
+  ...viewProps
 }: ToastRootProps) {
+  const reducedMotion = useReducedMotion();
   const styles = toast();
   const entering = position === "top" ? FadeInDown : FadeInUp;
   const exiting = position === "top" ? FadeOutUp : FadeOutDown;
 
   return (
     <Animated.View
+      {...viewProps}
       accessibilityHint={accessibilityHint}
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
       className={styles.root({ className })}
-      entering={entering.duration(220)}
-      exiting={exiting.duration(180)}
+      entering={reducedMotion ? undefined : entering.duration(220)}
+      exiting={reducedMotion ? undefined : exiting.duration(180)}
       style={style}
       testID={testID}
     >
@@ -106,12 +110,24 @@ export interface ToastIconProps {
 }
 
 function ToastIcon({ variant = "info", icon, color, size = 22 }: ToastIconProps) {
+  const theme = useTheme();
   if (icon) return <>{icon}</>;
   if (variant === "loading") {
-    return <ActivityIndicator color={color ?? theme.text.accent} size="small" />;
+    return (
+      <Spinner
+        accessibilityLabel="Cargando"
+        color={color ?? theme.text.accent}
+        size="small"
+      />
+    );
   }
-  const config = iconByVariant[variant];
-  return <Icon color={color ?? config.color} name={config.name} size={size} />;
+  const colors = {
+    info: theme.info,
+    success: theme.success,
+    warning: theme.warning,
+    danger: theme.danger,
+  };
+  return <Icon color={color ?? colors[variant]} name={iconByVariant[variant]} size={size} />;
 }
 
 export interface ToastContentProps {
@@ -149,19 +165,21 @@ function ToastDescription({ children, className }: ToastTextProps) {
   );
 }
 
-export interface ToastActionProps {
+export interface ToastActionProps extends Omit<PressableProps, "children" | "onPress"> {
   label: string;
   onPress: () => void;
   className?: string;
 }
 
-function ToastActionButton({ label, onPress, className }: ToastActionProps) {
+function ToastActionButton({ label, onPress, className, style, ...props }: ToastActionProps) {
   return (
     <Pressable
+      {...props}
       accessibilityLabel={label}
       accessibilityRole="button"
-      className={cn("min-h-11 justify-center px-2", className)}
+      className={cn("min-h-12 justify-center px-2", className)}
       onPress={onPress}
+      style={[{ minHeight: 48, minWidth: 48 }, style]}
     >
       <Typography.Text className="text-sm font-semibold text-text-accent">
         {label}
@@ -170,20 +188,29 @@ function ToastActionButton({ label, onPress, className }: ToastActionProps) {
   );
 }
 
-export interface ToastCloseProps {
+export interface ToastCloseProps extends Omit<PressableProps, "children" | "onPress"> {
   onPress: () => void;
   accessibilityLabel?: string;
   className?: string;
 }
 
-function ToastClose({ onPress, accessibilityLabel = "Cerrar", className }: ToastCloseProps) {
+function ToastClose({
+  onPress,
+  accessibilityLabel = "Cerrar",
+  className,
+  style,
+  ...props
+}: ToastCloseProps) {
+  const theme = useTheme();
   return (
     <Pressable
+      {...props}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
-      className={cn("min-h-11 min-w-11 items-center justify-center", className)}
+      className={cn("min-h-12 min-w-12 items-center justify-center", className)}
       hitSlop={8}
       onPress={onPress}
+      style={[{ minHeight: 48, minWidth: 48 }, style]}
     >
       <Icon color={theme.text.tertiary} name="close" size={18} />
     </Pressable>
@@ -234,14 +261,11 @@ const toast = tv({
   },
 });
 
-const iconByVariant: Record<
-  Exclude<ToastVariant, "loading">,
-  { name: string; color: string }
-> = {
-  info: { name: "information-circle", color: theme.info },
-  success: { name: "checkmark-circle", color: theme.success },
-  warning: { name: "warning", color: theme.warning },
-  danger: { name: "close-circle", color: theme.danger },
+const iconByVariant: Record<Exclude<ToastVariant, "loading">, string> = {
+  info: "information-circle",
+  success: "checkmark-circle",
+  warning: "warning",
+  danger: "close-circle",
 };
 
 function ToastItem({
@@ -256,8 +280,7 @@ function ToastItem({
   position: "top" | "bottom";
 }) {
   const variant = entry.variant ?? "info";
-  const resolvedDuration = entry.duration ?? (variant === "loading" ? 0 : DEFAULT_DURATION);
-  const showClose = entry.dismissible ?? resolvedDuration === 0;
+  const showClose = entry.dismissible ?? true;
   const dismiss = () => onHide(entry.id);
   const pan = usePanGesture({
     activeOffsetY: [-12, 12],
@@ -271,7 +294,11 @@ function ToastItem({
 
   return (
     <GestureDetector gesture={pan}>
-      <Toast.Root className={entry.className} position={position}>
+      <Toast.Root
+        className={entry.className}
+        onAccessibilityEscape={dismiss}
+        position={position}
+      >
         {entry.render ? (
           entry.render({
             dismiss,

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/refs */
 import { theme } from "@sincpro/mobile-ui/theme";
-import { createContext, type ReactNode, useContext, useEffect, useRef } from "react";
+import { useSheetTranslation } from "@sincpro/mobile-ui/utils/useSheetTranslation";
+import { createContext, type ReactNode, useContext, useRef } from "react";
 import {
   Animated,
   Dimensions,
@@ -134,30 +135,20 @@ const SIZE_MAP: Record<BottomSheetSize, number> = {
 function Root({ visible, onClose, size = "auto", dismissible = true, children }: RootProps) {
   const insets = useSafeAreaInsets();
   const screenHeight = Dimensions.get("window").height;
-  const translateY = useRef(new Animated.Value(screenHeight)).current;
+  const { translateY, reducedMotion } = useSheetTranslation(visible, screenHeight);
+  const gesture = useRef({ dismissible, onClose, reducedMotion });
+  gesture.current = { dismissible, onClose, reducedMotion };
 
   const maxHeight = size === "auto" ? screenHeight * 0.9 : screenHeight * SIZE_MAP[size];
   const minHeight = size === "auto" ? 0 : screenHeight * SIZE_MAP[size];
 
-  useEffect(() => {
-    if (visible) {
-      Animated.spring(translateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        damping: 20,
-        stiffness: 300,
-      }).start();
-    } else {
-      translateY.setValue(screenHeight);
-    }
-  }, [visible, screenHeight, translateY]);
-
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => dismissible,
+      onStartShouldSetPanResponder: () => gesture.current.dismissible,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return dismissible && Math.abs(gestureState.dy) > 10;
+        return gesture.current.dismissible && Math.abs(gestureState.dy) > 10;
       },
+      onPanResponderGrant: () => translateY.stopAnimation(),
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dy > 0) {
           translateY.setValue(gestureState.dy);
@@ -165,18 +156,17 @@ function Root({ visible, onClose, size = "auto", dismissible = true, children }:
       },
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dy > 100 || gestureState.vy > 0.5) {
-          Animated.timing(translateY, {
-            toValue: screenHeight,
-            duration: 200,
-            useNativeDriver: true,
-          }).start(() => onClose());
+          translateY.stopAnimation();
+          gesture.current.onClose();
         } else {
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-            damping: 20,
-            stiffness: 300,
-          }).start();
+          if (gesture.current.reducedMotion) translateY.setValue(0);
+          else
+            Animated.spring(translateY, {
+              toValue: 0,
+              useNativeDriver: true,
+              damping: 20,
+              stiffness: 300,
+            }).start();
         }
       },
     }),
@@ -184,11 +174,8 @@ function Root({ visible, onClose, size = "auto", dismissible = true, children }:
 
   function handleBackdropPress() {
     if (dismissible) {
-      Animated.timing(translateY, {
-        toValue: screenHeight,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => onClose());
+      translateY.stopAnimation();
+      onClose();
     }
   }
 
@@ -199,7 +186,7 @@ function Root({ visible, onClose, size = "auto", dismissible = true, children }:
 
   return (
     <Modal
-      animationType="fade"
+      animationType={reducedMotion ? "none" : "fade"}
       onRequestClose={onClose}
       presentationStyle="overFullScreen"
       transparent

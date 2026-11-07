@@ -14,6 +14,7 @@ import {
   type SavedCollectionQuery,
   validateCriteria,
 } from "@sincpro/mobile-ui/utils/criteria";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import FilterBuilder from "@sincpro/mobile-ui/widgets/FilterBuilder";
 import QueryChoice from "@sincpro/mobile-ui/widgets/QueryChoice";
 import { vars } from "nativewind";
@@ -60,6 +61,7 @@ function OptionsEditor({
   testID,
 }: CollectionOptionsProps) {
   const theme = useTheme();
+  const reducedMotion = useReducedMotion();
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(value);
   const [section, setSection] = useState<Section>("filter");
@@ -101,7 +103,7 @@ function OptionsEditor({
     );
   return (
     <Modal
-      animationType="slide"
+      animationType={reducedMotion ? "none" : "slide"}
       onRequestClose={close}
       presentationStyle="fullScreen"
       visible

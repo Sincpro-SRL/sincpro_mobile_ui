@@ -1,7 +1,8 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
-import { View } from "react-native";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 
 const meta: Meta = { title: "Components/Data Display" };
 export default meta;
@@ -95,6 +96,52 @@ export const Carousel: Story = {
     />
   ),
 };
+
+function CustomizedCarousel() {
+  const [index, setIndex] = useState(0);
+  return (
+    <Display.Carousel
+      activeDotStyle={{ width: 32 }}
+      data={PROMOS}
+      dotStyle={{ height: 3 }}
+      index={index}
+      itemStyle={{ borderWidth: 1, borderRadius: 10 }}
+      itemWidth={240}
+      keyExtractor={(item) => item.id}
+      onIndexChange={setIndex}
+      renderControls={(controls) => (
+        <View className="mt-4 flex-row items-center gap-4">
+          <Typography.Text variant="caption">{`Oferta ${controls.index + 1}/${controls.count}`}</Typography.Text>
+          <Pressable
+            accessibilityLabel="Volver al inicio"
+            accessibilityRole="button"
+            onPress={() => controls.goTo(0)}
+            style={{ minHeight: 48, justifyContent: "center" }}
+          >
+            <Typography.Text>Reiniciar</Typography.Text>
+          </Pressable>
+          <Pressable
+            accessibilityLabel="Oferta siguiente"
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !controls.canNext }}
+            disabled={!controls.canNext}
+            onPress={controls.next}
+            style={{ minHeight: 48, justifyContent: "center" }}
+          >
+            <Typography.Text>Siguiente</Typography.Text>
+          </Pressable>
+        </View>
+      )}
+      renderItem={(item) => (
+        <View className="bg-bg-muted p-6" style={{ minHeight: 128 }}>
+          <Typography.Text>{item.title}</Typography.Text>
+        </View>
+      )}
+    />
+  );
+}
+
+export const CarouselCustomized: Story = { render: () => <CustomizedCarousel /> };
 
 export const KeyValueList: Story = {
   render: () => (

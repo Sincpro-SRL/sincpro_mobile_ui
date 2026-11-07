@@ -6,8 +6,9 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useSheetTranslation } from "@sincpro/mobile-ui/utils/useSheetTranslation";
 import { vars } from "nativewind";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { Animated, Modal, PanResponder, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -54,39 +55,25 @@ function Sheet({
 }: SheetProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const translateY = useRef(new Animated.Value(800)).current;
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
-
-  useEffect(() => {
-    if (visible) {
-      Animated.spring(translateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        damping: 20,
-        stiffness: 300,
-      }).start();
-    } else {
-      translateY.setValue(800);
-    }
-  }, [visible, translateY]);
+  const { translateY, reducedMotion } = useSheetTranslation(visible);
+  const gesture = useRef({ onClose, reducedMotion });
+  gesture.current = { onClose, reducedMotion };
 
   const [pan] = useState(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, g) => g.dy > 2,
+      onPanResponderGrant: () => translateY.stopAnimation(),
       onPanResponderMove: (_, g) => {
         if (g.dy > 0) translateY.setValue(g.dy);
       },
       onPanResponderRelease: (_, g) => {
         if (g.dy > 100 || g.vy > 0.5) {
-          Animated.timing(translateY, {
-            toValue: 800,
-            duration: 200,
-            useNativeDriver: true,
-          }).start(() => onCloseRef.current());
+          translateY.stopAnimation();
+          gesture.current.onClose();
         } else {
-          Animated.spring(translateY, { toValue: 0, useNativeDriver: true }).start();
+          if (gesture.current.reducedMotion) translateY.setValue(0);
+          else Animated.spring(translateY, { toValue: 0, useNativeDriver: true }).start();
         }
       },
     }),

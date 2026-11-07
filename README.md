@@ -333,6 +333,15 @@ template layout without a toolbar.
 Multiline Return remains a newline; dismissing the keyboard does not submit the form.
 Story: `Patterns/Forms/Keyboard navigation`.
 
+`Form.ErrorSummary` presents ordered `{ id, label, message }` errors with
+`onSelectError(id)`: the host focuses the corresponding native input ref with `.focus()`.
+Use the same messages inline, keep controlled field drafts mounted, and place the summary
+inside `KeyboardForm`. The first appearance is announced; updates while errors remain do
+not repeatedly interrupt typing. Set `announce={false}` if the host already announces.
+`renderHeader` and `renderErrorContent` replace presentation, not the named selection
+action. Root/item/text props and styles remain customizable.
+Story: `Patterns/Forms/Validation` includes real input refs and custom content.
+
 `ListViewV2.Content` accepts native `keyboardShouldPersistTaps` and `keyboardDismissMode`
 across populated, empty and error states. Handled row/retry actions receive the first tap
 while search has focus (`"handled"` by default); pass `"never"` for the old dismiss-first
@@ -529,6 +538,41 @@ toast.show({
 Toast cards can also be dismissed with an upward or downward swipe. Custom render content keeps
 the shared card surface, safe-area placement, lifecycle, and swipe behavior.
 
+Temporary toasts now show a close action by default too; the `dismissible: false` option explicitly
+removes it. Escape dismisses the default surface. Enter/exit animation follows live
+Reduce Motion; loading uses the common accessible spinner. `Toast.Root` accepts native
+view props/styles; `Toast.Action` and `Toast.Close` accept native pressable props/styles.
+Custom renderers must include their own visible close alternative when appropriate.
+
+### Composable mobile navigation and loading
+
+`Display.Carousel` supports short, non-virtualized collections with named 48-point
+previous/next controls, localized page labels and optional controlled `index` /
+`onIndexChange`. Rejected controlled swipes restore the accepted page. Measured trailing
+space lets the last narrow card reach its snap position.
+`renderControls({ index, count, canPrevious, canNext, previous, next, goTo })` replaces the
+controls without replacing index validation or scrolling. Custom controls own their
+accessible labels/disabled state and must provide a non-swipe alternative.
+Use `itemWidth` / `gap` for snap geometry; `itemStyle`, root native props/styles,
+`contentContainerStyle`, dot styles and `paginationTextProps` customize presentation.
+Data keys must be unique, non-empty strings. Use a virtualized list for large datasets.
+Stories: `Components/Data display/Carousel` and `Carousel Customized`.
+
+`Feedback.DomainSplashScreen` waits for actual `isLoading={false}`, respecting
+`minDuration`, rather than fabricating progress or finishing after a timer.
+Children remain mounted, preserving drafts, but are inaccessible/non-interactive while
+loading. `onComplete` runs once per completed cycle; timers/animations are cleaned up.
+`renderLoading({ domainName, isLoading, reducedMotion })`, `containerStyle` and
+`overlayStyle` let developers/AI own the visuals without replacing that lifecycle.
+Do not use splash completion as a data-loading signal.
+Story: `Patterns/Feedback/Loading lifecycle`.
+
+The shared `useReducedMotion` hook makes one native preference query/subscription for
+all active consumers and cancels stale queries when they leave. RN sheets, menus,
+confirmation/edit dialogs, dropdowns, story viewer, accordion, dock and collection/promo
+overlays follow the live setting; drag interactions remain available.
+This does not certify arbitrary custom renderers or the optional native Sheet engine.
+
 ### Bottom Sheet and Dialogs
 
 ```tsx
@@ -646,7 +690,7 @@ This changes the Dock's former inline expansion behavior. See
 | `Display.CopyableText`                        | Text with one-tap clipboard copy                       |
 | `Display.Logo`                                | Brand logo (falls back to `setBranding` value)         |
 | `Display.Accordion`                           | Collapsible content section                            |
-| `Display.Carousel`                            | Horizontal swipe carousel                              |
+| `Display.Carousel`                            | Controlled short carousel with non-swipe alternatives  |
 | `Display.Story` / `StoryTray` / `StoryViewer` | Stories UI pattern                                     |
 | `Display.MediaCard`                           | Card with image or video embed                         |
 | `Display.Pattern`                             | Decorative background pattern                          |
@@ -663,6 +707,7 @@ This changes the Dock's former inline expansion behavior. See
 | `Form.FractionalQuantityInput`          | Decimal quantity input                                              |
 | `Form.Select`                           | Dropdown select (modal-based)                                       |
 | `Form.Dropdown`                         | Inline dropdown menu                                                |
+| `Form.ErrorSummary`                     | Ordered validation errors linked to native field focus              |
 | `Form.RadioButton`                      | Single-select radio option                                          |
 | `Form.Checkbox`                         | Multi-select checkbox                                               |
 | `Form.Switch`                           | Toggle switch                                                       |
@@ -682,6 +727,7 @@ This changes the Dock's former inline expansion behavior. See
 | ------------------------------- | -------------------------------- |
 | `Feedback.Spinner`              | Animated loading spinner         |
 | `Feedback.Loading`              | Full-screen loading overlay      |
+| `Feedback.DomainSplashScreen`   | Customizable real-load lifecycle |
 | `Feedback.Skeleton`             | Content placeholder shimmer      |
 | `Feedback.Progress`             | Linear progress bar              |
 | `Feedback.ProgressCircle`       | Circular progress indicator      |

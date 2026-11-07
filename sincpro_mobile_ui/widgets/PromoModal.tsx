@@ -1,6 +1,7 @@
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { ComponentType } from "react";
 import { Modal, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -56,12 +57,13 @@ export function PromoModal({
   accentColor,
 }: PromoModalProps) {
   const theme = useTheme();
+  const reducedMotion = useReducedMotion();
   const insets = useSafeAreaInsets();
   const accent = accentColor ?? theme.accent;
 
   return (
     <Modal
-      animationType="fade"
+      animationType={reducedMotion ? "none" : "fade"}
       onRequestClose={onDismiss}
       presentationStyle="overFullScreen"
       statusBarTranslucent

@@ -2,7 +2,7 @@ import { containerPair } from "@sincpro/mobile-ui/theme/color";
 import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
-/** Web UI light palette. Gold is a fill, never a border or a label. */
+/** Brand light palette for iOS and Android. Gold is a fill, never a border or a label. */
 const PRIMARY = "#2A4A85";
 const SECONDARY = "#1C3765";
 const ACCENT = "#C89B3C";

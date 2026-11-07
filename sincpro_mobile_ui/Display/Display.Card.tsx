@@ -1,5 +1,5 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
@@ -36,7 +36,11 @@ function Card({
   children,
   testID,
 }: CardProps) {
-  const shadow = elevation === "none" ? undefined : theme.shadow[elevation];
+  const theme = useTheme();
+  const shadow =
+    elevation === "none"
+      ? { borderCurve: "continuous" as const }
+      : { ...theme.shadow[elevation], borderCurve: "continuous" as const };
 
   if (onPress) {
     return (

@@ -2,7 +2,7 @@ import { containerPair } from "@sincpro/mobile-ui/theme/color";
 import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 
-/** Web UI dark palette. The same roles, measured on #181614. */
+/** Brand dark palette for iOS and Android, measured on #181614. */
 const PRIMARY = "#8FA9E8";
 const SECONDARY = "#B0C3F1";
 const ACCENT = "#C89B3C";
@@ -37,7 +37,7 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
     muted: "#302C28",
     accent: primaryC.container,
     hover: "#2A2622",
-    disabled: "#302C28",
+    disabled: "#3A342F",
     inverse: "#FAF9F7",
     containerLowest: "#141210",
     container: "#221F1C",

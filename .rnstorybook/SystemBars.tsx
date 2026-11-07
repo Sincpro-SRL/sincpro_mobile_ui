@@ -31,9 +31,10 @@ export function SystemBars({ children }: { children: ReactNode }) {
 
 export function useCanvasStatusBar(style?: StatusBarStyle) {
   const setOverride = useContext(OverrideContext);
-  if (!setOverride) throw new Error("Storybook canvas must be inside SystemBars");
   useLayoutEffect(() => {
+    if (!setOverride) return;
     setOverride(style ?? null);
     return () => setOverride(null);
   }, [setOverride, style]);
+  if (!setOverride) throw new Error("Storybook canvas must be inside SystemBars");
 }

@@ -1,19 +1,62 @@
+import type { PickerItemProps, PickerProps } from "@expo/ui";
+import type { DateTimePickerProps } from "@expo/ui/community/datetime-picker";
 import { expect, jest, test } from "@jest/globals";
 import Checkbox from "@sincpro/mobile-ui/Form/Form.Checkbox";
 import DatePicker from "@sincpro/mobile-ui/Form/Form.DatePicker";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
 import Select from "@sincpro/mobile-ui/Form/Form.Select";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import type { ReactNode } from "react";
 import { StyleSheet } from "react-native";
 
-jest.mock("@react-native-community/datetimepicker", () => () => null);
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
+jest.mock("react-native-keyboard-controller", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  const keyboardView = (props: { children?: ReactNode }) =>
+    mockReact.createElement(View, props);
+  return { KeyboardStickyView: keyboardView, KeyboardAwareScrollView: keyboardView };
+});
+jest.mock("@expo/ui/community/bottom-sheet", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return {
+    __esModule: true,
+    default: ({ children, index, ...rest }: { children: ReactNode; index: number }) => {
+      const props = { ...rest, index, testID: "native-sheet" };
+      return mockReact.createElement(View, props, index >= 0 ? children : null);
+    },
+    BottomSheetView: View,
+  };
+});
+jest.mock("@expo/ui", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { Text, View } = jest.requireActual<typeof import("react-native")>("react-native");
+  const picker = ({ children, ...rest }: PickerProps<string>) => {
+    const props = { ...rest, testID: rest.testID ?? "native-picker" };
+    return mockReact.createElement(View, props, children);
+  };
+  return {
+    Host: (props: { children: ReactNode }) => mockReact.createElement(View, props),
+    Picker: Object.assign(picker, {
+      Item: ({ label }: PickerItemProps<string>) => mockReact.createElement(Text, {}, label),
+    }),
+  };
+});
+jest.mock("@expo/ui/community/datetime-picker", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return {
+    __esModule: true,
+    default: (props: DateTimePickerProps) => mockReact.createElement(View, props),
+  };
+});
 
 test("checkbox exposes its label, checked state, and default 48 point target", async () => {
-  const onCheck = jest.fn();
+  const onCheck = jest.fn<(checked: boolean) => void>();
   await render(
     <Checkbox isChecked mainText="Recibir avisos" onCheck={onCheck} testID="notifications" />,
   );
@@ -26,7 +69,7 @@ test("checkbox exposes its label, checked state, and default 48 point target", a
 });
 
 test("select announces the selected value and its expanded state", async () => {
-  const onChange = jest.fn();
+  const onChange = jest.fn<(value: string) => void>();
   await render(
     <Select
       label="Estado"
@@ -40,21 +83,27 @@ test("select announces the selected value and its expanded state", async () => {
   );
 
   const trigger = screen.getByRole("button", { name: "Estado: Pendiente" });
-  expect(trigger.props.accessibilityState).toEqual({ disabled: false, expanded: false });
+  expect(trigger.props.accessibilityState).toEqual({
+    disabled: false,
+    expanded: false,
+    busy: false,
+  });
   expect(trigger.props.style).toMatchObject({ minHeight: 48, minWidth: 48 });
   await fireEvent.press(trigger);
   expect(
     screen.getByRole("button", { name: "Estado: Pendiente" }).props.accessibilityState,
-  ).toEqual({ disabled: false, expanded: true });
-  for (const option of screen.getAllByRole("menuitem")) {
-    expect(option.props.style).toMatchObject({ minHeight: 48, minWidth: 48 });
-  }
-  await fireEvent.press(screen.getByRole("menuitem", { name: "En curso" }));
+  ).toEqual({ disabled: false, expanded: true, busy: false });
+  expect(screen.getByTestId("native-picker").props.enabled).toBe(true);
+  expect(screen.getByTestId("native-picker").props.selectedValue).toBe("0");
+  await fireEvent(screen.getByTestId("native-picker"), "valueChange", "1", 1);
+  expect(onChange).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
+  await waitFor(() => expect(onChange).toHaveBeenCalledWith("active"));
   expect(onChange).toHaveBeenCalledWith("active");
 });
 
 test("select can be closed by default without selecting and allows long trigger text", async () => {
-  const onChange = jest.fn();
+  const onChange = jest.fn<(value: string) => void>();
   const label = "Correo electrónico del responsable del pedido";
   await render(
     <Select
@@ -67,7 +116,7 @@ test("select can be closed by default without selecting and allows long trigger 
   expect(screen.getByText(label).props.numberOfLines).toBeUndefined();
   expect(screen.getByText(label).props.allowFontScaling).not.toBe(false);
   await fireEvent.press(screen.getByRole("button", { name: `Canal: ${label}` }));
-  const close = screen.getByRole("button", { name: "Cerrar opciones" });
+  const close = screen.getByRole("button", { name: "Cerrar" });
   expect(close.props.style).toMatchObject({ minHeight: 48, minWidth: 48 });
   await fireEvent.press(close);
   expect(onChange).not.toHaveBeenCalled();
@@ -102,7 +151,12 @@ test("input defaults to 48 points and preserves multiline height and custom text
 test("date trigger has a 48 point target and a scalable unrestricted value label", async () => {
   const text = "Fecha de entrega prevista para el siguiente día hábil";
   await render(
-    <DatePicker label="Entrega" onChange={jest.fn()} placeholder={text} value={null} />,
+    <DatePicker
+      label="Entrega"
+      onChange={jest.fn<(value: Date) => void>()}
+      placeholder={text}
+      value={null}
+    />,
   );
   const trigger = screen.getByRole("button", { name: "Entrega" });
   expect(trigger.props.style).toMatchObject({ minHeight: 48, minWidth: 48 });
@@ -112,7 +166,7 @@ test("date trigger has a 48 point target and a scalable unrestricted value label
 });
 
 test("checkbox labels remain scalable and disabling still prevents changes", async () => {
-  const onCheck = jest.fn();
+  const onCheck = jest.fn<(checked: boolean) => void>();
   const mainText = "Recibir avisos sobre todos los cambios de mis pedidos";
   await render(<Checkbox disabled mainText={mainText} onCheck={onCheck} />);
   const label = screen.getByText(mainText);

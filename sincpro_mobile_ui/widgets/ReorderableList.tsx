@@ -232,7 +232,7 @@ export default function ReorderableList<T>({
                 {renderHandleContent ? (
                   renderHandleContent(context)
                 ) : (
-                  <Icon name="reorder-two-outline" size={20} />
+                  <Icon name="reorder" size={20} />
                 )}
               </View>
             </Sortable.Handle>
@@ -279,7 +279,7 @@ export default function ReorderableList<T>({
                         actionStyle,
                       ]}
                     >
-                      <Icon name="arrow-up-outline" size={18} />
+                      <Icon name="up" size={18} />
                     </Pressable>
                     <Pressable
                       accessibilityLabel={labels?.down?.(label) ?? `Bajar ${label}`}
@@ -295,7 +295,7 @@ export default function ReorderableList<T>({
                         actionStyle,
                       ]}
                     >
-                      <Icon name="arrow-down-outline" size={18} />
+                      <Icon name="down" size={18} />
                     </Pressable>
                   </>
                 )}

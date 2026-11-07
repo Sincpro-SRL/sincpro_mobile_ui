@@ -1,6 +1,6 @@
 # Component catalog — `@sincpro/mobile-ui`
 
-> Grouped by the Storybook taxonomy (Foundations / Components / Patterns / Legacy).
+> Grouped by the Storybook taxonomy (Foundations / Components / Patterns).
 > Import: `import { Display } from "@sincpro/mobile-ui/Display"` (namespace) unless a subpath is noted.
 
 The [manifesto](./MANIFESTO.md) defines the permanent objective: composable behavior and
@@ -14,7 +14,7 @@ hook is an API limitation, not a reason to require a fork or a new visual system
 | Theme      | `…/theme`      | `DEFAULT_THEME`, `DEFAULT_DARK_THEME`, `useTheme()`, `setActiveTheme`, `defineTheme`, `themeToVars`, `theme` const |
 | Tokens     | `…/tokens`     | `motion` (duration/easing/spring). zIndex/opacity are preset classes                                               |
 | Typography | `…/Typography` | `Typography.Text`, `Typography.Heading`                                                                            |
-| Icons      | `…/icons/*`    | SVG icon set + `Display.Icon` (vector-icons)                                                                       |
+| Icons      | `…/Display`    | `Display.Icon`, `IconName`, `ICON_MAP`: SF Symbols on iOS, Material on Android; branding SVGs separately             |
 | Primitives | `…/primitives` | `Box`, `Row`, `Stack`, `Pressable`, `Spacer`, `AspectRatio`, `BaseButton`                                          |
 
 ## Components
@@ -30,7 +30,9 @@ fonts and system scaling. Legacy `body` remains 14.
 
 ### Actions
 
-`Actions.Button` (variants primary/cta/secondary/outline/…), `Actions.IconButton`, `Actions.FAB`, `Actions.Dock`, `Navigation.AppBar.Action`. (`Form.Button` / `Form.IconButton` / `Form.FAB` exist as deprecated aliases.)
+`Actions.Button` (variants primary/cta/secondary/outline/…), `Actions.IconButton`, `Actions.FAB`, `Actions.Dock`, `Navigation.AppBar.Action`.
+`confirm` uses native Alert and needs no provider. Rich confirmation content uses
+`Dialog.Confirmation` or the explicitly mounted `ConfirmationProvider`.
 
 Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
 alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
@@ -41,13 +43,9 @@ Supply an accessible name for icon-only actions; the `accessibleSizing` prop was
 wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
 horizontal scrolling or wrapping; the default remains its legacy row layout.
 `Actions.Dock` defaults to a fixed bottom bar with a primary action and optional summary.
-Swipe up on its handle (or press “Más opciones”) to reveal secondary content above the bar;
-the 48-point handle claims touches immediately to prevent ancestor scroll competition.
-Expansion uses a native modal with a dim blocking backdrop, safe-area insets and keyboard
-avoidance. The content fits `maxExpandedHeightRatio` (default 0.6) and remaining screen
-height, then scrolls; the primary action is outside the scrolling panel.
-Swipe down, accessible escape, native Back, “Ocultar opciones” or the backdrop close it;
-`dismissOnBackdrop={false}` disables only backdrop dismissal.
+Press “Más opciones” to reveal secondary content in the canonical Expo sheet.
+Expansion delegates gestures, Back and native presentation to `Dialog.Sheet`; use
+`snapPoints` for detents and `dismissible` to control native dismissal.
 `expanded` / `onExpandedChange` support host control; `defaultExpanded` initializes
 uncontrolled state. The app must provide `SafeAreaProvider`. Keep collapsed fixed placement
 outside scroll views and reserve space below list content. `placement="footer"` reuses
@@ -66,7 +64,8 @@ horizontal scrolling or wrapping; the default remains its legacy row layout.
 
 ### Inputs (`Form`)
 
-`Input`, `TextInput`, `InputField`, `PasswordInput`, `Select`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `MonetaryInput`, `QuantitySelector`, `FractionalQuantityInput`, `PinInput`, `Slider`, `DatePicker` (native picker), `SearchHistory` (recent searches), `FilterButton`, `Controlled*` (react-hook-form).
+`Input`, `TextInput`, `InputField`, `PasswordInput`, `Select`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `MonetaryInput`, `QuantitySelector`, `FractionalQuantityInput`, `PinInput`, `Slider`, `DatePicker` (Expo native picker), `SearchHistory` (recent searches), `Controlled*` (react-hook-form).
+Action filters live in `Actions`, search in `Navigation`.
 
 ### Data Display (`Display`)
 
@@ -246,48 +245,35 @@ which field to search or mutate the query. `Navigation.SearchSuggestions` is als
 
 ### Overlays (`Dialog`)
 
-`Sheet` (bottom sheet on RN Modal — subpath `Dialog/Sheet`, swipe-down to close, optional fixed `footer`), `ActionSheet`, `Confirmation` (+`ConfirmationProvider`), `EditValue`.
+`Sheet` — subpath `Dialog/Sheet`, backed by `@expo/ui/community/bottom-sheet`.
+This is the only sheet implementation; `@expo/ui` is a required peer.
+Use `visible/onClose`, optional `title/footer/snapPoints/dismissible`, and
+`scrollable={false}` when content owns a FlashList. Native Back and swipe dismissal
+return control through `onClose`; the visible close action is built in.
 
-`NativeSheet` — optional subpath `Dialog/NativeSheet`, backed by Expo 58
-`@expo/ui/community/bottom-sheet`. SwiftUI presentation on iOS and Material3 on Android,
-with tokenized React Native content, visible close action and scrolling. Requires the optional
-`@expo/ui` peer installed in the host. Intentionally absent from root/category barrels.
-Its two detents are 60%/90% on iOS; Android uses native partial/expanded states rather than
-arbitrary percentages. This is additive; it does not replace `Sheet`.
-
-Use `Sheet showCloseButton` for a visible, named close action; accessible escape is also
-supported. Essential swipe actions must have an equivalent visible action:
+`ActionSheet`, rich `Confirmation` (+`ConfirmationProvider`) and `EditValue` compose
+this sheet. Simple confirmations use `requestConfirmation` (native Alert).
+`EditValue` commits through `onConfirm(value)` and cancels through `onClose`.
+Supply `onChange` with staged `value` for controlled drafts, `{key,label,value}` options
+for presets, or `footerAdornment` for additive actions; persistence remains in the host.
+Theme variables are reapplied inside native portals.
+Stories under `Patterns/Records/Actions` demonstrate explicit row actions, undo, draft
+filters and selection cancellation; do not nest sheets.
+Essential swipe actions need an equivalent visible action:
 `SwipeableRow visibleActions` provides a composition slot.
-
-`ActionSheet` uses named actions, 48-point targets, scrollable choices and persistent
-cancellation. Theme variables are reapplied inside native modal portals. Stories under
-`Patterns/Records/Actions` demonstrate explicit row actions, undo, draft filters and
-selection cancellation; do not nest sheets.
-
-`NativeSheet` — optional subpath `Dialog/NativeSheet`, backed by Expo 58
-`@expo/ui/community/bottom-sheet`. SwiftUI presentation on iOS and Material3 on Android,
-with tokenized React Native content, visible close action and scrolling. Requires the optional
-`@expo/ui` peer installed in the host. Intentionally absent from root/category barrels.
-Its two detents are 60%/90% on iOS; Android uses native partial/expanded states rather than
-arbitrary percentages. This is additive; it does not replace `Sheet`.
-
-Use `Sheet showCloseButton` for a visible, named close action; accessible escape is also
-supported. Essential swipe actions must have an equivalent visible action:
-`SwipeableRow visibleActions` provides a composition slot.
-
-`ActionSheet` uses named actions, 48-point targets, scrollable choices and persistent
-cancellation. Theme variables are reapplied inside native modal portals. Stories under
-`Patterns/Records/Actions` demonstrate explicit row actions, undo, draft filters and
-selection cancellation; do not nest sheets.
 
 ### Layout (`…/layouts`)
 
 `Container`, `ScrollContainer`, `GradientContainer`, `AuthContainer`, `PlainLayout`.
+Container/ScrollContainer default to left/right safe area; the header owns top,
+and the host tab bar owns bottom. Standalone auth owns all edges by default.
+All system bars belong to the host, never to these layouts.
 
 ## Patterns
 
 - **Views** (`…/views/*`): `FormViewV2`, `ListViewV2`, `AuthFormView`, `Wizard`, `AppSplashView` — screen templates.
-- **Widgets** (`…/widgets`): `MenuGrid`, `MenuCard`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer`, `PromoBanner`, `PromoModal`, `QuickActions`, `HomeHeader`, `ScreenHeader`, `MenuSection`, `CircleButton`.
+- **Widgets** (`…/widgets`): `TimeZoneSelectorModal`, `JSONViewer`, `PromoBanner`, `PromoModal`, `QuickActions`.
+  MenuGrid/MenuCard/CircleButton live in Display; MenuSection lives in Navigation.
 
 `FilterBar` (`…/widgets` or named export from `…/widgets/FilterBar`) composes optional search,
 quick chips, an advanced-filter action, results and clear. Controlled `filters` contain
@@ -340,7 +326,7 @@ changes during drag. No persistence or business rules live in the widget.
 `Patterns/Collections/Reordering` includes default/custom/long/conflict examples.
 Not a virtualized list or a universal cross-container drag framework.
 
-## Legacy (deprecated — `@deprecated`, still exported)
+## APIs removed in the SDK 58 major
 
 | Piece                                                                              | Replacement                                             |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------- |
@@ -348,7 +334,10 @@ Not a virtualized list or a universal cross-container drag framework.
 | `widgets.CircleButton`                                                             | `Actions.IconButton` / `AppBar.Action`                  |
 | `Form.SearchBar`                                                                   | `Navigation.SearchBar`                                  |
 | `Form.Button` / `Form.IconButton` / `Form.FAB`                                     | `Actions.Button` / `Actions.IconButton` / `Actions.FAB` |
-| `layouts.TabNavigatorLayout`                                                       | `Navigation.BottomNav` + core router layout             |
-| `Dialog.BottomSheet` (custom)                                                      | `Dialog.Sheet` (RN Modal)                               |
+| `layouts.TabNavigatorLayout`                                                       | Navegador del host                                     |
+| `Dialog.BottomSheet`, `Dialog.NativeSheet`                                         | `Dialog.Sheet` (`@expo/ui`)                             |
 
-`*` optional peer (`@react-native-community/slider`, `@react-native-community/datetimepicker`). `@expo/ui` is an optional peer for future native primitives (Switch/ContextMenu). `Dialog.Sheet` needs no native deps (RN Modal).
+Native controls use the required `@expo/ui` peer, symbols `expo-symbols`, and long lists
+FlashList v2. Storybook's shell still requires Gorhom as a development-only peer;
+the on-device controls addon was removed because it requires the obsolete community
+slider/date picker. Component demonstrations remain interactive through story state.

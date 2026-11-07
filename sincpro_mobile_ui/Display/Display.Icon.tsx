@@ -1,68 +1,65 @@
-import {
-  AntDesign,
-  Feather,
-  FontAwesome,
-  FontAwesome5,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-  SimpleLineIcons,
-} from "@expo/vector-icons";
+import { ICON_MAP, type IconName } from "@sincpro/mobile-ui/Display/icon-map";
 import { useTheme } from "@sincpro/mobile-ui/theme";
-import { IconType } from "@sincpro/mobile-ui/utils/icon";
-import { ComponentType, FC } from "react";
-import { View } from "react-native";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
+import { SymbolView } from "expo-symbols";
+import type { FC } from "react";
+import { type ColorValue, View, type ViewProps } from "react-native";
 
-export interface IconProps {
-  name?: any;
+export type IconProps = Omit<ViewProps, "children"> & {
+  name: IconName;
   size?: number;
-  color?: string;
-  type?: IconType;
-  customIcon?: ComponentType<{ size?: number; color?: string }>;
+  color?: ColorValue;
   className?: string;
-}
+};
 
 const Icon: FC<IconProps> = ({
   name,
   size = 24,
   color,
-  type = "ionicons",
-  customIcon,
   className,
+  style,
+  accessible,
+  accessibilityLabel,
+  accessibilityRole,
+  ...viewProps
 }) => {
   const theme = useTheme();
-  const iconColor = color || theme.text.primary;
+  if (typeof name !== "string" || !Object.hasOwn(ICON_MAP, name)) {
+    throw new Error(`Unknown icon name: ${String(name)}`);
+  }
+  if (!Number.isFinite(size) || size <= 0) {
+    throw new RangeError(`Invalid icon size: ${String(size)}`);
+  }
+  if (
+    ["type", "customIcon", "fallback", "children"].some((key) =>
+      Object.hasOwn(viewProps, key),
+    )
+  ) {
+    throw new Error(
+      "Display.Icon accepts semantic names, not icon families or custom renderers",
+    );
+  }
 
-  const renderIcon = () => {
-    if (type === "custom" && customIcon) {
-      const CustomIconComponent = customIcon;
-      return <CustomIconComponent color={iconColor} size={size} />;
-    }
-
-    switch (type) {
-      case "ionicons":
-        return <Ionicons color={iconColor} name={name} size={size} />;
-      case "fontawesome":
-        return <FontAwesome color={iconColor} name={name} size={size} />;
-      case "material":
-        return <MaterialIcons color={iconColor} name={name} size={size} />;
-      case "fontawesome5":
-        return <FontAwesome5 color={iconColor} name={name} size={size} />;
-      case "simplelineicons":
-        return <SimpleLineIcons color={iconColor} name={name} size={size} />;
-      case "antdesign":
-        return <AntDesign color={iconColor} name={name} size={size} />;
-      case "feather":
-        return <Feather color={iconColor} name={name} size={size} />;
-      case "MaterialCommunityIcons":
-        return <MaterialCommunityIcons color={iconColor} name={name} size={size} />;
-      default:
-        return null;
-    }
-  };
+  const icon = ICON_MAP[name];
 
   return (
-    <View className={`justify-center items-center ${className || ""}`}>{renderIcon()}</View>
+    <View
+      {...viewProps}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityRole ?? (accessibilityLabel ? "image" : undefined)}
+      accessible={accessible ?? Boolean(accessibilityLabel)}
+      className={cn("justify-center items-center", className)}
+      style={style}
+    >
+      <SymbolView
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
+        name={{ ios: icon.sf, android: icon.md, web: icon.md }}
+        size={size}
+        tintColor={color ?? theme.text.primary}
+      />
+    </View>
   );
 };
 

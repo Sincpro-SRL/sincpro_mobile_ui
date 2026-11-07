@@ -1,9 +1,5 @@
 import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Display } from "@sincpro/mobile-ui/Display";
-import BoxTimeIcon from "@sincpro/mobile-ui/icons/BoxTimeIcon";
-import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
-import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
-import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
@@ -50,25 +46,10 @@ export const IconButtons: Story = {
   name: "IconButton",
   render: () => (
     <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
-      <Actions.IconButton icon="add" onPress={() => {}} type="ionicons" />
-      <Actions.IconButton
-        icon="trash"
-        onPress={() => {}}
-        type="ionicons"
-        variant="secondary"
-      />
-      <Actions.IconButton
-        icon="share-outline"
-        onPress={() => {}}
-        type="ionicons"
-        variant="primary"
-      />
-      <Actions.IconButton
-        icon="settings-outline"
-        onPress={() => {}}
-        rounded
-        type="ionicons"
-      />
+      <Actions.IconButton icon="add" onPress={() => {}} />
+      <Actions.IconButton icon="delete" onPress={() => {}} variant="secondary" />
+      <Actions.IconButton icon="share" onPress={() => {}} variant="primary" />
+      <Actions.IconButton icon="settings" onPress={() => {}} rounded />
     </View>
   ),
 };
@@ -80,7 +61,7 @@ export const FABStory: Story = {
   render: () => (
     <View style={{ height: 200 }}>
       <Actions.FAB icon="add" onPress={() => {}} />
-      <Actions.FAB icon="create" label="Nuevo" onPress={() => {}} position="bottom-left" />
+      <Actions.FAB icon="edit" label="Nuevo" onPress={() => {}} position="bottom-left" />
     </View>
   ),
 };
@@ -159,7 +140,6 @@ function ActionDockDemo() {
       </ScrollView>
       <Actions.Dock
         expanded={expanded}
-        maxExpandedHeightRatio={0.45}
         onExpandedChange={setExpanded}
         primaryAction={
           <Actions.Button
@@ -171,6 +151,7 @@ function ActionDockDemo() {
             title={confirmed ? "Confirmado" : "Confirmar pedido"}
           />
         }
+        snapPoints={["45%"]}
         summary={
           <Display.AmountSummary.Root currencySymbol="Bs" variant="plain">
             <Display.AmountSummary.Total label="Total" value={128.5} />
@@ -215,14 +196,14 @@ export const CircleButtonStory: Story = {
   render: () => (
     <View style={{ gap: 20 }}>
       <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
-        <Display.CircleButton customIcon={HomeIcon} size="sm" />
-        <Display.CircleButton customIcon={HomeIcon} size="md" />
-        <Display.CircleButton customIcon={HomeIcon} size="lg" />
+        <Display.CircleButton icon="home" size="sm" />
+        <Display.CircleButton icon="home" size="md" />
+        <Display.CircleButton icon="home" size="lg" />
       </View>
       <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
-        <Display.CircleButton customIcon={ProfileIcon} size="md" variant="primary" />
-        <Display.CircleButton customIcon={BoxTimeIcon} size="md" variant="danger" />
-        <Display.CircleButton customIcon={SettingsIcon} size="md" variant="success" />
+        <Display.CircleButton icon="profile" size="md" variant="primary" />
+        <Display.CircleButton icon="time" size="md" variant="danger" />
+        <Display.CircleButton icon="settings" size="md" variant="success" />
       </View>
     </View>
   ),

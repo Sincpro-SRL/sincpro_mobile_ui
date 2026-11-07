@@ -68,10 +68,6 @@ export function themeToVars(t: ThemeTokens): Record<string, string> {
     "--warning": rgb(t.warning),
     "--danger": rgb(t.danger),
     "--info": rgb(t.info),
-    "--success-light": rgb(t.successLight),
-    "--warning-light": rgb(t.warningLight),
-    "--danger-light": rgb(t.dangerLight),
-    "--info-light": rgb(t.infoLight),
 
     "--container-primary": rgb(t.container.primary),
     "--container-on-primary": rgb(t.container.onPrimary),

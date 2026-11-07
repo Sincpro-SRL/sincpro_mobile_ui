@@ -7,13 +7,9 @@ interface MonetaryFieldProps {
   value: number | string | null | undefined;
   currencySymbol?: string;
   prefix?: string;
-  /** @deprecated Use className="text-{color}" instead */
-  color?: string;
   textVariant?: keyof typeof typographyVariants;
-  /** @deprecated Use className for styling */
   style?: StyleProp<TextStyle>;
-  /** @deprecated Use className="text-{color}" instead */
-  symbolColor?: string;
+  symbolStyle?: StyleProp<TextStyle>;
   semibold?: boolean;
   bold?: boolean;
   className?: string;
@@ -23,10 +19,9 @@ function MonetaryField({
   value,
   currencySymbol = "₡",
   prefix = "",
-  color,
   textVariant = "data",
   style = {},
-  symbolColor,
+  symbolStyle,
   semibold = true,
   bold = false,
   className,
@@ -38,14 +33,13 @@ function MonetaryField({
     <Typography.Text
       bold={bold}
       className={className}
-      color={color}
       semibold={semibold && !bold}
-      style={style as any}
+      style={style}
       variant={textVariant}
     >
       <Typography.Text
         className={className}
-        color={symbolColor || color}
+        style={[style, symbolStyle]}
         variant={textVariant}
       >
         {currencySymbol}

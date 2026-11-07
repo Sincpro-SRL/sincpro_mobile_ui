@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
@@ -11,7 +12,7 @@ import { View } from "react-native";
 export interface EmptyStateProps {
   title: string;
   description?: string;
-  icon?: string;
+  icon?: IconName;
   image?: ImageSource;
   actionLabel?: string;
   onAction?: () => void;
@@ -23,7 +24,7 @@ export interface EmptyStateProps {
 function EmptyState({
   title,
   description,
-  icon = "file-tray-outline",
+  icon = "inbox",
   image,
   actionLabel,
   onAction,

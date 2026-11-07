@@ -23,6 +23,7 @@ export {
 // Theme
 export { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 export {
+  appliedTextStyle,
   fontFamilies,
   fontSizes,
   fontWeights,
@@ -37,7 +38,6 @@ export { default as Container } from "@sincpro/mobile-ui/layouts/Container";
 export { default as GradientContainer } from "@sincpro/mobile-ui/layouts/GradientContainer";
 export { default as PlainLayout } from "@sincpro/mobile-ui/layouts/PlainLayout";
 export { default as ScrollContainer } from "@sincpro/mobile-ui/layouts/ScrollContainer";
-export { default as TabNavigatorLayout } from "@sincpro/mobile-ui/layouts/TabNavigatorLayout";
 
 // Views
 export { default as AppSplashView } from "@sincpro/mobile-ui/views/AppSplashView";
@@ -47,5 +47,3 @@ export { default as ListViewV2 } from "@sincpro/mobile-ui/views/ListViewV2";
 
 // Widgets
 export { default as JSONViewer } from "@sincpro/mobile-ui/widgets/JSONViewer";
-export { default as ScreenHeader } from "@sincpro/mobile-ui/widgets/ScreenHeader";
-export * from "@sincpro/mobile-ui/widgets/ScreenHeader";

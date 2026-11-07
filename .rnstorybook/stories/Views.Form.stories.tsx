@@ -1,11 +1,12 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 /**
  * Views/Form — FormViewV2: contenedor de un registro (detalle / crear / editar / settings).
  *
  * Cada story muestra UNA capacidad de la API. Las piezas de contenido puro
  * (Group/Section/estados) viven en `Views/Form/Content`.
  *
- * Layout: height:680 + alignSelf:"stretch" — contenedor acotado para que el
- * KeyboardAwareScrollView interno haga scroll.
+ * Layout: the story root is flex:1 inside the canvas so the footer stays
+ * above the Storybook chrome. The inner KeyboardAwareScrollView owns scrolling.
  *
  * Regla ActionsBar (Guardar/Cancelar):
  *   CORRECTO:   <FormViewV2.Header variant="default" />
@@ -15,7 +16,7 @@
 import { Display } from "@sincpro/mobile-ui/Display";
 import { Form } from "@sincpro/mobile-ui/Form";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import FormViewV2 from "@sincpro/mobile-ui/views/FormViewV2";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -36,6 +37,12 @@ const meta: Meta = { title: "Patterns/Views/Form" };
 export default meta;
 type Story = StoryObj;
 
+const screen = {
+  layout: "fullscreen",
+  ownsScroll: true,
+  ownsTopInset: true,
+} as const;
+
 /**
  * API: variant="large" · Content.Groups + Group · inputs de texto/select/qty · Footer sticky
  */
@@ -46,7 +53,7 @@ function FormViewLargeHeaderStory() {
   const [qty, setQty] = useState(10);
 
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         item={{ name }}
         name="Producto"
@@ -55,7 +62,7 @@ function FormViewLargeHeaderStory() {
       >
         {/* variant="large": bg-bg-page (transparente), título grande, sin borde */}
         <FormViewV2.Header
-          actions={<Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />}
+          actions={<Navigation.AppBar.Action icon="more" onPress={() => {}} />}
           variant="large"
         />
 
@@ -94,14 +101,17 @@ function FormViewLargeHeaderStory() {
 
         {/* Footer: sticky (renderiza fuera del scroll, dentro del Root flex) */}
         <FormViewV2.Footer>
-          <Form.Button onPress={() => {}} title="Guardar producto" />
+          <Actions.Button onPress={() => {}} title="Guardar producto" />
         </FormViewV2.Footer>
       </FormViewV2.Root>
     </View>
   );
 }
 
-export const LargeHeader: Story = { render: () => <FormViewLargeHeaderStory /> };
+export const LargeHeader: Story = {
+  parameters: screen,
+  render: () => <FormViewLargeHeaderStory />,
+};
 
 /**
  * API: variant="default" + back · ActionsBar SIBLING (Cancelar/Guardar) · DatePicker · Footer aux
@@ -110,6 +120,7 @@ export const LargeHeader: Story = { render: () => <FormViewLargeHeaderStory /> }
  * ni como children del Header). Footer queda para acciones auxiliares.
  */
 function FormViewEditWithActionsBarStory() {
+  const colors = useTheme();
   const [alias, setAlias] = useState("Impresora principal");
   const [ip, setIp] = useState("192.168.1.100");
   const [port, setPort] = useState("9100");
@@ -117,7 +128,7 @@ function FormViewEditWithActionsBarStory() {
   const [autoConnect, setAutoConnect] = useState(true);
 
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         description="Datos de configuración"
         item={{ alias }}
@@ -131,10 +142,10 @@ function FormViewEditWithActionsBarStory() {
         {/* ActionsBar: SIBLING — barra debajo del AppBar (NO en subheader) */}
         <FormViewV2.Header.ActionsBar>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Cancelar" variant="outline" />
+            <Actions.Button onPress={() => {}} title="Cancelar" variant="outline" />
           </View>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Guardar" />
+            <Actions.Button onPress={() => {}} title="Guardar" />
           </View>
         </FormViewV2.Header.ActionsBar>
 
@@ -163,13 +174,13 @@ function FormViewEditWithActionsBarStory() {
 
             <FormViewV2.Content.Group>
               <Display.ListItem
-                leading={<LeadingIcon name="wifi-outline" />}
+                leading={<LeadingIcon name="wifi" />}
                 subtitle="Conectar al iniciar la app"
                 title="Conexión automática"
                 trailing={
                   <Switch
                     onValueChange={setAutoConnect}
-                    trackColor={{ false: theme.bg.muted, true: theme.accent }}
+                    trackColor={{ false: colors.bg.muted, true: colors.accent }}
                     value={autoConnect}
                   />
                 }
@@ -180,7 +191,7 @@ function FormViewEditWithActionsBarStory() {
 
         {/* Footer: acción auxiliar. Cancelar/Guardar están en ActionsBar. */}
         <FormViewV2.Footer>
-          <Form.Button onPress={() => {}} title="Probar conexión" variant="outline" />
+          <Actions.Button onPress={() => {}} title="Probar conexión" variant="outline" />
         </FormViewV2.Footer>
       </FormViewV2.Root>
     </View>
@@ -188,18 +199,20 @@ function FormViewEditWithActionsBarStory() {
 }
 
 export const EditWithActionsBar: Story = {
+  parameters: screen,
   render: () => <FormViewEditWithActionsBarStory />,
 };
 
 /**
- * API: variant="center" · withMargin · display read-only · variant="data" (Fira Code) para IDs
+ * API: variant="center" · withMargin · display read-only · variant="data" para IDs
  *
  * Patrón ReadOnly: AppBar centrado (estilo modal/detalle), sin inputs,
  * tipografía mono (data) para SKUs, códigos y fechas.
  */
 function FormViewReadOnlyStory() {
+  const colors = useTheme();
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         item={{ id: "PRD-0042" }}
         name="Producto"
@@ -207,7 +220,7 @@ function FormViewReadOnlyStory() {
         withContainer={false}
       >
         <FormViewV2.Header
-          actions={<Navigation.AppBar.Action icon="create-outline" onPress={() => {}} />}
+          actions={<Navigation.AppBar.Action icon="edit" onPress={() => {}} />}
           variant="center"
         />
 
@@ -218,30 +231,25 @@ function FormViewReadOnlyStory() {
               height: 140,
               marginVertical: 16,
               borderRadius: 16,
-              backgroundColor: theme.bg.muted,
+              backgroundColor: colors.bg.muted,
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Display.Icon
-              color={theme.icon.tertiary}
-              name="image-outline"
-              size={36}
-              type="ionicons"
-            />
+            <Display.Icon color={colors.icon.tertiary} name="image" size={36} />
           </View>
 
           <Typography.Text semibold style={{ marginBottom: 2 }} variant="h3">
             Café molido premium
           </Typography.Text>
           <Typography.Text
-            style={{ color: theme.text.secondary, marginBottom: 16 }}
+            style={{ color: colors.text.secondary, marginBottom: 16 }}
             variant="bodySmall"
           >
             Alimentos
           </Typography.Text>
 
-          {/* variant="data" (Fira Code Medium) para IDs, códigos y fechas */}
+          {/* variant="data" para IDs, códigos y fechas */}
           <Display.Card padding="none">
             <KeyValueRow label="SKU" mono value="SKU-042" />
             <Divider />
@@ -266,10 +274,10 @@ function FormViewReadOnlyStory() {
         <FormViewV2.Footer>
           <View style={{ flexDirection: "row", gap: 8 }}>
             <View style={{ flex: 1 }}>
-              <Form.Button onPress={() => {}} title="Editar" variant="outline" />
+              <Actions.Button onPress={() => {}} title="Editar" variant="outline" />
             </View>
             <View style={{ flex: 1 }}>
-              <Form.Button onPress={() => {}} title="Ver historial" />
+              <Actions.Button onPress={() => {}} title="Ver historial" />
             </View>
           </View>
         </FormViewV2.Footer>
@@ -278,7 +286,10 @@ function FormViewReadOnlyStory() {
   );
 }
 
-export const ReadOnly: Story = { render: () => <FormViewReadOnlyStory /> };
+export const ReadOnly: Story = {
+  parameters: screen,
+  render: () => <FormViewReadOnlyStory />,
+};
 
 /**
  * API: variant="large" · Content.Section · Display.ListItem + Switch trailing
@@ -287,13 +298,14 @@ export const ReadOnly: Story = { render: () => <FormViewReadOnlyStory /> };
  * Rows son Display.ListItem (no inputs de formulario).
  */
 function FormViewSettingsStory() {
+  const colors = useTheme();
   const [autoSync, setAutoSync] = useState(true);
   const [wifi, setWifi] = useState(true);
   const [notifications, setNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         item={{ settings: true }}
         name="Ajustes"
@@ -317,28 +329,26 @@ function FormViewSettingsStory() {
 
           <FormViewV2.Content.Section title="Sincronización">
             <Display.ListItem
-              leading={<LeadingIcon name="sync-outline" />}
+              leading={<LeadingIcon name="sync" />}
               subtitle="Sincronizar datos al abrir la app"
               title="Sincronización automática"
               trailing={
                 <Switch
                   onValueChange={setAutoSync}
-                  trackColor={{ false: theme.bg.muted, true: theme.accent }}
+                  trackColor={{ false: colors.bg.muted, true: colors.accent }}
                   value={autoSync}
                 />
               }
             />
             <Divider />
             <Display.ListItem
-              leading={
-                <LeadingIcon color={wifi ? theme.accent : undefined} name="wifi-outline" />
-              }
+              leading={<LeadingIcon color={wifi ? colors.accent : undefined} name="wifi" />}
               subtitle="Solo sincronizar con Wi-Fi"
               title="Solo por Wi-Fi"
               trailing={
                 <Switch
                   onValueChange={setWifi}
-                  trackColor={{ false: theme.bg.muted, true: theme.accent }}
+                  trackColor={{ false: colors.bg.muted, true: colors.accent }}
                   value={wifi}
                 />
               }
@@ -347,12 +357,12 @@ function FormViewSettingsStory() {
 
           <FormViewV2.Content.Section title="Apariencia">
             <Display.ListItem
-              leading={<LeadingIcon name="moon-outline" />}
+              leading={<LeadingIcon name="dark-mode" />}
               title="Modo oscuro"
               trailing={
                 <Switch
                   onValueChange={setDarkMode}
-                  trackColor={{ false: theme.bg.muted, true: theme.accent }}
+                  trackColor={{ false: colors.bg.muted, true: colors.accent }}
                   value={darkMode}
                 />
               }
@@ -361,45 +371,39 @@ function FormViewSettingsStory() {
 
           <FormViewV2.Content.Section title="Notificaciones">
             <Display.ListItem
-              leading={<LeadingIcon name="notifications-outline" />}
+              leading={<LeadingIcon name="notifications" />}
               subtitle="Alertas de inventario bajo"
               title="Notificaciones de stock"
               trailing={
                 <Switch
                   onValueChange={setNotifications}
-                  trackColor={{ false: theme.bg.muted, true: theme.accent }}
+                  trackColor={{ false: colors.bg.muted, true: colors.accent }}
                   value={notifications}
                 />
               }
             />
             <Divider />
             <Display.ListItem
-              leading={<LeadingIcon name="information-circle-outline" />}
+              leading={<LeadingIcon name="info" />}
               onPress={() => {}}
               title="Acerca de la app"
-              trailing={
-                <Navigation.AppBar.Action bare icon="chevron-forward" onPress={() => {}} />
-              }
+              trailing={<Navigation.AppBar.Action bare icon="next" onPress={() => {}} />}
             />
           </FormViewV2.Content.Section>
 
           <FormViewV2.Content.Section title="Cuenta">
             <Display.ListItem
-              leading={<LeadingIcon name="person-outline" />}
+              leading={<LeadingIcon name="profile" />}
               onPress={() => {}}
               title="Mi perfil"
-              trailing={
-                <Navigation.AppBar.Action bare icon="chevron-forward" onPress={() => {}} />
-              }
+              trailing={<Navigation.AppBar.Action bare icon="next" onPress={() => {}} />}
             />
             <Divider />
             <Display.ListItem
-              leading={<LeadingIcon name="log-out-outline" />}
+              leading={<LeadingIcon name="logout" />}
               onPress={() => {}}
               title="Cerrar sesión"
-              trailing={
-                <Navigation.AppBar.Action bare icon="chevron-forward" onPress={() => {}} />
-              }
+              trailing={<Navigation.AppBar.Action bare icon="next" onPress={() => {}} />}
             />
           </FormViewV2.Content.Section>
         </FormViewV2.Content>
@@ -408,15 +412,19 @@ function FormViewSettingsStory() {
   );
 }
 
-export const Settings: Story = { render: () => <FormViewSettingsStory /> };
+export const Settings: Story = {
+  parameters: screen,
+  render: () => <FormViewSettingsStory />,
+};
 
 /**
  * API: tone="dark" · variant="large" · onDark action — héroe oscuro para reportes.
  * El AppBar tiene superficie siempre-oscura; el contenido debajo es bg-bg-page normal.
  */
 function FormViewDarkHeroStory() {
+  const colors = useTheme();
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         description="Resumen del día"
         item={{ sales: true }}
@@ -425,9 +433,7 @@ function FormViewDarkHeroStory() {
         withContainer={false}
       >
         <FormViewV2.Header
-          actions={
-            <Navigation.AppBar.Action icon="download-outline" onDark onPress={() => {}} />
-          }
+          actions={<Navigation.AppBar.Action icon="download" onDark onPress={() => {}} />}
           tone="dark"
           variant="large"
         />
@@ -444,15 +450,15 @@ function FormViewDarkHeroStory() {
                 style={[
                   {
                     flex: 1,
-                    backgroundColor: theme.bg.card,
+                    backgroundColor: colors.bg.card,
                     borderRadius: 12,
                     padding: 12,
                   },
-                  theme.shadow.sm,
+                  colors.shadow.sm,
                 ]}
               >
                 <Typography.Text
-                  style={{ color: theme.text.secondary }}
+                  style={{ color: colors.text.secondary }}
                   variant="captionSmall"
                 >
                   {s.label}
@@ -472,7 +478,7 @@ function FormViewDarkHeroStory() {
                   <View
                     key={t}
                     style={{
-                      borderBottomColor: theme.border.light,
+                      borderBottomColor: colors.border.light,
                       borderBottomWidth: i < arr.length - 1 ? 1 : 0,
                       paddingHorizontal: 12,
                       paddingVertical: 10,
@@ -487,21 +493,24 @@ function FormViewDarkHeroStory() {
         </FormViewV2.Content>
 
         <FormViewV2.Footer>
-          <Form.Button onPress={() => {}} title="Ver reporte completo" />
+          <Actions.Button onPress={() => {}} title="Ver reporte completo" />
         </FormViewV2.Footer>
       </FormViewV2.Root>
     </View>
   );
 }
 
-export const DarkHero: Story = { render: () => <FormViewDarkHeroStory /> };
+export const DarkHero: Story = {
+  parameters: screen,
+  render: () => <FormViewDarkHeroStory />,
+};
 
 /**
  * API: tone="gradient" · variant="large" · sin back — cabecera saludo (dashboard/home)
  */
 function FormViewGradientHeroStory() {
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         description="Tenés 3 pedidos pendientes"
         item={{ user: true }}
@@ -509,9 +518,7 @@ function FormViewGradientHeroStory() {
         withContainer={false}
       >
         <FormViewV2.Header
-          actions={
-            <Navigation.AppBar.Action icon="notifications-outline" onPress={() => {}} />
-          }
+          actions={<Navigation.AppBar.Action icon="notifications" onPress={() => {}} />}
           tone="gradient"
           variant="large"
         />
@@ -520,11 +527,13 @@ function FormViewGradientHeroStory() {
           <FormViewV2.Content.Groups>
             <FormViewV2.Content.Group title="Acciones rápidas">
               <View style={{ flexDirection: "row", gap: 8, padding: 8 }}>
-                {[
-                  { icon: "cart-outline", label: "Nueva venta" },
-                  { icon: "cube-outline", label: "Inventario" },
-                  { icon: "people-outline", label: "Clientes" },
-                ].map((a) => (
+                {(
+                  [
+                    { icon: "cart", label: "Nueva venta" },
+                    { icon: "package", label: "Inventario" },
+                    { icon: "people", label: "Clientes" },
+                  ] as const
+                ).map((a) => (
                   <View
                     key={a.label}
                     style={{ alignItems: "center", flex: 1, gap: 4, paddingVertical: 12 }}
@@ -542,7 +551,10 @@ function FormViewGradientHeroStory() {
   );
 }
 
-export const GradientHero: Story = { render: () => <FormViewGradientHeroStory /> };
+export const GradientHero: Story = {
+  parameters: screen,
+  render: () => <FormViewGradientHeroStory />,
+};
 
 /**
  * API: FormViewV2.Header.Segmented — switch tipo tabs en el subheader del AppBar.
@@ -551,7 +563,7 @@ export const GradientHero: Story = { render: () => <FormViewGradientHeroStory />
 function FormViewWithSegmentedStory() {
   const [tab, setTab] = useState<"detalle" | "historial">("detalle");
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root item={{}} name="Producto #001" onBack={() => {}} withContainer={false}>
         <FormViewV2.Header variant="default">
           <FormViewV2.Header.Segmented
@@ -577,13 +589,13 @@ function FormViewWithSegmentedStory() {
           ) : (
             <FormViewV2.Content.Section title="Movimientos">
               <Display.ListItem
-                leading={<LeadingIcon name="arrow-down-outline" />}
+                leading={<LeadingIcon name="down" />}
                 subtitle="2026-06-01 · Compra"
                 title="Entrada · +48 u"
               />
               <Divider />
               <Display.ListItem
-                leading={<LeadingIcon name="arrow-up-outline" />}
+                leading={<LeadingIcon name="up" />}
                 showDivider={false}
                 subtitle="2026-06-10 · Venta"
                 title="Salida · −12 u"
@@ -596,7 +608,10 @@ function FormViewWithSegmentedStory() {
   );
 }
 
-export const WithSegmented: Story = { render: () => <FormViewWithSegmentedStory /> };
+export const WithSegmented: Story = {
+  parameters: screen,
+  render: () => <FormViewWithSegmentedStory />,
+};
 
 /**
  * Catálogo de headers (Navigation.AppBar) usados por FormViewV2. AppBar directo
@@ -660,12 +675,8 @@ export const HeaderVariants: Story = {
           actions={
             <>
               <Navigation.AppBar.Action icon="search" onPress={() => {}} />
-              <Navigation.AppBar.Action
-                badge={3}
-                icon="notifications-outline"
-                onPress={() => {}}
-              />
-              <Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />
+              <Navigation.AppBar.Action badge={3} icon="notifications" onPress={() => {}} />
+              <Navigation.AppBar.Action icon="more" onPress={() => {}} />
             </>
           }
           onBack={() => {}}
@@ -733,10 +744,10 @@ export const HeaderVariants: Story = {
         <Navigation.AppBar onBack={() => {}} safeArea={false} title="Editar producto" />
         <DocActionsBar>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Cancelar" variant="outline" />
+            <Actions.Button onPress={() => {}} title="Cancelar" variant="outline" />
           </View>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Guardar" />
+            <Actions.Button onPress={() => {}} title="Guardar" />
           </View>
         </DocActionsBar>
       </VariantFrame>
@@ -756,11 +767,7 @@ export const HeaderVariants: Story = {
       <VariantFrame label="tone=dark — hero oscuro (balance / resumen)">
         <Navigation.AppBar
           actions={
-            <Navigation.AppBar.Action
-              icon="notifications-outline"
-              onDark
-              onPress={() => {}}
-            />
+            <Navigation.AppBar.Action icon="notifications" onDark onPress={() => {}} />
           }
           safeArea={false}
           subtitle="Saldo disponible"
@@ -772,9 +779,7 @@ export const HeaderVariants: Story = {
 
       <VariantFrame label="tone=gradient — CTA / saludo de bienvenida">
         <Navigation.AppBar
-          actions={
-            <Navigation.AppBar.Action icon="notifications-outline" onPress={() => {}} />
-          }
+          actions={<Navigation.AppBar.Action icon="notifications" onPress={() => {}} />}
           safeArea={false}
           subtitle="Tenés 3 pedidos pendientes"
           title="Buenos días, Andrés"

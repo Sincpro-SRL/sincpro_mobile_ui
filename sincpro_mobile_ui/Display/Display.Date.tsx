@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -30,8 +31,8 @@ interface DateFieldProps {
   timezone?: string;
   /** App-like layout. Default `inline` (no visual change vs. previous version). */
   variant?: DateVariant;
-  /** Override the leading icon (ionicons). Defaults: calendar, or clock if `showTime`. */
-  icon?: string;
+  /** Override the semantic icon. Defaults: calendar, or time if `showTime`. */
+  icon?: IconName;
   /** Show relative time ("hace 2 h") instead of the absolute date. */
   relative?: boolean;
 }
@@ -75,14 +76,13 @@ function DateField({
 
   const formatted = value && relative ? relativeTime(value) : absolute;
   const text = prefix ? `${prefix}${formatted}` : formatted;
-  const iconName = icon ?? (showTime && !relative ? "time-outline" : "calendar-outline");
+  const iconName = icon ?? (showTime && !relative ? "time" : "calendar");
 
   const label = (
     <Typography.Text
       bold={bold}
-      color={color}
       semibold={semibold && !bold}
-      style={style as TextStyle}
+      style={[{ color }, style]}
       variant={textVariant}
     >
       {text}
@@ -94,9 +94,8 @@ function DateField({
       <Typography.Text
         bold={bold}
         className={className}
-        color={color}
         semibold={semibold && !bold}
-        style={style as TextStyle}
+        style={[{ color }, style]}
         variant={textVariant}
       >
         {text}

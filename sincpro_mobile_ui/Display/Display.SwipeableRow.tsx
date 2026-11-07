@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -9,7 +10,7 @@ import Swipeable, {
 
 export interface SwipeRowAction {
   label?: string;
-  icon?: string;
+  icon?: IconName;
   color?: string;
   onPress: () => void;
 }

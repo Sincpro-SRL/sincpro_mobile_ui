@@ -143,13 +143,7 @@ function CopyableText({
             ) : (
               <Icon
                 color={isCopied ? theme.success : theme.text.accent}
-                name={
-                  isCopied
-                    ? "checkmark"
-                    : status === "error"
-                      ? "alert-circle-outline"
-                      : "copy-outline"
-                }
+                name={isCopied ? "check" : status === "error" ? "error" : "copy"}
                 size={20}
               />
             )}

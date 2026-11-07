@@ -1,11 +1,10 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import type { CustomIconProps } from "@sincpro/mobile-ui/icons/props";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type { ComponentType } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -18,16 +17,13 @@ function resolveDarkSurface(theme: ThemeTokens): string {
 export interface BottomNavItem {
   key: string;
   label?: string;
-  /** Icon font name (Display.Icon). Provide this OR `customIcon`. */
-  icon?: string;
-  activeIcon?: string;
-  /** Brand/custom SVG icon component. Takes precedence over `icon` (for non-font brand marks). */
-  customIcon?: ComponentType<CustomIconProps>;
+  icon?: IconName;
+  activeIcon?: IconName;
   badge?: string | number;
 }
 
 export interface BottomNavCenterAction {
-  icon: string;
+  icon: IconName;
   onPress: () => void;
   accessibilityLabel?: string;
 }
@@ -116,18 +112,10 @@ function BottomNav({
       };
 
   const renderIconNode = (item: BottomNavItem, active: boolean, color: string) => {
-    const node = item.customIcon ? (
-      <Icon color={color} customIcon={item.customIcon} size={24} type="custom" />
-    ) : (
-      <Icon
-        color={color}
-        name={(active ? (item.activeIcon ?? item.icon) : item.icon) ?? ""}
-        size={24}
-      />
-    );
+    const name = active ? (item.activeIcon ?? item.icon) : item.icon;
     return (
       <View>
-        {node}
+        {name ? <Icon color={color} name={name} size={24} /> : null}
         {item.badge != null ? (
           <View
             className="absolute bg-danger rounded-full min-w-[16px] h-4 px-1 items-center justify-center"

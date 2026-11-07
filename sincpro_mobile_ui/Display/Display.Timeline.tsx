@@ -35,7 +35,7 @@ function Timeline({ steps, current, className, testID }: TimelineProps) {
                 style={{ backgroundColor: dotColor }}
               >
                 {done ? (
-                  <Icon color={theme.text.inverse} name="checkmark" size={14} />
+                  <Icon color={theme.text.inverse} name="check" size={14} />
                 ) : (
                   <View
                     className="w-2 h-2 rounded-full"

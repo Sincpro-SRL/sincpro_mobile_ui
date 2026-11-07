@@ -1,80 +1,103 @@
-import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
-import { theme } from "@sincpro/mobile-ui/theme";
-import Typography from "@sincpro/mobile-ui/Typography/Typography.Text";
-import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
-import React from "react";
-import { Modal, TouchableWithoutFeedback, View } from "react-native";
+import { Actions } from "@sincpro/mobile-ui/Actions";
+import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import { Typography } from "@sincpro/mobile-ui/Typography";
+import { type ReactNode, useRef, useState } from "react";
+import { View } from "react-native";
 
-export interface Props {
-  auxTitle?: string;
-  subtitle?: string;
-  confirmButtonText?: string;
-  cancelButtonText?: string;
+export type ConfirmationProps = {
   visible: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-}
-
-const ConfirmationDialog: React.FC<Props> = ({
-  visible,
-  onCancel,
-  onConfirm,
-  auxTitle = "Descartar cambios",
-  subtitle = "¿Quieres descartar los cambios realizados?",
-  confirmButtonText = "Descartar cambios",
-  cancelButtonText = "Seguir editando",
-}) => {
-  const reducedMotion = useReducedMotion();
-  return (
-    <Modal
-      animationType={reducedMotion ? "none" : "fade"}
-      onRequestClose={onCancel}
-      presentationStyle="overFullScreen"
-      transparent
-      visible={visible}
-    >
-      <View className="flex-1 justify-center items-center p-6 bg-black/50">
-        <TouchableWithoutFeedback accessible={false} onPress={onCancel}>
-          <View className="absolute inset-0" />
-        </TouchableWithoutFeedback>
-        <View
-          accessibilityViewIsModal
-          className="p-3 w-full max-w-xs mx-auto"
-          onAccessibilityEscape={onCancel}
-          style={{
-            borderRadius: 16,
-            backgroundColor: theme.bg.popover,
-            ...theme.shadow.md,
-          }}
-        >
-          <Typography accessibilityRole="header" className="mb-1.5 text-sm" variant="body">
-            <Typography semibold variant="body">
-              {auxTitle}
-            </Typography>
-          </Typography>
-          <Typography className="mb-3 text-xs leading-tight" variant="body">
-            {subtitle}
-          </Typography>
-          <View className="flex-row gap-2">
-            <BaseButton
-              className="flex-1"
-              onPress={onCancel}
-              size="small"
-              title={cancelButtonText}
-              variant="outlineBlack"
-            />
-            <BaseButton
-              className="flex-1"
-              onPress={onConfirm}
-              size="small"
-              title={confirmButtonText}
-              variant="primary"
-            />
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
+  onClose: () => void;
+  onConfirm: () => void | Promise<void>;
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  cancelText?: string;
+  destructive?: boolean;
+  children?: ReactNode;
+  testID?: string;
 };
 
-export default ConfirmationDialog;
+function Confirmation({
+  visible,
+  onClose,
+  onConfirm,
+  title = "Descartar cambios",
+  message = "¿Quieres descartar los cambios realizados?",
+  confirmText = "Descartar cambios",
+  cancelText = "Seguir editando",
+  destructive = true,
+  children,
+  testID,
+}: ConfirmationProps) {
+  const saving = useRef(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
+  const close = () => {
+    if (saving.current) return;
+    setError(undefined);
+    onClose();
+  };
+  const confirm = async () => {
+    if (saving.current) return;
+    saving.current = true;
+    setPending(true);
+    setError(undefined);
+    try {
+      await onConfirm();
+      onClose();
+    } catch (cause) {
+      setError(
+        cause instanceof Error && cause.message.trim()
+          ? cause.message
+          : "No se pudo completar la operación. Vuelve a intentarlo.",
+      );
+    } finally {
+      saving.current = false;
+      setPending(false);
+    }
+  };
+
+  return (
+    <Sheet
+      dismissible={!pending}
+      footer={
+        <View className="gap-2">
+          <Actions.Button
+            disabled={pending}
+            onPress={close}
+            title={cancelText}
+            variant="outline"
+          />
+          <Actions.Button
+            disabled={pending}
+            loading={pending}
+            onPress={() => void confirm()}
+            title={confirmText}
+            variant={destructive ? "outlineDanger" : "primary"}
+          />
+        </View>
+      }
+      onClose={close}
+      testID={testID}
+      title={title}
+      visible={visible}
+    >
+      <Typography.Text className="text-text-secondary" selectable>
+        {message}
+      </Typography.Text>
+      {children}
+      {error ? (
+        <Typography.Text
+          accessibilityLiveRegion="polite"
+          accessibilityRole="alert"
+          className="pt-3 text-danger"
+          selectable
+        >
+          {error}
+        </Typography.Text>
+      ) : null}
+    </Sheet>
+  );
+}
+
+export default Confirmation;

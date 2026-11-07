@@ -1,5 +1,5 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Display } from "@sincpro/mobile-ui/Display";
-import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
@@ -33,9 +33,9 @@ export const Avatar: Story = {
 export const Icon: Story = {
   render: () => (
     <View style={{ flexDirection: "row", gap: 16 }}>
-      <Display.Icon name="home" size={28} type="ionicons" />
-      <Display.Icon name="settings" size={28} type="material" />
-      <Display.Icon name="check" size={28} type="feather" />
+      <Display.Icon name="home" size={28} />
+      <Display.Icon name="settings" size={28} />
+      <Display.Icon name="check" size={28} />
     </View>
   ),
 };
@@ -74,7 +74,7 @@ export const Card: Story = {
           Superficie tokenizada con elevación y slots Title/Footer.
         </Typography.Text>
         <Display.Card.Footer>
-          <Form.Button size="small" title="Acción" variant="cta" />
+          <Actions.Button size="small" title="Acción" variant="cta" />
         </Display.Card.Footer>
       </Display.Card>
       <Display.Card onPress={() => {}}>
@@ -123,11 +123,11 @@ export const ListItem: Story = {
   render: () => (
     <View className="bg-bg-card rounded-lg overflow-hidden">
       <Display.ListItem
-        leading={<Display.Icon name="person-circle" size={28} />}
+        leading={<Display.Icon name="profile-circle" size={28} />}
         onPress={() => {}}
         subtitle="Editar tu información"
         title="Perfil"
-        trailing={<Display.Icon name="chevron-forward" size={18} />}
+        trailing={<Display.Icon name="next" size={18} />}
       />
       <Display.ListItem
         leading={<Display.Icon name="notifications" size={28} />}
@@ -180,7 +180,7 @@ export const SwipeableRow: Story = {
       <Display.SwipeableRow
         rightActions={[
           { icon: "archive", color: "#64748B", label: "Archivar", onPress: () => {} },
-          { icon: "trash", label: "Eliminar", onPress: () => {} },
+          { icon: "delete", label: "Eliminar", onPress: () => {} },
         ]}
       >
         <Display.ListItem

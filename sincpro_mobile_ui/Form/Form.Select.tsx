@@ -1,178 +1,191 @@
+import { Host, Picker } from "@expo/ui";
+import { Actions } from "@sincpro/mobile-ui/Actions";
+import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
+import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useSheetTranslation } from "@sincpro/mobile-ui/utils/useSheetTranslation";
-import { vars } from "nativewind";
-import { useState } from "react";
-import { Animated, Modal, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRef, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 
-export interface SelectOption<T extends string | number> {
+export type SelectOption<T extends string | number> = {
   label: string;
   value: T;
-}
+};
 
-export interface SelectProps<T extends string | number> {
-  options: SelectOption<T>[];
+export type SelectProps<T extends string | number> = {
+  options: readonly SelectOption<T>[];
   value: T | null;
-  onChange: (value: T) => void;
+  onChange: (value: T) => void | Promise<void>;
+  onBlur?: () => void;
   label?: string;
   placeholder?: string;
   title?: string;
+  confirmLabel?: string;
   disabled?: boolean;
+  readOnly?: boolean;
+  loading?: boolean;
+  error?: string;
   className?: string;
   testID?: string;
-  showCloseButton?: boolean;
-}
+};
 
 function Select<T extends string | number>({
   options,
   value,
   onChange,
+  onBlur,
   label,
   placeholder = "Seleccionar…",
   title,
+  confirmLabel = "Aplicar",
   disabled = false,
+  readOnly = false,
+  loading = false,
+  error,
   className,
   testID,
-  showCloseButton = true,
 }: SelectProps<T>) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const appearance = relativeLuminance(theme.bg.card) < 0.179 ? "dark" : "light";
+  const saving = useRef(false);
   const [open, setOpen] = useState(false);
-  const selected = options.find((o) => o.value === value) ?? null;
-  const { translateY } = useSheetTranslation(open);
+  const [draftValue, setDraftValue] = useState<T | null>(null);
+  const [pending, setPending] = useState(false);
+  const [failure, setFailure] = useState<string>();
+  const selected = options.find((option) => option.value === value);
+  const draftIndex = options.findIndex((option) => option.value === draftValue);
+  const blocked = disabled || readOnly || loading || pending;
+  const close = () => {
+    if (saving.current) return;
+    setOpen(false);
+    onBlur?.();
+  };
+  const save = async () => {
+    const option = options.find((option) => option.value === draftValue);
+    if (!option || blocked || saving.current) return;
+    saving.current = true;
+    setPending(true);
+    setFailure(undefined);
+    try {
+      await onChange(option.value);
+      setOpen(false);
+      onBlur?.();
+    } catch (cause) {
+      setFailure(
+        cause instanceof Error && cause.message.trim()
+          ? cause.message
+          : "No se pudo aplicar la selección. Vuelve a intentarlo.",
+      );
+    } finally {
+      saving.current = false;
+      setPending(false);
+    }
+  };
 
   return (
     <View className={cn("gap-1", className)} testID={testID}>
       {label ? (
-        <Typography.Text className="font-medium text-text-primary" variant="bodySmall">
+        <Typography.Text className="text-text-primary" semibold variant="bodySmall">
           {label}
         </Typography.Text>
       ) : null}
-
       <Pressable
-        accessibilityHint="Abre la lista de opciones"
+        accessibilityHint="Abre el selector de opciones"
         accessibilityLabel={
           label
             ? `${label}: ${selected?.label ?? placeholder}`
             : (selected?.label ?? placeholder)
         }
         accessibilityRole="button"
-        accessibilityState={{ disabled, expanded: open }}
-        className="flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3 min-h-[48px]"
-        disabled={disabled}
-        onPress={() => setOpen(true)}
+        accessibilityState={{ disabled: blocked, expanded: open, busy: loading || pending }}
+        className="flex-row items-center gap-3 rounded-lg border border-input bg-bg-card px-3"
+        disabled={blocked}
+        onPress={() => {
+          setDraftValue(selected?.value ?? null);
+          setFailure(undefined);
+          setOpen(true);
+        }}
         style={{ minHeight: 48, minWidth: 48 }}
       >
         <Typography.Text
-          className={cn(
-            "flex-1 text-sm",
-            selected ? "text-text-primary" : "text-text-tertiary",
-          )}
+          className={cn("flex-1", selected ? "text-text-primary" : "text-text-tertiary")}
           style={{ paddingVertical: 12 }}
         >
-          {selected ? selected.label : placeholder}
+          {selected?.label ?? placeholder}
         </Typography.Text>
-        <Icon color={theme.icon.secondary} name="chevron-down" size={18} />
+        {loading || pending ? (
+          <ActivityIndicator color={theme.primary} />
+        ) : (
+          <Icon color={theme.icon.secondary} name="expand" size={18} />
+        )}
       </Pressable>
-
-      <Modal
-        animationType="none"
-        onRequestClose={() => setOpen(false)}
-        presentationStyle="overFullScreen"
-        transparent
+      {error ? (
+        <Typography.Text accessibilityLiveRegion="polite" className="text-danger">
+          {error}
+        </Typography.Text>
+      ) : null}
+      <Sheet
+        dismissible={!pending}
+        footer={
+          <Actions.Button
+            disabled={blocked || draftIndex < 0}
+            loading={pending}
+            onPress={() => void save()}
+            title={confirmLabel}
+          />
+        }
+        onClose={close}
+        title={title ?? label ?? "Seleccionar"}
         visible={open}
       >
-        <View className="flex-1 justify-end">
-          <View
-            accessibilityElementsHidden
-            className="absolute inset-0 bg-black/50"
-            importantForAccessibility="no-hide-descendants"
-            onResponderRelease={() => setOpen(false)}
-            onStartShouldSetResponder={() => true}
-          />
-          <Animated.View
-            accessibilityViewIsModal
-            className="rounded-t-3xl"
-            importantForAccessibility="yes"
-            onAccessibilityEscape={() => setOpen(false)}
-            style={[
-              vars(themeToVars(theme)),
-              {
-                transform: [{ translateY }],
-                maxHeight: "70%",
-                backgroundColor: theme.bg.card,
-                paddingBottom: insets.bottom + 8,
-              },
-            ]}
+        {open ? (
+          <Host
+            colorScheme={appearance}
+            matchContents={{ vertical: true }}
+            seedColor={theme.primary}
+            style={{ minHeight: 48 }}
           >
-            <View className="items-center pt-3 pb-1">
-              <View className="w-10 h-1 rounded-full bg-border-strong" />
-            </View>
-            {title || showCloseButton ? (
-              <View className="flex-row items-center justify-between px-4">
-                <Typography.Text
-                  accessibilityRole="header"
-                  className="flex-1 text-text-primary py-2"
-                  semibold
-                  variant="body"
-                >
-                  {title ?? label ?? "Seleccionar"}
-                </Typography.Text>
-                {showCloseButton ? (
-                  <Pressable
-                    accessibilityLabel="Cerrar opciones"
-                    onPress={() => setOpen(false)}
-                    style={{
-                      minWidth: 48,
-                      minHeight: 48,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography.Text className="text-text-accent" variant="bodySmall">
-                      Cerrar
-                    </Typography.Text>
-                  </Pressable>
-                ) : null}
-              </View>
-            ) : null}
-            <ScrollView>
-              {options.map((option) => {
-                const isSelected = option.value === value;
-                return (
-                  <Pressable
-                    accessibilityRole="menuitem"
-                    accessibilityState={{ selected: isSelected }}
-                    className="flex-row items-center justify-between px-4 py-3 border-b border-border-light"
-                    key={String(option.value)}
-                    onPress={() => {
-                      onChange(option.value);
-                      setOpen(false);
-                    }}
-                    style={{ minHeight: 48, minWidth: 48 }}
-                  >
-                    <Typography.Text
-                      className={cn(
-                        "flex-1 text-sm",
-                        isSelected ? "text-text-accent font-semibold" : "text-text-primary",
-                      )}
-                    >
-                      {option.label}
-                    </Typography.Text>
-                    {isSelected ? (
-                      <Icon color={theme.text.accent} name="checkmark" size={18} />
-                    ) : null}
-                  </Pressable>
+            <Picker<string>
+              appearance="wheel"
+              enabled={!blocked && options.length > 0}
+              onValueChange={(index) => {
+                if (blocked || saving.current) return;
+                setDraftValue(
+                  options.find((_, itemIndex) => String(itemIndex) === index)?.value ?? null,
                 );
-              })}
-            </ScrollView>
-          </Animated.View>
-        </View>
-      </Modal>
+                setFailure(undefined);
+              }}
+              selectedValue={draftIndex < 0 ? "" : String(draftIndex)}
+              testID={testID ? `${testID}-picker` : undefined}
+            >
+              <Picker.Item label={placeholder} value="" />
+              {options.map((option, index) => (
+                <Picker.Item key={String(index)} label={option.label} value={String(index)} />
+              ))}
+            </Picker>
+          </Host>
+        ) : null}
+        {!options.length ? (
+          <Typography.Text>No hay opciones disponibles.</Typography.Text>
+        ) : null}
+        {draftValue !== null && draftIndex < 0 ? (
+          <Typography.Text accessibilityRole="alert" className="text-danger">
+            La opción ya no está disponible. Selecciona otra.
+          </Typography.Text>
+        ) : null}
+        {failure ? (
+          <Typography.Text
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            className="pt-3 text-danger"
+            selectable
+          >
+            {failure}
+          </Typography.Text>
+        ) : null}
+      </Sheet>
     </View>
   );
 }

@@ -11,10 +11,15 @@ This package is maintained by Sincpro as part of the mobile framework ecosystem.
 ## Quick Start
 
 ```bash
-npx expo install @sincpro/mobile-ui expo-image
+npx expo install @sincpro/mobile-ui @expo/ui expo-symbols @shopify/flash-list expo-image react-native-keyboard-controller
 ```
 
 Wire the Tailwind preset, then import by category:
+
+The SDK 58 major uses one native sheet engine, semantic SF/Material icons and FlashList
+v2. Native dependencies are required peers, not implied by installing Expo.
+See [migration contracts](docs/MIGRATIONS.md) before upgrading. NativeWind remains on
+v4 until a v5 release explicitly supports SDK 58.
 
 ```js
 // tailwind.config.js
@@ -97,7 +102,7 @@ recoverable error. It uses fictional data and local state, not persistence or a 
   the Expo renderer, disk caching, automatic source recycling and Reduce Motion policy.
   `Display.ExpoImage` exposes the direct renderer; `Display.Image` adds error/retry composition.
   See the [breaking migration guide](docs/MIGRATION-V2.md).
-- `ListViewV2.Content` exposes `listProps` for virtualization, `getItemLayout`, viewability
+- `ListViewV2.Content` exposes FlashList v2 `listProps` for recycling and viewability
   and `extraData`, plus `listRef` and content styling. `Root hasMore={false}` stops
   pagination; `loadingMore` and refresh pause it. See the
   [mobile performance and usability plan](docs/MOBILE-QUALITY.md).

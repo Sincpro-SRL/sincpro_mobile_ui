@@ -83,7 +83,7 @@ function ListItem({
         ) : null}
         {chevron ? (
           <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Icon color={theme.icon.tertiary} name="chevron-forward" size={18} />
+            <Icon color={theme.icon.tertiary} name="next" size={18} />
           </View>
         ) : null}
       </View>

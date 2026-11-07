@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
@@ -320,7 +321,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
 
 export interface BaseButtonIconProps
   extends VariantProps<typeof buttonIcon>, AccessibilityProps {
-  icon: string;
+  icon: IconName;
   onPress?: () => void;
   loading?: boolean;
   disabled?: boolean;

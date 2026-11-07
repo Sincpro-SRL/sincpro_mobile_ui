@@ -1,6 +1,6 @@
 # Calidad móvil: investigación, plan y siguiente iteración
 
-Fecha: 2026-11-06. Investigación pública, seguida de inspección de código, implementación
+Fecha: 2026-11-07. Investigación pública, seguida de inspección de código, implementación
 y ciclos de pruebas. No es una certificación de todo el catálogo ni un benchmark nativo.
 
 ## Decisión v2: un único camino estándar
@@ -10,6 +10,14 @@ renderers de fotos/logos/ilustraciones lo usan. Los tamaños accesibles dejan de
 se elimina `accessibleSizing` y su rama legacy. Estilos, contenido y composición siguen
 abiertos, sin permitir que una implementación antigua sea el camino predeterminado.
 La guía para apps consumidoras es [MIGRATION-V2](./MIGRATION-V2.md).
+
+## Dirección de la próxima major SDK 58
+
+Controles y una Sheet con `@expo/ui`, iconos semánticos SF/Material, FlashList v2,
+keyboard-controller y React Compiler. NativeWind v4 sigue siendo el runtime soportado;
+no se migra a una rc de v5 que solo declara Expo 57. Los contratos incompatibles están
+en [MIGRATIONS](./MIGRATIONS.md). Las pruebas automatizadas no sustituyen el recorrido
+Android; iOS requiere Xcode 26.4 o superior.
 
 ## Lo aprendido de referentes
 
@@ -35,14 +43,14 @@ apps. Ese resultado necesita medición en release y dispositivos reales.
 2. **Media optimizable:** ExpoImage común para fotos, logos, stories e ilustraciones,
    cache/recycling automático, NativeWind y respeto de movimiento reducido; migración
    explícita en major 2, incluyendo contratos de fuente y eventos.
-3. **Listas grandes:** mantener FlatList, abrir controles de ventana/batching/layout/
-   viewability/refs, selección externa y fin de paginación; reducir invalidaciones de contexto.
+3. **Listas grandes:** FlashList v2, tipos de fila/reciclado, viewability/refs, selección
+   externa y fin de paginación; reducir invalidaciones de contexto y preservar entidades.
 4. **Controles móviles:** tamaños de 48 y texto escalable como estándar, sin flag legacy,
    conservando fuentes/paleta configurables y estados disabled accesibles.
 5. **Testing e iteración:** comprobar contratos reales, corregir fallos encontrados,
    validar tipos/stories/build y gate; separar mocks de validación nativa pendiente.
 
-## Segunda iteración: APIs abiertas con comportamiento compartido
+## Histórico v2: APIs abiertas con comportamiento compartido
 
 1. **Movimiento vivo:** un store compartido sustituye queries/listeners por hook. Una prueba
    con 100 consumidores exige exactamente una consulta y una suscripción nativa. Eventos
@@ -67,23 +75,22 @@ No se añadió ningún peer ni se cambió el motor de listas.
 
 ## Contrato de listas
 
-`ListViewV2.Content listProps` expone un conjunto deliberado de props de FlatList:
-`initialNumToRender`, `maxToRenderPerBatch`, `windowSize`, `updateCellsBatchingPeriod`,
-`removeClippedSubviews`, `extraData`, `getItemLayout`, `onViewableItemsChanged`,
-`viewabilityConfig`, `onEndReachedThreshold` y `maintainVisibleContentPosition`.
+`ListViewV2.Content listProps` expone configuración de FlashList v2 para reciclado,
+datos externos, viewability, fin de paginación y mantenimiento de posición visible.
 No permite reemplazar data/renderItem/keys/refresh por accidente.
-`listRef` permite scroll imperativo; `contentContainerStyle` permite personalizar contenido.
+`listRef` es `FlashListRef<IRowItem<T>>` para scroll imperativo;
+`contentContainerStyle` permite personalizar contenido.
 
 - Los renderers de `Content` y los callbacks de Root reciben el item original, sin clonarlo
   ni agregarle campos. Esto preserva getters, campos privados `#` y objetos congelados.
   El segundo argumento del renderer contiene `{ item, id, index, rowTitle, rowSubtitle,
 readonly }`; `toRowItem` / `toRowItems` devuelven esos wrappers, no entidades extendidas.
   Para metadatos usar `(item, row) => ...`, no `item.index` ni `item.rowTitle`.
-- Defaults de virtualización de RN preservados; threshold sigue siendo 0.5.
-- `getItemLayout` solo cuando altura y separadores son realmente conocidos. Revisar
-  font scaling; una estimación incorrecta causa errores de scroll, no una optimización.
-- Mantener estables `viewabilityConfig` y la presencia de `onViewableItemsChanged`
-  durante el montaje: son restricciones de FlatList, no un wrapper que las oculta.
+- El mantenimiento de posición visible se desactiva por defecto; threshold sigue 0.5.
+- Se borran `getItemLayout`, clipping, `windowSize` y batching propios de FlatList.
+  FlashList v2 mide filas; no asignar alturas estimadas ni keys internas que rompan reciclado.
+- Mantener estables los tipos de fila y las configuraciones de viewability; probar
+  selección, scroll y texto ampliado, no asumir rendimiento por cambiar el motor.
 - `extraData` invalida filas para selección/estado externo; conservar IDs estables.
 - `hasMore` en Root es true por defecto; false detiene solicitudes terminales.
   `loadingMore` y refresh pausan onLoadMore. El host controla carga, errores, reintentos
@@ -103,31 +110,22 @@ la tarjeta flexible recibe el resto, sin un `minHeight` basado en toda la ventan
 
 ### Barra de estado y edge-to-edge
 
-`Container` reserva los cuatro bordes por defecto y elige iconos blancos o negros
-según `theme.bg.page`; `ScrollContainer` usa `theme.bg.card`. Cambiar el tema actualiza
-los iconos sin remontar. No se fija un estilo blanco/oscuro independientemente del fondo.
+`Container`/`ScrollContainer` reservan solo izquierda/derecha por defecto. AppBar y
+los headers de templates reservan arriba; el navegador del host reserva abajo.
+Fuera de tabs, el host decide el borde inferior explícitamente. AuthContainer standalone
+reserva todos; `edges` permite embeberlo sin duplicar los bordes del canvas.
 
-Una cabecera que reserva su propio inset (`AppBar`, `CollapsingHeader`, `HomeHeader`)
-controla también la barra de estado. `AuthContainer` / `AuthFormView` usan el color
-inicial del degradado, resuelto desde el mismo preset que dibuja el fondo.
-`ListViewV2.Header` y `FormViewV2.Header` propagan `barStyle` a AppBar.
+Ningún layout/cabecera monta StatusBar de RN ni recibe `barStyle`/`statusBarHidden`.
+El host es el único dueño de `expo-status-bar` y `expo-system-ui`; el estilo deriva
+del tema activo y, para una superficie de ruta distinta, de su contraste real.
+Si un padre ya reserva arriba, usar `safeArea={false}` en su header.
 
-Cuando la cabecera dibuja detrás de la barra, usar `Container edges={["bottom", "left",
-"right"]}`: el contenedor no añade una franja superior ni monta otro StatusBar. Si el
-padre ya reserva el borde, usar `safeArea={false}` en la cabecera embebida.
-No se cambia el default de bordes de Container porque también sirve a pantallas sin header.
+Storybook hace de host standalone: aplica tema nativo y tokens, una sola barra Expo,
+safe area de canvas y metadata de contraste para auth. Sus pantallas fullscreen delegan
+arriba al header; no prueban la navegación protegida de tickets.
 
-`barStyle` explícito conserva precedencia, también sin inset superior.
-`statusBarHidden` conserva el control explícito de visibilidad de Container.
-Para fondos personalizados por `className` / `style`, degradados diagonales o varios
-colores con distinto contraste en el borde superior, indicar `barStyle` apropiado:
-la selección automática no puede resolver un CSS arbitrario ni garantizar contraste
-en cada píxel de un degradado. El host sigue siendo responsable del foco de las rutas
-que mantienen pantallas montadas y de la configuración de barras de su navegador.
-No se usan `backgroundColor` ni `translucent` de StatusBar, ignorados bajo edge-to-edge.
-
-La story Large List usa 2000 registros locales, selección externa y altura exacta ajustada
-al fontScale. Es un fixture de validación, no evidencia de fluidez ni datos de producción.
+La story Large List usa 2000 registros locales y selección externa. FlashList mide
+su layout; es un fixture de validación, no evidencia de fluidez en producción.
 
 ## Qué falta para un buen sistema móvil
 

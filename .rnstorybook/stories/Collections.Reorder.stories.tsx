@@ -1,4 +1,5 @@
 import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
@@ -16,24 +17,24 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-const initialItems = [
+const initialItems: { id: string; title: string; description: string; icon: IconName }[] = [
   {
     id: "inbox",
     title: "Entrada",
     description: "Pendientes del equipo",
-    icon: "file-tray-outline",
+    icon: "inbox",
   },
   {
     id: "review",
     title: "Revisión",
     description: "Documentos por revisar",
-    icon: "reader-outline",
+    icon: "document",
   },
   {
     id: "done",
     title: "Completados",
     description: "Trabajo finalizado",
-    icon: "checkmark-circle-outline",
+    icon: "success",
   },
 ];
 
@@ -105,7 +106,7 @@ function ReorderExample({
                       id: "new",
                       title: "Nuevo",
                       description: "Actualización externa",
-                      icon: "cloud-download-outline",
+                      icon: "download-cloud",
                     },
                   ]);
                 }, 1000);
@@ -142,9 +143,7 @@ function ReorderExample({
               )
             : undefined
         }
-        renderHandleContent={
-          custom ? () => <Icon name="hand-left-outline" size={18} /> : undefined
-        }
+        renderHandleContent={custom ? () => <Icon name="stop" size={18} /> : undefined}
         renderItem={({ item, index }) => (
           <Pressable
             accessibilityLabel={`Abrir ${item.title}`}

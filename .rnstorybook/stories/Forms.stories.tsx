@@ -1,3 +1,4 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Display } from "@sincpro/mobile-ui/Display";
 import { Form } from "@sincpro/mobile-ui/Form";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -56,12 +57,12 @@ function FilterDemo() {
   const [active, setActive] = useState("todos");
   return (
     <View style={{ flexDirection: "row", gap: 8 }}>
-      <Form.FilterButton
+      <Actions.FilterButton
         active={active === "todos"}
         onPress={() => setActive("todos")}
         title="Todos"
       />
-      <Form.FilterButton
+      <Actions.FilterButton
         active={active === "abiertos"}
         onPress={() => setActive("abiertos")}
         title="Abiertos"

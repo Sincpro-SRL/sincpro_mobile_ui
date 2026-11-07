@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": [
+    "App.tsx",
     "sincpro_mobile_ui/**/*.ts",
     "sincpro_mobile_ui/**/*.tsx",
     ".rnstorybook/**/*.ts",

@@ -3,8 +3,6 @@ import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import FAB from "@sincpro/mobile-ui/Actions/Actions.FAB";
 import IconButton from "@sincpro/mobile-ui/Actions/Actions.IconButton";
 import SectionHeader from "@sincpro/mobile-ui/Display/Display.SectionHeader";
-import FormButton from "@sincpro/mobile-ui/Form/Form.Button";
-import FormIconButton from "@sincpro/mobile-ui/Form/Form.IconButton";
 import Heading from "@sincpro/mobile-ui/Typography/Typography.Heading";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
@@ -53,7 +51,7 @@ test("icon action exposes a supplied name and a 48 point target", async () => {
   await render(
     <IconButton
       accessibilityLabel="Más opciones"
-      icon="more-horizontal"
+      icon="more"
       onPress={onPress}
       size="small"
     />,
@@ -79,21 +77,6 @@ test("compound icon action defaults to the same target and busy state", async ()
   const action = screen.getByRole("button", { name: "Copiar referencia" });
   expect(action.props.style).toMatchObject({ minWidth: 48, minHeight: 48 });
   expect(action.props.accessibilityState).toEqual({ disabled: true, busy: true });
-});
-
-test("legacy Form aliases share the unconditional action sizing", async () => {
-  await render(
-    <>
-      <FormButton size="small" title="Guardar" />
-      <FormButton.Icon accessibilityLabel="Copiar" icon="copy" size="small" />
-      <FormIconButton accessibilityLabel="Opciones" onPress={jest.fn()} size="small" />
-    </>,
-  );
-  for (const action of screen.getAllByRole("button")) {
-    expect(action.props.style).toMatchObject({ minWidth: 48, minHeight: 48 });
-  }
-  expect(screen.getByText("Guardar").props.allowFontScaling).toBe(true);
-  expect(screen.getByText("Guardar").props.numberOfLines).toBeUndefined();
 });
 
 test.each([undefined, "Crear un registro con todos los datos del cliente"])(

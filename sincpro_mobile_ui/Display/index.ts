@@ -107,9 +107,15 @@ export type {
   CarouselProps,
 } from "@sincpro/mobile-ui/Display/Display.Carousel";
 export type { CircleButtonProps } from "@sincpro/mobile-ui/Display/Display.CircleButton";
+export type { IconProps } from "@sincpro/mobile-ui/Display/Display.Icon";
 export type { ListGroupProps } from "@sincpro/mobile-ui/Display/Display.ListGroup";
 export type { ListItemProps } from "@sincpro/mobile-ui/Display/Display.ListItem";
 export type { MenuCardProps } from "@sincpro/mobile-ui/Display/Display.MenuCard";
 export type { MenuGridItem } from "@sincpro/mobile-ui/Display/Display.MenuGrid";
+export {
+  ICON_MAP,
+  type IconDefinition,
+  type IconName,
+} from "@sincpro/mobile-ui/Display/icon-map";
 
 export default Display;

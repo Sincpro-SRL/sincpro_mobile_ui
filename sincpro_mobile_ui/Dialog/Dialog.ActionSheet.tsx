@@ -1,30 +1,30 @@
+import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import type { IconName } from "@sincpro/mobile-ui/Display/icon-map";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useSheetTranslation } from "@sincpro/mobile-ui/utils/useSheetTranslation";
-import { vars } from "nativewind";
-import { Animated, Modal, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRef, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 
-export interface ActionSheetAction {
+export type ActionSheetAction = {
   label: string;
-  icon?: string;
+  icon?: IconName;
   destructive?: boolean;
   disabled?: boolean;
-  onPress: () => void;
-}
+  onPress: () => void | Promise<void>;
+};
 
-export interface ActionSheetProps {
+export type ActionSheetProps = {
   visible: boolean;
   onClose: () => void;
-  actions: ActionSheetAction[];
+  actions: readonly ActionSheetAction[];
   title?: string;
   message?: string;
   cancelLabel?: string;
   testID?: string;
-}
+};
 
 function ActionSheet({
   visible,
@@ -36,113 +36,121 @@ function ActionSheet({
   testID,
 }: ActionSheetProps) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const { translateY } = useSheetTranslation(visible);
+  const saving = useRef(false);
+  const [pending, setPending] = useState<number>();
+  const [error, setError] = useState<string>();
+  const close = () => {
+    if (saving.current) return;
+    setError(undefined);
+    onClose();
+  };
+  const choose = async (action: ActionSheetAction, index: number) => {
+    if (action.disabled || saving.current) return;
+    saving.current = true;
+    setPending(index);
+    setError(undefined);
+    try {
+      await action.onPress();
+      onClose();
+    } catch (cause) {
+      setError(
+        cause instanceof Error && cause.message.trim()
+          ? cause.message
+          : "No se pudo completar la acción. Vuelve a intentarlo.",
+      );
+    } finally {
+      saving.current = false;
+      setPending(undefined);
+    }
+  };
 
   return (
-    <Modal
-      animationType="none"
-      onRequestClose={onClose}
-      presentationStyle="overFullScreen"
-      transparent
+    <Sheet
+      dismissible={pending === undefined}
+      footer={
+        <Pressable
+          accessibilityLabel={cancelLabel}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: pending !== undefined }}
+          disabled={pending !== undefined}
+          onPress={close}
+          style={{ minHeight: 48, justifyContent: "center", alignItems: "center" }}
+        >
+          <Typography.Text className="text-text-accent" semibold>
+            {cancelLabel}
+          </Typography.Text>
+        </Pressable>
+      }
+      onClose={close}
+      testID={testID}
+      title={title}
       visible={visible}
     >
-      <View className="flex-1 justify-end" testID={testID}>
-        <View
-          accessibilityElementsHidden
-          className="absolute inset-0 bg-black/50"
-          importantForAccessibility="no-hide-descendants"
-          onResponderRelease={onClose}
-          onStartShouldSetResponder={() => true}
-        />
-        <Animated.View
-          accessibilityViewIsModal
-          onAccessibilityEscape={onClose}
-          style={[
-            vars(themeToVars(theme)),
-            {
-              transform: [{ translateY }],
-              maxHeight: "90%",
-              paddingHorizontal: 12,
-              paddingBottom: insets.bottom + 12,
-            },
-          ]}
+      {message ? (
+        <Typography.Text className="pb-3 text-text-secondary">{message}</Typography.Text>
+      ) : null}
+      {actions.map((action, index) => (
+        <Pressable
+          accessibilityLabel={action.label}
+          accessibilityRole="button"
+          accessibilityState={{
+            disabled: !!action.disabled || pending !== undefined,
+            busy: pending === index,
+          }}
+          className={cn(
+            "flex-row items-center gap-3 py-3",
+            index < actions.length - 1 && "border-b border-border-light",
+          )}
+          disabled={action.disabled || pending !== undefined}
+          key={`${action.label}-${index}`}
+          onPress={() => void choose(action, index)}
+          style={{ minHeight: 48 }}
         >
-          {title || message ? (
-            <View
-              className="rounded-xl mb-2 px-4 py-3 items-center"
-              style={{ backgroundColor: theme.bg.card }}
-            >
-              {title ? (
-                <Typography.Text
-                  accessibilityRole="header"
-                  className="text-text-primary"
-                  semibold
-                >
-                  {title}
-                </Typography.Text>
-              ) : null}
-              {message ? (
-                <Typography.Text className="text-text-secondary text-sm" variant="bodySmall">
-                  {message}
-                </Typography.Text>
-              ) : null}
-            </View>
+          {action.icon ? (
+            <Icon
+              color={
+                action.disabled
+                  ? theme.icon.disabled
+                  : action.destructive
+                    ? theme.danger
+                    : theme.icon.primary
+              }
+              name={action.icon}
+              size={20}
+            />
           ) : null}
-
-          <ScrollView
-            bounces={false}
-            className="rounded-xl overflow-hidden mb-2"
-            style={{ backgroundColor: theme.bg.card }}
+          <Typography.Text
+            className={cn(
+              "flex-1",
+              action.disabled
+                ? "text-text-disabled"
+                : action.destructive
+                  ? "text-danger"
+                  : "text-text-primary",
+            )}
+            semibold
           >
-            {actions.map((action, index) => (
-              <Pressable
-                accessibilityLabel={action.label}
-                accessibilityRole="button"
-                accessibilityState={{ disabled: action.disabled }}
-                className={cn(
-                  "flex-row items-center justify-center gap-2 px-4 py-4",
-                  index < actions.length - 1 && "border-b border-border-light",
-                )}
-                disabled={action.disabled}
-                key={action.label}
-                onPress={() => {
-                  onClose();
-                  action.onPress();
-                }}
-                style={{ minHeight: 48 }}
-              >
-                {action.icon ? (
-                  <Icon
-                    color={action.destructive ? theme.danger : theme.icon.primary}
-                    name={action.icon}
-                    size={20}
-                  />
-                ) : null}
-                <Typography.Text
-                  className={cn(action.destructive ? "text-danger" : "text-text-primary")}
-                  semibold
-                >
-                  {action.label}
-                </Typography.Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-
-          <Pressable
-            accessibilityLabel={cancelLabel}
-            accessibilityRole="button"
-            className="rounded-xl px-4 py-4 items-center"
-            onPress={onClose}
-            style={{ backgroundColor: theme.bg.card, minHeight: 48 }}
+            {action.label}
+          </Typography.Text>
+          {pending === index ? <ActivityIndicator color={theme.primary} /> : null}
+        </Pressable>
+      ))}
+      {!actions.length ? (
+        <Typography.Text>No hay acciones disponibles.</Typography.Text>
+      ) : null}
+      {error ? (
+        <View className="pt-3">
+          <Typography.Text
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            className="text-danger"
+            selectable
           >
-            <Typography.Text className="text-text-accent" semibold>
-              {cancelLabel}
-            </Typography.Text>
-          </Pressable>
-        </Animated.View>
-      </View>
-    </Modal>
+            {error}
+          </Typography.Text>
+        </View>
+      ) : null}
+    </Sheet>
   );
 }
 

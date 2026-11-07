@@ -37,6 +37,7 @@ export {
 export { theme } from "@sincpro/mobile-ui/theme/theme";
 export type { PatternMode, ShadowStyle, ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 export {
+  appliedTextStyle,
   configureFonts,
   fontFamilies,
   type FontRole,

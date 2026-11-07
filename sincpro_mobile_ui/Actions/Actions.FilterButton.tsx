@@ -70,7 +70,7 @@ export const FilterButton: FC<FilterButtonProps> = ({
       >
         {active ? (
           <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Icon color={theme.container.onPrimary} name="checkmark" size={18} />
+            <Icon color={theme.container.onPrimary} name="check" size={18} />
           </View>
         ) : null}
         <Typography.Text

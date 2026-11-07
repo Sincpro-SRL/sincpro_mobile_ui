@@ -1,6 +1,6 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Display } from "@sincpro/mobile-ui/Display";
 import Splash from "@sincpro/mobile-ui/Feedback/Feedback.Splash";
-import { Form } from "@sincpro/mobile-ui/Form";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -155,7 +155,7 @@ function HeroCardBody() {
           Bs 4.280
         </Typography.Text>
         <View style={{ marginTop: 16, alignSelf: "flex-start" }}>
-          <Form.Button
+          <Actions.Button
             onPress={() => {}}
             size="small"
             title="Registrar venta"

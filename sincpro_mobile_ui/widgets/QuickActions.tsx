@@ -1,15 +1,13 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { ComponentType } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 
 export interface QuickActionItem {
   id: string;
   label: string;
-  /** Ionicon name — use this OR `customIcon`. */
-  icon?: string;
-  customIcon?: ComponentType<{ size?: number; color?: string }>;
+  icon: IconName;
   badge?: string | number;
   onPress?: () => void;
   /** Circle background color override. Defaults to `theme.bg.muted`. */
@@ -66,13 +64,7 @@ export function QuickActions({ items, title }: QuickActionsProps) {
                 borderColor: theme.border.default,
               }}
             >
-              <Icon
-                color={theme.text.primary}
-                customIcon={item.customIcon}
-                name={item.icon}
-                size={24}
-                type={item.customIcon ? "custom" : "ionicons"}
-              />
+              <Icon color={theme.text.primary} name={item.icon} size={24} />
             </View>
 
             {/* Badge */}

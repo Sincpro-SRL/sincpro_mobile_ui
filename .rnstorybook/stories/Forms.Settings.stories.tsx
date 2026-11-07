@@ -49,7 +49,7 @@ export function GroupedSettings({
               className="rounded-full bg-container-accent p-2"
               importantForAccessibility="no-hide-descendants"
             >
-              <Icon color={theme.container.onAccent} name="person-outline" size={20} />
+              <Icon color={theme.container.onAccent} name="profile" size={20} />
             </View>
           }
           subtitle={

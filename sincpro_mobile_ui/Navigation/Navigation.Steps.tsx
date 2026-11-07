@@ -34,7 +34,7 @@ function Steps({ steps, current, className, testID }: StepsProps) {
                 style={{ backgroundColor: circleColor }}
               >
                 {done ? (
-                  <Icon color={theme.text.inverse} name="checkmark" size={16} />
+                  <Icon color={theme.text.inverse} name="check" size={16} />
                 ) : (
                   <Typography.Text style={{ color: textColor }} variant="bodySmall">
                     {index + 1}

@@ -74,10 +74,6 @@ export const DEFAULT_THEME: ThemeTokens = {
   warning: WARNING,
   danger: DANGER,
   info: INFO,
-  successLight: successC.container,
-  warningLight: warningC.container,
-  dangerLight: dangerC.container,
-  infoLight: infoC.container,
   container: {
     primary: primaryC.container,
     onPrimary: primaryC.onContainer,

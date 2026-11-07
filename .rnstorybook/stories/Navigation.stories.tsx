@@ -1,8 +1,6 @@
 import { Actions } from "@sincpro/mobile-ui/Actions";
-import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
-import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
-import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
+import type { BottomNavItem } from "@sincpro/mobile-ui/Navigation/Navigation.BottomNav";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -31,9 +29,7 @@ function SearchHeaderDemo() {
   const [q, setQ] = useState("");
   return (
     <Navigation.AppBar
-      actions={
-        <Navigation.AppBar.Action badge={3} icon="notifications-outline" onPress={() => {}} />
-      }
+      actions={<Navigation.AppBar.Action badge={3} icon="notifications" onPress={() => {}} />}
       safeArea={false}
       subheader={
         <Navigation.SearchBar onChangeText={setQ} placeholder="Buscar productos" value={q} />
@@ -141,9 +137,7 @@ export const AppBarDividers: Story = {
             title: "Detalle",
             subtitle: "Pedido #001",
             onBack: () => {},
-            actions: (
-              <Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />
-            ),
+            actions: <Navigation.AppBar.Action icon="more" onPress={() => {}} />,
           }}
           contentBg={theme.bg.card}
           label="default · back + acción · contenido BLANCO (bg-card = bg-card)"
@@ -180,9 +174,7 @@ export const AppBarDividers: Story = {
               title: "Detalle",
               subtitle: "Pedido #001",
               onBack: () => {},
-              actions: (
-                <Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />
-              ),
+              actions: <Navigation.AppBar.Action icon="more" onPress={() => {}} />,
             }}
             contentBg={theme.bg.card}
             divider={divider}
@@ -227,9 +219,7 @@ export const AppBarDividers: Story = {
               topSpacing: 12,
               variant: "large",
               background: { surface: "night-green", pattern: "dots", patternOpacity: 0.13 },
-              actions: (
-                <Navigation.AppBar.Action icon="notifications-outline" onPress={() => {}} />
-              ),
+              actions: <Navigation.AppBar.Action icon="notifications" onPress={() => {}} />,
             }}
             contentBg={theme.bg.page}
             divider={divider}
@@ -341,7 +331,7 @@ export const AppBarBackground: Story = {
       </Frame>
       <Frame label="background on compact default bar (back + actions)">
         <Navigation.AppBar
-          actions={<Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />}
+          actions={<Navigation.AppBar.Action icon="more" onPress={() => {}} />}
           background={{ surface: "night-green" }}
           onBack={() => {}}
           safeArea={false}
@@ -382,11 +372,7 @@ export const AppBar: Story = {
           actions={
             <>
               <Navigation.AppBar.Action icon="search" onPress={() => {}} />
-              <Navigation.AppBar.Action
-                badge={3}
-                icon="notifications-outline"
-                onPress={() => {}}
-              />
+              <Navigation.AppBar.Action badge={3} icon="notifications" onPress={() => {}} />
             </>
           }
           onBack={() => {}}
@@ -405,7 +391,7 @@ export const AppBar: Story = {
       </Frame>
       <Frame label="center · back + acción (squircle con borde, estilo detalle)">
         <Navigation.AppBar
-          actions={<Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />}
+          actions={<Navigation.AppBar.Action icon="more" onPress={() => {}} />}
           onBack={() => {}}
           safeArea={false}
           title="Detalle"
@@ -418,11 +404,7 @@ export const AppBar: Story = {
       <Frame label="dark / hero (tone='dark')">
         <Navigation.AppBar
           actions={
-            <Navigation.AppBar.Action
-              icon="notifications-outline"
-              onDark
-              onPress={() => {}}
-            />
+            <Navigation.AppBar.Action icon="notifications" onDark onPress={() => {}} />
           }
           safeArea={false}
           subtitle="Caja de hoy"
@@ -433,9 +415,7 @@ export const AppBar: Story = {
       </Frame>
       <Frame label="gradiente CTA · saludo (tone='gradient')">
         <Navigation.AppBar
-          actions={
-            <Navigation.AppBar.Action icon="notifications-outline" onPress={() => {}} />
-          }
+          actions={<Navigation.AppBar.Action icon="notifications" onPress={() => {}} />}
           safeArea={false}
           subtitle="Tenés 3 pedidos pendientes hoy"
           title="Buenos días, Mariana"
@@ -484,7 +464,7 @@ function CollapsingDemo() {
   return (
     <View style={{ height: 360 }}>
       <Navigation.CollapsingHeader
-        actions={<Navigation.AppBar.Action icon="ellipsis-horizontal" onPress={() => {}} />}
+        actions={<Navigation.AppBar.Action icon="more" onPress={() => {}} />}
         onBack={() => {}}
         scrollY={scrollY}
         subtitle="Desplazá para colapsar"
@@ -508,12 +488,12 @@ function CollapsingDemo() {
 
 export const CollapsingHeader: Story = { render: () => <CollapsingDemo /> };
 
-const NAV_ITEMS = [
-  { activeIcon: "home", icon: "home-outline", key: "home", label: "Inicio" },
-  { icon: "cart-outline", key: "sales", label: "Ventas" },
-  { icon: "cube-outline", key: "stock", label: "Stock" },
-  { icon: "people-outline", key: "clients", label: "Clientes" },
-  { icon: "settings-outline", key: "settings", label: "Ajustes" },
+const NAV_ITEMS: BottomNavItem[] = [
+  { activeIcon: "home", icon: "home", key: "home", label: "Inicio" },
+  { icon: "cart", key: "sales", label: "Ventas" },
+  { icon: "package", key: "stock", label: "Stock" },
+  { icon: "people", key: "clients", label: "Clientes" },
+  { icon: "settings", key: "settings", label: "Ajustes" },
 ];
 
 // One component (Navigation.BottomNav), every shape/variant by props — the single source of truth.
@@ -582,11 +562,11 @@ export const BottomNavVariants: Story = { render: () => <BottomNavMatrixDemo /> 
 // Los inactivos muestran solo ícono.
 function TicketsTabBarDemo() {
   const [tab, setTab] = useState("home");
-  const items = [
-    { customIcon: HomeIcon, key: "odoo", label: "Odoo" },
-    { customIcon: HomeIcon, key: "home", label: "Principal" },
-    { customIcon: SettingsIcon, key: "settings", label: "Ajustes" },
-    { customIcon: ProfileIcon, key: "profile", label: "Perfil" },
+  const items: BottomNavItem[] = [
+    { icon: "server", key: "odoo", label: "Odoo" },
+    { icon: "home", key: "home", label: "Principal" },
+    { icon: "settings", key: "settings", label: "Ajustes" },
+    { icon: "profile", key: "profile", label: "Perfil" },
   ];
   return (
     <View style={{ gap: 24 }}>

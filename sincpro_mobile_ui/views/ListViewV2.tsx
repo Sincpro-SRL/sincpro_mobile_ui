@@ -1,3 +1,9 @@
+import {
+  FlashList,
+  type FlashListProps,
+  type FlashListRef,
+  type ListRenderItemInfo,
+} from "@shopify/flash-list";
 import { Display } from "@sincpro/mobile-ui/Display";
 import SearchHistory, {
   type SearchHistoryProps,
@@ -15,7 +21,7 @@ import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
-import { IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
+import { type IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
 import React, {
   createContext,
   ReactNode,
@@ -27,8 +33,6 @@ import React, {
   useState,
 } from "react";
 import {
-  FlatList,
-  type FlatListProps,
   RefreshControl,
   ScrollView,
   type ScrollViewProps,
@@ -42,7 +46,7 @@ import type { Edge } from "react-native-safe-area-context";
 interface ListViewProps<T> {
   name: string;
   description?: string;
-  items: T[];
+  items: readonly T[];
   isLoading?: boolean;
   hasError?: boolean;
   errorMessage?: string;
@@ -61,6 +65,7 @@ interface ListViewProps<T> {
   hasMore?: boolean;
   backgroundColor?: string;
   withContainer?: boolean;
+  edges?: Edge[];
   children: ReactNode;
 }
 
@@ -106,14 +111,11 @@ function ListViewRoot<T>({
   hasMore = true,
   backgroundColor,
   withContainer = true,
+  edges,
   children,
 }: ListViewProps<T>) {
-  const Wrapper = withContainer ? Container : View;
-  const wrapperProps = withContainer
-    ? { edges: ["bottom", "left", "right"] as Edge[] }
-    : { className: "flex-1 bg-bg-page" };
+  const style = backgroundColor ? { backgroundColor } : undefined;
 
-  // Propagate contentWithMargin to ContentList via context
   return (
     <ListViewProvider
       description={description}
@@ -135,7 +137,15 @@ function ListViewRoot<T>({
     >
       <RefreshErrorContext.Provider value={onRefreshError}>
         <ErrorBoundary>
-          <Wrapper {...wrapperProps}>{children}</Wrapper>
+          {withContainer ? (
+            <Container edges={edges} style={style}>
+              {children}
+            </Container>
+          ) : (
+            <View className="flex-1 bg-bg-page" style={style}>
+              {children}
+            </View>
+          )}
         </ErrorBoundary>
       </RefreshErrorContext.Provider>
     </ListViewProvider>
@@ -145,7 +155,6 @@ function ListViewRoot<T>({
 interface HeaderProps {
   /** Reserve the top inset; disable when the host already handles it. */
   safeArea?: boolean;
-  barStyle?: "light-content" | "dark-content";
   /** AppBar display variant. `large` = big title (list/index). `center` = modal/detail. */
   variant?: "default" | "large" | "center";
   /** Surface tone. `dark` = always-dark hero. `gradient` = brand accent gradient. */
@@ -168,7 +177,6 @@ interface HeaderProps {
 
 function Header({
   safeArea = true,
-  barStyle,
   variant = "large",
   tone,
   actions,
@@ -182,7 +190,6 @@ function Header({
     <Navigation.AppBar
       actions={actions}
       background={background}
-      barStyle={barStyle}
       onBack={onBack}
       safeArea={safeArea}
       subheader={children}
@@ -331,32 +338,143 @@ type ListScrollProps = Pick<
   "keyboardShouldPersistTaps" | "keyboardDismissMode" | "testID"
 >;
 
-export type ListViewVirtualizationProps = Pick<
-  FlatListProps<IRowItem<unknown>>,
-  | "initialNumToRender"
-  | "maxToRenderPerBatch"
-  | "windowSize"
-  | "updateCellsBatchingPeriod"
-  | "removeClippedSubviews"
+export type ListViewVirtualizationProps<T = unknown> = Pick<
+  FlashListProps<IRowItem<T>>,
+  | "drawDistance"
+  | "maxItemsInRecyclePool"
+  | "getItemType"
   | "extraData"
-  | "getItemLayout"
+  | "initialScrollIndex"
+  | "initialScrollIndexParams"
   | "onViewableItemsChanged"
   | "viewabilityConfig"
+  | "viewabilityConfigCallbackPairs"
   | "onEndReachedThreshold"
   | "maintainVisibleContentPosition"
 >;
 
-interface ListContentOptions {
-  listProps?: ListViewVirtualizationProps;
-  listRef?: Ref<FlatList<IRowItem<unknown>>>;
+interface ListContentOptions<T> {
+  listProps?: ListViewVirtualizationProps<T>;
+  listRef?: Ref<FlashListRef<IRowItem<T>>>;
   contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
-function rowKey(item: IRowItem<unknown>): string {
-  return String(item.id ?? item.index);
+function rowKey<T>(row: IRowItem<T>): string {
+  return String(row.id);
 }
 
-function Content({
+function ContentList<T = unknown>({
+  children,
+  contentWithMargin,
+  keyboardShouldPersistTaps,
+  keyboardDismissMode,
+  testID,
+  listProps,
+  listRef,
+  contentContainerStyle,
+}: {
+  children?: (item: T, row: IRowItem<T>) => ReactNode;
+  contentWithMargin: boolean;
+} & ListScrollProps &
+  ListContentOptions<T>) {
+  const {
+    items,
+    onRefresh,
+    showRefreshing,
+    setShowRefreshing,
+    onPressItem,
+    onDeleteItem,
+    readonly,
+    onLoadMore,
+    loadingMore,
+    hasMore,
+  } = useListView<T>();
+  const bottomInset = useBottomInset();
+  const theme = useTheme();
+  const rowItems = useMemo(() => toRowItems(items), [items]);
+  const onRefreshError = useContext(RefreshErrorContext);
+
+  const handleRefresh = useCallback(async () => {
+    await refreshListData(onRefresh, onRefreshError, setShowRefreshing);
+  }, [onRefresh, onRefreshError, setShowRefreshing]);
+
+  const renderItem = useCallback(
+    ({ item: row }: ListRenderItemInfo<IRowItem<T>>) => {
+      if (children) {
+        return <>{children(row.item, row)}</>;
+      }
+
+      const onPress = () => onPressItem?.(row.item);
+      const onDelete = () => onDeleteItem?.(row.item);
+      const isReadOnly = row.readonly || readonly || false;
+
+      return (
+        <Navigation.RowItem
+          item={row}
+          onDelete={onDelete}
+          onPress={onPress}
+          readonly={isReadOnly}
+        />
+      );
+    },
+    [children, onPressItem, onDeleteItem, readonly],
+  );
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        marginTop: 2,
+        paddingHorizontal: contentWithMargin ? 4 : 0,
+        backgroundColor: theme.bg.page,
+      }}
+    >
+      <FlashList<IRowItem<T>>
+        {...listProps}
+        contentContainerStyle={[
+          bottomInset ? { paddingBottom: bottomInset } : undefined,
+          contentContainerStyle,
+        ]}
+        data={rowItems}
+        keyboardDismissMode={keyboardDismissMode}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        keyExtractor={rowKey}
+        ListFooterComponent={
+          loadingMore ? (
+            <View className="py-4">
+              <Feedback.Spinner size="small" />
+            </View>
+          ) : undefined
+        }
+        maintainVisibleContentPosition={
+          listProps?.maintainVisibleContentPosition ?? { disabled: true }
+        }
+        onEndReached={
+          onLoadMore
+            ? () => {
+                if (hasMore && !loadingMore && !showRefreshing) onLoadMore();
+              }
+            : undefined
+        }
+        onEndReachedThreshold={listProps?.onEndReachedThreshold ?? 0.5}
+        ref={listRef}
+        refreshControl={
+          <RefreshControl
+            colors={[theme.primary]}
+            onRefresh={handleRefresh}
+            refreshing={showRefreshing}
+          />
+        }
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1 }}
+        testID={testID}
+      />
+    </View>
+  );
+}
+
+function Content<T = unknown>({
   children,
   withMargin = true,
   keyboardShouldPersistTaps = "handled",
@@ -366,10 +484,10 @@ function Content({
   listRef,
   contentContainerStyle,
 }: {
-  children?: (item: any, row: IRowItem<unknown>) => ReactNode;
+  children?: (item: T, row: IRowItem<T>) => ReactNode;
   withMargin?: boolean;
 } & ListScrollProps &
-  ListContentOptions) {
+  ListContentOptions<T>) {
   const {
     name,
     items,
@@ -381,7 +499,7 @@ function Content({
     onBack,
     showRefreshing,
     setShowRefreshing,
-  } = useListView();
+  } = useListView<T>();
 
   const bottomInset = useBottomInset();
   const theme = useTheme();
@@ -456,7 +574,7 @@ function Content({
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg.page }}>
       <Display.CountRecords count={items.length || 0} name={name} />
-      <ContentList
+      <ContentList<T>
         contentContainerStyle={contentContainerStyle}
         contentWithMargin={withMargin}
         keyboardDismissMode={keyboardDismissMode}
@@ -467,114 +585,6 @@ function Content({
       >
         {children}
       </ContentList>
-    </View>
-  );
-}
-
-function ContentList({
-  children,
-  contentWithMargin,
-  keyboardShouldPersistTaps,
-  keyboardDismissMode,
-  testID,
-  listProps,
-  listRef,
-  contentContainerStyle,
-}: {
-  children?: (item: any, row: IRowItem<unknown>) => ReactNode;
-  contentWithMargin: boolean;
-} & ListScrollProps &
-  ListContentOptions) {
-  const {
-    items,
-    onRefresh,
-    showRefreshing,
-    setShowRefreshing,
-    onPressItem,
-    onDeleteItem,
-    readonly,
-    onLoadMore,
-    loadingMore,
-    hasMore,
-  } = useListView();
-  const bottomInset = useBottomInset();
-  const theme = useTheme();
-  const rowItems = useMemo(() => toRowItems(items), [items]);
-  const onRefreshError = useContext(RefreshErrorContext);
-
-  const handleRefresh = useCallback(async () => {
-    await refreshListData(onRefresh, onRefreshError, setShowRefreshing);
-  }, [onRefresh, onRefreshError, setShowRefreshing]);
-
-  const renderItem = useCallback(
-    ({ item }: { item: IRowItem<unknown> }) => {
-      if (children) {
-        return <>{children(item.item, item)}</>;
-      }
-
-      const onPress = () => onPressItem?.(item.item);
-      const onDelete = () => onDeleteItem?.(item.item);
-      const isReadOnly = item.readonly || readonly || false;
-
-      return (
-        <Navigation.RowItem
-          item={item}
-          onDelete={onDelete}
-          onPress={onPress}
-          readonly={isReadOnly}
-        />
-      );
-    },
-    [children, onPressItem, onDeleteItem, readonly],
-  );
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        marginTop: 2,
-        paddingHorizontal: contentWithMargin ? 4 : 0,
-        backgroundColor: theme.bg.page,
-      }}
-    >
-      <FlatList<IRowItem<unknown>>
-        {...listProps}
-        contentContainerStyle={[
-          bottomInset ? { paddingBottom: bottomInset } : undefined,
-          contentContainerStyle,
-        ]}
-        data={rowItems}
-        keyboardDismissMode={keyboardDismissMode}
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        keyExtractor={rowKey}
-        ListFooterComponent={
-          loadingMore ? (
-            <View className="py-4">
-              <Feedback.Spinner size="small" />
-            </View>
-          ) : undefined
-        }
-        onEndReached={
-          onLoadMore
-            ? () => {
-                if (hasMore && !loadingMore && !showRefreshing) onLoadMore();
-              }
-            : undefined
-        }
-        onEndReachedThreshold={listProps?.onEndReachedThreshold ?? 0.5}
-        ref={listRef}
-        refreshControl={
-          <RefreshControl
-            colors={[theme.primary]}
-            onRefresh={handleRefresh}
-            refreshing={showRefreshing}
-          />
-        }
-        renderItem={renderItem}
-        scrollEnabled={true}
-        showsVerticalScrollIndicator={false}
-        testID={testID}
-      />
     </View>
   );
 }
@@ -774,7 +784,7 @@ const ContentWithSubComponents = Object.assign(Content, {
 
 /**
  * Screen container for a collection (list / index / search results).
- * Owns safe-area, the FlatList (pagination + pull-to-refresh), record count, and the
+ * Owns safe-area, the FlashList (pagination + pull-to-refresh), record count, and the
  * loading/empty/error states.
  *
  * API map:
@@ -785,7 +795,7 @@ const ContentWithSubComponents = Object.assign(Content, {
  *     .Header.Segmented          — tab-like switch in the subheader (Activos / Archivados)
  *     .Header.Filters(.Chips/.Chip) — horizontal filter pills (SIBLING below the header)
  *     .Header.ActionsBar         — SIBLING bar below the header (bulk select, etc.)
- *   ListViewV2.Content           — FlatList body; `children` is an optional custom row renderer
+ *   ListViewV2.Content           — FlashList body; `children` is an optional custom row renderer
  *     .Content.Row(.Avatar/.Content/.Title/.Subtitle/.Footer/.Actions/.ActionButton)
  *   ListViewV2.Footer        — pinned footer (hidden when empty)
  *   ListViewV2.FloatingButton — absolute FAB overlay

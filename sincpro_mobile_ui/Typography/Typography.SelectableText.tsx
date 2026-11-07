@@ -1,8 +1,5 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import {
-  resolveTextFontFamily,
-  typographyVariants,
-} from "@sincpro/mobile-ui/theme/typography";
+import { appliedTextStyle, typographyVariants } from "@sincpro/mobile-ui/theme/typography";
 import { TextInput, type TextInputProps } from "react-native";
 
 export type SelectableTextProps = Pick<
@@ -33,12 +30,8 @@ function SelectableText({
       scrollEnabled={false}
       showSoftInputOnFocus={false}
       style={[
-        typographyVariants[variant],
-        {
-          fontFamily: resolveTextFontFamily(variant, false, semibold),
-          padding: 0,
-          textAlignVertical: "top",
-        },
+        appliedTextStyle(variant, false, semibold),
+        { padding: 0, textAlignVertical: "top" },
         style,
       ]}
       underlineColorAndroid="transparent"

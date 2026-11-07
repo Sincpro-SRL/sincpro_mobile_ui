@@ -25,7 +25,7 @@ function ListViewAllRowVariantsStory() {
         <View style={{ backgroundColor: theme.bg.card }}>
           <ListViewV2.Content.Row>
             <ListViewV2.Content.Row.Avatar>
-              <LeadingIcon name="cube-outline" />
+              <LeadingIcon name="package" />
             </ListViewV2.Content.Row.Avatar>
             <ListViewV2.Content.Row.Content>
               <ListViewV2.Content.Row.Title>Producto básico</ListViewV2.Content.Row.Title>
@@ -43,7 +43,7 @@ function ListViewAllRowVariantsStory() {
         <View style={{ backgroundColor: theme.bg.card }}>
           <ListViewV2.Content.Row onPress={() => {}}>
             <ListViewV2.Content.Row.Avatar>
-              <LeadingIcon name="receipt-outline" />
+              <LeadingIcon name="receipt" />
             </ListViewV2.Content.Row.Avatar>
             <ListViewV2.Content.Row.Content>
               <ListViewV2.Content.Row.Title
@@ -112,7 +112,7 @@ function ListViewAllRowVariantsStory() {
         <View style={{ backgroundColor: theme.bg.card }}>
           <ListViewV2.Content.Row>
             <ListViewV2.Content.Row.Avatar>
-              <LeadingIcon name="document-outline" />
+              <LeadingIcon name="document" />
             </ListViewV2.Content.Row.Avatar>
             <ListViewV2.Content.Row.Content>
               <ListViewV2.Content.Row.Title>
@@ -122,25 +122,11 @@ function ListViewAllRowVariantsStory() {
             </ListViewV2.Content.Row.Content>
             <ListViewV2.Content.Row.Actions>
               <ListViewV2.Content.Row.ActionButton
-                icon={
-                  <Display.Icon
-                    color={theme.icon.primary}
-                    name="share-outline"
-                    size={18}
-                    type="ionicons"
-                  />
-                }
+                icon={<Display.Icon color={theme.icon.primary} name="share" size={18} />}
                 onPress={() => {}}
               />
               <ListViewV2.Content.Row.ActionButton
-                icon={
-                  <Display.Icon
-                    color={theme.icon.primary}
-                    name="trash-outline"
-                    size={18}
-                    type="ionicons"
-                  />
-                }
+                icon={<Display.Icon color={theme.icon.primary} name="delete" size={18} />}
                 onPress={() => {}}
               />
             </ListViewV2.Content.Row.Actions>

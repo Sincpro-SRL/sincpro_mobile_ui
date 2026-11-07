@@ -1,18 +1,16 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import { IconType } from "@sincpro/mobile-ui/utils/icon";
-import { ComponentType } from "react";
 import { View } from "react-native";
 import { tv } from "tailwind-variants";
 
 export interface CircleButtonProps {
-  iconType?: IconType;
   size?: "sm" | "md" | "lg";
   color?: string;
   variant?: "primary" | "secondary" | "accent" | "success" | "danger" | "warning";
   className?: string;
-  customIcon?: ComponentType<{ size?: number; color?: string }>;
+  icon: IconName;
 }
 
 const circleButtonVariants = tv({
@@ -45,24 +43,18 @@ const SIZE_MAP = {
 };
 
 export function CircleButton({
-  iconType = "ionicons",
   size = "md",
   color,
   variant = "accent",
   className,
-  customIcon,
+  icon,
 }: CircleButtonProps) {
   const theme = useTheme();
   const iconColor = color ?? theme.text.inverse;
 
   return (
     <View className={cn(circleButtonVariants({ size, variant }), className)}>
-      <Icon
-        color={iconColor}
-        customIcon={customIcon}
-        size={SIZE_MAP[size].icon}
-        type={iconType}
-      />
+      <Icon color={iconColor} name={icon} size={SIZE_MAP[size].icon} />
     </View>
   );
 }

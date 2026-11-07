@@ -3,8 +3,8 @@ import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import KeyboardToolbar from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
-import { type ComponentRef, createRef } from "react";
-import { StyleSheet, Text, TextInput } from "react-native";
+import { createRef } from "react";
+import { StyleSheet, Text, type TextInputInstance } from "react-native";
 import { FocusedInputEvents, KeyboardController } from "react-native-keyboard-controller";
 import type { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 
@@ -145,7 +145,6 @@ test("KeyboardForm forwards native scroll ref and composes toolbar overrides", a
   await render(
     <KeyboardForm
       ref={ref}
-      toolbarLabels={{ doneLabel: "Legacy close label" }}
       toolbarProps={{ doneLabel: "Cerrar edición", showDoneLabel: true }}
     >
       <Input label="Campo" value="" />
@@ -154,7 +153,6 @@ test("KeyboardForm forwards native scroll ref and composes toolbar overrides", a
   ref.current?.assureFocusedInputVisible();
   expect(mockAssureVisible).toHaveBeenCalled();
   expect(screen.getByRole("button", { name: "Cerrar edición" })).toBeTruthy();
-  expect(screen.queryByRole("button", { name: "Legacy close label" })).toBeNull();
 });
 
 test("toolbar follows native group boundaries and delegates focus traversal", async () => {
@@ -183,7 +181,7 @@ test("closed keyboard toolbar stays mounted but inaccessible", async () => {
 });
 
 test("Form.Input forwards the native instance ref for return-key navigation", async () => {
-  const ref = createRef<ComponentRef<typeof TextInput>>();
+  const ref = createRef<TextInputInstance>();
   const submit = jest.fn();
   await render(
     <Input
@@ -200,4 +198,29 @@ test("Form.Input forwards the native instance ref for return-key navigation", as
     nativeEvent: { text: "" },
   });
   expect(submit).toHaveBeenCalledTimes(1);
+});
+
+test("keyboard form reserves sticky CTA plus toolbar clearance without replacing public offsets", async () => {
+  const { rerender } = await render(
+    <KeyboardForm stickyFooterHeight={64} testID="sticky-form">
+      <Input label="Último campo" value="" />
+    </KeyboardForm>,
+  );
+  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(136);
+  await fireEvent(screen.getByTestId("keyboard-toolbar"), "layout", {
+    nativeEvent: { layout: { x: 0, y: 0, width: 400, height: 88 } },
+  });
+  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(176);
+  await rerender(
+    <KeyboardForm stickyFooterHeight={80} toolbar={false} testID="sticky-form">
+      <Input label="Último campo" value="" />
+    </KeyboardForm>,
+  );
+  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(104);
+  await rerender(
+    <KeyboardForm bottomOffset={200} stickyFooterHeight={80} testID="sticky-form">
+      <Input label="Último campo" value="" />
+    </KeyboardForm>,
+  );
+  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(200);
 });

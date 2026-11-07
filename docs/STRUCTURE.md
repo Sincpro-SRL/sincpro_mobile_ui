@@ -18,17 +18,19 @@
 | `primitives/` | Átomos estructurales sin semántica de dominio             | `Box`, `Row`, `Stack`, `BaseButton`, `Pressable`, `Spacer`, `AspectRatio`                                                                                                                 | nada con estado de negocio                 |
 | `Typography/` | Texto                                                     | `Text`, `Heading`                                                                                                                                                                         |                                            |
 | `Display/`    | **Mostrar datos** (presentacional puro)                   | `Badge`, `Avatar`, `Card`, `Chip`, `Accordion`, `ListItem`, `Icon`, `Monetary`, `Date`, `Divider`, `CopyableText`                                                                         | estado de app, inputs                      |
-| `Form/`       | **Entrada de datos**                                      | `Input`, `Button`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `SearchBar`, `Monetary/QuantityInput`, `Controlled*`                                                                  | display puro                               |
+| `Form/`       | **Entrada de datos**                                      | `Input`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `Select`, `DatePicker`, `Slider`, `KeyboardForm`, `KeyboardToolbar`, `Monetary/QuantityInput`, `Controlled*`                              | acciones (→ `Actions`)                     |
 | `Feedback/`   | **Comunicar estado de la app**                            | `Loading`, `Spinner`, `Skeleton`, `Progress`, `Banner`, `Empty`, `Error`, `Toast` (Provider+hook), `ErrorBoundary`                                                                        | datos del dominio                          |
-| `Dialog/`     | Overlays modales                                          | `Confirmation`, `EditValue`, `BottomSheet`                                                                                                                                                |                                            |
+| `Dialog/`     | Overlays modales                                          | `Sheet` sobre `@expo/ui/community/bottom-sheet`, `ActionSheet`, `EditValue`, confirmación nativa                                                                                            | otro motor de sheets                       |
 | `Navigation/` | Navegación intra-pantalla / barras                        | `AppBar`, `BottomNav`, `TabItem`, `RowItem`, `SegmentedControl`, `Tabs`, `FloatingBar`, `CollapsingHeader`, `Steps`, `Menu`, `SearchBar`                                                  | layouts de ruta (van en el core)           |
-| `layouts/`    | Contenedores presentacionales                             | `Container`, `ScrollContainer`, `GradientContainer`, `AuthContainer`, `PlainLayout`, `TabNavigatorLayout`                                                                                 | layouts router-aware (core)                |
+| `layouts/`    | Contenedores presentacionales                             | `Container`, `ScrollContainer`, `GradientContainer`, `AuthContainer`, `PlainLayout`                                                                                                        | layouts router-aware (host)                |
 | `views/`      | Templates compuestos (patrones de pantalla)               | `FormViewV2`, `ListViewV2`, `AuthFormView`, `AppSplashView`, `Wizard`                                                                                                                     |                                            |
-| `widgets/`    | Composiciones genéricas listas                            | `MenuGrid`, `MenuCard`, `MenuSection`, `PromoBanner`, `PromoModal`, `QuickActions`, `HomeHeader`_, `ScreenHeader`_, `CircleButton`, `GeoPermissionCard`, `TimeZoneSelector`, `JSONViewer` |                                            |
+| `widgets/`    | Composiciones genéricas listas                            | `CollectionOptions`, `FilterBar`, `FilterBuilder`, `PromoBanner`, `PromoModal`, `QuickActions`, `TimeZoneSelector`, `JSONViewer`                                                             | alias de `Display`/`Navigation`, negocio    |
 | `icons/`      | Iconos SVG                                                | componentes de icono                                                                                                                                                                      | lógica de dominio                          |
-| `utils/`      | Helpers genéricos                                         | `date`, `monetary`, `quantity`, `serializer`, `timezone`, `icon`                                                                                                                          |                                            |
+| `utils/`      | Helpers genéricos                                         | `date`, `monetary`, `quantity`, `serializer`, `timezone`                                                                                                                                  | fábricas de familias de iconos             |
 
-`*` = piezas con estética vieja, mantenidas por **retrocompat**; el rumbo es un Header de estilo propio (ver plan UD6).
+`Display.Icon` acepta `IconName`; el mapa `ICON_MAP` exportado desde `Display` contiene
+los nombres SF/Material compartidos con los tabs del host. Los logos son branding,
+no una segunda familia de iconos. No hay aliases ni cabeceras legacy por retrocompat.
 
 ## Cómo decidir la categoría (árbol rápido)
 
@@ -42,7 +44,7 @@
 
 ## Taxonomía de Storybook
 
-Solo cuatro raíces: `Foundations`, `Components`, `Patterns`, `Legacy`.
+Raíces del catálogo vigente: `Foundations`, `Components`, `Patterns`.
 UX es un criterio transversal, no una carpeta para ejemplos heterogéneos.
 
 - Estados, jerarquía y fallos de una pieza van con esa pieza: `Components/Actions/Button`,
@@ -76,3 +78,9 @@ UX es un criterio transversal, no una carpeta para ejemplos heterogéneos.
 - `expo-image` es obligatorio desde v2: toda imagen de catálogo usa el renderer común
   `Display.ExpoImage`, directamente o mediante `Display.Image`. Las texturas SVG son otra
   responsabilidad y conservan `react-native-svg`; `resolveAssetSource` de RN no es un renderer.
+- `@expo/ui`, `expo-symbols`, FlashList v2 y keyboard-controller son peers obligatorios
+  del stack SDK 58. El barrel puede componerlos sin implementar otra alternativa.
+- Las dependencias realmente opcionales conservan subpath y peer opcional; ningún peer
+  usa `*` o mínimos sin límite superior.
+- No hay controlador de barras en el design system. El host usa un solo
+  `expo-status-bar` y `expo-system-ui`; Storybook hace de host independiente.

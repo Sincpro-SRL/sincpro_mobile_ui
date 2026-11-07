@@ -11,16 +11,6 @@ jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("@sincpro/mobile-ui/Dialog/Dialog.NativeSheet", () => {
-  const mockReact = jest.requireActual<typeof import("react")>("react");
-  const { View } = require("react-native");
-  return {
-    __esModule: true,
-    default: ({ visible, children }: { visible: boolean; children: React.ReactNode }) =>
-      visible ? mockReact.createElement(View, {}, children) : null,
-  };
-});
-
 test("an explicit options action can archive and undo without a swipe gesture", async () => {
   await render(<MobileRecords />);
   await fireEvent.press(screen.getByRole("button", { name: "Opciones del registro" }));
@@ -53,6 +43,7 @@ test("filter drafts do not change the list until Apply and dismiss discards them
 test("selection is communicated after choosing a mobile-sheet option", async () => {
   await render(<MobileSelection />);
   await fireEvent.press(screen.getByRole("button", { name: "Canal de aviso: Seleccionar…" }));
-  await fireEvent.press(screen.getByRole("menuitem", { name: "Correo electrónico" }));
+  await fireEvent(screen.getByTestId("native-picker"), "valueChange", "0");
+  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
   expect(screen.getByText("Canal elegido: Correo electrónico")).toBeTruthy();
 });

@@ -1,154 +1,226 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { FlashList } from "@shopify/flash-list";
+import { Actions } from "@sincpro/mobile-ui/Actions";
+import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
+import { fontFamilies, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
-import React, { useEffect, useRef } from "react";
-import {
-  FlatList,
-  Modal,
-  TextInput,
-  type TextInputInstance,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { type ReactNode, useRef, useState } from "react";
+import { Keyboard, TextInput, type TextInputProps, View } from "react-native";
 
-export interface EditableValueModalChip {
-  key?: string;
+export type EditValueOption = {
+  key: string;
   label: string;
-  onPress: () => void;
-}
+  value: string;
+  disabled?: boolean;
+};
 
-export interface EditableValueModalProps {
+export type EditValueProps = {
   visible: boolean;
   title: string;
   value: string;
-  onChangeValue: (text: string) => void;
-  onConfirm: () => void;
-  onCancel: () => void;
+  onChange?: (value: string) => void;
+  onConfirm: (value: string) => void | Promise<void>;
+  onClose: () => void;
   placeholder?: string;
-  helperText?: string | React.ReactNode;
-  chips?: EditableValueModalChip[];
-  keyboardType?: "default" | "numeric" | "decimal-pad";
-  rightAdornment?: React.ReactNode;
+  helperText?: ReactNode;
+  options?: readonly EditValueOption[];
+  keyboardType?: TextInputProps["keyboardType"];
+  rightAdornment?: ReactNode;
+  footerAdornment?: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   autoFocus?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
   testID?: string;
-}
+};
 
-function EditableValueModal({
-  visible,
+function EditValueEditor({
   title,
   value,
-  onChangeValue,
+  onChange,
   onConfirm,
-  onCancel,
+  onClose,
   placeholder,
   helperText,
-  chips,
+  options = [],
   keyboardType = "decimal-pad",
   rightAdornment,
+  footerAdornment,
   confirmLabel = "Aplicar",
   cancelLabel = "Cancelar",
   autoFocus = true,
-  testID,
-}: EditableValueModalProps) {
-  const inputRef = useRef<TextInputInstance>(null);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (visible && autoFocus) {
-      const t = setTimeout(() => inputRef.current?.focus(), 60);
-      return () => clearTimeout(t);
+  disabled = false,
+  readOnly = false,
+  onPendingChange,
+}: EditValueProps & { onPendingChange: (pending: boolean) => void }) {
+  const theme = useTheme();
+  const saving = useRef(false);
+  const [localDraft, setLocalDraft] = useState(value);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
+  const draft = onChange ? value : localDraft;
+  const blocked = disabled || readOnly || pending;
+  const updateDraft = (next: string) => {
+    if (blocked || saving.current) return;
+    if (onChange) onChange(next);
+    else setLocalDraft(next);
+    setError(undefined);
+  };
+  const close = () => {
+    if (saving.current) return;
+    Keyboard.dismiss();
+    onClose();
+  };
+  const save = async () => {
+    if (disabled || readOnly || saving.current) return;
+    saving.current = true;
+    setPending(true);
+    onPendingChange(true);
+    setError(undefined);
+    try {
+      await onConfirm(draft);
+      Keyboard.dismiss();
+      onClose();
+    } catch (cause) {
+      setError(
+        cause instanceof Error && cause.message.trim()
+          ? cause.message
+          : "No se pudo guardar. Conservamos el valor para reintentar.",
+      );
+    } finally {
+      saving.current = false;
+      setPending(false);
+      onPendingChange(false);
     }
-  }, [visible, autoFocus]);
+  };
 
   return (
-    <Modal
-      animationType={reducedMotion ? "none" : "fade"}
-      onRequestClose={onCancel}
-      presentationStyle="overFullScreen"
-      transparent
-      visible={visible}
-    >
-      <View className="flex-1 justify-center p-6 bg-black/40">
-        <View
-          accessibilityViewIsModal
-          className="p-4"
-          onAccessibilityEscape={onCancel}
-          style={{ borderRadius: 16, backgroundColor: theme.bg.popover, ...theme.shadow.md }}
-          testID={testID}
-        >
-          <Typography.Text className="mb-3" semibold variant="h6">
-            {title}
-          </Typography.Text>
-          <View className="flex-row items-center">
-            <TextInput
-              accessibilityLabel={title}
-              className="flex-1 border border-input rounded-lg p-2.5 text-lg text-text-primary"
-              keyboardType={keyboardType}
-              onChangeText={onChangeValue}
-              onSubmitEditing={onConfirm}
-              placeholder={placeholder}
-              placeholderTextColor={theme.text.tertiary}
-              ref={inputRef}
-              returnKeyType="done"
-              selectionColor={theme.primary}
-              underlineColorAndroid="transparent"
-              value={value}
-            />
-            {rightAdornment && <View className="ml-2">{rightAdornment}</View>}
-          </View>
-          {helperText ? (
-            <View className="mt-2">
-              {typeof helperText === "string" ? (
-                <Typography.Text className="opacity-70" variant="bodySmall">
-                  {helperText}
-                </Typography.Text>
-              ) : (
-                helperText
-              )}
-            </View>
-          ) : null}
-          {chips && chips.length > 0 && (
-            <FlatList
-              contentContainerClassName="gap-2 py-3"
-              data={chips}
-              horizontal
-              keyExtractor={(c, i) => c.key || `${c.label}-${i}`}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className="px-3 py-1.5 bg-accent/10 rounded-2xl border border-accent/30"
-                  onPress={item.onPress}
-                >
-                  <Typography.Text semibold variant="bodySmall">
-                    {item.label}
-                  </Typography.Text>
-                </TouchableOpacity>
-              )}
-            />
-          )}
-          <View className="flex-row justify-end gap-3">
-            <TouchableOpacity
-              className="px-4 py-2.5 rounded-lg bg-bg-hover"
-              onPress={onCancel}
-            >
-              <Typography.Text semibold variant="body">
-                {cancelLabel}
-              </Typography.Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="px-4 py-2.5 rounded-lg bg-accent"
-              onPress={onConfirm}
-            >
-              <Typography.Text className="text-text-inverse" semibold variant="body">
-                {confirmLabel}
-              </Typography.Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+    <View style={{ flex: 1, minHeight: 0 }}>
+      <View className="flex-row items-center gap-2">
+        <TextInput
+          accessibilityLabel={title}
+          accessibilityState={{ disabled: blocked }}
+          autoFocus={autoFocus && !blocked}
+          className="flex-1 border border-input rounded-lg p-3 text-text-primary"
+          editable={!blocked}
+          keyboardType={keyboardType}
+          onChangeText={updateDraft}
+          onSubmitEditing={() => void save()}
+          placeholder={placeholder}
+          placeholderTextColor={theme.text.tertiary}
+          readOnly={readOnly}
+          returnKeyType="done"
+          selectionColor={theme.primary}
+          style={{ minHeight: 48, fontFamily: fontFamilies.regular, fontSize: 18 }}
+          underlineColorAndroid="transparent"
+          value={draft}
+        />
+        {rightAdornment}
       </View>
-    </Modal>
+      {helperText ? (
+        typeof helperText === "string" ? (
+          <Typography.Text className="pt-2 text-text-secondary">{helperText}</Typography.Text>
+        ) : (
+          helperText
+        )
+      ) : null}
+      <View style={{ flex: 1, minHeight: 0 }}>
+        <FlashList
+          contentContainerStyle={{ paddingVertical: 12 }}
+          data={options}
+          keyboardShouldPersistTaps="handled"
+          keyExtractor={(option) => option.key}
+          renderItem={({ item }) => (
+            <Pressable
+              accessibilityLabel={item.label}
+              accessibilityRole="radio"
+              accessibilityState={{
+                disabled: blocked || !!item.disabled,
+                selected: item.value === draft,
+              }}
+              className="border-b border-border-light py-3"
+              disabled={blocked || item.disabled}
+              onPress={() => {
+                if (!item.disabled) updateDraft(item.value);
+              }}
+              style={{ minWidth: 48, minHeight: 48 }}
+            >
+              <Typography.Text
+                className={item.disabled ? "text-text-disabled" : "text-text-primary"}
+                semibold={item.value === draft}
+              >
+                {item.label}
+              </Typography.Text>
+            </Pressable>
+          )}
+        />
+      </View>
+      {error ? (
+        <Typography.Text
+          accessibilityLiveRegion="polite"
+          accessibilityRole="alert"
+          className="pb-3 text-danger"
+          selectable
+        >
+          {error}
+        </Typography.Text>
+      ) : null}
+      <View className="gap-2 border-t border-border-light py-3">
+        {footerAdornment ? (
+          <View
+            accessibilityElementsHidden={blocked}
+            importantForAccessibility={blocked ? "no-hide-descendants" : "auto"}
+            pointerEvents={blocked ? "none" : "auto"}
+          >
+            {footerAdornment}
+          </View>
+        ) : null}
+        <Actions.Button
+          disabled={pending}
+          onPress={close}
+          title={cancelLabel}
+          variant="secondary"
+        />
+        <Actions.Button
+          disabled={blocked}
+          loading={pending}
+          onPress={() => void save()}
+          title={confirmLabel}
+        />
+      </View>
+    </View>
   );
 }
 
-export default EditableValueModal;
+function EditValue(props: EditValueProps) {
+  const busy = useRef(false);
+  const [pending, setPending] = useState(false);
+  return (
+    <Sheet
+      dismissible={!pending}
+      onClose={() => {
+        if (!busy.current) {
+          Keyboard.dismiss();
+          props.onClose();
+        }
+      }}
+      scrollable={false}
+      testID={props.testID}
+      title={props.title}
+      visible={props.visible}
+    >
+      {props.visible ? (
+        <EditValueEditor
+          {...props}
+          onPendingChange={(next) => {
+            busy.current = next;
+            setPending(next);
+          }}
+        />
+      ) : null}
+    </Sheet>
+  );
+}
+
+export default EditValue;

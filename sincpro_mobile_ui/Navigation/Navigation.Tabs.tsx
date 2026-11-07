@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -86,7 +87,7 @@ function TabsList({ children, className }: { children: ReactNode; className?: st
 export interface TabsTriggerProps {
   value: string;
   children: ReactNode;
-  icon?: string;
+  icon?: IconName;
   iconLayout?: "top" | "left";
 }
 

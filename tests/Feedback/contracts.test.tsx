@@ -47,7 +47,7 @@ test("base action retains its accessible name while busy", async () => {
 
 test("base icon action carries the same target and supplied name", async () => {
   await render(
-    <BaseButton.Icon accessibilityLabel="Más opciones" icon="ellipsis" size="small" />,
+    <BaseButton.Icon accessibilityLabel="Más opciones" icon="more" size="small" />,
   );
   expect(screen.getByRole("button", { name: "Más opciones" }).props.style).toMatchObject({
     minWidth: 48,

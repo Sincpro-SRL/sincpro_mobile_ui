@@ -28,10 +28,10 @@ export const StatCards: Story = {
   render: () => (
     <View style={{ flexDirection: "row", gap: 12 }}>
       <View style={{ flex: 1 }}>
-        <Display.StatCard delta={12.5} icon="cash-outline" label="Ventas" value="Bs 4.2k" />
+        <Display.StatCard delta={12.5} icon="cash" label="Ventas" value="Bs 4.2k" />
       </View>
       <View style={{ flex: 1 }}>
-        <Display.StatCard delta={-3.2} icon="cart-outline" label="Pedidos" value="128" />
+        <Display.StatCard delta={-3.2} icon="cart" label="Pedidos" value="128" />
       </View>
     </View>
   ),
@@ -233,7 +233,7 @@ export const Tooltip: Story = {
                   Bs 96,00
                 </Typography.Text>
                 <Display.Tooltip content="Incluye impuestos y costo de envío estimados.">
-                  <Display.Icon name="information-circle-outline" size={18} />
+                  <Display.Icon name="info" size={18} />
                 </Display.Tooltip>
               </View>
             }
@@ -253,11 +253,7 @@ export const Tooltip: Story = {
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <Display.StatusDot status="online" />
             <Typography.Text className="text-text-primary">Conexión activa</Typography.Text>
-            <Display.Icon
-              className="text-text-tertiary"
-              name="chevron-down-outline"
-              size={14}
-            />
+            <Display.Icon className="text-text-tertiary" name="expand" size={14} />
           </View>
         </Display.Tooltip>
       </View>
@@ -267,11 +263,7 @@ export const Tooltip: Story = {
           {`placement="right"`}
         </Typography.Text>
         <Display.Tooltip content="Campo obligatorio" placement="right" width={160}>
-          <Display.Icon
-            className="text-text-tertiary"
-            name="alert-circle-outline"
-            size={20}
-          />
+          <Display.Icon className="text-text-tertiary" name="error" size={20} />
         </Display.Tooltip>
       </View>
 
@@ -285,7 +277,7 @@ export const Tooltip: Story = {
             placement="left"
             width={220}
           >
-            <Display.Icon className="text-text-tertiary" name="settings-outline" size={20} />
+            <Display.Icon className="text-text-tertiary" name="settings" size={20} />
           </Display.Tooltip>
         </View>
       </View>
@@ -332,13 +324,13 @@ export const IconBadge: Story = {
   render: () => (
     <View style={{ flexDirection: "row", gap: 24, alignItems: "center" }}>
       <Display.IconBadge count={3} onPress={() => {}}>
-        <Display.Icon name="notifications-outline" size={26} />
+        <Display.Icon name="notifications" size={26} />
       </Display.IconBadge>
       <Display.IconBadge count={128} onPress={() => {}}>
-        <Display.Icon name="mail-outline" size={26} />
+        <Display.Icon name="mail" size={26} />
       </Display.IconBadge>
       <Display.IconBadge dot onPress={() => {}}>
-        <Display.Icon name="cart-outline" size={26} />
+        <Display.Icon name="cart" size={26} />
       </Display.IconBadge>
     </View>
   ),

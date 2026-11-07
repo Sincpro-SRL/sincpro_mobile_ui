@@ -1,4 +1,4 @@
-import { Form } from "@sincpro/mobile-ui/Form";
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { View } from "react-native";
@@ -18,7 +18,7 @@ const VARIANTS = [
 
 const meta = {
   title: "Components/Actions/Button",
-  component: Form.Button,
+  component: Actions.Button,
   args: {
     title: "Acción",
     variant: "primary",
@@ -27,7 +27,7 @@ const meta = {
     variant: { control: "select", options: VARIANTS },
     size: { control: "select", options: ["small", "medium", "large"] },
   },
-} satisfies Meta<typeof Form.Button>;
+} satisfies Meta<typeof Actions.Button>;
 
 export default meta;
 
@@ -36,10 +36,10 @@ type Story = StoryObj<typeof meta>;
 export const ActionHierarchy: Story = {
   render: () => (
     <View style={{ gap: 16 }}>
-      <Form.Button title="Guardar cambios" />
-      <Form.Button title="Cancelar edición" variant="secondary" />
-      <Form.Button title="Ver historial" variant="link" />
-      <Form.Button title="Eliminar registro" variant="outlineDanger" />
+      <Actions.Button title="Guardar cambios" />
+      <Actions.Button title="Cancelar edición" variant="secondary" />
+      <Actions.Button title="Ver historial" variant="link" />
+      <Actions.Button title="Eliminar registro" variant="outlineDanger" />
     </View>
   ),
 };
@@ -47,8 +47,8 @@ export const ActionHierarchy: Story = {
 export const BusyAndDisabled: Story = {
   render: () => (
     <View style={{ gap: 16 }}>
-      <Form.Button loading title="Guardando cambios" />
-      <Form.Button disabled title="Continuar" />
+      <Actions.Button loading title="Guardando cambios" />
+      <Actions.Button disabled title="Continuar" />
       <Typography.Text>Completa los campos obligatorios para continuar.</Typography.Text>
     </View>
   ),
@@ -62,7 +62,7 @@ export const AllVariants: Story = {
       {VARIANTS.map((variant) => (
         <View key={variant} style={{ gap: 4 }}>
           <Typography.Text className="text-text-secondary text-xs">{variant}</Typography.Text>
-          <Form.Button title={`Button ${variant}`} variant={variant} />
+          <Actions.Button title={`Button ${variant}`} variant={variant} />
         </View>
       ))}
     </View>
@@ -72,9 +72,9 @@ export const AllVariants: Story = {
 export const Sizes: Story = {
   render: () => (
     <View style={{ gap: 12 }}>
-      <Form.Button size="small" title="Small" />
-      <Form.Button size="medium" title="Medium" />
-      <Form.Button size="large" title="Large" />
+      <Actions.Button size="small" title="Small" />
+      <Actions.Button size="medium" title="Medium" />
+      <Actions.Button size="large" title="Large" />
     </View>
   ),
 };
@@ -82,9 +82,9 @@ export const Sizes: Story = {
 export const States: Story = {
   render: () => (
     <View style={{ gap: 12 }}>
-      <Form.Button title="Default" />
-      <Form.Button loading title="Loading" />
-      <Form.Button disabled title="Disabled" />
+      <Actions.Button title="Default" />
+      <Actions.Button loading title="Loading" />
+      <Actions.Button disabled title="Disabled" />
     </View>
   ),
 };
@@ -92,9 +92,9 @@ export const States: Story = {
 export const IconButtons: Story = {
   render: () => (
     <View style={{ flexDirection: "row", gap: 12 }}>
-      <Form.Button.Icon icon="home" variant="primary" />
-      <Form.Button.Icon icon="settings" variant="secondary" />
-      <Form.Button.Icon icon="trash" variant="outlineDanger" />
+      <Actions.Button.Icon icon="home" variant="primary" />
+      <Actions.Button.Icon icon="settings" variant="secondary" />
+      <Actions.Button.Icon icon="delete" variant="outlineDanger" />
     </View>
   ),
 };
@@ -113,7 +113,7 @@ export const Hierarchy: Story = {
       {HIERARCHY.map(({ level, variant }) => (
         <View key={variant} style={{ gap: 4 }}>
           <Typography.Text className="text-text-secondary text-xs">{level}</Typography.Text>
-          <Form.Button title={level} variant={variant} />
+          <Actions.Button title={level} variant={variant} />
         </View>
       ))}
     </View>

@@ -37,7 +37,7 @@ function KeyValue({
       )}
       testID={testID}
     >
-      <Typography.Text className="text-text-secondary" variant="caption">
+      <Typography.Text className="min-w-0 shrink text-text-secondary" variant="labelSmall">
         {label}
       </Typography.Text>
       {typeof value === "string" || typeof value === "number" ? (

@@ -92,18 +92,6 @@ export interface ThemeTokens {
   info: string;
 
   /**
-   * @deprecated Prefer `container.success`. Kept for NativeWind `bg-success-light`
-   * back-compat; defaults stay in sync with container fills.
-   */
-  successLight: string;
-  /** @deprecated Prefer `container.warning`. */
-  warningLight: string;
-  /** @deprecated Prefer `container.danger`. */
-  dangerLight: string;
-  /** @deprecated Prefer `container.info`. */
-  infoLight: string;
-
-  /**
    * Soft tonal fills + on-colors — badges, chips, tonal CTAs, selected rows.
    * Prefer these over saturated `success` + white for body-sized labels.
    */

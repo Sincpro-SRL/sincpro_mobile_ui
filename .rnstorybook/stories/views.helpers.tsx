@@ -2,13 +2,13 @@
  * Shared helpers + sample data for the Views/Form and Views/List stories.
  * NOT a story file (no `.stories` suffix) so Storybook's glob skips it.
  */
-import { Display } from "@sincpro/mobile-ui/Display";
+import { Display, type IconName } from "@sincpro/mobile-ui/Display";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import React from "react";
 import { View } from "react-native";
 
-export function LeadingIcon({ name, color }: { name: string; color?: string }) {
+export function LeadingIcon({ name, color }: { name: IconName; color?: string }) {
   return (
     <View
       style={{
@@ -20,12 +20,7 @@ export function LeadingIcon({ name, color }: { name: string; color?: string }) {
         justifyContent: "center",
       }}
     >
-      <Display.Icon
-        color={color ?? theme.icon.primary}
-        name={name}
-        size={18}
-        type="ionicons"
-      />
+      <Display.Icon color={color ?? theme.icon.primary} name={name} size={18} />
     </View>
   );
 }
@@ -95,15 +90,23 @@ export function KeyValueRow({
   return (
     <View
       style={{
+        alignItems: "flex-start",
         flexDirection: "row",
+        gap: 16,
         justifyContent: "space-between",
-        alignItems: "center",
-        paddingVertical: 10,
         paddingHorizontal: 16,
+        paddingVertical: 12,
       }}
     >
-      <Typography.Text variant="caption">{label}</Typography.Text>
-      <Typography.Text variant={mono ? "data" : "bodySmall"}>{value}</Typography.Text>
+      <Typography.Text style={{ flex: 1 }} variant="labelSmall">
+        {label}
+      </Typography.Text>
+      <Typography.Text
+        style={{ flexShrink: 1, maxWidth: "56%", textAlign: "right" }}
+        variant={mono ? "data" : "body"}
+      >
+        {value}
+      </Typography.Text>
     </View>
   );
 }

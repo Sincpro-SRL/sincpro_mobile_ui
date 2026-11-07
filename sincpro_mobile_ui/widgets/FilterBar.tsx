@@ -61,7 +61,7 @@ export function FilterBar({
           {onOpenFilters ? (
             <IconButton
               accessibilityLabel={filtersLabel}
-              icon="sliders"
+              icon="filter"
               onPress={onOpenFilters}
             />
           ) : null}

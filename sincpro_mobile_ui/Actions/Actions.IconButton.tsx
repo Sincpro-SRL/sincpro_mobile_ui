@@ -1,7 +1,7 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
-import { IconType } from "@sincpro/mobile-ui/utils/icon";
 import type { AccessibilityProps } from "react-native";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 
@@ -35,8 +35,7 @@ const iconButton = tv({
 });
 
 export interface IconButtonProps extends VariantProps<typeof iconButton>, AccessibilityProps {
-  icon?: string;
-  type?: IconType;
+  icon: IconName;
   onPress: () => void;
   loading?: boolean;
   iconColor?: string;
@@ -46,7 +45,6 @@ export interface IconButtonProps extends VariantProps<typeof iconButton>, Access
 
 function IconButton({
   icon,
-  type = "feather",
   onPress,
   variant = "ghost",
   size = "medium",
@@ -80,7 +78,7 @@ function IconButton({
       {loading ? (
         <ActivityIndicator color={resolvedColor} size="small" />
       ) : (
-        <Icon color={resolvedColor} name={icon} size={24} type={type} />
+        <Icon color={resolvedColor} name={icon} size={24} />
       )}
     </TouchableOpacity>
   );

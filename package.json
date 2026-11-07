@@ -9,6 +9,7 @@
   },
   "files": [
     "dist",
+    "assets",
     "tailwind.preset.js",
     "README.md"
   ],

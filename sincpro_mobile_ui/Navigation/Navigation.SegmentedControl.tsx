@@ -27,8 +27,6 @@ export interface SegmentedControlProps<T extends string> {
    * - `"left"` — icon inline left of the label (compact, single-line).
    */
   iconLayout?: "top" | "left";
-  /** Increase each option's target to at least 48 points. */
-  accessibleSizing?: boolean;
   disabled?: boolean;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
@@ -43,7 +41,6 @@ function SegmentedControl<T extends string>({
   value,
   onChange,
   iconLayout = "top",
-  accessibleSizing = false,
   disabled = false,
   accessibilityLabel,
   style,
@@ -71,7 +68,8 @@ function SegmentedControl<T extends string>({
         const inline = hasIcons && iconLayout === "left";
         const baseStyle: ViewStyle = {
           flex: 1,
-          minHeight: accessibleSizing ? 48 : undefined,
+          minHeight: 48,
+          minWidth: 48,
           flexDirection: inline ? "row" : "column",
           alignItems: "center",
           justifyContent: "center",
@@ -91,7 +89,7 @@ function SegmentedControl<T extends string>({
             accessibilityState={isDisabled ? { selected, disabled: true } : { selected }}
             activeOpacity={0.7}
             disabled={isDisabled || undefined}
-            hitSlop={accessibleSizing ? 0 : undefined}
+            hitSlop={0}
             key={option.value}
             onPress={() => {
               if (!isDisabled) onChange(option.value);
@@ -109,14 +107,11 @@ function SegmentedControl<T extends string>({
             ) : null}
             <Typography.Text
               {...labelTextProps}
-              numberOfLines={
-                labelTextProps?.numberOfLines ?? (accessibleSizing ? undefined : 1)
-              }
               semibold={labelTextProps?.semibold ?? selected}
               style={[
                 {
                   color: iconColor,
-                  fontSize: accessibleSizing ? 14 : 12,
+                  fontSize: 14,
                   textAlign: "center",
                   flexShrink: 1,
                 },

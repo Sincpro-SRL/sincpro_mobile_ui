@@ -1,6 +1,7 @@
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
-import { type ImageSourcePropType, View } from "react-native";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
+import { View } from "react-native";
 
 const Header = Navigation.Header;
 const HeaderToolbar = Navigation.HeaderToolbar;
@@ -18,7 +19,7 @@ interface ScreenHeaderProps {
   centerTitle?: boolean;
   subtitle?: string;
   logo?: boolean;
-  logoSource?: ImageSourcePropType;
+  logoSource?: ImageSource;
   rightComponent?: React.ReactNode;
   children?: React.ReactNode;
   withGradientContainer?: boolean;

@@ -1,32 +1,21 @@
+import ExpoImage, { type ExpoImageProps } from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Skeleton from "@sincpro/mobile-ui/Feedback/Feedback.Skeleton";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import { type ReactNode, useState } from "react";
-import {
-  Image,
-  type ImageProps,
-  type ImageResizeMode,
-  type ImageSourcePropType,
-  type ImageStyle,
-  type StyleProp,
-  View,
-  type ViewStyle,
-} from "react-native";
+import { type ImageSource, imageSourceKey } from "@sincpro/mobile-ui/utils/image";
+import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { type StyleProp, View, type ViewStyle } from "react-native";
 
-export interface DisplayImageProps extends Omit<
-  ImageProps,
-  "source" | "style" | "width" | "height" | "resizeMode"
-> {
-  source: ImageSourcePropType;
+export interface DisplayImageProps extends Omit<ExpoImageProps, "source" | "style"> {
+  source: ImageSource;
   width?: number | `${number}%`;
   height?: number;
   aspectRatio?: number;
   radius?: number;
-  resizeMode?: ImageResizeMode;
   fallbackIcon?: string;
   className?: string;
-  style?: StyleProp<ImageStyle>;
+  style?: ExpoImageProps["style"];
   containerStyle?: StyleProp<ViewStyle>;
   renderError?: (retry: () => void) => ReactNode;
   testID?: string;
@@ -38,7 +27,8 @@ function ImageContent({
   height,
   aspectRatio,
   radius = 12,
-  resizeMode = "cover",
+  contentFit = "cover",
+  placeholder,
   fallbackIcon = "image-outline",
   className,
   style,
@@ -48,20 +38,23 @@ function ImageContent({
   onError,
   onLoadStart,
   onLoadEnd,
+  onLoad,
   accessibilityLabel,
   accessible,
+  retry,
   ...imageProps
-}: DisplayImageProps) {
+}: DisplayImageProps & { retry: () => void }) {
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  const [attempt, setAttempt] = useState(0);
+  const active = useRef(true);
 
-  const retry = () => {
-    setFailed(false);
-    setLoading(true);
-    setAttempt((current) => current + 1);
-  };
+  useLayoutEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+    };
+  }, []);
 
   const dimensions = { width, height, aspectRatio, borderRadius: radius } as const;
 
@@ -88,30 +81,38 @@ function ImageContent({
         )
       ) : (
         <>
-          <Image
+          <ExpoImage
             {...imageProps}
             accessibilityLabel={accessibilityLabel}
             accessible={accessible}
-            key={attempt}
+            contentFit={contentFit}
             onError={(event) => {
+              if (!active.current) return;
               setFailed(true);
               setLoading(false);
-              console.error("[Display.Image] Image load failed", event.nativeEvent.error);
               onError?.(event);
             }}
+            onLoad={(event) => {
+              if (!active.current) return;
+              setLoading(false);
+              onLoad?.(event);
+            }}
             onLoadEnd={() => {
+              if (!active.current) return;
               setLoading(false);
               onLoadEnd?.();
             }}
             onLoadStart={() => {
+              if (!active.current) return;
               setLoading(true);
               onLoadStart?.();
             }}
-            resizeMode={resizeMode}
+            placeholder={placeholder}
+            placeholderContentFit={imageProps.placeholderContentFit ?? contentFit}
             source={source}
             style={[{ width: "100%", height: "100%" }, style]}
           />
-          {loading ? (
+          {loading && !placeholder ? (
             <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
               <Skeleton height="100%" radius={radius} width="100%" />
             </View>
@@ -123,7 +124,14 @@ function ImageContent({
 }
 
 function DisplayImage(props: DisplayImageProps) {
-  return <ImageContent {...props} key={JSON.stringify(props.source)} />;
+  const [attempt, setAttempt] = useState(0);
+  return (
+    <ImageContent
+      {...props}
+      key={`${imageSourceKey(props.source)}:${attempt}`}
+      retry={() => setAttempt((current) => current + 1)}
+    />
+  );
 }
 
 export default DisplayImage;

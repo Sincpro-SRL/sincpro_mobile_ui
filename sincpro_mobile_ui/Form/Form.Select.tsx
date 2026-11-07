@@ -21,7 +21,6 @@ export interface SelectProps<T extends string | number> {
   placeholder?: string;
   title?: string;
   disabled?: boolean;
-  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
   showCloseButton?: boolean;
@@ -35,10 +34,9 @@ function Select<T extends string | number>({
   placeholder = "Seleccionar…",
   title,
   disabled = false,
-  accessibleSizing = false,
   className,
   testID,
-  showCloseButton = accessibleSizing,
+  showCloseButton = true,
 }: SelectProps<T>) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -77,20 +75,17 @@ function Select<T extends string | number>({
         }
         accessibilityRole="button"
         accessibilityState={{ disabled, expanded: open }}
-        className={cn(
-          "flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3",
-          accessibleSizing ? "min-h-[48px]" : "min-h-[44px]",
-        )}
+        className="flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3 min-h-[48px]"
         disabled={disabled}
         onPress={() => setOpen(true)}
+        style={{ minHeight: 48, minWidth: 48 }}
       >
         <Typography.Text
           className={cn(
             "flex-1 text-sm",
             selected ? "text-text-primary" : "text-text-tertiary",
           )}
-          numberOfLines={accessibleSizing ? undefined : 1}
-          style={accessibleSizing ? { paddingVertical: 12 } : undefined}
+          style={{ paddingVertical: 12 }}
         >
           {selected ? selected.label : placeholder}
         </Typography.Text>
@@ -171,7 +166,7 @@ function Select<T extends string | number>({
                       onChange(option.value);
                       setOpen(false);
                     }}
-                    style={accessibleSizing ? { minHeight: 48 } : undefined}
+                    style={{ minHeight: 48, minWidth: 48 }}
                   >
                     <Typography.Text
                       className={cn(

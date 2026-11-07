@@ -32,8 +32,6 @@ export interface SheetProps {
   dismissOnBackdrop?: boolean;
   /** Show a visible close button in the sheet header. */
   showCloseButton?: boolean;
-  /** Increase interactive targets to 48 points. */
-  accessibleSizing?: boolean;
   testID?: string;
 }
 
@@ -52,7 +50,6 @@ function Sheet({
   maxHeightRatio = 0.9,
   dismissOnBackdrop = false,
   showCloseButton = false,
-  accessibleSizing = false,
   testID,
 }: SheetProps) {
   const theme = useTheme();
@@ -152,7 +149,7 @@ function Sheet({
                   className="items-center justify-center rounded-lg"
                   hitSlop={8}
                   onPress={onClose}
-                  style={accessibleSizing ? { minWidth: 48, minHeight: 48 } : undefined}
+                  style={{ minWidth: 48, minHeight: 48 }}
                 >
                   <Typography.Text className="text-text-accent" variant="bodySmall">
                     Cerrar

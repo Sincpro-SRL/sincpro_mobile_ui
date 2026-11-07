@@ -24,7 +24,6 @@ export interface SearchBarProps {
   onPress?: () => void;
   className?: string;
   testID?: string;
-  accessibleSizing?: boolean;
   accessibilityLabel?: string;
   clearAccessibilityLabel?: string;
   suggestions?: SearchSuggestionsProps;
@@ -45,7 +44,6 @@ function SearchBar({
   onPress,
   className,
   testID,
-  accessibleSizing = false,
   accessibilityLabel,
   clearAccessibilityLabel = "Limpiar",
   suggestions,
@@ -60,7 +58,8 @@ function SearchBar({
         className,
       )}
       style={{
-        ...(accessibleSizing ? { minHeight: 48 } : { height: 44 }),
+        minHeight: 48,
+        minWidth: 48,
         borderWidth: 1,
         borderColor: focused ? theme.border.focus : "transparent",
       }}
@@ -76,7 +75,7 @@ function SearchBar({
         <TextInput
           accessibilityLabel={accessibilityLabel ?? placeholder}
           autoFocus={autoFocus}
-          className={cn("flex-1 text-text-primary", !accessibleSizing && "text-sm")}
+          className="flex-1 text-text-primary"
           onBlur={() => setFocused(false)}
           onChangeText={onChangeText}
           onFocus={() => setFocused(true)}
@@ -85,26 +84,18 @@ function SearchBar({
           placeholderTextColor={theme.text.tertiary}
           returnKeyType="search"
           selectionColor={theme.primary}
-          style={
-            accessibleSizing
-              ? {
-                  ...typographyVariants.bodyReadable,
-                  fontFamily: resolveTextFontFamily("bodyReadable"),
-                  minHeight: 48,
-                  paddingVertical: 8,
-                }
-              : undefined
-          }
+          style={{
+            ...typographyVariants.bodyReadable,
+            fontFamily: resolveTextFontFamily("bodyReadable"),
+            minHeight: 48,
+            paddingVertical: 8,
+          }}
           testID={testID ? `${testID}-input` : undefined}
           underlineColorAndroid="transparent"
           value={value}
         />
       ) : (
-        <Typography.Text
-          className={cn("flex-1 text-text-tertiary", !accessibleSizing && "text-sm")}
-          numberOfLines={accessibleSizing ? undefined : 1}
-          variant={accessibleSizing ? "bodyReadable" : "body"}
-        >
+        <Typography.Text className="flex-1 text-text-tertiary" variant="bodyReadable">
           {value || placeholder}
         </Typography.Text>
       )}
@@ -116,16 +107,12 @@ function SearchBar({
             onChangeText("");
             onClear?.();
           }}
-          style={
-            accessibleSizing
-              ? {
-                  minHeight: 48,
-                  minWidth: 48,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }
-              : undefined
-          }
+          style={{
+            minHeight: 48,
+            minWidth: 48,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Icon color={theme.icon.tertiary} name="close-circle" size={18} />
         </Pressable>
@@ -139,6 +126,7 @@ function SearchBar({
         accessibilityLabel={accessibilityLabel ?? placeholder}
         accessibilityRole="search"
         onPress={onPress}
+        style={{ minHeight: 48, minWidth: 48 }}
         testID={testID}
       >
         {body}

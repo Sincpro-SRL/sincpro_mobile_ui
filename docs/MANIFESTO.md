@@ -23,10 +23,10 @@ forkear el paquete ni perder su comportamiento.
 3. **Comportamiento reutilizable.** Teclado, foco, navegación entre campos, selección,
    estados, cancelación y recuperación deben seguir funcionando al cambiar la
    presentación. La app aporta datos, acciones y reglas de negocio.
-4. **Defaults compatibles.** Conservar la presentación original de APIs existentes.
-   Una nueva receta, tendencia o recomendación no autoriza a agrandar ni rediseñar
-   automáticamente las pantallas consumidoras. Los cambios intencionales necesitan
-   adopción explícita y una vía de migración.
+4. **Defaults correctos y versionados.** Minor/patch conservan contratos existentes.
+   Una mejora incompatible autorizada usa una major y una guía de migración, en vez de
+   perpetuar caminos inferiores. v2 establece targets accesibles y Expo Image como
+   comportamiento estándar; adoptar esa major implica adoptar sus contratos.
 5. **Templates abiertos.** Formulario, listado, encabezado y footer se pueden componer
    por partes. Deben exponer los controles nativos relevantes, incluidos refs y
    callbacks, sin exigir otro layout para acceder a ellos.
@@ -48,7 +48,7 @@ garantiza automáticamente contraste, alcance táctil o usabilidad.
 
 ## Criterio para aceptar cambios
 
-- ¿Se conserva el default existente?
+- ¿Se conserva el contrato en minor/patch, o se declara y documenta la migración major?
 - ¿Puede el consumidor modificar las regiones y estilos relevantes por API pública?
 - ¿Puede componer contenido no previsto, sin duplicar comportamiento?
 - ¿Siguen funcionando teclado, foco, eventos y estados con esa personalización?

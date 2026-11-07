@@ -21,7 +21,7 @@ export interface FilterBarOption {
 export interface FilterBarProps {
   filters: readonly FilterBarOption[];
   onFilterPress: (id: string) => void;
-  search?: Omit<SearchBarProps, "accessibleSizing">;
+  search?: SearchBarProps;
   onOpenFilters?: () => void;
   filtersLabel?: string;
   onClearFilters?: () => void;
@@ -55,13 +55,12 @@ export function FilterBar({
         <View className="flex-row items-center gap-2">
           {search ? (
             <View className="flex-1 min-w-0">
-              <SearchBar {...search} accessibleSizing />
+              <SearchBar {...search} />
             </View>
           ) : null}
           {onOpenFilters ? (
             <IconButton
               accessibilityLabel={filtersLabel}
-              accessibleSizing
               icon="sliders"
               onPress={onOpenFilters}
             />

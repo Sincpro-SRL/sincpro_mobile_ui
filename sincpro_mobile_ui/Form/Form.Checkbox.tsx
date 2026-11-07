@@ -14,7 +14,6 @@ interface RowCheckBoxProps {
   onCheck?: (isChecked: boolean) => void;
   disabled?: boolean;
   accessibilityLabel?: string;
-  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
 }
@@ -29,7 +28,6 @@ function RowCheckBox({
   onCheck = () => {},
   disabled = false,
   accessibilityLabel,
-  accessibleSizing = false,
   className,
   testID,
 }: RowCheckBoxProps) {
@@ -79,17 +77,20 @@ function RowCheckBox({
       )}
       disabled={disabled}
       onPress={handlePress}
-      style={accessibleSizing ? { minHeight: 48, paddingVertical: 8 } : undefined}
+      style={{ minHeight: 48, minWidth: 48, paddingVertical: 8 }}
       testID={testID}
     >
-      <View>{renderLeftComponent()}</View>
+      <View className="flex-1 min-w-0">{renderLeftComponent()}</View>
 
-      <View className="flex-row items-center">
+      <View className="flex-row items-center flex-shrink">
         {renderRightComponent()}
         <Checkbox
+          accessibilityElementsHidden
+          accessible={false}
           className="ml-2"
           color={theme.primary}
           disabled={disabled}
+          importantForAccessibility="no-hide-descendants"
           pointerEvents="none"
           value={isChecked}
         />

@@ -172,13 +172,11 @@ function ReorderExample({
       </Typography.Text>
       <View style={{ gap: 8 }}>
         <Button
-          accessibleSizing
           onPress={() => setDisabled(!disabled)}
           title={disabled ? "Permitir ordenar" : "Bloquear orden"}
           variant="secondary"
         />
         <Button
-          accessibleSizing
           onPress={() => {
             setItems(initialItems);
             setAction("Orden restablecido");

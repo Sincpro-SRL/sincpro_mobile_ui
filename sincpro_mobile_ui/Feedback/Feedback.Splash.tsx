@@ -1,16 +1,19 @@
+import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Loading from "@sincpro/mobile-ui/Feedback/Feedback.Loading";
+import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, type ImageSourcePropType, View } from "react-native";
+import { View } from "react-native";
 
 interface SplashScreenProps {
   isReady: boolean;
-  logo?: ImageSourcePropType;
+  logo?: ImageSource;
   minDuration?: number;
   message?: string;
   /** `default` keeps the legacy look; `hero` is the modern dark gradient + dotted texture. */
@@ -22,11 +25,13 @@ interface SplashScreenProps {
   children?: ReactNode;
 }
 
-function renderLogo(logo?: ImageSourcePropType) {
+function renderLogo(logo?: ImageSource) {
   if (!logo) {
     return null;
   }
-  return <Image className="w-[250px] h-[200px] mb-12" resizeMode="contain" source={logo} />;
+  return (
+    <ExpoImage className="w-[250px] h-[200px] mb-12" contentFit="contain" source={logo} />
+  );
 }
 
 function HeroSplash({
@@ -35,7 +40,7 @@ function HeroSplash({
   title,
   subtitle,
 }: {
-  logo?: ImageSourcePropType;
+  logo?: ImageSource;
   message: string;
   title?: string;
   subtitle?: string;
@@ -49,9 +54,9 @@ function HeroSplash({
       <Pattern color={theme.primary} kind="dots" opacity={0.16} size={26} />
       <View className="items-center">
         {logo ? (
-          <Image
+          <ExpoImage
             className="w-28 h-28 mb-7"
-            resizeMode="contain"
+            contentFit="contain"
             source={logo}
             style={{ shadowColor: theme.primary, shadowOpacity: 0.7, shadowRadius: 28 }}
           />
@@ -69,11 +74,7 @@ function HeroSplash({
           </Typography.Text>
         ) : null}
         <View className="mt-10">
-          <ActivityIndicator
-            accessibilityLabel={message}
-            color={theme.primary}
-            size="small"
-          />
+          <Spinner accessibilityLabel={message} color={theme.primary} size="small" />
         </View>
       </View>
     </GradientSurface>

@@ -85,7 +85,6 @@ export const TerminalPagination: Story = {
             {count < 60 ? "Desplázate para cargar otra página local" : "Fin de la colección"}
           </Typography.Text>
           <Actions.Button
-            accessibleSizing
             onPress={() => setCount(20)}
             title="Reiniciar demo"
             variant="secondary"

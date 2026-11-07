@@ -1,5 +1,8 @@
 # Mobile UX adoption and migration
 
+This guide records the earlier v1 adoption. For the required image renderer and
+accessible-target migration, follow [v2 migration](./MIGRATION-V2.md).
+
 ## Scope
 
 This PR implements design-system foundations. It does not update `@sincpro/mobile`,

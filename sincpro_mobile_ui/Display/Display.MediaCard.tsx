@@ -2,12 +2,13 @@ import DisplayImage from "@sincpro/mobile-ui/Display/Display.Image";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
-import { type ImageSourcePropType, View } from "react-native";
+import { View } from "react-native";
 
 export interface MediaCardProps {
-  image: ImageSourcePropType;
+  image: ImageSource;
   title?: string;
   subtitle?: string;
   badge?: ReactNode;

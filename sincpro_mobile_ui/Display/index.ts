@@ -15,6 +15,7 @@ import CountRecords from "@sincpro/mobile-ui/Display/Display.CountRecords";
 import DataTable from "@sincpro/mobile-ui/Display/Display.DataTable";
 import Date from "@sincpro/mobile-ui/Display/Display.Date";
 import Divider from "@sincpro/mobile-ui/Display/Display.Divider";
+import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import IconBadge from "@sincpro/mobile-ui/Display/Display.IconBadge";
@@ -58,6 +59,7 @@ export const Display = {
   Chip,
   Tag,
   Image: DisplayImage,
+  ExpoImage,
   MediaCard,
   MediaEmbed,
   Story,

@@ -16,7 +16,6 @@ export const AccessibleSegments: Story = {
       <View className="p-4 gap-4">
         <Navigation.SegmentedControl
           accessibilityLabel="Estado de la colección"
-          accessibleSizing
           onChange={setValue}
           options={[
             { label: "Pendientes de sincronización", value: "pending" },

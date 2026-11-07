@@ -11,7 +11,7 @@ This package is maintained by Sincpro as part of the mobile framework ecosystem.
 ## Quick Start
 
 ```bash
-npx expo install @sincpro/mobile-ui
+npx expo install @sincpro/mobile-ui expo-image
 ```
 
 Wire the Tailwind preset, then import by category:
@@ -36,11 +36,7 @@ export default function InvoiceScreen() {
     <Display.Card>
       <Display.KeyValue label="Invoice #" value="INV-0042" copyable />
       <Display.Monetary value={1500.0} variant="dataLarge" />
-      <Actions.Button
-        accessibleSizing
-        onPress={() => toast.success("Invoice sent")}
-        title="Send Invoice"
-      />
+      <Actions.Button onPress={() => toast.success("Invoice sent")} title="Send Invoice" />
     </Display.Card>
   );
 }
@@ -97,17 +93,17 @@ recoverable error. It uses fictional data and local state, not persistence or a 
   Track/indicator styling and native accessibility props remain customizable.
   See the [feedback contract](docs/CATALOG.md#feedback-feedback) and the
   [comparison and priorities](docs/DESIGN-SYSTEM-GAPS.md).
-- For image caching/recycling in Expo 58, opt into `ExpoImage` from
-  `@sincpro/mobile-ui/Display/ExpoImage` and install the optional `expo-image` peer.
-  Existing `Display.Image` stays native and supports explicit error/retry composition.
+- v2 requires `expo-image`: `Display.Image`, logos, story media and illustrations share
+  the Expo renderer, disk caching, automatic source recycling and Reduce Motion policy.
+  `Display.ExpoImage` exposes the direct renderer; `Display.Image` adds error/retry composition.
+  See the [breaking migration guide](docs/MIGRATION-V2.md).
 - `ListViewV2.Content` exposes `listProps` for virtualization, `getItemLayout`, viewability
   and `extraData`, plus `listRef` and content styling. `Root hasMore={false}` stops
   pagination; `loadingMore` and refresh pause it. See the
   [mobile performance and usability plan](docs/MOBILE-QUALITY.md).
-- `Actions.Button` (including `.Icon`), `Actions.IconButton`, `BaseButton`,
-  `Feedback.EmptyState`, `Feedback.Error` and `Form.Input` accept `accessibleSizing` to
-  opt into a minimum 48-point target. Buttons also allow enlarged, multiline labels in
-  this mode. Existing sizing remains the default for compatibility.
+- Buttons, icon actions, inputs, selection controls and navigation use their 48-point
+  accessible sizing by default. `accessibleSizing` was removed: there is no legacy
+  compact-target mode. Labels wrap and follow system scaling; presentation stays configurable.
 - Supply `accessibilityLabel` for icon-only actions. Loading buttons expose busy/disabled
   state and retain their accessible name.
 - `Display.CopyableText` uses a familiar copy icon: tap a short value to copy it.
@@ -126,7 +122,7 @@ recoverable error. It uses fictional data and local state, not persistence or a 
   the keyboard. It preserves typography/tokens and backs the longer-text modes above.
   On iOS, `Text selectable` alone only exposes full-paragraph copying, not range handles.
 - Headings and section titles expose native header semantics.
-- Checkbox/Select announce control state; their `accessibleSizing` mode enlarges targets.
+- Checkbox/Select announce control state and use accessible targets without an opt-in.
 - Sheet supports accessible escape and `showCloseButton`; `SwipeableRow visibleActions`
   supplies a non-gesture alternative. Keep explicit labels for essential actions.
 - `Dialog/NativeSheet` is an optional Expo 58 native presentation (`@expo/ui` peer);
@@ -135,7 +131,7 @@ recoverable error. It uses fictional data and local state, not persistence or a 
   summaries, cancelable selection, filters applied only on confirmation and archive/undo.
 - Form/List view refresh always clears the busy state on failure and accepts
   `onRefreshError` for application recovery without discarding content.
-- AppBar, BottomNav and SegmentedControl support accessible sizing; banners expose status
+- AppBar, BottomNav and SegmentedControl use accessible sizing; banners expose status
   semantics, and confirmation defaults use explicit verbs.
 
 The [audit and validation report](docs/UX-AUDIT.md) records scope, evidence and device limits.
@@ -232,8 +228,8 @@ Auto wraps above font scale 1.3, otherwise it scrolls horizontally. Quick chips 
 immediately; the recipe's advanced sheet applies only on confirmation.
 
 `Actions.FilterButton variant="mobile"` adds readable wrapping labels and 48-point targets.
-`FilterButtonGroup layout="scroll|wrap"` and `Navigation.SearchBar accessibleSizing` are
-additive; legacy filter layout and search sizing remain unchanged.
+`FilterButtonGroup layout="scroll|wrap"` supports both layouts. `Navigation.SearchBar`
+uses accessible sizing by default in v2, with no legacy sizing flag.
 When placing these controls in a host ScrollView, use `keyboardShouldPersistTaps="handled"`
 so a filter can act on the first tap while the keyboard is open.
 Use virtualized lists for production-sized collections.

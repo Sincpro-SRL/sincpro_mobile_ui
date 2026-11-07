@@ -11,19 +11,10 @@ interface ErrorProps {
   onBack?: () => void;
   onHome?: () => void;
   className?: string;
-  accessibleSizing?: boolean;
   testID?: string;
 }
 
-function Error({
-  message,
-  onRetry,
-  onBack,
-  onHome,
-  className,
-  accessibleSizing = false,
-  testID,
-}: ErrorProps) {
+function Error({ message, onRetry, onBack, onHome, className, testID }: ErrorProps) {
   return (
     <View
       className={cn("flex-1 items-center justify-center px-4", className)}
@@ -46,26 +37,12 @@ function Error({
         {message || "Ocurrió un error al cargar la información"}
       </Typography.Text>
       <View className="mt-8 w-full gap-3">
-        {onRetry && (
-          <Button
-            accessibleSizing={accessibleSizing}
-            className="w-full"
-            onPress={onRetry}
-            title="Reintentar"
-          />
-        )}
+        {onRetry && <Button className="w-full" onPress={onRetry} title="Reintentar" />}
         {onBack && (
-          <Button
-            accessibleSizing={accessibleSizing}
-            className="w-full"
-            onPress={onBack}
-            title="Volver"
-            variant="secondary"
-          />
+          <Button className="w-full" onPress={onBack} title="Volver" variant="secondary" />
         )}
         {onHome && (
           <Button
-            accessibleSizing={accessibleSizing}
             className="w-full"
             onPress={onHome}
             title="Ir al inicio"

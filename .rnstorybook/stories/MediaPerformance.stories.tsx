@@ -30,18 +30,12 @@ export const Recovery: Story = {
               <Typography.Text accessibilityLiveRegion="polite">
                 No se pudo cargar la imagen
               </Typography.Text>
-              <Actions.Button
-                accessibleSizing
-                onPress={retry}
-                title="Reintentar"
-                variant="secondary"
-              />
+              <Actions.Button onPress={retry} title="Reintentar" variant="secondary" />
             </View>
           )}
           source={{ uri: working ? PHOTO : "https://invalid.example/image.png" }}
         />
         <Actions.Button
-          accessibleSizing
           onPress={() => setWorking((value) => !value)}
           title={working ? "Probar fallo" : "Cambiar a fuente válida"}
           variant="secondary"
@@ -72,7 +66,6 @@ export const CachedRecycling: Story = {
           transition={180}
         />
         <Actions.Button
-          accessibleSizing
           onPress={() => setRecord((value) => value + 1)}
           title="Reciclar para otro registro"
           variant="secondary"

@@ -43,7 +43,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
         Consulta el resumen o abre las acciones del registro. No necesitas descubrir un gesto.
       </Typography.Text>
       <Button
-        accessibleSizing
         onPress={() => {
           setPendingDraft(pendingOnly);
           setFiltersOpen(true);
@@ -55,7 +54,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
         <Banner
           action={
             <Button
-              accessibleSizing
               onPress={() => setArchived(false)}
               title="Deshacer archivo"
               variant="link"
@@ -79,7 +77,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
           <View className="flex-row items-center">
             <ListItem
               accessibilityLabel="Abrir resumen del registro"
-              accessibleSizing
               className="flex-1"
               onPress={() => setSummaryOpen(true)}
               showDivider={false}
@@ -88,7 +85,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
             />
             <IconButton
               accessibilityLabel="Opciones del registro"
-              accessibleSizing
               icon="more-horizontal"
               onPress={() => setActionsOpen(true)}
             />
@@ -108,7 +104,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
         visible={actionsOpen}
       />
       <Sheet
-        accessibleSizing
         onClose={() => setFiltersOpen(false)}
         showCloseButton
         title="Filtrar registros"
@@ -116,7 +111,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
       >
         <View style={{ gap: 16 }}>
           <Checkbox
-            accessibleSizing
             isChecked={pendingDraft}
             mainText="Solo pendientes"
             onCheck={setPendingDraft}
@@ -125,7 +119,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
             Los cambios se aplican al confirmar. Cerrar mantiene los filtros anteriores.
           </Typography.Text>
           <Button
-            accessibleSizing
             onPress={() => {
               setPendingOnly(pendingDraft);
               setFiltersOpen(false);

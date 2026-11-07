@@ -21,7 +21,6 @@ export function MobileSelection({ long = false }: { long?: boolean }) {
         La selección se abre en una hoja inferior, no en un desplegable de escritorio.
       </Typography.Text>
       <Select
-        accessibleSizing
         label="Canal de aviso"
         onChange={setValue}
         options={[

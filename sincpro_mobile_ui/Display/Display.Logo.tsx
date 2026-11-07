@@ -1,7 +1,9 @@
 import { getBrandingLogo } from "@sincpro/mobile-ui/branding";
+import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { FC } from "react";
-import { Image, type ImageSourcePropType, View } from "react-native";
+import { View } from "react-native";
 
 const logo = tv({
   slots: {
@@ -27,15 +29,15 @@ const logo = tv({
 });
 
 export interface LogoProps extends VariantProps<typeof logo> {
-  source?: ImageSourcePropType;
+  source?: ImageSource;
   className?: string;
 }
 
-function renderImage(imageClassName: string, source?: ImageSourcePropType) {
+function renderImage(imageClassName: string, source?: ImageSource) {
   if (!source) {
     return null;
   }
-  return <Image className={imageClassName} resizeMode="contain" source={source} />;
+  return <ExpoImage className={imageClassName} contentFit="contain" source={source} />;
 }
 
 const Logo: FC<LogoProps> = ({ source, size = "medium", className }) => {

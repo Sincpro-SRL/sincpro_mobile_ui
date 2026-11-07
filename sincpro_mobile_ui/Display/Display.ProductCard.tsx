@@ -5,12 +5,13 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import type { ReactNode } from "react";
-import { type ImageSourcePropType, View } from "react-native";
+import { View } from "react-native";
 
 export interface ProductCardProps {
   title: string;
-  image: ImageSourcePropType;
+  image: ImageSource;
   price: number;
   originalPrice?: number;
   currency?: string;

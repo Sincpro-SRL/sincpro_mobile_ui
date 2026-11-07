@@ -1,13 +1,14 @@
 import { Display, Typography } from "@sincpro/mobile-ui/index";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { theme } from "@sincpro/mobile-ui/theme";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import React, { ReactNode } from "react";
-import { type ImageSourcePropType, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 interface HomeHeaderProps {
   readonly title?: string;
   readonly logo?: ReactNode;
-  readonly logoSource?: ImageSourcePropType;
+  readonly logoSource?: ImageSource;
   readonly backButton?: boolean;
   readonly onBack?: () => void;
 }

@@ -1,16 +1,18 @@
+import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, type ImageSourcePropType, View } from "react-native";
+import { View } from "react-native";
 
 export interface StoryProps {
-  image: ImageSourcePropType;
+  image: ImageSource;
   label?: string;
   seen?: boolean;
   variant?: "circle" | "card";
   size?: number;
-  avatar?: ImageSourcePropType;
+  avatar?: ImageSource;
   /** Mostrar el círculo del autor en la card. `false` = card de historia sin avatar. */
   showAvatar?: boolean;
   onPress?: () => void;
@@ -39,7 +41,7 @@ function Story({
         style={{ width: size * 1.6, borderRadius: 14, overflow: "hidden" }}
         testID={testID}
       >
-        <Image source={image} style={{ width: "100%", height: size * 2.6 }} />
+        <ExpoImage source={image} style={{ width: "100%", height: size * 2.6 }} />
         {showAvatar ? (
           <View
             style={{
@@ -51,7 +53,7 @@ function Story({
               borderColor: seen ? theme.border.strong : theme.primary,
             }}
           >
-            <Image
+            <ExpoImage
               source={avatar ?? image}
               style={{ width: 34, height: 34, borderRadius: 17 }}
             />
@@ -114,7 +116,7 @@ function Story({
             justifyContent: "center",
           }}
         >
-          <Image
+          <ExpoImage
             source={image}
             style={{ width: innerSize, height: innerSize, borderRadius: innerSize / 2 }}
           />

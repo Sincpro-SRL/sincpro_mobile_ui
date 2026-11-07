@@ -131,7 +131,6 @@ function OptionsEditor({
           </Typography.Text>
           <IconButton
             accessibilityLabel="Cancelar configuración"
-            accessibleSizing
             disabled={saving}
             icon="close"
             onPress={close}
@@ -193,7 +192,6 @@ function OptionsEditor({
               ) : (
                 savedQueries.map((saved) => (
                   <Button
-                    accessibleSizing
                     disabled={saving}
                     key={saved.id}
                     onPress={() => {
@@ -211,7 +209,6 @@ function OptionsEditor({
               {onSave ? (
                 <>
                   <Input
-                    accessibleSizing
                     editable={!saving}
                     label="Nombre de la configuración"
                     onChangeText={setLabel}
@@ -219,7 +216,6 @@ function OptionsEditor({
                     value={label}
                   />
                   <Button
-                    accessibleSizing
                     loading={saving}
                     onPress={() => {
                       const invalid = problem();
@@ -274,7 +270,6 @@ function OptionsEditor({
                     </Typography.Text>
                     {section === "sort" ? (
                       <Button
-                        accessibleSizing
                         onPress={() =>
                           setDraft({
                             ...draft,
@@ -295,7 +290,6 @@ function OptionsEditor({
                     <View className="flex-row flex-wrap gap-2">
                       <Button
                         accessibilityLabel={`Subir ${field?.label ?? id}`}
-                        accessibleSizing
                         disabled={index === 0}
                         onPress={() => updateOrder(moveCollectionEntry(ordered, index, -1))}
                         title="Subir"
@@ -303,7 +297,6 @@ function OptionsEditor({
                       />
                       <Button
                         accessibilityLabel={`Bajar ${field?.label ?? id}`}
-                        accessibleSizing
                         disabled={index === ordered.length - 1}
                         onPress={() => updateOrder(moveCollectionEntry(ordered, index, 1))}
                         title="Bajar"
@@ -311,7 +304,6 @@ function OptionsEditor({
                       />
                       <Button
                         accessibilityLabel={`Quitar ${field?.label ?? id}`}
-                        accessibleSizing
                         onPress={() => updateOrder(ordered.filter((key) => key !== id))}
                         title="Quitar"
                         variant="link"
@@ -350,7 +342,6 @@ function OptionsEditor({
             <Typography.Text>Guarda o cancela la condición antes de aplicar.</Typography.Text>
           ) : null}
           <Button
-            accessibleSizing
             disabled={editing || saving}
             onPress={() => {
               const invalid = problem();

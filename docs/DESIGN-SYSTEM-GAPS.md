@@ -1,5 +1,8 @@
 # Design system: brechas y prioridades
 
+Informe de la iteración v1. Para los contratos actuales, ver
+[migración v2](./MIGRATION-V2.md) y [calidad móvil](./MOBILE-QUALITY.md).
+
 Fecha: 2026-11-06. Alcance: revisión del catálogo, planes existentes y código de feedback;
 no es una auditoría exhaustiva de todos los componentes ni una certificación nativa.
 

@@ -10,7 +10,6 @@ test("empty state offers a named accessible action without a confirmation provid
   const create = jest.fn();
   await render(
     <EmptyState
-      accessibleSizing
       actionLabel="Crear"
       description="Empieza creando un registro"
       onAction={create}
@@ -26,10 +25,11 @@ test("empty state offers a named accessible action without a confirmation provid
 test("error state preserves recovery actions without a confirmation provider", async () => {
   const retry = jest.fn();
   const back = jest.fn();
-  await render(
-    <ErrorState accessibleSizing message="Sin conexión" onBack={back} onRetry={retry} />,
-  );
+  await render(<ErrorState message="Sin conexión" onBack={back} onRetry={retry} />);
   expect(screen.getByText("Sin conexión").props.accessibilityLiveRegion).toBe("polite");
+  for (const action of screen.getAllByRole("button")) {
+    expect(action.props.style).toMatchObject({ minHeight: 48, minWidth: 48 });
+  }
   await fireEvent.press(screen.getByRole("button", { name: "Reintentar" }));
   await fireEvent.press(screen.getByRole("button", { name: "Volver" }));
   expect(retry).toHaveBeenCalledTimes(1);
@@ -38,7 +38,7 @@ test("error state preserves recovery actions without a confirmation provider", a
 
 test("base action retains its accessible name while busy", async () => {
   const press = jest.fn();
-  await render(<BaseButton accessibleSizing loading onPress={press} title="Guardar" />);
+  await render(<BaseButton loading onPress={press} title="Guardar" />);
   const action = screen.getByRole("button", { name: "Guardar" });
   expect(action.props.accessibilityState).toEqual({ disabled: true, busy: true });
   await fireEvent.press(action);
@@ -47,10 +47,25 @@ test("base action retains its accessible name while busy", async () => {
 
 test("base icon action carries the same target and supplied name", async () => {
   await render(
-    <BaseButton.Icon accessibilityLabel="Más opciones" accessibleSizing icon="ellipsis" />,
+    <BaseButton.Icon accessibilityLabel="Más opciones" icon="ellipsis" size="small" />,
   );
   expect(screen.getByRole("button", { name: "Más opciones" }).props.style).toMatchObject({
     minWidth: 48,
     minHeight: 48,
   });
 });
+
+test.each(["primary", "secondary", "link"] as const)(
+  "base %s actions allow scaled multiline labels and 48 point targets by default",
+  async (variant) => {
+    const title = "Guardar los cambios de todos los registros";
+    await render(<BaseButton size="small" title={title} variant={variant} />);
+    expect(screen.getByRole("button").props.style).toMatchObject({
+      minWidth: 48,
+      minHeight: 48,
+    });
+    expect(screen.getByText(title).props.allowFontScaling).toBe(true);
+    expect(screen.getByText(title).props.numberOfLines).toBeUndefined();
+    expect(screen.getByText(title).props.style.flexShrink).toBe(1);
+  },
+);

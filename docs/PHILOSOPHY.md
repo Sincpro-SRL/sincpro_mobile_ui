@@ -22,7 +22,7 @@ no un rediseño general ni una escala visual obligatoria.
    - **Capas (2026):** fills semánticos (`primary`) → **containers** (`container.success` + `onSuccess`) → superficies tonales (`bg.containerLowest|container|containerHigh`) → **state layers** (`state.press`) → **material** chrome (`material.blur` para nav/glass). Badges/chips usan containers, no fill saturado + blanco.
    - **Contrato de color:** `primary` / `accent` = superficies y chrome (fills, borders, tracks). Texto/links/labels con color de marca = `text.accent` (AA sobre `bg.page`/`bg.card`). Tinta sobre un fill de marca = `text.onPrimary` / `text.onAccent` vía `resolveOnColor(fill)`. Rebrand rápido: `buildThemeFromBrand({ brand, mode })`.
 4. **Extensible sin forkear.** `className`, `style`, `children`, slots y render props permiten modificar presentación y composición sin copiar el componente. Las variantes son conveniencias, no el límite de personalización. Rediseños que rompen API requieren una adopción explícita.
-5. **Retrocompatible.** Hay apps en producción. Todo cambio es **aditivo** por defecto (minor); lo que rompe es opt-in y se deprecia con camino de migración. Nunca cambiamos cómo se ve una pantalla existente sin que la app lo adopte.
+5. **Versionado explícito.** Minor/patch preservan contratos. Una mejora incompatible autorizada se publica como major con guía de migración; no se conserva una implementación inferior solo por compatibilidad. v2 hace obligatorios Expo Image y los tamaños accesibles antes opt-in.
 6. **Liviano para el build.** Subpath exports + barrels finos → tree-shaking real. Deps nativas pesadas/opcionales (`expo-glass-effect`, etc.) como peer opcional expuesto solo por subpath, para que una app que no las usa no las cargue.
 
 ## Accesibilidad y calidad (no negociable)
@@ -59,8 +59,8 @@ Todo componente nuevo trae: `accessibilityRole`/`accessibilityLabel`/`accessibil
   UX es transversal; no justifica otra categoría de stories con piezas sin relación.
 - **Énfasis:** una acción de máximo énfasis por contexto de tarea. Un modal es otro contexto;
   las excepciones se justifican. Las acciones secundarias no compiten con la principal.
-- **Tacto:** objetivo efectivo de 44×44 puntos en iOS y 48×48 dp en Android. El modo
-  `accessibleSizing` usa 48 en ambas plataformas sin cambiar el tamaño legacy por defecto.
+- **Tacto:** los controles migrados usan targets de al menos 48 puntos en ambas plataformas.
+  `accessibleSizing` fue eliminado en v2: accesibilidad no es un modo opt-in.
   `hitSlop` no sustituye verificar límites del padre y solapamiento con otros controles.
 - **Lectura:** probar texto al 200%, contenido largo y pantalla estrecha. El contenido
   esencial debe seguir disponible; no resolver problemas ocultándolo o desactivando scaling.

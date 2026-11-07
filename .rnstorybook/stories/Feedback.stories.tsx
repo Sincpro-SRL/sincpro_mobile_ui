@@ -20,13 +20,11 @@ function RecoveryExample({ failure = false }: { failure?: boolean }) {
     );
   return failure ? (
     <Feedback.Error
-      accessibleSizing
       message="No se pudo cargar la información. Puedes volver a intentarlo."
       onRetry={() => setRecovered(true)}
     />
   ) : (
     <Feedback.EmptyState
-      accessibleSizing
       actionLabel="Crear primer registro"
       description="Los registros que crees aparecerán aquí."
       onAction={() => setRecovered(true)}

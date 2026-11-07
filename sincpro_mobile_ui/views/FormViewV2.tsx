@@ -13,9 +13,10 @@ import {
   type SegmentedControlProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
 import React, { ReactNode } from "react";
-import { type ImageSourcePropType, RefreshControl, View } from "react-native";
+import { RefreshControl, View } from "react-native";
 import type { Edge } from "react-native-safe-area-context";
 
 interface FormViewProps<T> {
@@ -123,7 +124,7 @@ interface HeaderProps {
    */
   background?: AppBarBackground;
   /** @deprecated Pass `variant` prop instead. */
-  logoSource?: ImageSourcePropType;
+  logoSource?: ImageSource;
 }
 
 function Header({

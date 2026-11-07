@@ -28,7 +28,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-test("optional Expo image forwards caching, recycling, placeholder and accessibility controls", async () => {
+test("Expo image forwards caching, recycling, placeholder and accessibility controls", async () => {
   const onLoad = jest.fn();
   await render(
     <ExpoImage
@@ -97,4 +97,13 @@ test("load errors remain observable instead of becoming silent placeholders", as
   await fireEvent(screen.getByTestId("failed"), "error", error);
   expect(log).toHaveBeenCalledWith("[ExpoImage] Image load failed", "Unavailable");
   expect(onError).toHaveBeenCalledWith(error);
+});
+
+test("raw Expo image derives recycling identity when its source changes", async () => {
+  const source = { uri: "https://example.com/first.png" };
+  const { rerender } = await render(<ExpoImage source={source} testID="recycled" />);
+  expect(screen.getByTestId("recycled").props.recyclingKey).toBe(JSON.stringify(source));
+  const replacement = { uri: "https://example.com/second.png" };
+  await rerender(<ExpoImage source={replacement} testID="recycled" />);
+  expect(screen.getByTestId("recycled").props.recyclingKey).toBe(JSON.stringify(replacement));
 });

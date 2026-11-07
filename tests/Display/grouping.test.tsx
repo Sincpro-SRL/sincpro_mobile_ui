@@ -107,12 +107,16 @@ test("disabled mobile rows expose their state and do not run actions", async () 
   expect(onPress).not.toHaveBeenCalled();
 });
 
-test("legacy typography and single-line rows do not change", async () => {
-  await render(<ListItem onPress={jest.fn()} title="Legacy" />);
-  expect(screen.getByText("Legacy").props.numberOfLines).toBe(1);
+test("default rows wrap text and use accessible targets without changing typography", async () => {
+  await render(<ListItem onPress={jest.fn()} subtitle="Ayuda" title="Fila" />);
+  expect(screen.getByText("Fila").props.numberOfLines).toBeUndefined();
+  expect(screen.getByText("Ayuda").props.numberOfLines).toBeUndefined();
   expect(
-    ReactNative.StyleSheet.flatten(screen.getByText("Legacy").props.style).fontSize,
-  ).toBe(14);
+    ReactNative.StyleSheet.flatten(screen.getByRole("button").props.style),
+  ).toMatchObject({ minHeight: 48, minWidth: 48 });
+  expect(ReactNative.StyleSheet.flatten(screen.getByText("Fila").props.style).fontSize).toBe(
+    14,
+  );
 });
 
 test("mobile rows omit their own separators by default but honor an explicit divider", async () => {

@@ -19,6 +19,7 @@ import { IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
 import React, {
   createContext,
   ReactNode,
+  type Ref,
   useCallback,
   useContext,
   useEffect,
@@ -27,6 +28,7 @@ import React, {
 } from "react";
 import {
   FlatList,
+  type FlatListProps,
   RefreshControl,
   ScrollView,
   type ScrollViewProps,
@@ -56,6 +58,7 @@ interface ListViewProps<T> {
   onLoadMore?: () => void;
   /** Show a footer spinner while the next page loads. */
   loadingMore?: boolean;
+  hasMore?: boolean;
   backgroundColor?: string;
   withContainer?: boolean;
   children: ReactNode;
@@ -100,6 +103,7 @@ function ListViewRoot<T>({
   onBack,
   onLoadMore,
   loadingMore = false,
+  hasMore = true,
   backgroundColor,
   withContainer = true,
   children,
@@ -115,6 +119,7 @@ function ListViewRoot<T>({
       description={description}
       errorMessage={errorMessage}
       hasError={hasError}
+      hasMore={hasMore}
       isLoading={isLoading}
       items={items}
       loadingMore={loadingMore}
@@ -320,16 +325,45 @@ type ListScrollProps = Pick<
   "keyboardShouldPersistTaps" | "keyboardDismissMode" | "testID"
 >;
 
+export type ListViewVirtualizationProps = Pick<
+  FlatListProps<IRowItem<unknown>>,
+  | "initialNumToRender"
+  | "maxToRenderPerBatch"
+  | "windowSize"
+  | "updateCellsBatchingPeriod"
+  | "removeClippedSubviews"
+  | "extraData"
+  | "getItemLayout"
+  | "onViewableItemsChanged"
+  | "viewabilityConfig"
+  | "onEndReachedThreshold"
+  | "maintainVisibleContentPosition"
+>;
+
+interface ListContentOptions {
+  listProps?: ListViewVirtualizationProps;
+  listRef?: Ref<FlatList<IRowItem<unknown>>>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+}
+
+function rowKey(item: IRowItem<unknown>): string {
+  return String(item.id ?? item.index);
+}
+
 function Content({
   children,
   withMargin = true,
   keyboardShouldPersistTaps = "handled",
   keyboardDismissMode = "none",
   testID,
+  listProps,
+  listRef,
+  contentContainerStyle,
 }: {
   children?: (item: any) => ReactNode;
   withMargin?: boolean;
-} & ListScrollProps) {
+} & ListScrollProps &
+  ListContentOptions) {
   const {
     name,
     items,
@@ -358,12 +392,15 @@ function Content({
   if (hasError) {
     return (
       <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingBottom: bottomInset,
-        }}
+        contentContainerStyle={[
+          {
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingBottom: bottomInset,
+          },
+          contentContainerStyle,
+        ]}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={
@@ -384,12 +421,15 @@ function Content({
   if (items.length === 0) {
     return (
       <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingBottom: bottomInset,
-        }}
+        contentContainerStyle={[
+          {
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingBottom: bottomInset,
+          },
+          contentContainerStyle,
+        ]}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={
@@ -411,9 +451,12 @@ function Content({
     <View style={{ flex: 1, backgroundColor: theme.bg.page }}>
       <Display.CountRecords count={items.length || 0} name={name} />
       <ContentList
+        contentContainerStyle={contentContainerStyle}
         contentWithMargin={withMargin}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        listProps={listProps}
+        listRef={listRef}
         testID={testID}
       >
         {children}
@@ -428,10 +471,14 @@ function ContentList({
   keyboardShouldPersistTaps,
   keyboardDismissMode,
   testID,
+  listProps,
+  listRef,
+  contentContainerStyle,
 }: {
   children?: (item: any) => ReactNode;
   contentWithMargin: boolean;
-} & ListScrollProps) {
+} & ListScrollProps &
+  ListContentOptions) {
   const {
     items,
     onRefresh,
@@ -442,6 +489,7 @@ function ContentList({
     readonly,
     onLoadMore,
     loadingMore,
+    hasMore,
   } = useListView();
   const bottomInset = useBottomInset();
   const theme = useTheme();
@@ -483,12 +531,16 @@ function ContentList({
         backgroundColor: theme.bg.page,
       }}
     >
-      <FlatList
-        contentContainerStyle={bottomInset ? { paddingBottom: bottomInset } : undefined}
+      <FlatList<IRowItem<unknown>>
+        {...listProps}
+        contentContainerStyle={[
+          bottomInset ? { paddingBottom: bottomInset } : undefined,
+          contentContainerStyle,
+        ]}
         data={rowItems}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        keyExtractor={(item) => String(item.id ?? item.index)}
+        keyExtractor={rowKey}
         ListFooterComponent={
           loadingMore ? (
             <View className="py-4">
@@ -496,8 +548,15 @@ function ContentList({
             </View>
           ) : undefined
         }
-        onEndReached={onLoadMore ? () => onLoadMore() : undefined}
-        onEndReachedThreshold={0.5}
+        onEndReached={
+          onLoadMore
+            ? () => {
+                if (hasMore && !loadingMore && !showRefreshing) onLoadMore();
+              }
+            : undefined
+        }
+        onEndReachedThreshold={listProps?.onEndReachedThreshold ?? 0.5}
+        ref={listRef}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}

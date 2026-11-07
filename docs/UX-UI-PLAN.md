@@ -1,5 +1,8 @@
 # Plan de evolución UX/UI móvil
 
+Los lotes siguientes describen v1. [La migración v2](./MIGRATION-V2.md) sustituye el opt-in
+de tamaños accesibles y hace obligatorio el renderer Expo Image.
+
 Estado: contratos, refactor priorizado, stories, pruebas y E2E iOS implementados.
 La certificación completa de dispositivos/accesibilidad y la adopción en apps quedan fuera de
 lo comprobado en esta ejecución.

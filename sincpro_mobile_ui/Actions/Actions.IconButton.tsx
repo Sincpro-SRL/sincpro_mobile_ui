@@ -42,7 +42,6 @@ export interface IconButtonProps extends VariantProps<typeof iconButton>, Access
   iconColor?: string;
   className?: string;
   testID?: string;
-  accessibleSizing?: boolean;
 }
 
 function IconButton({
@@ -57,7 +56,6 @@ function IconButton({
   iconColor,
   className,
   testID,
-  accessibleSizing = false,
   accessibilityState,
   ...accessibilityProps
 }: IconButtonProps) {
@@ -76,7 +74,7 @@ function IconButton({
         disabled: disabled || loading,
         busy: loading,
       }}
-      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      style={{ minHeight: 48, minWidth: 48 }}
       testID={testID}
     >
       {loading ? (

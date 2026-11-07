@@ -57,11 +57,7 @@ export function RecordDetail({
         <Typography.Heading>Registros</Typography.Heading>
         <Card>
           <KeyValue align="stacked" label="Cliente" value={savedName} />
-          <Button
-            accessibleSizing
-            onPress={() => setShowList(false)}
-            title="Ver ORD-000123"
-          />
+          <Button onPress={() => setShowList(false)} title="Ver ORD-000123" />
         </Card>
       </View>
     );
@@ -88,7 +84,6 @@ export function RecordDetail({
         <View style={{ gap: 12 }} testID="ux-editor">
           <SectionHeader title="Editar cliente" />
           <Input
-            accessibleSizing
             label="Nombre del cliente"
             onChangeText={setName}
             testID="ux-client-input"
@@ -102,12 +97,10 @@ export function RecordDetail({
             </Typography.Text>
           ) : null}
           <Button
-            accessibleSizing
             onPress={save}
             title={status === "error" ? "Reintentar guardar" : "Guardar cambios"}
           />
           <Button
-            accessibleSizing
             onPress={() => {
               setName(savedName);
               setEditing(false);
@@ -119,7 +112,6 @@ export function RecordDetail({
         </View>
       ) : (
         <Button
-          accessibleSizing
           onPress={() => {
             setEditing(true);
             setStatus("idle");
@@ -133,7 +125,6 @@ export function RecordDetail({
       ) : null}
       {startInList && !editing ? (
         <Button
-          accessibleSizing
           onPress={() => setShowList(true)}
           title="Volver a registros"
           variant="secondary"

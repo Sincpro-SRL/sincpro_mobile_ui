@@ -20,7 +20,6 @@ test("search exposes a named readable input and a separate 48 point clear action
   await render(
     <SearchBar
       accessibilityLabel="Buscar recursos"
-      accessibleSizing
       clearAccessibilityLabel="Limpiar búsqueda"
       onChangeText={change}
       onClear={clear}
@@ -55,30 +54,27 @@ test("search forwards typing and submission without inventing result state", asy
   expect(submit).toHaveBeenCalledWith("referencia");
 });
 
-test.each([false, true])(
-  "search triggers preserve legacy sizing and opt into readable wrapping with accessibleSizing=%s",
-  async (accessibleSizing) => {
-    const press = jest.fn();
-    await render(
-      <SearchBar
-        accessibilityLabel="Abrir búsqueda"
-        accessibleSizing={accessibleSizing}
-        editable={false}
-        onChangeText={jest.fn()}
-        onPress={press}
-        placeholder="Buscar recursos por título"
-        value=""
-      />,
-    );
-    const text = screen.getByText("Buscar recursos por título");
-    expect(text.props.numberOfLines).toBe(accessibleSizing ? undefined : 1);
-    expect(ReactNative.StyleSheet.flatten(text.props.style).fontSize).toBe(
-      accessibleSizing ? 17 : 14,
-    );
-    await fireEvent.press(screen.getByRole("search", { name: "Abrir búsqueda" }));
-    expect(press).toHaveBeenCalledTimes(1);
-  },
-);
+test("search triggers default to readable scalable multiline labels", async () => {
+  const press = jest.fn();
+  await render(
+    <SearchBar
+      accessibilityLabel="Abrir búsqueda"
+      editable={false}
+      onChangeText={jest.fn()}
+      onPress={press}
+      placeholder="Buscar recursos por título"
+      value=""
+    />,
+  );
+  const text = screen.getByText("Buscar recursos por título");
+  expect(text.props.numberOfLines).toBeUndefined();
+  expect(text.props.allowFontScaling).not.toBe(false);
+  expect(ReactNative.StyleSheet.flatten(text.props.style).fontSize).toBe(17);
+  const trigger = screen.getByRole("search", { name: "Abrir búsqueda" });
+  expect(trigger.props.style).toMatchObject({ minHeight: 48, minWidth: 48 });
+  await fireEvent.press(trigger);
+  expect(press).toHaveBeenCalledTimes(1);
+});
 
 test("mobile filters expose selection and disabled state without truncating labels", async () => {
   const press = jest.fn();

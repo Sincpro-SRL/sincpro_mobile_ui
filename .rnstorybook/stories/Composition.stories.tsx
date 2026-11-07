@@ -103,7 +103,6 @@ export function CollectionRecipe({
     <IconButton
       accessibilityLabel={`${saved.includes(record.id) ? "Quitar de guardados" : "Guardar"} ${record.title}`}
       accessibilityState={{ selected: saved.includes(record.id) }}
-      accessibleSizing
       icon={saved.includes(record.id) ? "bookmark" : "bookmark-outline"}
       onPress={() => toggleSaved(record.id)}
       type="ionicons"
@@ -150,7 +149,6 @@ export function CollectionRecipe({
       />
       {visible.length === 0 ? (
         <EmptyState
-          accessibleSizing
           actionLabel="Restablecer búsqueda"
           description="Prueba otro título o cambia los filtros."
           onAction={() => {
@@ -175,7 +173,6 @@ export function CollectionRecipe({
               <View className="flex-row flex-wrap items-center gap-2 mt-4">
                 <Button
                   accessibilityLabel={`Abrir ${record.title}`}
-                  accessibleSizing
                   onPress={() => setDetail(record.id)}
                   title="Ver detalle"
                   variant="secondary"
@@ -208,7 +205,6 @@ export function CollectionRecipe({
         Datos e ilustraciones locales de demostración.
       </Typography.Text>
       <Sheet
-        accessibleSizing
         onClose={() => setMoreOpen(false)}
         showCloseButton
         title="Más filtros"
@@ -216,13 +212,11 @@ export function CollectionRecipe({
       >
         <View style={{ gap: 16 }}>
           <Checkbox
-            accessibleSizing
             isChecked={featuredDraft}
             mainText="Solo destacados"
             onCheck={setFeaturedDraft}
           />
           <Button
-            accessibleSizing
             onPress={() => {
               setActive((current) =>
                 featuredDraft
@@ -249,7 +243,6 @@ export function CollectionRecipe({
             </Typography.Text>
             <CopyableText value={`REF-${selected.id.toUpperCase()}`} />
             <Button
-              accessibleSizing
               onPress={() => toggleSaved(selected.id)}
               title={
                 saved.includes(selected.id)

@@ -1,21 +1,23 @@
+import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Story from "@sincpro/mobile-ui/Display/Display.Story";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { Image, type ImageSourcePropType, ScrollView, View } from "react-native";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
+import { ScrollView, View } from "react-native";
 
 export interface StoryTrayItem {
   id: string;
-  image: ImageSourcePropType;
+  image: ImageSource;
   label?: string;
-  avatar?: ImageSourcePropType;
+  avatar?: ImageSource;
   seen?: boolean;
 }
 
 export interface StoryTrayCreate {
   label?: string;
-  image?: ImageSourcePropType;
+  image?: ImageSource;
   onPress: () => void;
 }
 
@@ -48,7 +50,7 @@ function CreateCard({ create, size }: { create: StoryTrayCreate; size: number })
       }}
     >
       {create.image ? (
-        <Image source={create.image} style={{ width: "100%", height: size * 1.7 }} />
+        <ExpoImage source={create.image} style={{ width: "100%", height: size * 1.7 }} />
       ) : (
         <View
           style={{ width: "100%", height: size * 1.7, backgroundColor: theme.bg.muted }}

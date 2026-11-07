@@ -73,3 +73,6 @@ UX es un criterio transversal, no una carpeta para ejemplos heterogéneos.
 - Archivo nuevo en su carpeta → importable ya por catch-all `@sincpro/mobile-ui/<carpeta>/<archivo>`.
 - Subpath limpio (`@sincpro/mobile-ui/<carpeta>`) → barrel `index.ts` + entrada en `exports` de `package.json`.
 - Dep nativa **opcional/pesada** → `peerDependenciesMeta.optional` + exponer **solo por subpath** (fuera de barrels root), para no inflar el build de apps que no la usan.
+- `expo-image` es obligatorio desde v2: toda imagen de catálogo usa el renderer común
+  `Display.ExpoImage`, directamente o mediante `Display.Image`. Las texturas SVG son otra
+  responsabilidad y conservan `react-native-svg`; `resolveAssetSource` de RN no es un renderer.

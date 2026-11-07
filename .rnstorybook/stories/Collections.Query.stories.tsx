@@ -209,7 +209,6 @@ export function QueryCollection() {
       <Typography.Heading variant="h3">Colección configurable</Typography.Heading>
       <SearchBar
         accessibilityLabel="Buscar en la colección"
-        accessibleSizing
         clearAccessibilityLabel="Limpiar búsqueda de colección"
         onChangeText={(search) => setQuery({ ...query, search })}
         suggestions={{
@@ -220,7 +219,6 @@ export function QueryCollection() {
         value={query.search}
       />
       <Button
-        accessibleSizing
         onPress={() => setOpen(true)}
         title="Filtros, orden y agrupación"
         variant="secondary"
@@ -252,7 +250,6 @@ export function QueryCollection() {
       ) : null}
       {!visible.length ? (
         <Button
-          accessibleSizing
           onPress={() => setQuery(initialQuery)}
           title="Restablecer colección"
           variant="secondary"

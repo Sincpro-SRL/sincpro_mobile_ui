@@ -3,8 +3,9 @@ import type { KeyboardFormProps } from "@sincpro/mobile-ui/Form/Form.KeyboardFor
 import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { ReactNode } from "react";
-import { type ImageSourcePropType, View } from "react-native";
+import { View } from "react-native";
 
 const Logo = Display.Logo;
 const Text = Typography.Text;
@@ -12,7 +13,7 @@ const Text = Typography.Text;
 interface AuthFormProps {
   title?: string;
   description?: string;
-  logoSource?: ImageSourcePropType;
+  logoSource?: ImageSource;
   onBack?: () => void;
   FormNode: ReactNode;
   background?: AppBarBackground;

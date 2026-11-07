@@ -1,3 +1,4 @@
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { type ImageSourcePropType } from "react-native";
 
 /**
@@ -15,7 +16,7 @@ import { type ImageSourcePropType } from "react-native";
  */
 export interface BrandingConfig {
   /** Brand logo (used by `Display.Logo`, `widgets.ScreenHeader`, etc.). */
-  logo?: ImageSourcePropType;
+  logo?: ImageSource;
   /** Brand symbol / icon used by `Display.Pattern kind="mesh"` as the tiled texture. */
   mesh?: ImageSourcePropType;
   /** Tile size in px (overrides `theme.pattern.size` for the brand mesh). */
@@ -23,7 +24,7 @@ export interface BrandingConfig {
 }
 
 interface BrandingState {
-  logo: ImageSourcePropType | undefined;
+  logo: ImageSource | undefined;
   mesh: ImageSourcePropType | undefined;
   meshSize: number | undefined;
 }
@@ -36,7 +37,7 @@ export function setBranding(config: BrandingConfig): void {
   if (config.meshSize !== undefined) state.meshSize = config.meshSize;
 }
 
-export function getBrandingLogo(): ImageSourcePropType | undefined {
+export function getBrandingLogo(): ImageSource | undefined {
   return state.logo;
 }
 

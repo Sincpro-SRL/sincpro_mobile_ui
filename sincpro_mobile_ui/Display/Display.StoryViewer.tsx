@@ -1,20 +1,16 @@
+import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
-import {
-  Image,
-  type ImageSourcePropType,
-  Modal,
-  Pressable as RNPressable,
-  View,
-} from "react-native";
+import { Modal, Pressable as RNPressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface StoryViewerSlide {
-  image: ImageSourcePropType;
+  image: ImageSource;
 }
 
 export interface StoryViewerProps {
@@ -26,7 +22,7 @@ export interface StoryViewerProps {
   title: string;
   subtitle?: string;
   time?: string;
-  avatar?: ImageSourcePropType;
+  avatar?: ImageSource;
   progress?: number;
   muted?: boolean;
   paused?: boolean;
@@ -78,8 +74,8 @@ function StoryViewer({
       visible={visible}
     >
       <View style={{ flex: 1, backgroundColor: "#000" }} testID={testID}>
-        <Image
-          resizeMode="contain"
+        <ExpoImage
+          contentFit="contain"
           source={current.image}
           style={{
             position: "absolute",
@@ -149,7 +145,7 @@ function StoryViewer({
 
           <View style={{ flexDirection: "row", alignItems: "center", marginTop: 12 }}>
             {avatar ? (
-              <Image
+              <ExpoImage
                 source={avatar}
                 style={{ width: 36, height: 36, borderRadius: 18, marginRight: 8 }}
               />

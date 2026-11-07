@@ -17,7 +17,6 @@ export interface DatePickerProps {
   minimumDate?: Date;
   maximumDate?: Date;
   disabled?: boolean;
-  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
 }
@@ -50,7 +49,6 @@ function DatePicker({
   minimumDate,
   maximumDate,
   disabled = false,
-  accessibleSizing = false,
   className,
   testID,
 }: DatePickerProps) {
@@ -77,13 +75,14 @@ function DatePicker({
         accessibilityRole="button"
         accessibilityState={{ disabled }}
         accessibilityValue={{ text: value ? fmt(value) : placeholder }}
-        className="flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3 min-h-[44px]"
+        className="flex-row items-center justify-between rounded-lg border border-input bg-bg-card px-3 min-h-[48px]"
         disabled={disabled}
         onPress={() => setOpen(true)}
-        style={accessibleSizing ? { minHeight: 48 } : undefined}
+        style={{ minHeight: 48, minWidth: 48 }}
       >
         <Typography.Text
           className={cn("flex-1 text-sm", value ? "text-text-primary" : "text-text-tertiary")}
+          style={{ paddingVertical: 12 }}
         >
           {value ? fmt(value) : placeholder}
         </Typography.Text>

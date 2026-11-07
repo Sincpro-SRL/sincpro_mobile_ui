@@ -42,6 +42,10 @@ test("sheet offers an opt-in named close action and modal semantics", async () =
   );
 
   expect(screen.getByText("Filtros").props.accessibilityRole).toBe("header");
+  expect(screen.getByRole("button", { name: "Cerrar" }).props.style).toMatchObject({
+    minWidth: 48,
+    minHeight: 48,
+  });
   await fireEvent.press(screen.getByRole("button", { name: "Cerrar" }));
   expect(onClose).toHaveBeenCalledTimes(1);
 });

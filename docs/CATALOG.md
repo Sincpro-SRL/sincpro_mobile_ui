@@ -35,8 +35,8 @@ fonts and system scaling. Legacy `body` remains 14.
 Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
 alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
 alternative. Existing variants are retained; `primary` and `cta` currently share styling.
-Use `accessibleSizing` on buttons/icon buttons for a 48-point minimum, multiline/scaled
-button text, and a supplied accessible name for icon-only actions.
+Buttons/icon buttons use a 48-point minimum and multiline/scaled button text by default.
+Supply an accessible name for icon-only actions; the `accessibleSizing` prop was removed in v2.
 `FilterButton variant="mobile"` exposes selected/disabled state, a selected check and
 wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
 horizontal scrolling or wrapping; the default remains its legacy row layout.
@@ -58,8 +58,8 @@ See [migration and adoption order](MOBILE_UX_MIGRATION.md).
 Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
 alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
 alternative. Existing variants are retained; `primary` and `cta` currently share styling.
-Use `accessibleSizing` on buttons/icon buttons for a 48-point minimum, multiline/scaled
-button text, and a supplied accessible name for icon-only actions.
+Buttons/icon buttons use a 48-point minimum and multiline/scaled button text by default.
+Supply an accessible name for icon-only actions; the `accessibleSizing` prop was removed in v2.
 `FilterButton variant="mobile"` exposes selected/disabled state, a selected check and
 wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
 horizontal scrolling or wrapping; the default remains its legacy row layout.
@@ -146,6 +146,26 @@ icon renderers retain control.
 
 ### Commerce (`Display`)
 
+`Display.Image` uses Expo Image and its original icon-only fallback. Expo callbacks,
+accessible names, `containerStyle` and `renderError(retry)` are available without replacing
+loading behavior. Changing the source resets success/failure/loading; equivalent source
+objects preserve state. A retry reloads the same source. Errors log and notify `onError`.
+`style` continues to customize the image itself; `containerStyle` styles its frame.
+
+`Display.ExpoImage` is the common direct renderer, also exported by `…/Display/ExpoImage`.
+Install the required `expo-image` peer in the host with `npx expo install expo-image`.
+It forwards Expo Image props: `cachePolicy`, `recyclingKey`, `placeholder`, `contentFit`,
+`allowDownscaling`, events and styles, plus NativeWind `className`.
+Defaults remain Expo disk caching and no transition. Explicit transitions, animated image
+autoplay and SF Symbol effects respect live Reduce Motion. Errors log and notify `onError`;
+error/retry UI and cache/privacy policy belong to the host. Set `cachePolicy="none"` where
+persistence is inappropriate. Do not prefetch an entire collection or force memory caching.
+v2 migrates logos, product/media thumbnails, stories, splash logos and empty illustrations
+to this renderer. `resizeMode` is replaced by `contentFit`; events use Expo payloads, not
+`nativeEvent`. Recycling identity defaults to the source identity, including native shared
+image references without serializing them. SVG texture images retain their SVG renderer.
+See [migration v2](./MIGRATION-V2.md).
+
 `PriceTag`, `ProductCard`.
 
 ### Media & Social (`Display`)
@@ -178,9 +198,14 @@ consumer-controlled. No automatic live announcements on every progress update.
 
 `AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `Search` (compound field, filter chips, advanced filter sheet, history and suggestions), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).
 
-`SearchBar accessibleSizing` opts into readable 17-point text and 48-point input/clear
+`SegmentedControl` wraps labels at 14 points with 48-point minimum targets by default.
+The old single-line 12-point mode was removed. Group/per-option disabled state, accessible
+names/hints, `style`, `optionStyle` and `labelTextProps` support local composition.
+Options remain host-controlled and keep selected tab semantics.
+
+`SearchBar` uses readable 17-point text and 48-point input/clear
 targets. Name search and clear independently with `accessibilityLabel` and
-`clearAccessibilityLabel`. Legacy height remains 44.
+`clearAccessibilityLabel`. There is no legacy 44-point mode.
 `suggestions` accepts host-owned items `{id,label,description?}`, `onSelect`, loading,
 error/retry and empty copy. Suggestions appear on focus; selecting one does not guess
 which field to search or mutate the query. `Navigation.SearchSuggestions` is also composable.
@@ -191,9 +216,9 @@ existing list-specific API fits. For hierarchy, prefer `AppBar` back navigation 
 `Steps` for sequential flows; generic breadcrumbs are not added because they consume
 horizontal space without improving common mobile navigation.
 
-`SearchBar accessibleSizing` opts into readable 17-point text and 48-point input/clear
+`SearchBar` uses readable 17-point text and 48-point input/clear
 targets. Name search and clear independently with `accessibilityLabel` and
-`clearAccessibilityLabel`. Legacy height remains 44.
+`clearAccessibilityLabel`. There is no legacy 44-point mode.
 `suggestions` accepts host-owned items `{id,label,description?}`, `onSelect`, loading,
 error/retry and empty copy. Suggestions appear on focus; selecting one does not guess
 which field to search or mutate the query. `Navigation.SearchSuggestions` is also composable.

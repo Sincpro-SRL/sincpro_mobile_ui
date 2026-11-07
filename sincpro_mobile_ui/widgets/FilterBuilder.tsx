@@ -56,7 +56,6 @@ export default function FilterBuilder({
           Este grupo ya no está disponible. La configuración cambió.
         </Typography.Text>
         <Button
-          accessibleSizing
           onPress={() => {
             setPath([]);
             setEditing(null);
@@ -142,7 +141,6 @@ export default function FilterBuilder({
                 />
               ) : field?.type === "date" ? (
                 <DatePicker
-                  accessibleSizing
                   key={index}
                   label={label}
                   onChange={(date) =>
@@ -154,7 +152,6 @@ export default function FilterBuilder({
                 />
               ) : (
                 <Input
-                  accessibleSizing
                   key={index}
                   keyboardType={
                     field?.type === "number" ? "numbers-and-punctuation" : "default"
@@ -178,7 +175,6 @@ export default function FilterBuilder({
             </Typography.Text>
           ) : null}
           <Button
-            accessibleSizing
             onPress={() => {
               const next = {
                 ...condition,
@@ -203,7 +199,6 @@ export default function FilterBuilder({
             title="Guardar condición"
           />
           <Button
-            accessibleSizing
             onPress={() => setEditing(null)}
             title="Cancelar condición"
             variant="secondary"
@@ -213,7 +208,6 @@ export default function FilterBuilder({
         <>
           {path.length ? (
             <Button
-              accessibleSizing
               onPress={() => setPath(path.slice(0, -1))}
               title="Volver al grupo anterior"
               variant="link"
@@ -241,7 +235,6 @@ export default function FilterBuilder({
               </Typography.Text>
               <View className="flex-row flex-wrap gap-2">
                 <Button
-                  accessibleSizing
                   onPress={() =>
                     child.kind === "group"
                       ? setPath([...path, index])
@@ -255,7 +248,6 @@ export default function FilterBuilder({
                   variant="secondary"
                 />
                 <Button
-                  accessibleSizing
                   onPress={() =>
                     changeGroup({
                       ...group,
@@ -269,14 +261,12 @@ export default function FilterBuilder({
             </View>
           ))}
           <Button
-            accessibleSizing
             disabled={!fields.some((item) => item.operators.length)}
             onPress={addCondition}
             title="Añadir condición"
             variant="secondary"
           />
           <Button
-            accessibleSizing
             onPress={() => {
               changeGroup({
                 ...group,

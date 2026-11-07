@@ -93,7 +93,6 @@ export function GroupedSettings({
           trailing={
             <Checkbox
               accessibilityLabel="Recibir avisos importantes"
-              accessibleSizing
               className="min-w-[48px]"
               isChecked={notifications}
               onCheck={setNotifications}

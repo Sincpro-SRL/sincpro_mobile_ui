@@ -25,7 +25,6 @@ export interface ListItemProps {
   showDivider?: boolean;
   className?: string;
   testID?: string;
-  accessibleSizing?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
   disabled?: boolean;
@@ -49,7 +48,6 @@ function ListItem({
   showDivider,
   className,
   testID,
-  accessibleSizing = false,
   accessibilityLabel,
   accessibilityHint,
   disabled = false,
@@ -96,7 +94,6 @@ function ListItem({
       <View className={cn("flex-1", mobile ? "min-w-0 gap-1" : "gap-0.5")}>
         <Typography.Text
           className={mobile && disabled ? "text-text-disabled" : "text-text-primary"}
-          numberOfLines={mobile || accessibleSizing ? undefined : 1}
           semibold={!mobile || comfortable}
           variant={comfortable ? "bodyReadable" : "body"}
           {...titleTextProps}
@@ -106,7 +103,6 @@ function ListItem({
         {subtitle ? (
           <Typography.Text
             className="text-text-secondary"
-            numberOfLines={mobile || accessibleSizing ? undefined : 1}
             variant={comfortable ? "bodyLarge" : "bodySmall"}
             {...subtitleTextProps}
           >
@@ -168,7 +164,7 @@ function ListItem({
         className={base}
         disabled={disabled}
         onPress={onPress}
-        style={[accessibleSizing ? { minHeight: 48 } : undefined, style]}
+        style={[{ minHeight: 48, minWidth: 48 }, style]}
         testID={testID}
       >
         {content}

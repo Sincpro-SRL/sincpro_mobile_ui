@@ -4,13 +4,14 @@ import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import React, { ReactNode } from "react";
-import { type ImageSourcePropType, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 export interface HeaderProps {
   title?: string;
   logo?: ReactNode;
-  logoSource?: ImageSourcePropType;
+  logoSource?: ImageSource;
   backButton?: boolean;
   handleBackButton?: () => void;
   className?: string;

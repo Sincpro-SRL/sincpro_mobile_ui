@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 interface ListViewContextValue<T> {
   name: string;
@@ -18,6 +18,7 @@ interface ListViewContextValue<T> {
   onBack?: () => void;
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  hasMore: boolean;
 }
 
 const Context = createContext<ListViewContextValue<any> | null>(null);
@@ -38,6 +39,7 @@ export function ListViewProvider<T>({
   onBack,
   onLoadMore,
   loadingMore = false,
+  hasMore = true,
   children,
 }: {
   name: string;
@@ -55,35 +57,53 @@ export function ListViewProvider<T>({
   onBack?: () => void;
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  hasMore?: boolean;
   children: ReactNode;
 }) {
   const [showRefreshing, setShowRefreshing] = useState(false);
-
-  return (
-    <Context.Provider
-      value={{
-        name,
-        description,
-        items,
-        isLoading,
-        hasError,
-        errorMessage,
-        readonly,
-        showRefreshing,
-        setShowRefreshing,
-        onRefresh,
-        onRetry,
-        onPressItem,
-        onDeleteItem,
-        onSearch,
-        onBack,
-        onLoadMore,
-        loadingMore,
-      }}
-    >
-      {children}
-    </Context.Provider>
+  const value = useMemo(
+    () => ({
+      name,
+      description,
+      items,
+      isLoading,
+      hasError,
+      errorMessage,
+      readonly,
+      showRefreshing,
+      setShowRefreshing,
+      onRefresh,
+      onRetry,
+      onPressItem,
+      onDeleteItem,
+      onSearch,
+      onBack,
+      onLoadMore,
+      loadingMore,
+      hasMore,
+    }),
+    [
+      name,
+      description,
+      items,
+      isLoading,
+      hasError,
+      errorMessage,
+      readonly,
+      showRefreshing,
+      onRefresh,
+      onRetry,
+      onPressItem,
+      onDeleteItem,
+      onSearch,
+      onBack,
+      onLoadMore,
+      loadingMore,
+      hasMore,
+    ],
   );
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
 export function useListView<T>() {

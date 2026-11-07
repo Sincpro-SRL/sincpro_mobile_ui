@@ -9,6 +9,35 @@ export default meta;
 
 type Story = StoryObj;
 
+export const AccessibleSegments: Story = {
+  render: function AccessibleSegments() {
+    const [value, setValue] = useState("pending");
+    return (
+      <View className="p-4 gap-4">
+        <Navigation.SegmentedControl
+          accessibilityLabel="Estado de la colección"
+          onChange={setValue}
+          options={[
+            { label: "Pendientes de sincronización", value: "pending" },
+            { label: "Registros completados", value: "done" },
+            {
+              label: "Archivados",
+              value: "archived",
+              disabled: true,
+              accessibilityHint: "No disponible en esta demostración",
+            },
+          ]}
+          value={value}
+        />
+        <Typography.Text>
+          Prueba texto ampliado y pantalla estrecha; los labels no se truncan en modo
+          accesible.
+        </Typography.Text>
+      </View>
+    );
+  },
+};
+
 // ─── Text-only ───────────────────────────────────────────────────────────────
 
 const VIEWS = [

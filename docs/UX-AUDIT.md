@@ -1,5 +1,8 @@
 # Auditoría UX/UI y contrato de evolución
 
+Informe histórico de v1. La política actual de tamaños y renderer de imágenes está en
+[migración v2](./MIGRATION-V2.md); los resultados originales se conservan como evidencia.
+
 Fecha: 2026-11-06. Alcance: componentes representativos y patrones del catálogo móvil,
 contrastados con la metodología aplicada en web y con fundamentos nativos.
 No es una certificación de accesibilidad ni una auditoría exhaustiva de cada variante.

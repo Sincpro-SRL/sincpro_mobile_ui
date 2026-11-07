@@ -62,8 +62,6 @@ export interface BottomNavProps {
   bordered?: boolean;
   /** Token for the active color. `primary` (default) or `accent` (e.g. green CTA brand). */
   activeColor?: "primary" | "accent";
-  /** Increase each tab's target to at least 48 points. */
-  accessibleSizing?: boolean;
   className?: string;
   testID?: string;
 }
@@ -85,7 +83,6 @@ function BottomNav({
   indicator = "none",
   bordered = true,
   activeColor = "primary",
-  accessibleSizing = false,
   className,
   testID,
 }: BottomNavProps) {
@@ -164,14 +161,15 @@ function BottomNav({
             style={{
               borderRadius: 999,
               backgroundColor: activeTint,
-              ...(accessibleSizing ? { minHeight: 48, minWidth: 48 } : null),
+              minHeight: 48,
+              minWidth: 48,
             }}
           >
             {renderIconNode(item, true, onActive)}
             {item.label ? (
               <Typography.Text
                 semibold
-                style={{ color: onActive, fontSize: 13, marginLeft: 8 }}
+                style={{ color: onActive, fontSize: 13, marginLeft: 8, flexShrink: 1 }}
               >
                 {item.label}
               </Typography.Text>
@@ -186,7 +184,7 @@ function BottomNav({
           className="items-center justify-center px-3 py-2"
           key={item.key}
           onPress={() => onChange(item.key)}
-          style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+          style={{ minHeight: 48, minWidth: 48 }}
         >
           {renderIconNode(item, false, inactiveColor)}
         </Pressable>
@@ -212,7 +210,7 @@ function BottomNav({
         className="flex-1 items-center justify-center py-1.5"
         key={item.key}
         onPress={() => onChange(item.key)}
-        style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+        style={{ minHeight: 48, minWidth: 48 }}
       >
         {indicator === "bar" && active ? (
           <View
@@ -249,9 +247,8 @@ function BottomNav({
         ) : null}
         {showLabels && item.label && indicator !== "glow" ? (
           <Typography.Text
-            numberOfLines={1}
             semibold={active}
-            style={{ color: labelColor, fontSize: 11, marginTop: 3 }}
+            style={{ color: labelColor, fontSize: 11, marginTop: 3, textAlign: "center" }}
           >
             {item.label}
           </Typography.Text>

@@ -11,7 +11,7 @@ import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 // ─── Style variants ───────────────────────────────────────────────────────────
 
 const button = tv({
-  base: "rounded-md items-center justify-center flex-row min-h-[44px]",
+  base: "rounded-md items-center justify-center flex-row min-h-[48px]",
   variants: {
     variant: {
       primary: "bg-accent",
@@ -22,12 +22,12 @@ const button = tv({
       outlineDanger: "bg-transparent border border-danger",
       outlineBlack: "bg-transparent border border-border-strong",
       flat: "bg-text-primary/10",
-      link: "bg-transparent min-h-0",
+      link: "bg-transparent",
       transparent: "bg-transparent border border-border-light",
     },
     size: {
-      small: "py-1.5 px-3 min-h-[36px]",
-      medium: "py-2.5 px-4 min-h-[44px]",
+      small: "py-1.5 px-3 min-h-[48px]",
+      medium: "py-2.5 px-4 min-h-[48px]",
       large: "py-3 px-5 min-h-[48px]",
     },
     disabled: {
@@ -172,7 +172,6 @@ export interface ButtonProps extends VariantProps<typeof button>, AccessibilityP
   className?: string;
   icon?: React.ReactNode;
   testID?: string;
-  accessibleSizing?: boolean;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -186,7 +185,6 @@ const Button: FC<ButtonProps> = ({
   className,
   icon,
   testID,
-  accessibleSizing = false,
   accessibilityLabel,
   accessibilityState,
   ...accessibilityProps
@@ -229,17 +227,18 @@ const Button: FC<ButtonProps> = ({
           disabled: disabled || loading,
           busy: loading,
         }}
-        style={
-          accessibleSizing
-            ? { minHeight: 48, minWidth: 48, justifyContent: "center" }
-            : undefined
-        }
+        style={{ minHeight: 48, minWidth: 48, justifyContent: "center" }}
         testID={testID}
       >
         {loading ? (
           <ActivityIndicator color={loadingColorValue} size="small" />
         ) : (
-          <Typography.Text className={textColorClass} variant={textVariantValue}>
+          <Typography.Text
+            allowFontScaling
+            className={textColorClass}
+            style={{ flexShrink: 1 }}
+            variant={textVariantValue}
+          >
             {title}
           </Typography.Text>
         )}
@@ -263,7 +262,7 @@ const Button: FC<ButtonProps> = ({
         disabled: disabled || loading,
         busy: loading,
       }}
-      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      style={{ minHeight: 48, minWidth: 48 }}
       testID={testID}
     >
       {loading ? (
@@ -272,11 +271,10 @@ const Button: FC<ButtonProps> = ({
         <>
           {icon ? <View className="mr-2">{icon}</View> : null}
           <Typography.Text
-            allowFontScaling={accessibleSizing}
+            allowFontScaling
             className={textColorClass}
-            ellipsizeMode="tail"
-            numberOfLines={accessibleSizing ? undefined : 1}
             semibold={emphasize}
+            style={{ flexShrink: 1 }}
             variant={textVariantValue}
           >
             {title}
@@ -297,7 +295,6 @@ export interface ButtonIconProps extends VariantProps<typeof buttonIcon>, Access
   disabled?: boolean;
   className?: string;
   testID?: string;
-  accessibleSizing?: boolean;
 }
 
 const ButtonIcon: FC<ButtonIconProps> = ({
@@ -310,7 +307,6 @@ const ButtonIcon: FC<ButtonIconProps> = ({
   disabled = false,
   className,
   testID,
-  accessibleSizing = false,
   accessibilityState,
   ...accessibilityProps
 }) => {
@@ -350,7 +346,7 @@ const ButtonIcon: FC<ButtonIconProps> = ({
         disabled: disabled || loading,
         busy: loading,
       }}
-      style={accessibleSizing ? { minHeight: 48, minWidth: 48 } : undefined}
+      style={{ minHeight: 48, minWidth: 48 }}
       testID={testID}
     >
       {loading ? (

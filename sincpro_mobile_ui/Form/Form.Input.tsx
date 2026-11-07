@@ -23,7 +23,6 @@ interface FormInputProps extends TextInputProps {
   error?: string;
   tooltip?: string;
   className?: string;
-  accessibleSizing?: boolean;
 }
 
 function FormInput({
@@ -36,7 +35,6 @@ function FormInput({
   onFocus,
   onBlur,
   className,
-  accessibleSizing = false,
   ref,
   ...props
 }: FormInputProps) {
@@ -69,7 +67,7 @@ function FormInput({
           accessibilityHint={error || tooltip}
           accessibilityLabel={label}
           className={cn(
-            "px-3 py-2.5 text-sm min-h-[44px] text-text-primary",
+            "px-3 py-2.5 text-sm min-h-[48px] text-text-primary",
             multiline && "min-h-[64px] pt-2.5",
           )}
           multiline={multiline}
@@ -79,7 +77,7 @@ function FormInput({
           placeholderTextColor={theme.text.tertiary}
           ref={ref}
           selectionColor={theme.primary}
-          style={[accessibleSizing ? { minHeight: 48 } : undefined, style]}
+          style={[{ minHeight: multiline ? 64 : 48 }, style]}
           textAlignVertical={multiline ? "top" : "center"}
           underlineColorAndroid="transparent"
           {...props}

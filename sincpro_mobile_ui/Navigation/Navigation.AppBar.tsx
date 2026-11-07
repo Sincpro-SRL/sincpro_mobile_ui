@@ -29,8 +29,6 @@ export interface AppBarActionProps {
   onDark?: boolean;
   /** Drop the contained surface → bare icon/text (iOS-style plain back/action). */
   bare?: boolean;
-  /** Increase the action target to 48 points. */
-  accessibleSizing?: boolean;
   testID?: string;
 }
 
@@ -48,7 +46,6 @@ function AppBarAction({
   tone = "plain",
   onDark = false,
   bare = false,
-  accessibleSizing = false,
   testID,
 }: AppBarActionProps) {
   const theme = useTheme();
@@ -79,8 +76,10 @@ function AppBarAction({
         hitSlop={6}
         onPress={onPress}
         style={{
-          height: accessibleSizing ? 48 : 36,
+          minHeight: 48,
+          minWidth: 48,
           paddingHorizontal: 14,
+          paddingVertical: 8,
           borderRadius: 999,
           backgroundColor: bg,
           ...(showBorder ? { borderWidth: 1, borderColor: theme.border.light } : null),
@@ -88,7 +87,11 @@ function AppBarAction({
         testID={testID}
       >
         {icon ? <Icon color={iconColor} name={icon} size={16} /> : null}
-        <Typography.Text semibold style={{ color: iconColor }} variant="bodySmall">
+        <Typography.Text
+          semibold
+          style={{ color: iconColor, flexShrink: 1 }}
+          variant="bodySmall"
+        >
           {label}
         </Typography.Text>
       </Pressable>
@@ -103,8 +106,8 @@ function AppBarAction({
       hitSlop={6}
       onPress={onPress}
       style={{
-        width: accessibleSizing ? 48 : 40,
-        height: accessibleSizing ? 48 : 40,
+        width: 48,
+        height: 48,
         borderRadius: 12,
         backgroundColor: bg,
         ...(showBorder ? { borderWidth: 1, borderColor: theme.border.light } : null),
@@ -149,8 +152,6 @@ export interface AppBarProps {
   border?: boolean;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
-  /** Increase the back-action target to 48 points. */
-  accessibleSizing?: boolean;
   /**
    * [large variant] Extra top padding (px) above the large title row.
    * Default is 8. Use ~16–24 on root/home screens without a back button.
@@ -228,7 +229,6 @@ function AppBar({
   backVariant = "contained",
   border = true,
   safeArea = true,
-  accessibleSizing = false,
   topSpacing,
   background,
   bottomDivider,
@@ -331,7 +331,6 @@ function AppBar({
             {onBack ? (
               <AppBarAction
                 accessibilityLabel="Volver"
-                accessibleSizing={accessibleSizing}
                 bare={backVariant === "plain"}
                 icon="chevron-back"
                 onDark={dark || gradient || hasBackground}
@@ -346,7 +345,6 @@ function AppBar({
               <Typography.Text
                 accessibilityRole="header"
                 className={colored ? "" : "text-text-primary"}
-                numberOfLines={1}
                 semibold
                 style={titleStyle}
                 variant="subtitle"
@@ -357,7 +355,6 @@ function AppBar({
             {subtitle ? (
               <Typography.Text
                 className={colored ? "" : "text-text-secondary"}
-                numberOfLines={1}
                 style={subtitleStyle}
                 variant="caption"
               >
@@ -381,7 +378,6 @@ function AppBar({
           {onBack ? (
             <AppBarAction
               accessibilityLabel="Volver"
-              accessibleSizing={accessibleSizing}
               bare={backVariant === "plain"}
               icon="chevron-back"
               onDark={dark || gradient || hasBackground}

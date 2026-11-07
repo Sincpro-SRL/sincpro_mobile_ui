@@ -146,6 +146,22 @@ icon renderers retain control.
 
 ### Commerce (`Display`)
 
+`Display.Image` retains native Image and its original icon-only fallback. Native callbacks,
+accessible names, `containerStyle` and `renderError(retry)` are available without replacing
+loading behavior. Changing the source resets success/failure/loading; equivalent source
+objects preserve state. A retry reloads the same source. Errors log and notify `onError`.
+`style` continues to customize the image itself; `containerStyle` styles its frame.
+
+`ExpoImage` is an optional subpath `…/Display/ExpoImage`, not a member of `Display` or the
+root barrel. Install `expo-image` in the host with `npx expo install expo-image`.
+It forwards Expo Image props: `cachePolicy`, `recyclingKey`, `placeholder`, `contentFit`,
+`allowDownscaling`, events and styles, plus NativeWind `className`.
+Defaults remain Expo disk caching and no transition. Explicit transitions, animated image
+autoplay and SF Symbol effects respect live Reduce Motion. Errors log and notify `onError`;
+error/retry UI and cache/privacy policy belong to the host. Set `cachePolicy="none"` where
+persistence is inappropriate. Do not prefetch an entire collection or force memory caching.
+The existing Image and its consumers are not silently migrated to this optional native peer.
+
 `PriceTag`, `ProductCard`.
 
 ### Media & Social (`Display`)
@@ -177,6 +193,11 @@ consumer-controlled. No automatic live announcements on every progress update.
 ### Navigation (`Navigation`)
 
 `AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `Search` (compound field, filter chips, advanced filter sheet, history and suggestions), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).
+
+`SegmentedControl accessibleSizing` wraps labels at 14 points with 48-point minimum
+targets; legacy labels remain single-line at 12. Group/per-option disabled state, accessible
+names/hints, `style`, `optionStyle` and `labelTextProps` support local composition.
+Options remain host-controlled and keep selected tab semantics.
 
 `SearchBar accessibleSizing` opts into readable 17-point text and 48-point input/clear
 targets. Name search and clear independently with `accessibilityLabel` and

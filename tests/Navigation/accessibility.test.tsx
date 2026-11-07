@@ -2,7 +2,8 @@ import { expect, jest, test } from "@jest/globals";
 import { AppBar } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { BottomNav } from "@sincpro/mobile-ui/Navigation/Navigation.BottomNav";
 import SegmentedControl from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("@sincpro/mobile-ui/Display/Display.GradientSurface", () => () => null);
@@ -65,4 +66,53 @@ test("segmented options keep tab semantics and optionally meet the 48 point targ
   expect(screen.getByRole("tab", { name: "Abiertos" }).props.style).toMatchObject({
     minHeight: 48,
   });
+});
+
+test("mobile segmented labels wrap and styles stay locally customizable", async () => {
+  await render(
+    <SegmentedControl
+      accessibilityLabel="Vista del inventario"
+      accessibleSizing
+      labelTextProps={{ style: { fontSize: 18, fontWeight: "700" } }}
+      onChange={jest.fn()}
+      options={[{ label: "Registros pendientes de sincronización", value: "pending" }]}
+      optionStyle={{ paddingVertical: 12 }}
+      value="pending"
+    />,
+  );
+  const label = screen.getByText("Registros pendientes de sincronización");
+  expect(label.props.numberOfLines).toBeUndefined();
+  expect(StyleSheet.flatten(label.props.style)).toMatchObject({
+    fontSize: 18,
+    fontWeight: "700",
+  });
+  const tab = screen.getByRole("tab");
+  expect(StyleSheet.flatten(tab.props.style)).toMatchObject({
+    minHeight: 48,
+    paddingVertical: 12,
+  });
+  expect(tab.props.hitSlop).toBe(0);
+});
+
+test("disabled segmented options expose state and cannot dispatch changes", async () => {
+  const onChange = jest.fn();
+  const options = [
+    { label: "Lista", value: "list" },
+    { label: "Mapa", value: "map", disabled: true, accessibilityHint: "Requiere ubicación" },
+  ];
+  const { rerender } = await render(
+    <SegmentedControl onChange={onChange} options={options} value="list" />,
+  );
+  const map = screen.getByRole("tab", { name: "Mapa" });
+  expect(map.props.accessibilityState).toMatchObject({ selected: false, disabled: true });
+  expect(map.props.accessibilityHint).toBe("Requiere ubicación");
+  await fireEvent.press(map);
+  expect(onChange).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByRole("tab", { name: "Lista" }));
+  expect(onChange).toHaveBeenCalledWith("list");
+  await rerender(
+    <SegmentedControl disabled onChange={onChange} options={options} value="list" />,
+  );
+  await fireEvent.press(screen.getByRole("tab", { name: "Lista" }));
+  expect(onChange).toHaveBeenCalledTimes(1);
 });

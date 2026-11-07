@@ -1,8 +1,12 @@
 import { expect, jest, test } from "@jest/globals";
 import ListView from "@sincpro/mobile-ui/views/ListViewV2";
-import { toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
+import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
+import { type IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Text } from "react-native";
+import { createRef, memo } from "react";
+import type { FlatList } from "react-native";
+import { StyleSheet } from "react-native";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("@sincpro/mobile-ui/Display", () => ({
@@ -10,7 +14,12 @@ jest.mock("@sincpro/mobile-ui/Display", () => ({
 }));
 jest.mock("@sincpro/mobile-ui/Feedback", () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
-  Feedback: { Empty: () => null, Error: () => null, Loading: () => null },
+  Feedback: {
+    Empty: () => null,
+    Error: () => null,
+    Loading: () => null,
+    Spinner: () => null,
+  },
 }));
 jest.mock("@sincpro/mobile-ui/Navigation", () => {
   const mockReact = jest.requireActual<typeof import("react")>("react");
@@ -110,3 +119,165 @@ test("FlatList keys rows by stable IDs rather than their current position", asyn
   expect(list.props.keyExtractor(first)).toBe("0");
   expect(list.props.keyExtractor(second)).toBe("pedido-2");
 });
+
+test("list exposes virtualization, fixed-row geometry, external selection and viewability without replacing its engine", async () => {
+  const getItemLayout = (_data: unknown, index: number) => ({
+    length: 64,
+    offset: 64 * index,
+    index,
+  });
+  const onViewableItemsChanged = jest.fn();
+  const items = [{ id: "1", name: "Pedido" }];
+  const { rerender } = await render(
+    <ListView.Root items={items} name="Pedidos" withContainer={false}>
+      <ListView.Content
+        contentContainerStyle={{ paddingTop: 12 }}
+        listProps={{
+          initialNumToRender: 12,
+          maxToRenderPerBatch: 8,
+          windowSize: 7,
+          updateCellsBatchingPeriod: 40,
+          removeClippedSubviews: false,
+          extraData: "selection-1",
+          getItemLayout,
+          onViewableItemsChanged,
+          onEndReachedThreshold: 0.25,
+        }}
+        testID="tuned-list"
+      />
+    </ListView.Root>,
+  );
+  const list = screen.getByTestId("tuned-list");
+  expect(list.props).toMatchObject({
+    initialNumToRender: 12,
+    maxToRenderPerBatch: 8,
+    windowSize: 7,
+    updateCellsBatchingPeriod: 40,
+    removeClippedSubviews: false,
+    extraData: "selection-1",
+    onEndReachedThreshold: 0.25,
+  });
+  expect(list.props.getItemLayout(null, 100)).toEqual({
+    length: 64,
+    offset: 6400,
+    index: 100,
+  });
+  expect(list.props.onViewableItemsChanged).toBe(onViewableItemsChanged);
+  expect(StyleSheet.flatten(list.props.contentContainerStyle).paddingTop).toBe(12);
+  await rerender(
+    <ListView.Root items={items} name="Pedidos" withContainer={false}>
+      <ListView.Content
+        listProps={{ extraData: "selection-2", onViewableItemsChanged }}
+        testID="tuned-list"
+      />
+    </ListView.Root>,
+  );
+  expect(screen.getByTestId("tuned-list").props.extraData).toBe("selection-2");
+  expect(screen.getByTestId("tuned-list").props.onEndReachedThreshold).toBe(0.5);
+});
+
+test.each([
+  { hasMore: true, loadingMore: false, expected: 1 },
+  { hasMore: false, loadingMore: false, expected: 0 },
+  { hasMore: true, loadingMore: true, expected: 0 },
+])(
+  "pagination respects terminal and pending state: %j",
+  async ({ hasMore, loadingMore, expected }) => {
+    const onLoadMore = jest.fn();
+    await render(
+      <ListView.Root
+        hasMore={hasMore}
+        items={[{ id: "1", name: "Pedido" }]}
+        loadingMore={loadingMore}
+        name="Pedidos"
+        onLoadMore={onLoadMore}
+        withContainer={false}
+      >
+        <ListView.Content testID="paged-list" />
+      </ListView.Root>,
+    );
+    await act(() => screen.getByTestId("paged-list").props.onEndReached());
+    expect(onLoadMore).toHaveBeenCalledTimes(expected);
+  },
+);
+
+test("pagination is paused while refreshing and resumes after refresh settles", async () => {
+  let finishRefresh!: () => void;
+  const onRefresh = () =>
+    new Promise<void>((resolve) => {
+      finishRefresh = resolve;
+    });
+  const onLoadMore = jest.fn();
+  await render(
+    <ListView.Root
+      items={[{ id: "1", name: "Pedido" }]}
+      name="Pedidos"
+      onLoadMore={onLoadMore}
+      onRefresh={onRefresh}
+      withContainer={false}
+    >
+      <ListView.Content testID="refresh-list" />
+    </ListView.Root>,
+  );
+  await act(() => {
+    screen.getByTestId("refresh-list").props.refreshControl.props.onRefresh();
+  });
+  await act(() => screen.getByTestId("refresh-list").props.onEndReached());
+  expect(onLoadMore).not.toHaveBeenCalled();
+  await act(() => finishRefresh());
+  await act(() => screen.getByTestId("refresh-list").props.onEndReached());
+  expect(onLoadMore).toHaveBeenCalledTimes(1);
+});
+
+test("memoized consumers do not rerender for an unrelated provider parent update", async () => {
+  const items = [{ id: "1", name: "Pedido" }];
+  const renderConsumer = jest.fn();
+  const Consumer = memo(function Consumer() {
+    const { name } = useListView();
+    renderConsumer();
+    return <Text>{name}</Text>;
+  });
+
+  const provider = (unrelated: string, name = "Pedidos") => (
+    <>
+      <Text>{unrelated}</Text>
+      <ListViewProvider items={items} name={name}>
+        <Consumer />
+      </ListViewProvider>
+    </>
+  );
+  const { rerender } = await render(provider("Primero"));
+  expect(renderConsumer).toHaveBeenCalledTimes(1);
+  await rerender(provider("Segundo"));
+  expect(renderConsumer).toHaveBeenCalledTimes(1);
+  await rerender(provider("Tercero", "Inventario"));
+  expect(renderConsumer).toHaveBeenCalledTimes(2);
+});
+
+test("listRef exposes the existing FlatList imperative scroll API", async () => {
+  const listRef = createRef<FlatList<IRowItem<unknown>>>();
+  await render(
+    <ListView.Root items={[{ id: "1", name: "Pedido" }]} name="Pedidos" withContainer={false}>
+      <ListView.Content listRef={listRef} testID="ref-list" />
+    </ListView.Root>,
+  );
+  expect(typeof listRef.current?.scrollToIndex).toBe("function");
+  expect(typeof listRef.current?.scrollToOffset).toBe("function");
+});
+
+test.each([false, true])(
+  "content styles also apply to empty/error recovery surfaces: error=%s",
+  async (hasError) => {
+    await render(
+      <ListView.Root hasError={hasError} items={[]} name="Pedidos" withContainer={false}>
+        <ListView.Content
+          contentContainerStyle={{ paddingTop: 18 }}
+          testID="recovery-surface"
+        />
+      </ListView.Root>,
+    );
+    expect(
+      StyleSheet.flatten(screen.getByTestId("recovery-surface").props.contentContainerStyle),
+    ).toMatchObject({ paddingTop: 18, flexGrow: 1 });
+  },
+);

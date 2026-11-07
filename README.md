@@ -97,6 +97,13 @@ recoverable error. It uses fictional data and local state, not persistence or a 
   Track/indicator styling and native accessibility props remain customizable.
   See the [feedback contract](docs/CATALOG.md#feedback-feedback) and the
   [comparison and priorities](docs/DESIGN-SYSTEM-GAPS.md).
+- For image caching/recycling in Expo 58, opt into `ExpoImage` from
+  `@sincpro/mobile-ui/Display/ExpoImage` and install the optional `expo-image` peer.
+  Existing `Display.Image` stays native and supports explicit error/retry composition.
+- `ListViewV2.Content` exposes `listProps` for virtualization, `getItemLayout`, viewability
+  and `extraData`, plus `listRef` and content styling. `Root hasMore={false}` stops
+  pagination; `loadingMore` and refresh pause it. See the
+  [mobile performance and usability plan](docs/MOBILE-QUALITY.md).
 - `Actions.Button` (including `.Icon`), `Actions.IconButton`, `BaseButton`,
   `Feedback.EmptyState`, `Feedback.Error` and `Form.Input` accept `accessibleSizing` to
   opt into a minimum 48-point target. Buttons also allow enlarged, multiline labels in

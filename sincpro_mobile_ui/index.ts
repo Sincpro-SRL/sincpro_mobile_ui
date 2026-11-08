@@ -35,6 +35,7 @@ export {
 // Layouts
 export { BottomInsetContext } from "@sincpro/mobile-ui/layouts/BottomInset";
 export { default as Container } from "@sincpro/mobile-ui/layouts/Container";
+export type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 export { default as GradientContainer } from "@sincpro/mobile-ui/layouts/GradientContainer";
 export { default as PlainLayout } from "@sincpro/mobile-ui/layouts/PlainLayout";
 export { default as ScrollContainer } from "@sincpro/mobile-ui/layouts/ScrollContainer";

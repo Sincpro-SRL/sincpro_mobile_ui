@@ -142,3 +142,21 @@ test("family-specific names and custom artwork are not semantic aliases", () => 
     assert.equal(Object.hasOwn(ICON_MAP, name), false);
   }
 });
+
+test("the generated Android glyph table matches the installed Material Symbols codepoints", async () => {
+  const { MATERIAL_CODEPOINTS } = await import("@sincpro/mobile-ui/Display/icon-glyphs");
+  const packagePath = createRequire(resolve("package.json")).resolve(
+    "expo-symbols/package.json",
+  );
+  const symbols = JSON.parse(
+    readFileSync(join(dirname(packagePath), "build/android/symbols.json"), "utf8"),
+  ) as Record<string, number>;
+  assert.deepEqual(Object.keys(MATERIAL_CODEPOINTS).sort(), Object.keys(ICON_MAP).sort());
+  for (const [name, icon] of Object.entries(ICON_MAP)) {
+    assert.equal(
+      MATERIAL_CODEPOINTS[name as keyof typeof MATERIAL_CODEPOINTS],
+      symbols[icon.md],
+      `${name}: run node scripts/generate-icon-glyphs.mjs`,
+    );
+  }
+});

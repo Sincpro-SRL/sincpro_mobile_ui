@@ -48,6 +48,10 @@ export interface CarouselProps<T> extends Omit<ViewProps, "children"> {
   activeDotStyle?: StyleProp<ViewStyle>;
 }
 
+function defaultPageLabel(index: number, count: number): string {
+  return `Elemento ${index + 1} de ${count}`;
+}
+
 function Carousel<T>({
   data,
   renderItem,
@@ -61,7 +65,7 @@ function Carousel<T>({
   onIndexChange,
   previousAccessibilityLabel = "Elemento anterior",
   nextAccessibilityLabel = "Elemento siguiente",
-  formatPageLabel = (index, count) => `Elemento ${index + 1} de ${count}`,
+  formatPageLabel = defaultPageLabel,
   renderControls,
   controlsClassName,
   paginationTextProps,

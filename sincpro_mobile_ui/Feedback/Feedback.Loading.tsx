@@ -3,7 +3,7 @@ import { cn } from "@sincpro/mobile-ui/theme/tw";
 import type React from "react";
 import { type StyleProp, View, type ViewStyle } from "react-native";
 
-interface LoadingStateProps {
+export interface LoadingStateProps {
   message?: string;
   size?: "small" | "large";
   variant?: SpinnerVariant;

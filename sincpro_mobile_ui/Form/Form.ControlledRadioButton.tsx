@@ -1,11 +1,12 @@
+import Field from "@sincpro/mobile-ui/Form/Form.Field";
 import RadioButton from "@sincpro/mobile-ui/Form/Form.RadioButton";
-import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import type { Control, FieldValues, Path, PathValue } from "react-hook-form";
 
 interface ControlledRadioButtonProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
-  value: any;
+  value: PathValue<T, Path<T>>;
 }
 
 function ControlledRadioButton<T extends FieldValues>({
@@ -15,14 +16,14 @@ function ControlledRadioButton<T extends FieldValues>({
   value,
 }: ControlledRadioButtonProps<T>) {
   return (
-    <Controller
+    <Field
       control={control}
       name={name}
-      render={({ field: { onChange, value: selectedValue } }) => (
+      render={({ value: selected, onChange }) => (
         <RadioButton
           label={label}
           onPress={() => onChange(value)}
-          selected={selectedValue === value}
+          selected={selected === value}
         />
       )}
     />

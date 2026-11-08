@@ -4,6 +4,7 @@ import Input from "@sincpro/mobile-ui/Form/Form.Input";
 import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt } from "@sincpro/mobile-ui/utils/async";
 import {
   type CollectionField,
   type CollectionQuery,
@@ -103,16 +104,16 @@ function OptionsEditor({
     onPendingChange(true);
     setError(undefined);
     setStatus(undefined);
-    try {
+    const result = await attempt(async () => {
       await onSave(label.trim(), draft);
       setStatus("Configuración guardada. Pulsa Aplicar configuración para usarla.");
-    } catch (cause) {
-      console.error("[CollectionOptions] Save failed", cause);
+    });
+    pending.current = false;
+    setSaving(false);
+    onPendingChange(false);
+    if (!result.ok) {
+      console.error("[CollectionOptions] Save failed", result.error);
       setError("No se pudo guardar. Conservamos la configuración para reintentar.");
-    } finally {
-      pending.current = false;
-      setSaving(false);
-      onPendingChange(false);
     }
   };
   const applyConfiguration = async () => {
@@ -127,18 +128,18 @@ function OptionsEditor({
     setApplying(true);
     onPendingChange(true);
     setError(undefined);
-    try {
+    const result = await attempt(async () => {
       await onApply(draft);
       Keyboard.dismiss();
       onClose();
-    } catch (cause) {
-      console.error("[CollectionOptions] Apply failed", cause);
+    });
+    pending.current = false;
+    setSaving(false);
+    setApplying(false);
+    onPendingChange(false);
+    if (!result.ok) {
+      console.error("[CollectionOptions] Apply failed", result.error);
       setError("No se pudo aplicar. Conservamos la configuración para reintentar.");
-    } finally {
-      pending.current = false;
-      setSaving(false);
-      setApplying(false);
-      onPendingChange(false);
     }
   };
   return (

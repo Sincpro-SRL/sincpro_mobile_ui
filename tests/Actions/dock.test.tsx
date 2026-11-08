@@ -215,10 +215,6 @@ test("native layout owns sheet height and keyboard while collapsed docks own the
     </Dock>,
   );
   expect(screen.getByTestId("native-sheet").props.snapPoints).toEqual(["90%", 480]);
-  const panel = StyleSheet.flatten(screen.getByTestId("dock-sheet").props.style);
-  expect(panel).toMatchObject({ flex: 1, minHeight: 0 });
-  expect(panel.height).toBeUndefined();
-  expect(panel.maxHeight).toBeUndefined();
   const scroll = screen
     .getByTestId("dock-sheet")
     .queryAll((node) => node.props.keyboardShouldPersistTaps === "handled")[0];

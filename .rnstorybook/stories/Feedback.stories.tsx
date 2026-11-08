@@ -263,3 +263,39 @@ export const PermissionCard: Story = {
     </View>
   ),
 };
+
+/**
+ * Feedback.State: one entry point, three modes.
+ * - `loading`: spinner with a message.
+ * - `empty` without `title`: the original "no records" look of list/form templates.
+ * - `empty` with `title`: the configurable empty state (icon or image, description, action).
+ * - `error`: message with retry / back / home.
+ */
+export const StateModes: Story = {
+  render: () => (
+    <View style={{ gap: 24 }}>
+      <View style={{ height: 160 }}>
+        <Feedback.State kind="loading" message="Cargando pedidos" />
+      </View>
+      <View style={{ height: 220 }}>
+        <Feedback.State kind="empty" />
+      </View>
+      <View style={{ height: 260 }}>
+        <Feedback.State
+          actionLabel="Crear pedido"
+          description="Todavía no hay pedidos para este cliente."
+          kind="empty"
+          onAction={() => undefined}
+          title="Sin pedidos"
+        />
+      </View>
+      <View style={{ height: 260 }}>
+        <Feedback.State
+          kind="error"
+          message="Sin conexión con el servidor"
+          onRetry={() => undefined}
+        />
+      </View>
+    </View>
+  ),
+};

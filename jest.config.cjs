@@ -3,7 +3,11 @@ const { transformIgnorePatterns } = expoPreset;
 
 module.exports = {
   preset: "jest-expo",
-  setupFiles: [...(expoPreset.setupFiles ?? []), "<rootDir>/tests/jest-native-mocks.cjs"],
+  setupFiles: [
+    ...(expoPreset.setupFiles ?? []),
+    "react-native-gesture-handler/jestSetup",
+    "<rootDir>/tests/jest-native-mocks.cjs",
+  ],
   testMatch: ["<rootDir>/tests/**/*.test.tsx"],
   transformIgnorePatterns: transformIgnorePatterns.map((pattern) =>
     pattern.replace("(?!", "(?!@shopify/flash-list|"),

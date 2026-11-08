@@ -1,5 +1,6 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { formatTwoDecimals } from "@sincpro/mobile-ui/utils/monetary";
 import { View } from "react-native";
 
 export interface PriceTagProps {
@@ -18,11 +19,7 @@ const sizeMap = {
 };
 
 function format(amount: number, currency: string): string {
-  const formatted = amount.toLocaleString("es-BO", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  return `${currency} ${formatted}`;
+  return `${currency} ${formatTwoDecimals(amount)}`;
 }
 
 function PriceTag({

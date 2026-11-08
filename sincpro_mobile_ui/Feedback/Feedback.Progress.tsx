@@ -2,7 +2,7 @@ import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { motion } from "@sincpro/mobile-ui/tokens/motion";
 import { normalizeProgress } from "@sincpro/mobile-ui/utils/progress";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Animated,
   Easing,
@@ -39,8 +39,7 @@ function Progress({
   const reducedMotion = useReducedMotion();
   const shouldAnimate = indeterminate && animated && !reducedMotion;
   const progress = indeterminate ? 0 : normalizeProgress(value);
-  // eslint-disable-next-line react-hooks/refs
-  const translate = useRef(new Animated.Value(0)).current;
+  const [translate] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     translate.setValue(0);
@@ -80,7 +79,6 @@ function Progress({
               transform: shouldAnimate
                 ? [
                     {
-                      // eslint-disable-next-line react-hooks/refs
                       translateX: translate.interpolate({
                         inputRange: [0, 1],
                         outputRange: ["-40%", "250%"],

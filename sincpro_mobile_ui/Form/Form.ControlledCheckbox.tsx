@@ -1,5 +1,6 @@
 import Checkbox from "@sincpro/mobile-ui/Form/Form.Checkbox";
-import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import Field from "@sincpro/mobile-ui/Form/Form.Field";
+import type { Control, FieldValues, Path } from "react-hook-form";
 
 interface ControlledCheckboxProps<T extends FieldValues> {
   control: Control<T>;
@@ -15,14 +16,14 @@ function ControlledCheckbox<T extends FieldValues>({
   subText,
 }: ControlledCheckboxProps<T>) {
   return (
-    <Controller
+    <Field
       control={control}
       name={name}
-      render={({ field: { onChange, value } }) => (
+      render={({ value, onChange }) => (
         <Checkbox
-          isChecked={value || false}
+          isChecked={Boolean(value)}
           mainText={label}
-          onCheck={onChange}
+          onCheck={onChange as (checked: boolean) => void}
           subText={subText}
         />
       )}

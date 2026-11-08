@@ -1,11 +1,11 @@
+import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import Button from "@sincpro/mobile-ui/primitives/BaseButton";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
 
-interface ErrorProps {
+export interface ErrorProps {
   message?: string;
   onRetry?: () => void;
   onBack?: () => void;
@@ -15,6 +15,7 @@ interface ErrorProps {
 }
 
 function Error({ message, onRetry, onBack, onHome, className, testID }: ErrorProps) {
+  const theme = useTheme();
   return (
     <View
       className={cn("flex-1 items-center justify-center px-4", className)}

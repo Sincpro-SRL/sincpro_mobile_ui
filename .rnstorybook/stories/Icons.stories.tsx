@@ -1,4 +1,4 @@
-import { Display, ICON_MAP, type IconName } from "@sincpro/mobile-ui/Display";
+import { Display, ICON_NAMES } from "@sincpro/mobile-ui/Display";
 import LogoIcon from "@sincpro/mobile-ui/icons/LogoIcon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -8,7 +8,7 @@ import { View } from "react-native";
 const meta: Meta = { title: "Foundations/Icons" };
 export default meta;
 
-const names = Object.keys(ICON_MAP).filter((name): name is IconName => name in ICON_MAP);
+const names = ICON_NAMES;
 
 function SemanticGallery() {
   const theme = useTheme();

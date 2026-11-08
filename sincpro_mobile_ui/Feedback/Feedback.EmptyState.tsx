@@ -1,8 +1,8 @@
+import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
@@ -32,6 +32,7 @@ function EmptyState({
   className,
   testID,
 }: EmptyStateProps) {
+  const theme = useTheme();
   return (
     <View
       className={cn("flex-1 items-center justify-center px-8 gap-3", className)}
@@ -60,7 +61,7 @@ function EmptyState({
       ) : null}
       {actionLabel && onAction ? (
         <View className="mt-2">
-          <BaseButton onPress={onAction} title={actionLabel} variant="primary" />
+          <Button onPress={onAction} title={actionLabel} variant="primary" />
         </View>
       ) : null}
       {children}

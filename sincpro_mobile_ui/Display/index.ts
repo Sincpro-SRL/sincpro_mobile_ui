@@ -38,6 +38,7 @@ import SearchHistory from "@sincpro/mobile-ui/Display/Display.SearchHistory";
 import SectionHeader from "@sincpro/mobile-ui/Display/Display.SectionHeader";
 import Stat from "@sincpro/mobile-ui/Display/Display.Stat";
 import StatCard from "@sincpro/mobile-ui/Display/Display.StatCard";
+import StatusBadge from "@sincpro/mobile-ui/Display/Display.StatusBadge";
 import StatusDot from "@sincpro/mobile-ui/Display/Display.StatusDot";
 import Story from "@sincpro/mobile-ui/Display/Display.Story";
 import StoryTray from "@sincpro/mobile-ui/Display/Display.StoryTray";
@@ -48,6 +49,7 @@ import Timeline from "@sincpro/mobile-ui/Display/Display.Timeline";
 import Tooltip from "@sincpro/mobile-ui/Display/Display.Tooltip";
 
 export const Display = {
+  StatusBadge,
   AmountSummary,
   Badge,
   BadgeVariants,
@@ -113,9 +115,23 @@ export type { ListItemProps } from "@sincpro/mobile-ui/Display/Display.ListItem"
 export type { MenuCardProps } from "@sincpro/mobile-ui/Display/Display.MenuCard";
 export type { MenuGridItem } from "@sincpro/mobile-ui/Display/Display.MenuGrid";
 export {
-  ICON_MAP,
-  type IconDefinition,
+  defineStatuses,
+  resolveStatus,
+  type StatusBadgeProps,
+  type StatusDefinition,
+  type StatusMap,
+  type StatusTone,
+} from "@sincpro/mobile-ui/Display/Display.StatusBadge";
+export { ICON_FONT_FAMILY, ICON_FONTS } from "@sincpro/mobile-ui/Display/icon-font";
+export {
+  type BuiltInIconName,
+  ICON_NAMES,
   type IconName,
 } from "@sincpro/mobile-ui/Display/icon-map";
+export {
+  type CustomIconRegistry,
+  type CustomIconRenderer,
+  registerIcons,
+} from "@sincpro/mobile-ui/Display/icon-registry";
 
 export default Display;

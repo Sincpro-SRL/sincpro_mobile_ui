@@ -13,6 +13,10 @@ jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("react-native-keyboard-controller", () => ({
   KeyboardStickyView: require("react-native").View,
   KeyboardController: { dismiss: jest.fn() },
+  useReanimatedKeyboardAnimation: () => ({
+    height: { get: () => 0 },
+    progress: { get: () => 0 },
+  }),
 }));
 jest.mock("@sincpro/mobile-ui/Display/Display.Logo", () => () => null);
 jest.mock("@sincpro/mobile-ui/index", () => ({
@@ -63,7 +67,6 @@ test("form template preserves default appearance and merges public keyboard conf
       </FormView.Root>
     </BottomInsetContext.Provider>,
   );
-  expect(screen.getByTestId("template-scroll").props.toolbar).toBe(true);
   expect(
     StyleSheet.flatten(screen.getByTestId("template-scroll").props.contentContainerStyle),
   ).toMatchObject({ paddingBottom: 72, flexGrow: 1 });
@@ -74,10 +77,8 @@ test("form template preserves default appearance and merges public keyboard conf
           keyboardFormProps={{
             bottomOffset: 96,
             contentContainerStyle: { paddingTop: 12 },
-            keyboardDismissMode: "on-drag",
-            toolbarProps: { doneLabel: "Terminar", showDoneLabel: true },
+            bounces: false,
           }}
-          keyboardToolbar
         >
           <Text>Contenido original</Text>
         </FormView.Content>
@@ -85,12 +86,7 @@ test("form template preserves default appearance and merges public keyboard conf
     </BottomInsetContext.Provider>,
   );
   const scroll = screen.getByTestId("template-scroll");
-  expect(scroll.props).toMatchObject({
-    toolbar: true,
-    bottomOffset: 96,
-    keyboardDismissMode: "on-drag",
-    toolbarProps: { doneLabel: "Terminar", showDoneLabel: true },
-  });
+  expect(scroll.props).toMatchObject({ bottomOffset: 96, bounces: false });
   expect(StyleSheet.flatten(scroll.props.contentContainerStyle)).toMatchObject({
     paddingBottom: 72,
     paddingTop: 12,
@@ -102,27 +98,16 @@ test("auth template keeps its original defaults and forwards keyboard configurat
   const { rerender } = await render(
     <AuthFormView FormNode={<Text>Campos</Text>} title="Ingresar" />,
   );
-  expect(screen.getByTestId("template-scroll").props).toMatchObject({
-    toolbar: true,
-    bounces: false,
-  });
+  expect(screen.getByTestId("template-scroll").props).toMatchObject({ bounces: false });
   expect(screen.getByTestId("template-scroll").props.bottomOffset).toBeUndefined();
   await rerender(
     <AuthFormView
       FormNode={<Text>Campos</Text>}
-      keyboardFormProps={{
-        bottomOffset: 88,
-        toolbarProps: { doneLabel: "Finalizar" },
-      }}
-      keyboardToolbar
+      keyboardFormProps={{ bottomOffset: 88 }}
       title="Ingresar"
     />,
   );
-  expect(screen.getByTestId("template-scroll").props).toMatchObject({
-    toolbar: true,
-    bottomOffset: 88,
-    toolbarProps: { doneLabel: "Finalizar" },
-  });
+  expect(screen.getByTestId("template-scroll").props).toMatchObject({ bottomOffset: 88 });
 });
 
 test("auth header uses available layout height and a branded surface with explicit overrides", async () => {

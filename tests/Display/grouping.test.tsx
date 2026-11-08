@@ -238,12 +238,17 @@ test("text and container overrides use native style precedence without losing co
   expect(style("Mi ayuda")).toMatchObject({ fontSize: 15, fontFamily: "Brand-Reading" });
   expect(style("Mi valor").fontSize).toBe(12);
   expect(style("Personalizado")).toMatchObject({ fontSize: 12, fontStyle: "italic" });
-  expect(
-    ReactNative.StyleSheet.flatten(screen.getByRole("button").props.style),
-  ).toMatchObject({
-    borderRadius: 24,
+  const button = screen.getByRole("button");
+  expect(ReactNative.StyleSheet.flatten(button.props.style)).toMatchObject({
     minHeight: 48,
     minWidth: 48,
+  });
+  // The row surface is the Pressable's only child: the override shapes it.
+  const surface = button.children[0];
+  if (typeof surface === "string") throw new Error("row surface missing");
+  expect(ReactNative.StyleSheet.flatten(surface.props.style)).toMatchObject({
+    borderRadius: 24,
+    minHeight: 48,
   });
   await fireEvent.press(screen.getByRole("button", { name: "Mi fila" }));
   expect(open).toHaveBeenCalledTimes(1);

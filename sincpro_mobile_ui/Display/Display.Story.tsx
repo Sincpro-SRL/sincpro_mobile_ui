@@ -1,6 +1,6 @@
 import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,6 +32,7 @@ function Story({
   onPress,
   testID,
 }: StoryProps) {
+  const theme = useTheme();
   if (variant === "card") {
     return (
       <Pressable

@@ -2,6 +2,7 @@ import "@shopify/flash-list/jestSetup";
 
 import { expect, jest, test } from "@jest/globals";
 import type {
+  FlashListProps,
   FlashListRef,
   ListRenderItemInfo,
   RenderTarget,
@@ -10,7 +11,8 @@ import type {
 import { BottomInsetContext } from "@sincpro/mobile-ui/layouts/BottomInset";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import ListView, {
-  type ListViewVirtualizationProps,
+  type ListViewHandle,
+  type ListViewVisibleRow,
 } from "@sincpro/mobile-ui/views/ListViewV2";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import {
@@ -23,6 +25,20 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { createRef, memo, type RefObject } from "react";
 import { StyleSheet, Text } from "react-native";
 
+// The real FlashList keeps virtualizing; the spy only records the props the DS hands it.
+type EngineProps<T> = FlashListProps<T> & { ref?: RefObject<FlashListRef<T> | null> };
+const mockEngine: { props?: EngineProps<unknown> } = {};
+jest.mock("@shopify/flash-list", () => {
+  const actual = jest.requireActual<typeof import("@shopify/flash-list")>("@shopify/flash-list");
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  return {
+    ...actual,
+    FlashList: (props: EngineProps<unknown>) => {
+      mockEngine.props = props;
+      return mockReact.createElement(actual.FlashList, props);
+    },
+  };
+});
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("@sincpro/mobile-ui/Display", () => {
   const mockReact = jest.requireActual<typeof import("react")>("react");
@@ -113,11 +129,11 @@ jest.mock("@sincpro/mobile-ui/Navigation", () => {
   };
 });
 
-function getFlashListProps<T>(listRef: RefObject<FlashListRef<T> | null>) {
-  if (!listRef.current) {
+function engineProps<T>() {
+  if (!mockEngine.props) {
     throw new Error("FlashList did not mount");
   }
-  return listRef.current.props;
+  return mockEngine.props as EngineProps<IRowItem<T>>;
 }
 
 test("debounced list search does not repeat when the host callback identity changes", async () => {
@@ -232,7 +248,6 @@ test("custom renderers and default row actions receive original entities", async
   }
   const event = new Event();
   Object.freeze(event);
-  const listRef = createRef<FlashListRef<IRowItem<Event>>>();
   const renderRow = jest.fn((item: Event, row: IRowItem<Event>) => (
     <Text>{`${row.index}: ${item.asJSON()}`}</Text>
   ));
@@ -240,13 +255,13 @@ test("custom renderers and default row actions receive original entities", async
   const onDelete = jest.fn();
   const { rerender } = await render(
     <ListView.Root items={[event]} name="Eventos" withContainer={false}>
-      <ListView.Content<Event> listRef={listRef}>{renderRow}</ListView.Content>
+      <ListView.Content<Event>>{renderRow}</ListView.Content>
     </ListView.Root>,
   );
   expect(screen.getByText('0: {"label":"Pedido creado"}')).toBeTruthy();
   expect(renderRow.mock.calls[0][0]).toBe(event);
   expect(renderRow.mock.calls[0][1].item).toBe(event);
-  const props = getFlashListProps(listRef);
+  const props = engineProps<Event>();
   const row = props.data?.[0];
   if (!row || !props.renderItem) {
     throw new Error("FlashList row renderer is missing");
@@ -271,7 +286,7 @@ test("custom renderers and default row actions receive original entities", async
       onPressItem={onPress}
       withContainer={false}
     >
-      <ListView.Content<Event> listRef={listRef} testID="original-rows" />
+      <ListView.Content<Event> testID="original-rows" />
     </ListView.Root>,
   );
   await fireEvent.press(screen.getByRole("button", { name: "Open event-1" }));
@@ -286,14 +301,14 @@ test("FlashList keys original rows by stable IDs when their positions change", a
     { id: 0, name: "Pedido cero" },
     { id: "pedido-2", name: "Pedido dos" },
   ];
-  const listRef = createRef<FlashListRef<IRowItem<(typeof items)[number]>>>();
+  type Order = (typeof items)[number];
   const list = (rows: typeof items) => (
     <ListView.Root items={rows} name="Pedidos" withContainer={false}>
-      <ListView.Content listRef={listRef} testID="orders-list" />
+      <ListView.Content testID="orders-list" />
     </ListView.Root>
   );
   const { rerender } = await render(list(items));
-  const props = getFlashListProps(listRef);
+  const props = engineProps<Order>();
   const [first, second] = props.data ?? [];
   expect(props.keyExtractor?.(first, 0)).toBe("0");
   expect(props.keyExtractor?.(second, 1)).toBe("pedido-2");
@@ -301,7 +316,7 @@ test("FlashList keys original rows by stable IDs when their positions change", a
   expect(second.item).toBe(items[1]);
 
   await rerender(list([items[1], items[0]]));
-  const reordered = getFlashListProps(listRef);
+  const reordered = engineProps<Order>();
   const [movedSecond, movedFirst] = reordered.data ?? [];
   expect(reordered.keyExtractor?.(movedSecond, 0)).toBe("pedido-2");
   expect(reordered.keyExtractor?.(movedFirst, 1)).toBe("0");
@@ -309,79 +324,77 @@ test("FlashList keys original rows by stable IDs when their positions change", a
   expect(movedFirst.item).toBe(items[0]);
 });
 
-test("list exposes v2 recycling, external selection and timestamped viewability callbacks", async () => {
+test("tuning reaches the engine in DS terms and hands back original items", async () => {
   type Order = { id: string; name: string };
-  const getItemType = jest.fn<NonNullable<ListViewVirtualizationProps<Order>["getItemType"]>>(
-    (row) => row.item.name,
-  );
-  const onViewableItemsChanged =
-    jest.fn<NonNullable<ListViewVirtualizationProps<Order>["onViewableItemsChanged"]>>();
-  const viewabilityConfig = { waitForInteraction: true, itemVisiblePercentThreshold: 50 };
   const items = [{ id: "1", name: "Pedido" }];
-  const listRef = createRef<FlashListRef<IRowItem<Order>>>();
-  const { rerender } = await render(
+  const rowType = jest.fn((order: Order, _index: number) => order.name);
+  const onVisibleRowsChange = jest.fn<(rows: ListViewVisibleRow<Order>[]) => void>();
+  const list = (extraData: string, keepVisiblePosition = false) => (
     <ListView.Root items={items} name="Pedidos" withContainer={false}>
-      <ListView.Content
+      <ListView.Content<Order>
         contentContainerStyle={{ paddingTop: 12 }}
-        listProps={{
-          drawDistance: 300,
-          maxItemsInRecyclePool: 32,
-          extraData: "selection-1",
-          getItemType,
-          onViewableItemsChanged,
-          viewabilityConfig,
-          viewabilityConfigCallbackPairs: [{ viewabilityConfig, onViewableItemsChanged }],
-          onEndReachedThreshold: 0.25,
-        }}
-        listRef={listRef}
         testID="tuned-list"
+        tuning={{
+          drawDistance: 300,
+          extraData,
+          initialIndex: 0,
+          keepVisiblePosition,
+          loadMoreThreshold: 0.25,
+          onVisibleRowsChange,
+          rowType,
+          visiblePercent: 50,
+        }}
       />
-    </ListView.Root>,
+    </ListView.Root>
   );
-  const props = getFlashListProps(listRef);
+  const { rerender } = await render(list("selection-1"));
+  const props = engineProps<Order>();
   expect(props).toMatchObject({
     drawDistance: 300,
-    maxItemsInRecyclePool: 32,
     extraData: "selection-1",
+    initialScrollIndex: 0,
     onEndReachedThreshold: 0.25,
     maintainVisibleContentPosition: { disabled: true },
+    viewabilityConfig: { itemVisiblePercentThreshold: 50 },
   });
+  expect(StyleSheet.flatten(props.contentContainerStyle)?.paddingTop).toBe(12);
+
   const row = props.data?.[0];
   if (!row) {
     throw new Error("FlashList row is missing");
   }
-  expect(props.getItemType?.(row, 0, props.extraData)).toBe("Pedido");
-  expect(getItemType).toHaveBeenLastCalledWith(row, 0, "selection-1");
-  expect(getItemType.mock.calls.at(-1)?.[0].item).toBe(items[0]);
-  expect(props.onViewableItemsChanged).toBe(onViewableItemsChanged);
-  const token: ViewToken<IRowItem<Order>> = {
+  expect(props.getItemType?.(row, 0)).toBe("Pedido");
+  expect(rowType).toHaveBeenLastCalledWith(items[0], 0);
+
+  const visible: ViewToken<IRowItem<Order>> = {
     item: row,
     key: "1",
     index: 0,
     isViewable: true,
     timestamp: 123,
   };
-  const viewability = { viewableItems: [token], changed: [token] };
-  props.onViewableItemsChanged?.(viewability);
-  expect(onViewableItemsChanged).toHaveBeenLastCalledWith(viewability);
-  expect(onViewableItemsChanged.mock.calls.at(-1)?.[0].viewableItems[0].item.item).toBe(
-    items[0],
-  );
-  expect(props.viewabilityConfigCallbackPairs?.[0].onViewableItemsChanged).toBe(
-    onViewableItemsChanged,
-  );
-  expect(StyleSheet.flatten(props.contentContainerStyle)?.paddingTop).toBe(12);
-  await rerender(
-    <ListView.Root items={items} name="Pedidos" withContainer={false}>
-      <ListView.Content
-        listProps={{ extraData: "selection-2", onViewableItemsChanged }}
-        listRef={listRef}
-        testID="tuned-list"
-      />
+  const unplaced: ViewToken<IRowItem<Order>> = { ...visible, index: null };
+  props.onViewableItemsChanged?.({ viewableItems: [visible, unplaced], changed: [visible] });
+  expect(onVisibleRowsChange).toHaveBeenLastCalledWith([{ item: items[0], index: 0 }]);
+  expect(onVisibleRowsChange.mock.calls.at(-1)?.[0][0].item).toBe(items[0]);
+
+  await rerender(list("selection-2", true));
+  expect(engineProps<Order>().extraData).toBe("selection-2");
+  expect(engineProps<Order>().maintainVisibleContentPosition).toBeUndefined();
+});
+
+test("an untuned list keeps the defaults and skips viewability work", async () => {
+  await render(
+    <ListView.Root items={[{ id: "1", name: "Pedido" }]} name="Pedidos" withContainer={false}>
+      <ListView.Content testID="plain-list" />
     </ListView.Root>,
   );
-  expect(getFlashListProps(listRef).extraData).toBe("selection-2");
-  expect(getFlashListProps(listRef).onEndReachedThreshold).toBe(0.5);
+  const props = engineProps();
+  expect(props.onEndReachedThreshold).toBe(0.5);
+  expect(props.maintainVisibleContentPosition).toEqual({ disabled: true });
+  expect(props.onViewableItemsChanged).toBeUndefined();
+  expect(props.viewabilityConfig).toBeUndefined();
+  expect(props.getItemType).toBeUndefined();
 });
 
 test.each([
@@ -392,7 +405,6 @@ test.each([
   "pagination respects terminal and pending state: %j",
   async ({ hasMore, loadingMore, expected }) => {
     const onLoadMore = jest.fn();
-    const listRef = createRef<FlashListRef<IRowItem<{ id: string; name: string }>>>();
     await render(
       <ListView.Root
         hasMore={hasMore}
@@ -402,11 +414,11 @@ test.each([
         onLoadMore={onLoadMore}
         withContainer={false}
       >
-        <ListView.Content listRef={listRef} testID="paged-list" />
+        <ListView.Content testID="paged-list" />
       </ListView.Root>,
     );
     onLoadMore.mockClear();
-    await act(() => getFlashListProps(listRef).onEndReached?.());
+    await act(() => engineProps().onEndReached?.());
     expect(onLoadMore).toHaveBeenCalledTimes(expected);
   },
 );
@@ -418,7 +430,6 @@ test("pagination is paused while refreshing and resumes after refresh settles", 
       finishRefresh = resolve;
     });
   const onLoadMore = jest.fn();
-  const listRef = createRef<FlashListRef<IRowItem<{ id: string; name: string }>>>();
   await render(
     <ListView.Root
       items={[{ id: "1", name: "Pedido" }]}
@@ -427,19 +438,19 @@ test("pagination is paused while refreshing and resumes after refresh settles", 
       onRefresh={onRefresh}
       withContainer={false}
     >
-      <ListView.Content listRef={listRef} testID="refresh-list" />
+      <ListView.Content testID="refresh-list" />
     </ListView.Root>,
   );
   onLoadMore.mockClear();
   await act(() => {
-    getFlashListProps(listRef).refreshControl?.props.onRefresh?.();
+    engineProps().refreshControl?.props.onRefresh?.();
   });
-  expect(getFlashListProps(listRef).refreshControl?.props.refreshing).toBe(true);
-  await act(() => getFlashListProps(listRef).onEndReached?.());
+  expect(engineProps().refreshControl?.props.refreshing).toBe(true);
+  await act(() => engineProps().onEndReached?.());
   expect(onLoadMore).not.toHaveBeenCalled();
   await act(() => finishRefresh());
-  expect(getFlashListProps(listRef).refreshControl?.props.refreshing).toBe(false);
-  await act(() => getFlashListProps(listRef).onEndReached?.());
+  expect(engineProps().refreshControl?.props.refreshing).toBe(false);
+  await act(() => engineProps().onEndReached?.());
   expect(onLoadMore).toHaveBeenCalledTimes(1);
 });
 
@@ -468,18 +479,38 @@ test("memoized consumers do not rerender for an unrelated provider parent update
   expect(renderConsumer).toHaveBeenCalledTimes(2);
 });
 
-test("listRef exposes the real FlashList v2 imperative scroll API", async () => {
-  const listRef = createRef<FlashListRef<IRowItem<{ id: string; name: string }>>>();
-  await render(
-    <ListView.Root items={[{ id: "1", name: "Pedido" }]} name="Pedidos" withContainer={false}>
-      <ListView.Content listRef={listRef} testID="ref-list" />
-    </ListView.Root>,
+test("ListViewHandle drives the engine and ignores calls without a list", async () => {
+  const handle = createRef<ListViewHandle>();
+  const list = (items: { id: string; name: string }[]) => (
+    <ListView.Root items={items} name="Pedidos" withContainer={false}>
+      <ListView.Content ref={handle} testID="ref-list" />
+    </ListView.Root>
   );
-  expect(typeof listRef.current?.scrollToIndex).toBe("function");
-  expect(typeof listRef.current?.scrollToOffset).toBe("function");
-  expect(typeof listRef.current?.scrollToItem).toBe("function");
-  expect(typeof listRef.current?.computeVisibleIndices).toBe("function");
-  expect(getFlashListProps(listRef).data?.[0].item.name).toBe("Pedido");
+  const { rerender } = await render(list([]));
+  expect(screen.getByText("No records")).toBeTruthy();
+  await handle.current?.scrollToIndex(0);
+  handle.current?.scrollToTop();
+  handle.current?.scrollToEnd();
+
+  await rerender(list([{ id: "1", name: "Pedido" }, { id: "2", name: "Pedido 2" }]));
+  const engine = engineProps().ref?.current;
+  if (!engine) {
+    throw new Error("FlashList ref is missing");
+  }
+  const scrollToIndex = jest.spyOn(engine, "scrollToIndex").mockResolvedValue();
+  const scrollToTop = jest.spyOn(engine, "scrollToTop").mockReturnValue();
+  const scrollToEnd = jest.spyOn(engine, "scrollToEnd").mockReturnValue();
+
+  await handle.current?.scrollToIndex(1, { position: "center" });
+  await handle.current?.scrollToIndex(2);
+  await handle.current?.scrollToIndex(-1);
+  handle.current?.scrollToTop({ animated: false });
+  handle.current?.scrollToEnd();
+
+  expect(scrollToIndex).toHaveBeenCalledTimes(1);
+  expect(scrollToIndex).toHaveBeenCalledWith({ index: 1, animated: true, viewPosition: 0.5 });
+  expect(scrollToTop).toHaveBeenCalledWith({ animated: false });
+  expect(scrollToEnd).toHaveBeenCalledWith({ animated: true });
 });
 
 test("a growing immutable list only mounts the real FlashList viewport", async () => {
@@ -489,7 +520,7 @@ test("a growing immutable list only mounts the real FlashList viewport", async (
   const renderRow = jest.fn((item: (typeof items)[number]) => <Text>{item.name}</Text>);
   await render(
     <ListView.Root items={items} name="Pedidos" withContainer={false}>
-      <ListView.Content listProps={{ drawDistance: 100 }}>{renderRow}</ListView.Content>
+      <ListView.Content tuning={{ drawDistance: 100 }}>{renderRow}</ListView.Content>
     </ListView.Root>,
   );
   expect(screen.getByText("Pedido 0")).toBeTruthy();
@@ -559,16 +590,15 @@ test("headers own top while the list container defaults to lateral edges only", 
 });
 
 test("list padding only adds the host's explicit floating bottom inset", async () => {
-  const listRef = createRef<FlashListRef<IRowItem<{ id: string; name: string }>>>();
   await render(
     <BottomInsetContext.Provider value={48}>
       <ListView.Root items={[{ id: "1", name: "Pedido" }]} name="Pedidos">
-        <ListView.Content contentContainerStyle={{ paddingTop: 12 }} listRef={listRef} />
+        <ListView.Content contentContainerStyle={{ paddingTop: 12 }} />
       </ListView.Root>
     </BottomInsetContext.Provider>,
   );
   expect(screen.root?.props.edges).toMatchObject({ top: "off", bottom: "off" });
-  expect(StyleSheet.flatten(getFlashListProps(listRef).contentContainerStyle)).toMatchObject({
+  expect(StyleSheet.flatten(engineProps().contentContainerStyle)).toMatchObject({
     paddingTop: 12,
     paddingBottom: 48,
   });

@@ -46,6 +46,10 @@ export function QuickActions({ items, title }: QuickActionsProps) {
       >
         {items.map((item) => (
           <TouchableOpacity
+            accessibilityLabel={
+              item.badge != null ? `${item.label}, ${item.badge}` : item.label
+            }
+            accessibilityRole="button"
             activeOpacity={0.7}
             key={item.id}
             onPress={item.onPress}

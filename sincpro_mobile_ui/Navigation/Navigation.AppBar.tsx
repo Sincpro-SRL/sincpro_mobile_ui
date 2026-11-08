@@ -1,5 +1,6 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import GradientSurface, {
+  type GradientPoint,
   type GradientPreset,
 } from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
@@ -8,7 +9,6 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type { LinearGradientPoint } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -191,9 +191,9 @@ export interface AppBarBackground {
   /** Custom color stops — overrides `surface`. Minimum 2 colors. */
   colors?: readonly [string, string, ...string[]];
   /** Gradient start point. Default: top-left `{ x: 0, y: 0 }`. */
-  start?: LinearGradientPoint;
+  start?: GradientPoint;
   /** Gradient end point. Default: bottom-right `{ x: 1, y: 1 }`. */
-  end?: LinearGradientPoint;
+  end?: GradientPoint;
   /** SVG texture overlay kind. */
   pattern?: PatternKind;
   /** Texture opacity (0–1). Default 0.18. */

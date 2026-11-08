@@ -1,5 +1,5 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useRef } from "react";
@@ -26,6 +26,7 @@ function PinInput({
   className,
   testID,
 }: PinInputProps) {
+  const theme = useTheme();
   const inputRef = useRef<TextInputInstance>(null);
   const chars = value.split("");
 

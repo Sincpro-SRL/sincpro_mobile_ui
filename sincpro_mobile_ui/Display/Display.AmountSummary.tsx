@@ -1,6 +1,6 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { View } from "react-native";
 
 import Monetary from "./Display.Monetary";
@@ -26,8 +26,9 @@ function Root({
   className,
   testID,
 }: AmountSummaryRootProps) {
+  const context = useMemo(() => ({ currencySymbol }), [currencySymbol]);
   return (
-    <AmountSummaryContext.Provider value={{ currencySymbol }}>
+    <AmountSummaryContext.Provider value={context}>
       <View
         className={cn(
           "gap-1",

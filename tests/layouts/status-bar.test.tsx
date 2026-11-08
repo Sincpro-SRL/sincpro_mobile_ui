@@ -8,7 +8,7 @@ import CollapsingHeader from "@sincpro/mobile-ui/Navigation/Navigation.Collapsin
 import { setActiveTheme } from "@sincpro/mobile-ui/theme/active";
 import { DEFAULT_DARK_THEME } from "@sincpro/mobile-ui/theme/dark";
 import { DEFAULT_THEME } from "@sincpro/mobile-ui/theme/default";
-import { Animated, StatusBar, Text } from "react-native";
+import { StatusBar, Text } from "react-native";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 jest.mock("react-native-keyboard-controller", () => {
@@ -61,7 +61,12 @@ test.each(["container", "scroll", "auth", "app-bar", "collapsing"] as const)(
       scroll: <ScrollContainer>{content}</ScrollContainer>,
       auth: <AuthContainer header={<Text>Logo</Text>}>{content}</AuthContainer>,
       "app-bar": <AppBar title="Eventos" />,
-      collapsing: <CollapsingHeader scrollY={new Animated.Value(0)} title="Eventos" />,
+      collapsing: (
+        <CollapsingHeader.Root>
+          <CollapsingHeader title="Eventos" />
+          <CollapsingHeader.ScrollView>{content}</CollapsingHeader.ScrollView>
+        </CollapsingHeader.Root>
+      ),
     }[kind];
     await render(screen);
     await act(() => setActiveTheme(DEFAULT_DARK_THEME));

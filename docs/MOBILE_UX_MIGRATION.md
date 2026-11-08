@@ -45,7 +45,7 @@ const [note, setNote] = useState("");
   primaryAction={<Actions.Button title="Guardar" onPress={submit} />}
   summary={<Display.Monetary amount={total} />}
 >
-  <Form.TextInput value={note} onChangeText={setNote} />
+  <Form.Input look="outline" value={note} onChangeText={setNote} />
 </Actions.Dock>;
 ```
 

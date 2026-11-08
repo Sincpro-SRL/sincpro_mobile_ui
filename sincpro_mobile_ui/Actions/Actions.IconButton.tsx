@@ -1,6 +1,6 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import type { AccessibilityProps } from "react-native";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
@@ -57,6 +57,7 @@ function IconButton({
   accessibilityState,
   ...accessibilityProps
 }: IconButtonProps) {
+  const theme = useTheme();
   const resolvedColor = iconColor ?? theme.text.accent;
 
   return (

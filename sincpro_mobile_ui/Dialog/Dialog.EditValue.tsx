@@ -4,6 +4,7 @@ import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { fontFamilies, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { type ReactNode, useRef, useState } from "react";
 import { Keyboard, TextInput, type TextInputProps, View } from "react-native";
 
@@ -78,20 +79,21 @@ function EditValueEditor({
     setPending(true);
     onPendingChange(true);
     setError(undefined);
-    try {
+    const result = await attempt(async () => {
       await onConfirm(draft);
       Keyboard.dismiss();
       onClose();
-    } catch (cause) {
+    });
+    saving.current = false;
+    setPending(false);
+    onPendingChange(false);
+    if (!result.ok) {
       setError(
-        cause instanceof Error && cause.message.trim()
-          ? cause.message
-          : "No se pudo guardar. Conservamos el valor para reintentar.",
+        errorMessage(
+          result.error,
+          "No se pudo guardar. Conservamos el valor para reintentar.",
+        ),
       );
-    } finally {
-      saving.current = false;
-      setPending(false);
-      onPendingChange(false);
     }
   };
 

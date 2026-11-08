@@ -1,7 +1,7 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { motion } from "@sincpro/mobile-ui/tokens/motion";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Animated, type DimensionValue, Easing, type ViewProps } from "react-native";
 
 export interface SkeletonProps extends Omit<ViewProps, "children"> {
@@ -25,8 +25,7 @@ function Skeleton({
 }: SkeletonProps) {
   const reducedMotion = useReducedMotion();
   const shouldAnimate = animated && !reducedMotion;
-  // eslint-disable-next-line react-hooks/refs
-  const opacity = useRef(new Animated.Value(0.5)).current;
+  const [opacity] = useState(() => new Animated.Value(0.5));
 
   useEffect(() => {
     opacity.setValue(0.5);

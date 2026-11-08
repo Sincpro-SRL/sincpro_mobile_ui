@@ -22,7 +22,27 @@ export interface DisplayImageProps extends Omit<ExpoImageProps, "source" | "styl
   testID?: string;
 }
 
-function ImageContent({
+interface LoadState {
+  key: string | undefined;
+  attempt: number;
+  loading: boolean;
+  failed: boolean;
+}
+
+const fresh = (key: string | undefined): LoadState => ({
+  key,
+  attempt: 0,
+  loading: true,
+  failed: false,
+});
+
+/**
+ * One native image view for the life of the component. A new `source` resets the load
+ * state in place instead of remounting, so a recycled FlashList cell keeps its view and
+ * `recyclingKey` clears the previous picture natively. Each load has a token; events
+ * from an older source or attempt cannot settle the current one.
+ */
+function DisplayImage({
   source,
   width = "100%",
   height,
@@ -42,20 +62,42 @@ function ImageContent({
   onLoad,
   accessibilityLabel,
   accessible,
-  retry,
   ...imageProps
-}: DisplayImageProps & { retry: () => void }) {
+}: DisplayImageProps) {
   const theme = useTheme();
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
-  const active = useRef(true);
+  const sourceKey = imageSourceKey(source);
+  const [state, setState] = useState<LoadState>(() => fresh(sourceKey));
+  let current = state;
+  if (state.key !== sourceKey) {
+    current = fresh(sourceKey);
+    setState(current);
+  }
+  const token = `${current.attempt}:${current.key}`;
+  const committed = useRef<string | null>(null);
 
   useLayoutEffect(() => {
-    active.current = true;
-    return () => {
-      active.current = false;
-    };
-  }, []);
+    committed.current = token;
+  });
+  useLayoutEffect(
+    () => () => {
+      committed.current = null;
+    },
+    [],
+  );
+
+  /** Applies a change only while this render's load is still the current one. */
+  const settle = (patch: Partial<LoadState>) => {
+    if (committed.current !== token) return false;
+    setState((previous) => ({ ...previous, ...patch }));
+    return true;
+  };
+  const retry = () =>
+    setState((previous) => ({
+      ...previous,
+      attempt: previous.attempt + 1,
+      loading: true,
+      failed: false,
+    }));
 
   const dimensions = { width, height, aspectRatio, borderRadius: radius } as const;
 
@@ -65,7 +107,7 @@ function ImageContent({
       style={[dimensions, containerStyle]}
       testID={testID}
     >
-      {failed ? (
+      {current.failed ? (
         renderError ? (
           renderError(retry)
         ) : (
@@ -87,33 +129,26 @@ function ImageContent({
             accessibilityLabel={accessibilityLabel}
             accessible={accessible}
             contentFit={contentFit}
+            // Only a manual retry asks the native view to start over.
+            key={current.attempt}
             onError={(event) => {
-              if (!active.current) return;
-              setFailed(true);
-              setLoading(false);
-              onError?.(event);
+              if (settle({ failed: true, loading: false })) onError?.(event);
             }}
             onLoad={(event) => {
-              if (!active.current) return;
-              setLoading(false);
-              onLoad?.(event);
+              if (settle({ loading: false })) onLoad?.(event);
             }}
             onLoadEnd={() => {
-              if (!active.current) return;
-              setLoading(false);
-              onLoadEnd?.();
+              if (settle({ loading: false })) onLoadEnd?.();
             }}
             onLoadStart={() => {
-              if (!active.current) return;
-              setLoading(true);
-              onLoadStart?.();
+              if (settle({ loading: true })) onLoadStart?.();
             }}
             placeholder={placeholder}
             placeholderContentFit={imageProps.placeholderContentFit ?? contentFit}
             source={source}
             style={[{ width: "100%", height: "100%" }, style]}
           />
-          {loading && !placeholder ? (
+          {current.loading && !placeholder ? (
             <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
               <Skeleton height="100%" radius={radius} width="100%" />
             </View>
@@ -121,17 +156,6 @@ function ImageContent({
         </>
       )}
     </View>
-  );
-}
-
-function DisplayImage(props: DisplayImageProps) {
-  const [attempt, setAttempt] = useState(0);
-  return (
-    <ImageContent
-      {...props}
-      key={`${imageSourceKey(props.source)}:${attempt}`}
-      retry={() => setAttempt((current) => current + 1)}
-    />
   );
 }
 

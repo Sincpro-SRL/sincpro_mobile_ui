@@ -176,7 +176,7 @@ test("select keeps numeric originals, commits only on Apply and cancels without 
   await fireEvent(screen.getByTestId("quantity-picker"), "valueChange", "1", 1);
   await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
   await waitFor(() => expect(change).toHaveBeenCalledWith(20));
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
 test("select failure retains its draft and read-only and empty controls cannot commit", async () => {
@@ -200,7 +200,7 @@ test("select failure retains its draft and read-only and empty controls cannot c
   await waitFor(() => expect(change).toHaveBeenCalledTimes(2));
   await rerender(<Select {...props} readOnly />);
   await fireEvent.press(screen.getByRole("button", { name: "Estado: Seleccionar…" }));
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
   await rerender(<Select {...props} options={[]} />);
   await fireEvent.press(screen.getByRole("button", { name: "Estado: Seleccionar…" }));
   expect(screen.getByTestId("native-picker").props.enabled).toBe(false);
@@ -269,7 +269,7 @@ test("native picker ignores queued changes while its selected draft is being sav
   expect(screen.getByTestId("quantity-picker").props.selectedValue).toBe("1");
   expect(change).toHaveBeenCalledWith(20);
   await act(async () => release());
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
 test("ControlledDropdown is a real react-hook-form native selection field", async () => {
@@ -321,7 +321,7 @@ test("dropdown rich options respect disabled state and preserve failed async act
   await waitFor(() => expect(screen.getByText("Reintentar")).toBeTruthy());
   expect(screen.getByTestId("native-sheet").props.index).toBe(0);
   await fireEvent.press(screen.getByRole("button", { name: "Guardar" }));
-  await waitFor(() => expect(screen.getByTestId("native-sheet").props.index).toBe(-1));
+  await waitFor(() => expect(screen.queryByTestId("native-sheet")).toBeNull());
 });
 
 test("action sheet waits for a successful action and disables duplicate and cancel requests", async () => {
@@ -513,7 +513,7 @@ test("controlled EditValue increments the currently typed draft and preserves it
   await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
   await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
   expect(save).toHaveBeenLastCalledWith("7.75");
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
 test("EditValue disables editing and cancellation until its save resolves", async () => {
@@ -601,7 +601,7 @@ test("Android select applies the tapped option and dismissal publishes nothing",
   await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Diez" }));
   await fireEvent.press(screen.getByRole("radio", { name: "Veinte" }));
   await waitFor(() => expect(change).toHaveBeenCalledWith(20));
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
 test("date limits are checked before applying and cancellation does not publish a draft", async () => {
@@ -844,7 +844,7 @@ test("confirmation provider uses the canonical sheet and cancellation never conf
   await fireEvent.press(screen.getByRole("button", { name: "Abrir" }));
   await fireEvent.press(screen.getByRole("button", { name: "Cancelar" }));
   expect(confirm).not.toHaveBeenCalled();
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
 test("rich confirmation defaults stay generic when optional fields are explicitly undefined", async () => {
@@ -946,7 +946,7 @@ test("Dock uses the canonical sheet, keeps one primary action and honors control
   expect(screen.getAllByText("Guardar")).toHaveLength(1);
   expect(screen.getByText("Detalle")).toBeTruthy();
   await fireEvent(screen.getByTestId("native-sheet"), "close");
-  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
   expect(screen.getAllByText("Guardar")).toHaveLength(1);
 });
 

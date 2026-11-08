@@ -5,6 +5,7 @@ import KeyboardForm, {
 } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
 import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
+import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { AppBar } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { MenuSection } from "@sincpro/mobile-ui/Navigation/Navigation.MenuSection";
@@ -17,7 +18,6 @@ import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormView
 import React, { ReactNode } from "react";
 import { RefreshControl, useWindowDimensions, View, type ViewInstance } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
-import type { Edge } from "react-native-safe-area-context";
 
 interface FormViewProps<T> {
   name: string;
@@ -33,7 +33,7 @@ interface FormViewProps<T> {
   onRetry?: () => void;
   onBack?: () => void;
   withContainer?: boolean;
-  edges?: Edge[];
+  edges?: SafeAreaEdge[];
   children: ReactNode;
 }
 
@@ -200,13 +200,11 @@ function HeaderSegmented<T extends string>(props: SegmentedControlProps<T>) {
 
 function Content({
   withMargin = false,
-  keyboardToolbar = true,
   keyboardFormProps,
   children,
 }: {
   withMargin?: boolean;
-  keyboardToolbar?: boolean;
-  keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
+  keyboardFormProps?: Omit<KeyboardFormProps, "children" | "stickyFooterHeight">;
   children: ReactNode;
 }) {
   const {
@@ -258,7 +256,6 @@ function Content({
       }
       stickyFooterHeight={stickyFooterHeight}
       style={[{ flex: 1, backgroundColor: theme.bg.page }, keyboardFormProps?.style]}
-      toolbar={keyboardToolbar}
     >
       {isCenteredContent ? (
         <>

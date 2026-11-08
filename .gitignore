@@ -15,3 +15,6 @@ android/
 # Agent skills stay in the user store (~/.agents). This package does not vendor them.
 .agents/
 skills-lock.json
+
+# Reassure: medición local de renders (la línea base se genera, no se versiona)
+.reassure/

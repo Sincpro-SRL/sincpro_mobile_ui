@@ -1,5 +1,6 @@
+import Field from "@sincpro/mobile-ui/Form/Form.Field";
 import Select, { type SelectProps } from "@sincpro/mobile-ui/Form/Form.Select";
-import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
 
 export type ControlledDropdownProps<T extends FieldValues> = Omit<
   SelectProps<string>,
@@ -15,17 +16,17 @@ function ControlledDropdown<T extends FieldValues>({
   ...props
 }: ControlledDropdownProps<T>) {
   return (
-    <Controller
+    <Field
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
+      render={({ value, onChange, onBlur, error, disabled }) => (
         <Select
           {...props}
-          disabled={props.disabled || field.disabled}
-          error={fieldState.error?.message}
-          onBlur={field.onBlur}
-          onChange={field.onChange}
-          value={typeof field.value === "string" ? field.value : null}
+          disabled={props.disabled || disabled}
+          error={error}
+          onBlur={onBlur}
+          onChange={onChange as (selected: string) => void}
+          value={typeof value === "string" ? value : null}
         />
       )}
     />

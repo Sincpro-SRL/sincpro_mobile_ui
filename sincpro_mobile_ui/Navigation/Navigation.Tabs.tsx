@@ -3,7 +3,14 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import { TouchableOpacity, View } from "react-native";
 
 type TabsVariant = "underline" | "filled";
@@ -52,8 +59,13 @@ function TabsRoot({
     [value, onValueChange],
   );
 
+  const context = useMemo(
+    () => ({ value: current, setValue, variant }),
+    [current, setValue, variant],
+  );
+
   return (
-    <TabsContext.Provider value={{ value: current, setValue, variant }}>
+    <TabsContext.Provider value={context}>
       <View className={cn("flex-1", className)}>{children}</View>
     </TabsContext.Provider>
   );

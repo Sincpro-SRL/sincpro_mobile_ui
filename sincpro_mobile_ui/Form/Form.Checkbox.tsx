@@ -1,8 +1,9 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { Checkbox } from "expo-checkbox";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
 interface RowCheckBoxProps {
   mainText?: string;
@@ -31,6 +32,7 @@ function RowCheckBox({
   className,
   testID,
 }: RowCheckBoxProps) {
+  const theme = useTheme();
   const handlePress = () => {
     if (!disabled) {
       onCheck(!isChecked);
@@ -76,6 +78,7 @@ function RowCheckBox({
         className,
       )}
       disabled={disabled}
+      hitSlop={0}
       onPress={handlePress}
       style={{ minHeight: 48, minWidth: 48, paddingVertical: 8 }}
       testID={testID}

@@ -5,6 +5,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { useRef, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 
@@ -49,18 +50,16 @@ function ActionSheet({
     saving.current = true;
     setPending(index);
     setError(undefined);
-    try {
+    const result = await attempt(async () => {
       await action.onPress();
       onClose();
-    } catch (cause) {
+    });
+    saving.current = false;
+    setPending(undefined);
+    if (!result.ok) {
       setError(
-        cause instanceof Error && cause.message.trim()
-          ? cause.message
-          : "No se pudo completar la acción. Vuelve a intentarlo.",
+        errorMessage(result.error, "No se pudo completar la acción. Vuelve a intentarlo."),
       );
-    } finally {
-      saving.current = false;
-      setPending(undefined);
     }
   };
 

@@ -20,7 +20,14 @@ jest.mock("react-native-keyboard-controller", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   const keyboardView = (props: { children?: React.ReactNode }) =>
     mockReact.createElement(View, props);
-  return { KeyboardStickyView: keyboardView, KeyboardAwareScrollView: keyboardView };
+  return {
+    KeyboardStickyView: keyboardView,
+    KeyboardAwareScrollView: keyboardView,
+    useReanimatedKeyboardAnimation: () => ({
+      height: { get: () => 0 },
+      progress: { get: () => 0 },
+    }),
+  };
 });
 jest.mock("@sincpro/mobile-ui/Form/Form.KeyboardForm", () => {
   const mockReact = jest.requireActual<typeof import("react")>("react");

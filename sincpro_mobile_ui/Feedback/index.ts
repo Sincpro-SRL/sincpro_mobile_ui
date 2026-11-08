@@ -9,6 +9,7 @@ import ProgressCircle from "@sincpro/mobile-ui/Feedback/Feedback.ProgressCircle"
 import Skeleton from "@sincpro/mobile-ui/Feedback/Feedback.Skeleton";
 import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 import SplashScreen from "@sincpro/mobile-ui/Feedback/Feedback.Splash";
+import State from "@sincpro/mobile-ui/Feedback/Feedback.State";
 import { Toast } from "@sincpro/mobile-ui/Feedback/Toast.context";
 
 export { ErrorBoundary } from "@sincpro/mobile-ui/Feedback/ErrorBoundary";
@@ -19,6 +20,7 @@ export type {
   SpinnerProps,
   SpinnerVariant,
 } from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
+export type { FeedbackStateProps } from "@sincpro/mobile-ui/Feedback/Feedback.State";
 export {
   Toast,
   type ToastAction,
@@ -41,6 +43,7 @@ export { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 
 export const Feedback = {
   Loading,
+  State,
   Spinner,
   Skeleton,
   Progress,

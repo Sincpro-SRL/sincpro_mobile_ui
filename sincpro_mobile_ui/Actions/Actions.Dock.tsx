@@ -40,10 +40,11 @@ function Dock({
   dismissible = true,
   snapPoints,
   placement = "fixed",
-  safeAreaBottom = placement === "fixed",
+  safeAreaBottom: safeAreaBottomProp,
   className,
   testID,
 }: DockProps) {
+  const safeAreaBottom = safeAreaBottomProp ?? placement === "fixed";
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);

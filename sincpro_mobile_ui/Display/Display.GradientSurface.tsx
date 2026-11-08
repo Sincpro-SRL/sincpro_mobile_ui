@@ -1,8 +1,11 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { getActiveTheme, type ThemeTokens, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
-import { LinearGradient, type LinearGradientPoint } from "expo-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { View, type ViewStyle } from "react-native";
+
+/** Gradient anchor, 0 to 1 on each axis: `{ x, y }` or `[x, y]`. */
+export type GradientPoint = { x: number; y: number } | [x: number, y: number];
 
 /**
  * Decorative gradient presets. `brand` is themeable (reads `theme.gradient.primary`) —
@@ -62,15 +65,18 @@ export interface GradientSurfaceProps extends VariantProps<typeof surface> {
   preset?: GradientPreset;
   /** Custom gradient stops (overrides `preset`). */
   colors?: readonly [string, string, ...string[]];
-  start?: LinearGradientPoint;
-  end?: LinearGradientPoint;
+  start?: GradientPoint;
+  end?: GradientPoint;
   children?: ReactNode;
   className?: string;
   style?: ViewStyle;
   testID?: string;
 }
 
-export function resolveGradientPreset(preset: GradientPreset = "warm") {
+export function resolveGradientPreset(
+  preset: GradientPreset = "warm",
+  theme: ThemeTokens = getActiveTheme(),
+) {
   const surface = preset === "brand" ? GRADIENT_PRESETS.warm : GRADIENT_PRESETS[preset];
   return {
     ...surface,
@@ -95,7 +101,8 @@ function GradientSurface({
   style,
   testID,
 }: GradientSurfaceProps) {
-  const p = resolveGradientPreset(preset);
+  const theme = useTheme();
+  const p = resolveGradientPreset(preset, theme);
   const resolvedColors = colors ?? p.colors;
 
   return (

@@ -10,6 +10,7 @@ import {
   IBMPlexSans_700Bold,
   useFonts,
 } from "@expo-google-fonts/ibm-plex-sans";
+import { ICON_FONTS } from "@sincpro/mobile-ui/Display/icon-font";
 import type { TextStyle } from "react-native";
 
 /* -------------------- Font Families ----------------------------------------
@@ -418,6 +419,7 @@ export const useAppFonts = () => {
     IBMPlexSans_500Medium,
     IBMPlexSans_600SemiBold,
     IBMPlexSans_700Bold,
+    ...ICON_FONTS,
   });
   return loaded;
 };

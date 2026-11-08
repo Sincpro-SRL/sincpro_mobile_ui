@@ -181,7 +181,7 @@ test.each(["confirmation", "edit", "dropdown", "sheet", "actions", "select"])(
     expect(stop).not.toHaveBeenCalled();
     await fireEvent.press(screen.getByRole("button", { name: "Cerrar" }));
     if (kind === "dropdown" || kind === "select")
-      expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
+      expect(screen.queryByTestId("native-sheet")).toBeNull();
     if (kind !== "dropdown") expect(close).toHaveBeenCalledTimes(1);
   },
 );

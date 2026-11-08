@@ -1,5 +1,5 @@
 import { Actions } from "@sincpro/mobile-ui/Actions";
-import { Display } from "@sincpro/mobile-ui/Display";
+import { defineStatuses, Display } from "@sincpro/mobile-ui/Display";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
@@ -17,6 +17,27 @@ export const Badge: Story = {
       <Display.Badge label="Aviso" variant="warning" />
       <Display.Badge label="Error" variant="danger" />
       <Display.Badge label="Info" variant="info" />
+    </View>
+  ),
+};
+
+const INVOICE_STATUS = defineStatuses({
+  draft: { label: "Borrador", tone: "info" },
+  posted: { label: "Publicada", tone: "infoDark" },
+  paid: { label: "Pagada", tone: "success", icon: "success" },
+  overdue: { label: "Vencida", tone: "warning", icon: "warning" },
+  cancel: { label: "Anulada", tone: "danger", icon: "error" },
+});
+
+/** One table per domain state: badges, row icons and filters read the same label and tone. */
+export const StatusBadge: Story = {
+  render: () => (
+    <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+      {(["draft", "posted", "paid", "overdue", "cancel", "estado-nuevo"] as const).map(
+        (status) => (
+          <Display.StatusBadge key={status} status={status} statuses={INVOICE_STATUS} />
+        ),
+      )}
     </View>
   ),
 };

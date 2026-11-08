@@ -1,14 +1,17 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { IRowItemProps } from "@sincpro/mobile-ui/views/types/IListView";
+import { memo } from "react";
 import { TouchableOpacity, View } from "react-native";
 
 function RowItem({
   item,
   className,
-  onPress = item.onPress,
-  readonly = item.readonly,
+  onPress: onPressProp,
+  readonly: readonlyProp,
 }: IRowItemProps<any> & { className?: string }) {
+  const onPress = onPressProp === undefined ? item.onPress : onPressProp;
+  const readonly = readonlyProp === undefined ? item.readonly : readonlyProp;
   function rowContent() {
     return (
       <View className="flex-1">
@@ -34,4 +37,4 @@ function RowItem({
   );
 }
 
-export default RowItem;
+export default memo(RowItem);

@@ -21,13 +21,15 @@ export interface MediaCardProps {
   testID?: string;
 }
 
+const LANDSCAPE = 16 / 9;
+
 function MediaCard({
   image,
   title,
   subtitle,
   badge,
   overlay,
-  aspectRatio = 16 / 9,
+  aspectRatio = LANDSCAPE,
   height,
   radius = 16,
   onPress,

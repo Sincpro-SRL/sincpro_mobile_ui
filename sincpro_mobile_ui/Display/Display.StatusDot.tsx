@@ -1,4 +1,4 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { type ThemeTokens, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
@@ -14,12 +14,14 @@ export interface StatusDotProps {
   testID?: string;
 }
 
-const statusColor: Record<StatusKind, string> = {
-  online: theme.success,
-  offline: theme.icon.disabled,
-  busy: theme.danger,
-  away: theme.warning,
-};
+function statusColor(theme: ThemeTokens): Record<StatusKind, string> {
+  return {
+    online: theme.success,
+    offline: theme.icon.disabled,
+    busy: theme.danger,
+    away: theme.warning,
+  };
+}
 
 const statusLabel: Record<StatusKind, string> = {
   online: "En línea",
@@ -36,7 +38,8 @@ function StatusDot({
   className,
   testID,
 }: StatusDotProps) {
-  const dotColor = color ?? statusColor[status];
+  const theme = useTheme();
+  const dotColor = color ?? statusColor(theme)[status];
   const text = label ?? statusLabel[status];
 
   return (

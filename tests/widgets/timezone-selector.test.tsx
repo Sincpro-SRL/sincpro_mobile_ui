@@ -32,7 +32,7 @@ jest.mock("@expo/ui/community/bottom-sheet", () => {
       mockReact.createElement(
         View,
         {
-          testID: "native-timezone-sheet",
+          testID: "native-sheet",
           ...{ index, onClose, snapPoints, enablePanDownToClose, backgroundStyle },
         },
         children,
@@ -62,7 +62,7 @@ test("timezone selection uses the canonical native sheet with one virtualized sc
       onSelect: jest.fn(),
     }),
   );
-  const nativeSheet = screen.getByTestId("native-timezone-sheet");
+  const nativeSheet = screen.getByTestId("native-sheet");
   expect(nativeSheet.props.index).toBe(0);
   expect(nativeSheet.props.snapPoints).toEqual(["90%"]);
   expect(nativeSheet.props.enablePanDownToClose).toBe(true);
@@ -164,7 +164,7 @@ test.each(["Cancelar", "Cerrar", "native", "escape"])(
     );
     await fireEvent.press(screen.getByRole("radio", { name: "New York" }));
     if (dismissal === "native") {
-      await fireEvent(screen.getByTestId("native-timezone-sheet"), "onClose");
+      await fireEvent(screen.getByTestId("native-sheet"), "onClose");
     } else if (dismissal === "escape") {
       await fireEvent(screen.getByTestId("timezone-sheet"), "onAccessibilityEscape");
     } else {
@@ -175,13 +175,12 @@ test.each(["Cancelar", "Cerrar", "native", "escape"])(
   },
 );
 
-test("closing through visible does not emit a duplicate native dismissal callback", async () => {
+test("closing through visible unmounts the sheet without a dismissal callback", async () => {
   const onClose = jest.fn();
   const onSelect = jest.fn();
   const { rerender } = await render(timezoneSelector({ visible: true, onClose, onSelect }));
   await rerender(timezoneSelector({ visible: false, onClose, onSelect }));
-  expect(screen.getByTestId("native-timezone-sheet").props.index).toBe(-1);
-  await fireEvent(screen.getByTestId("native-timezone-sheet"), "onClose");
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
   expect(onClose).not.toHaveBeenCalled();
   expect(onSelect).not.toHaveBeenCalled();
 });
@@ -199,7 +198,7 @@ test("sheet surfaces, selected rows and search text react to a live dark theme",
       }),
     );
     await act(() => setActiveTheme(DEFAULT_DARK_THEME));
-    expect(screen.getByTestId("native-timezone-sheet").props.backgroundStyle).toMatchObject({
+    expect(screen.getByTestId("native-sheet").props.backgroundStyle).toMatchObject({
       backgroundColor: DEFAULT_DARK_THEME.bg.card,
     });
     expect(

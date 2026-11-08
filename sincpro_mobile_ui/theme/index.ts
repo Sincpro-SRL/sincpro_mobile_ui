@@ -46,4 +46,5 @@ export {
   variantFontRole,
 } from "@sincpro/mobile-ui/theme/typography";
 export { useTheme } from "@sincpro/mobile-ui/theme/useTheme";
+export { useThemeVars } from "@sincpro/mobile-ui/theme/useThemeVars";
 export { validateTheme } from "@sincpro/mobile-ui/theme/validate";

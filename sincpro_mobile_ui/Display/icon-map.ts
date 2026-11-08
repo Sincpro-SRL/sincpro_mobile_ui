@@ -1,3 +1,4 @@
+import type { CustomIconName } from "@sincpro/mobile-ui/Display/icon-registry";
 import type { AndroidSymbol, SFSymbol } from "expo-symbols";
 
 export type IconDefinition = Readonly<{ sf: SFSymbol; md: AndroidSymbol }>;
@@ -89,4 +90,9 @@ export const ICON_MAP = {
   wifi: { sf: "wifi", md: "wifi" },
 } as const satisfies Record<string, IconDefinition>;
 
-export type IconName = keyof typeof ICON_MAP;
+export type BuiltInIconName = keyof typeof ICON_MAP;
+
+/** Built-in semantic names plus the ones an app registers with `registerIcons`. */
+export type IconName = BuiltInIconName | CustomIconName;
+
+export const ICON_NAMES = Object.keys(ICON_MAP) as readonly BuiltInIconName[];

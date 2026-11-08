@@ -14,6 +14,24 @@ import {
   type ViewStyle,
 } from "react-native";
 
+const iconSources = new Map<string, Promise<ImageSourcePropType | null>>();
+
+/** One native rasterization per icon and color for the whole app. */
+function menuIconSource(icon: IconName, color: string) {
+  const key = `${icon}:${color}`;
+  let source = iconSources.get(key);
+  if (!source) {
+    source = unstable_getMaterialSymbolSourceAsync(ICON_MAP[icon].md, 24, color).catch(
+      (cause: unknown) => {
+        iconSources.delete(key);
+        throw cause;
+      },
+    );
+    iconSources.set(key, source);
+  }
+  return source;
+}
+
 export type MenuItem = {
   label: string;
   icon?: IconName;
@@ -73,7 +91,7 @@ function Menu({
     void Promise.all(
       requests.map(async ({ icon, color }) => ({
         key: `${icon}:${color}`,
-        source: await unstable_getMaterialSymbolSourceAsync(ICON_MAP[icon].md, 24, color),
+        source: await menuIconSource(icon, color),
       })),
     ).then(
       (results) => {

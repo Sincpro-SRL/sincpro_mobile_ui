@@ -1,6 +1,6 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { type ThemeTokens, useTheme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Text, View } from "react-native";
 
@@ -27,13 +27,15 @@ const chip = tv({
   },
 });
 
-const removeIconColor: Record<string, string> = {
-  neutral: theme.text.secondary,
-  primary: theme.container.onPrimary,
-  success: theme.container.onSuccess,
-  warning: theme.container.onWarning,
-  danger: theme.container.onDanger,
-};
+function removeIconColor(theme: ThemeTokens): Record<string, string> {
+  return {
+    neutral: theme.text.secondary,
+    primary: theme.container.onPrimary,
+    success: theme.container.onSuccess,
+    warning: theme.container.onWarning,
+    danger: theme.container.onDanger,
+  };
+}
 
 export interface ChipProps extends VariantProps<typeof chip> {
   label: string;
@@ -52,6 +54,7 @@ function Chip({
   className,
   testID,
 }: ChipProps) {
+  const theme = useTheme();
   const styles = chip({ tone, selected });
   const content = (
     <>
@@ -60,7 +63,7 @@ function Chip({
       </Text>
       {onRemove ? (
         <Pressable accessibilityLabel={`Quitar ${label}`} hitSlop={8} onPress={onRemove}>
-          <Icon color={removeIconColor[tone ?? "neutral"]} name="close" size={14} />
+          <Icon color={removeIconColor(theme)[tone ?? "neutral"]} name="close" size={14} />
         </Pressable>
       ) : null}
     </>

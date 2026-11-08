@@ -1,10 +1,14 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { typographyVariants } from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { formatDate, formatDateWithDefaultTimezone } from "@sincpro/mobile-ui/utils/date";
+import {
+  formatDate,
+  formatDateWithDefaultTimezone,
+  parseInstant,
+} from "@sincpro/mobile-ui/utils/date";
 import { type StyleProp, type TextStyle, View } from "react-native";
 
 type DateFormat = "short" | "long" | "numeric";
@@ -38,7 +42,8 @@ interface DateFieldProps {
 }
 
 function relativeTime(value: string | Date): string {
-  const then = new Date(value).getTime();
+  const then = parseInstant(value)?.getTime() ?? Number.NaN;
+  if (Number.isNaN(then)) return "-";
   const diffSec = Math.round((Date.now() - then) / 1000);
   const abs = Math.abs(diffSec);
   const fut = diffSec < 0;
@@ -66,15 +71,17 @@ function DateField({
   icon,
   relative = false,
 }: DateFieldProps) {
+  const theme = useTheme();
   const locale = "es-CR";
 
-  const absolute = !value
-    ? "-"
-    : timezone
-      ? formatDate(value, timezone, { showTime, locale })
-      : formatDateWithDefaultTimezone(value, { showTime, locale });
+  const absolute =
+    !value || relative
+      ? "-"
+      : timezone
+        ? formatDate(value, timezone, { showTime, locale })
+        : formatDateWithDefaultTimezone(value, { showTime, locale });
 
-  const formatted = value && relative ? relativeTime(value) : absolute;
+  const formatted = !value ? "-" : relative ? relativeTime(value) : absolute;
   const text = prefix ? `${prefix}${formatted}` : formatted;
   const iconName = icon ?? (showTime && !relative ? "time" : "calendar");
 

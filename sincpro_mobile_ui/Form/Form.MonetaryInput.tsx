@@ -1,4 +1,4 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { parseToMonetaryNumber } from "@sincpro/mobile-ui/utils/monetary";
@@ -30,6 +30,7 @@ function MonetaryInput({
   currencySymbol = "₡",
   placeholder = "Escriba el monto",
 }: MonetaryInputProps) {
+  const theme = useTheme();
   const [raw, setRaw] = useState<number>(parseToMonetaryNumber(amount));
   const [isFocused, setIsFocused] = useState(false);
 

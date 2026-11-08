@@ -14,7 +14,7 @@ hook is an API limitation, not a reason to require a fork or a new visual system
 | Theme      | `…/theme`      | `DEFAULT_THEME`, `DEFAULT_DARK_THEME`, `useTheme()`, `setActiveTheme`, `defineTheme`, `themeToVars`, `theme` const |
 | Tokens     | `…/tokens`     | `motion` (duration/easing/spring). zIndex/opacity are preset classes                                               |
 | Typography | `…/Typography` | `Typography.Text`, `Typography.Heading`                                                                            |
-| Icons      | `…/Display`    | `Display.Icon`, `IconName`, `ICON_MAP`: SF Symbols on iOS, Material on Android; branding SVGs separately             |
+| Icons      | `…/Display`    | `Display.Icon`, `IconName`, `ICON_MAP`: SF Symbols on iOS, Material on Android; branding SVGs separately           |
 | Primitives | `…/primitives` | `Box`, `Row`, `Stack`, `Pressable`, `Spacer`, `AspectRatio`, `BaseButton`                                          |
 
 ## Components
@@ -64,7 +64,7 @@ horizontal scrolling or wrapping; the default remains its legacy row layout.
 
 ### Inputs (`Form`)
 
-`Input`, `TextInput`, `InputField`, `PasswordInput`, `Select`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `MonetaryInput`, `QuantitySelector`, `FractionalQuantityInput`, `PinInput`, `Slider`, `DatePicker` (Expo native picker), `SearchHistory` (recent searches), `Controlled*` (react-hook-form).
+`Input` (`look`: `card` | `outline`; `secure`), `Select`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `MonetaryInput`, `QuantitySelector`, `FractionalQuantityInput`, `PinInput`, `Slider`, `DatePicker` (Expo native picker), `SearchHistory` (recent searches), `Controlled*` (react-hook-form).
 Action filters live in `Actions`, search in `Navigation`.
 
 ### Data Display (`Display`)
@@ -150,6 +150,53 @@ Header `style`, `contentStyle`, `actionStyle` and `actionTextProps` expose its l
 `Foundations/Typography` includes compact/comfortable hierarchy examples with identical content.
 Icons without an explicit color follow live theme changes; consumer-supplied colors/custom
 icon renderers retain control.
+
+### Rows — which one to use
+
+All rows share the surface `flex-row items-center px-4 py-3`, 48-point targets, and pressable
+feedback without NativeWind interop on React Native `Pressable` (contract-tested).
+
+| Row                         | Shape                                                                                                  | Use it for                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `Display.ListItem`          | Slot props: `leading`, `title`, `subtitle`, `value`, `trailing`, `chevron`                             | Settings, menus, detail rows. **The default row.**                 |
+| `ListItem variant="mobile"` | Same slots; wraps text, stacks the value at large font, pressed background                             | Mobile-first screens and `ListGroup` sections                      |
+| `ListViewV2.Content.Row`    | Compound children: `Avatar`, `Content`, `Title`, `Subtitle`, `Footer`, `Actions`                       | Custom list rows with footer or inline actions                     |
+| `Navigation.RowItem`        | `IRowItem` (`rowTitle`, `rowSubtitle`), title typography                                               | The default row `ListViewV2` draws without a renderer              |
+| `Display.KeyValue`          | `label` + `value`, row or stacked, `copyable`                                                          | Read-only facts of a record                                        |
+| `Display.SwipeableRow`      | Wrapper with left/right actions and `visibleActions`                                                   | Any row above that also needs swipe actions                        |
+| `Display.MenuButton`        | Settings row: icon component, label, description, `value`, `badge`, `toggle`, `loading`, swipe actions | Settings and menu screens, usually inside `Navigation.MenuSection` |
+
+`RowItem` uses the `title` typography and `py-2.5`, unlike `ListItem`; folding it into `ListItem`
+needs a visual decision (pending, see the plan). The same applies to `MenuButton` (its own badge
+presets and divider) and to `Navigation.MenuSection` versus `Display.ListGroup` (bordered card with
+shadow and an uppercase caption title, versus an inset card with a `SectionHeader`).
+
+Screen readers: an actionable row is **one** button that reads label, detail, value and badge. A
+`MenuButton` with `toggle` leaves the row transparent so the named `Switch` is reachable.
+
+### Tiles — which one to use
+
+| Tile                   | Shape                                                        | Use it for                       |
+| ---------------------- | ------------------------------------------------------------ | -------------------------------- |
+| `Display.MenuCard`     | Card with a circled icon and a 2-line label; `size` sm or md | A module launcher tile           |
+| `Display.MenuGrid`     | Wrapping grid of `MenuCard` (2 columns md, 3 columns sm)     | Home screens of modules          |
+| `widgets/QuickActions` | Horizontal scroller of 52-point icon circles with a badge    | Shortcuts above a feed or a list |
+
+All tiles are buttons named by their label (`QuickActions` adds the badge).
+
+### Amounts and figures — which one to use
+
+| Component               | Shape                                              | Use it for                        |
+| ----------------------- | -------------------------------------------------- | --------------------------------- |
+| `Display.Monetary`      | Symbol + amount inline (`1.234,50`), Text variants | Any amount in a row or a detail   |
+| `Display.PriceTag`      | Price, struck original price and `-N%` badge       | Catalog and cart prices           |
+| `Display.AmountSummary` | Labelled lines with a total                        | Totals of a document              |
+| `Display.Stat`          | Big value over a caption, no surface               | Figures inside a header or a card |
+| `Display.StatCard`      | Card with label, value, icon and delta             | Dashboards                        |
+
+All amounts go through `utils/monetary` `formatTwoDecimals`: one shared formatter, decimal
+half-up rounding (`Big`). Dates go through `utils/intl` `dateTimeFormat`, which shares one
+`Intl.DateTimeFormat` per locale and options. Never build an `Intl` formatter inside a render.
 
 ### Commerce (`Display`)
 
@@ -334,7 +381,7 @@ Not a virtualized list or a universal cross-container drag framework.
 | `widgets.CircleButton`                                                             | `Actions.IconButton` / `AppBar.Action`                  |
 | `Form.SearchBar`                                                                   | `Navigation.SearchBar`                                  |
 | `Form.Button` / `Form.IconButton` / `Form.FAB`                                     | `Actions.Button` / `Actions.IconButton` / `Actions.FAB` |
-| `layouts.TabNavigatorLayout`                                                       | Navegador del host                                     |
+| `layouts.TabNavigatorLayout`                                                       | Navegador del host                                      |
 | `Dialog.BottomSheet`, `Dialog.NativeSheet`                                         | `Dialog.Sheet` (`@expo/ui`)                             |
 
 Native controls use the required `@expo/ui` peer, symbols `expo-symbols`, and long lists

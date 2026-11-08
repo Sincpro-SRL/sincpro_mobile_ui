@@ -1,34 +1,35 @@
+import Field, { type FieldRules } from "@sincpro/mobile-ui/Form/Form.Field";
 import MonetaryInput from "@sincpro/mobile-ui/Form/Form.MonetaryInput";
-import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
 
 interface ControlledMonetaryInputProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
+  /** Not drawn: MonetaryInput has no label. Kept for API compatibility. */
   label: string;
   placeholder?: string;
   currency?: string;
-  rules?: any;
+  rules?: FieldRules<T, Path<T>>;
+  /** Not drawn: MonetaryInput has no error slot. Kept for API compatibility. */
   error?: string;
 }
 
 function ControlledMonetaryInput<T extends FieldValues>({
   control,
   name,
-  label,
   placeholder,
   currency = "CRC",
   rules,
-  error,
 }: ControlledMonetaryInputProps<T>) {
   return (
-    <Controller
+    <Field
       control={control}
       name={name}
-      render={({ field: { onChange, onBlur, value } }) => (
+      render={({ value, onChange }) => (
         <MonetaryInput
           amount={value}
           currencySymbol={currency}
-          onChange={onChange}
+          onChange={onChange as (amount: number) => void}
           placeholder={placeholder}
         />
       )}

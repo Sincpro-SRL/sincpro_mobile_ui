@@ -5,6 +5,7 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { matchesSearch } from "@sincpro/mobile-ui/utils/search";
 import type { TimezoneLocale } from "@sincpro/mobile-ui/utils/timezone";
 import { useMemo, useState } from "react";
 import { TextInput, View } from "react-native";
@@ -103,26 +104,10 @@ function TimeZoneSelectorModal({
     }));
   }, []);
 
-  const filteredTimezones = useMemo(() => {
-    if (!query.trim()) return timezoneList;
-
-    const normalizedQuery = query
-      .trim()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-
-    return timezoneList.filter(({ label, timezone }) => {
-      const normalizedLabel = label
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-      const normalizedTz = timezone.toLowerCase();
-      return (
-        normalizedLabel.includes(normalizedQuery) || normalizedTz.includes(normalizedQuery)
-      );
-    });
-  }, [query, timezoneList]);
+  const filteredTimezones = useMemo(
+    () => timezoneList.filter(({ label, timezone }) => matchesSearch(query, label, timezone)),
+    [query, timezoneList],
+  );
 
   function handleConfirm() {
     const selected = timezoneList.find((tz) => tz.timezone === selectedTimezone);

@@ -28,9 +28,12 @@ test.each(["default", "mobile"] as const)(
       />,
     );
     const row = screen.getByTestId("row");
-    expect(StyleSheet.flatten(row.props.style)).toMatchObject({
+    expect(StyleSheet.flatten(row.props.style)).toMatchObject({ minHeight: 48, minWidth: 48 });
+    // The mobile row draws its surface in the Pressable's child (no className on Pressable).
+    const surface = variant === "mobile" ? row.children[0] : row;
+    if (typeof surface === "string") throw new Error("row surface missing");
+    expect(StyleSheet.flatten(surface.props.style)).toMatchObject({
       minHeight: 48,
-      minWidth: 48,
       paddingVertical: 16,
     });
     for (const text of [title, subtitle]) {

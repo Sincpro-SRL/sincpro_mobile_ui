@@ -1,41 +1,47 @@
+import KeyboardForm, {
+  type KeyboardFormProps,
+} from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import React, { ReactNode } from "react";
-import { type StyleProp, View, type ViewStyle } from "react-native";
-import {
-  KeyboardAwareScrollView,
-  type KeyboardAwareScrollViewProps,
-} from "react-native-keyboard-controller";
-import { type Edge, SafeAreaView } from "react-native-safe-area-context";
+import type { ReactNode } from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type ScrollContainerProps = Omit<KeyboardAwareScrollViewProps, "children"> & {
+export interface ScrollContainerProps extends Omit<
+  KeyboardFormProps,
+  "children" | "className"
+> {
   children: ReactNode;
-  contentContainerStyle?: StyleProp<ViewStyle>;
+  /** Classes of the safe-area surface. */
   className?: string;
-  edges?: Edge[];
-};
+  /** Edges this container reserves. Lateral by default: the header owns top. */
+  edges?: SafeAreaEdge[];
+}
 
+/**
+ * Scrollable page surface. The scroll is the DS `KeyboardForm`, so the space kept
+ * above the keyboard and the toolbar group are the same as in every form, and iOS
+ * keeps adjusting the content inset natively (large titles, NativeTabs).
+ */
 function ScrollContainer({
   children,
-  contentContainerStyle = {},
   className,
   edges = ["left", "right"],
-  bottomOffset = 72,
-  style,
-  ...props
+  contentContainerStyle,
+  contentInsetAdjustmentBehavior = "automatic",
+  showsVerticalScrollIndicator = false,
+  ...form
 }: ScrollContainerProps) {
   return (
     <SafeAreaView className={cn("flex-1 bg-bg-card", className)} edges={edges}>
-      <KeyboardAwareScrollView
-        bottomOffset={bottomOffset}
+      <KeyboardForm
         contentContainerStyle={[{ flexGrow: 1, padding: 16 }, contentContainerStyle]}
-        contentInsetAdjustmentBehavior="automatic"
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        style={[{ flex: 1 }, style]}
-        {...props}
+        contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+        {...form}
       >
         <View className="flex-1">{children}</View>
-      </KeyboardAwareScrollView>
+      </KeyboardForm>
     </SafeAreaView>
   );
 }

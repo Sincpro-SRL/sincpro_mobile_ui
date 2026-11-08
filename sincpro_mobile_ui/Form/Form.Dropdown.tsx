@@ -4,6 +4,7 @@ import Pressable, { type PressableProps } from "@sincpro/mobile-ui/primitives/Pr
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { type ReactNode, useRef, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 
@@ -51,18 +52,16 @@ function Dropdown({
     saving.current = true;
     setPending(option.id);
     setError(undefined);
-    try {
+    const result = await attempt(async () => {
       await option.onPress();
       setOpen(false);
-    } catch (cause) {
+    });
+    saving.current = false;
+    setPending(undefined);
+    if (!result.ok) {
       setError(
-        cause instanceof Error && cause.message.trim()
-          ? cause.message
-          : "No se pudo completar la acción. Vuelve a intentarlo.",
+        errorMessage(result.error, "No se pudo completar la acción. Vuelve a intentarlo."),
       );
-    } finally {
-      saving.current = false;
-      setPending(undefined);
     }
   };
 

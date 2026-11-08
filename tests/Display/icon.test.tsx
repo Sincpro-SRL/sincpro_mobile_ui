@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, expect, jest, test } from "@jest/globals";
 import Icon, { type IconProps } from "@sincpro/mobile-ui/Display/Display.Icon";
+import { ICON_FONT_FAMILY } from "@sincpro/mobile-ui/Display/icon-font";
+import { MATERIAL_CODEPOINTS } from "@sincpro/mobile-ui/Display/icon-glyphs";
 import { ICON_MAP, type IconName } from "@sincpro/mobile-ui/Display/icon-map";
+import { registerIcons } from "@sincpro/mobile-ui/Display/icon-registry";
 import { DEFAULT_DARK_THEME, DEFAULT_THEME, setActiveTheme } from "@sincpro/mobile-ui/theme";
 import { act, render, screen } from "@testing-library/react-native";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
 
 jest.mock("expo-symbols", () => {
   const mockReact = jest.requireActual<typeof import("react")>("react");
@@ -71,24 +74,31 @@ test("explicit icon color and size remain consumer controlled", async () => {
   });
 });
 
-test.each(["ios", "android", "web"] as const)(
-  "%s receives its own native source, never an SF-only or fallback icon",
+test("iOS draws the native SF Symbol", async () => {
+  jest.replaceProperty(Platform, "OS", "ios");
+  await render(<Icon name="home" />);
+  expect(jest.mocked(SymbolView).mock.lastCall?.[0]).toMatchObject({
+    name: ICON_MAP.home.sf,
+    size: 24,
+  });
+});
+
+test.each(["android", "web"] as const)(
+  "%s draws one Material glyph that does not grow with the system font scale",
   async (platform) => {
     jest.replaceProperty(Platform, "OS", platform);
-    await render(<Icon name="home" />);
-    expect(jest.mocked(SymbolView).mock.lastCall?.[0]).toMatchObject({
-      name: {
-        ios: ICON_MAP.home.sf,
-        android: ICON_MAP.home.md,
-        web: ICON_MAP.home.md,
-      },
-      size: 24,
+    await render(<Icon color="#123ABC" name="home" size={18} testID="icon" />);
+    expect(SymbolView).not.toHaveBeenCalled();
+    const glyph = screen.getByText(String.fromCharCode(MATERIAL_CODEPOINTS.home), {
+      includeHiddenElements: true,
     });
-    expect(getNativeSymbol().props.children).toBe(
-      platform === "ios" ? ICON_MAP.home.sf : ICON_MAP.home.md,
-    );
-    expect(jest.mocked(SymbolView).mock.lastCall?.[0]).not.toHaveProperty("fallback");
-    expect(jest.mocked(SymbolView).mock.lastCall?.[0]).not.toHaveProperty("type");
+    expect(glyph.props.allowFontScaling).toBe(false);
+    expect(StyleSheet.flatten(glyph.props.style)).toMatchObject({
+      fontFamily: ICON_FONT_FAMILY,
+      fontSize: 18,
+      lineHeight: 18,
+      color: "#123ABC",
+    });
   },
 );
 
@@ -136,42 +146,54 @@ test("decorative icons stay unfocusable and accessibility overrides are retained
   expect(screen.getByTestId("icon").props.accessibilityRole).toBe("button");
 });
 
-test.each([
-  "home-outline",
-  "house.fill",
-  "arrow_back",
-  "ionicons",
-  "toString",
-  "constructor",
-  "__proto__",
-  "",
-  null,
-  undefined,
-  4,
-])("invalid JavaScript icon name %p fails explicitly", async (name) => {
-  const props: Record<string, unknown> = { name };
-  await expect(render(<Icon name="home" {...props} />)).rejects.toThrow("Unknown icon name");
-});
+test.each(["home-outline", "house.fill", "ionicons", "toString", "__proto__", "", null, 4])(
+  "unknown icon name %p shows the fallback and reports it once instead of crashing the screen",
+  async (name) => {
+    const error = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    const props: Record<string, unknown> = { name };
+    await render(<Icon name="home" {...props} />);
+    await render(<Icon name="home" {...props} />);
+    expect(jest.mocked(SymbolView).mock.lastCall?.[0]).toMatchObject({
+      name: ICON_MAP.info.sf,
+    });
+    const reports = error.mock.calls.filter(([message]) =>
+      String(message).includes("Unknown icon"),
+    );
+    expect(reports).toHaveLength(1);
+  },
+);
 
 test.each(["type", "customIcon", "fallback", "children"])(
-  "removed JavaScript %s prop is rejected, not silently ignored",
+  "legacy %s prop is reported and ignored",
   async (key) => {
+    const error = jest.spyOn(console, "error").mockImplementation(() => undefined);
     const props: Record<string, unknown> = { [key]: "legacy" };
-    await expect(render(<Icon name="home" {...props} />)).rejects.toThrow(
-      "Display.Icon accepts semantic names, not icon families or custom renderers",
-    );
+    await render(<Icon name="home" testID="icon" {...props} />);
+    expect(screen.queryByText("legacy", { includeHiddenElements: true })).toBeNull();
+    expect(
+      screen.getByTestId("icon").props[key === "children" ? "legacy" : key],
+    ).toBeUndefined();
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(`"${key}" is not supported`));
   },
 );
 
-test.each([0, -1, NaN, Infinity, "24"])(
-  "invalid icon size %p fails explicitly",
-  async (size) => {
-    const props: Record<string, unknown> = { size };
-    await expect(render(<Icon name="home" {...props} />)).rejects.toThrow(
-      "Invalid icon size",
-    );
-  },
-);
+test.each([0, -1, NaN, Infinity])("invalid size %p falls back to 24", async (size) => {
+  jest.spyOn(console, "error").mockImplementation(() => undefined);
+  await render(<Icon name="home" size={size} />);
+  expect(jest.mocked(SymbolView).mock.lastCall?.[0]).toMatchObject({ size: 24 });
+});
+
+test("registered app icons render through the same component", async () => {
+  registerIcons({
+    brand: ({ size, color }: { size: number; color: unknown }) => (
+      <Text testID="brand-glyph">{`${size}:${String(color)}`}</Text>
+    ),
+  } as Parameters<typeof registerIcons>[0]);
+  const brand = "brand" as IconName;
+  await render(<Icon color="#FF0000" name={brand} size={30} />);
+  expect(screen.getByTestId("brand-glyph").props.children).toBe("30:#FF0000");
+  expect(SymbolView).not.toHaveBeenCalled();
+});
 
 test("public contract requires semantic names and excludes family and renderer props", () => {
   const contract: {

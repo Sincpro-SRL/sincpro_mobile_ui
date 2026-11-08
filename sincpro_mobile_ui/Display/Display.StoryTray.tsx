@@ -2,7 +2,7 @@ import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Story from "@sincpro/mobile-ui/Display/Display.Story";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { ScrollView, View } from "react-native";
@@ -34,6 +34,7 @@ export interface StoryTrayProps {
 }
 
 function CreateCard({ create, size }: { create: StoryTrayCreate; size: number }) {
+  const theme = useTheme();
   const w = size * 1.6;
   return (
     <Pressable
@@ -82,6 +83,7 @@ function CreateCard({ create, size }: { create: StoryTrayCreate; size: number })
 }
 
 function CreateCircle({ create, size }: { create: StoryTrayCreate; size: number }) {
+  const theme = useTheme();
   return (
     <Pressable
       accessibilityLabel={create.label ?? "Crear historia"}

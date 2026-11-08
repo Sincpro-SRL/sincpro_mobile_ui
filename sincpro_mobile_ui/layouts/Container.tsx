@@ -1,12 +1,13 @@
+import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import React, { FC, ReactNode } from "react";
 import { ViewStyle } from "react-native";
-import { Edge, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ContainerProps = {
   children: ReactNode;
   style?: ViewStyle;
-  edges?: Edge[];
+  edges?: SafeAreaEdge[];
   className?: string;
 };
 

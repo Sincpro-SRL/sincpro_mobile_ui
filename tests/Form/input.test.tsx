@@ -1,6 +1,8 @@
 import { expect, jest, test } from "@jest/globals";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
+import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 
@@ -55,4 +57,14 @@ test("focus and blur still reach the caller", async () => {
   await fireEvent(screen.getByLabelText("Correo"), "blur");
   expect(onFocus).toHaveBeenCalledTimes(1);
   expect(onBlur).toHaveBeenCalledTimes(1);
+});
+
+test("typed text uses the DS body face in both looks, without a line height", async () => {
+  for (const look of ["card", "outline"] as const) {
+    const { unmount } = await render(<Input label="Usuario" look={look} value="andres" />);
+    const style = StyleSheet.flatten(screen.getByLabelText("Usuario").props.style);
+    expect(style).toMatchObject({ fontFamily: fontFamilies.regular, fontSize: 14 });
+    expect(style.lineHeight).toBeUndefined();
+    await unmount();
+  }
 });

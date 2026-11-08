@@ -54,10 +54,7 @@ function DataTable<T>({
         {columns.map((col) => (
           <View key={col.key} style={{ flex: col.flex ?? 1 }}>
             <Typography.Text
-              className={cn(
-                "text-text-secondary font-semibold",
-                alignClass[col.align ?? "left"],
-              )}
+              className={cn("text-text-secondary", alignClass[col.align ?? "left"])}
               numberOfLines={1}
               variant="caption"
             >

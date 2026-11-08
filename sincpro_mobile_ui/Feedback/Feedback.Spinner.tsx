@@ -202,7 +202,7 @@ const Spinner: React.FC<SpinnerProps> = ({
         {indicator}
       </View>
       {text && (
-        <Typography.Text className="mt-2.5 text-base" variant="body">
+        <Typography.Text className="mt-2.5" variant="body">
           {text}
         </Typography.Text>
       )}

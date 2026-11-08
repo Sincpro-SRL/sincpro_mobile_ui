@@ -32,7 +32,7 @@ function Error({ message, onRetry, onBack, onHome, className, testID }: ErrorPro
       </Typography.Text>
       <Typography.Text
         accessibilityLiveRegion="polite"
-        className="pt-2 text-center text-base leading-5.5 text-text-secondary"
+        className="pt-2 text-center text-text-secondary"
         variant="h5"
       >
         {message || "Ocurrió un error al cargar la información"}

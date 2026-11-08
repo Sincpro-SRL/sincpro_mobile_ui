@@ -151,6 +151,24 @@
 - **Causa:** un hijo `position: "absolute"` se mide contra el ancho de su padre (un ícono de 24pt). El texto no entra, salta de línea y el alto fijo lo recorta.
 - **Fix:** `CountBadge` con `anchor={{ top, right }}`, que lo monta en un contenedor ancho, sin toques y alineado a la derecha.
 
+### Una pantalla con `GradientSurface` sale en blanco
+
+- **Síntoma:** el splash `hero` (o cualquier fondo con degradado) no se ve; queda el fondo de la app.
+- **Causa:** `GradientSurface` aplica `className` a su vista **interna**. Con `className="flex-1"` y la externa sin altura, la interna arranca de base 0 y todo colapsa a 0 de alto.
+- **Fix:** para llenar el padre, pasar `style={{ flex: 1 }}` (la vista externa); `className` queda para el layout del contenido.
+
+### Los botones del pie de una sheet no aparecen
+
+- **Síntoma:** una `Sheet` con `footer` y los snap points por defecto (`60%`, `90%`) no muestra el pie hasta que se arrastra hacia arriba.
+- **Causa:** el panel mide lo que el snap más alto y reposa hundido mostrando el más bajo; lo que va al final del panel queda fuera de la pantalla.
+- **Fix:** las acciones van en `footer` (`SheetSurface` lo fija al borde visible). Si un componente dibuja sus acciones dentro del contenido, que use un solo snap point.
+
+### Una clase de color no pinta nada
+
+- **Síntoma:** un divisor o un borde no se ve, o sale negro.
+- **Causa:** la clase nombra un token que el preset no define (`bg-border-divider`, `border-brand-accent`).
+- **Fix:** usar los tokens del preset. Un contrato de `tests/sdk58` falla si una clase de color nombra un token inexistente.
+
 ## Lint / tooling
 
 ### ESLint marca `import/export` falso en barrels solo-tipos (rojo en VSCode)

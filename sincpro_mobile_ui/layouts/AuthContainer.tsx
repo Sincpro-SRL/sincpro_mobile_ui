@@ -7,6 +7,7 @@ import KeyboardForm, {
 import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
@@ -54,14 +55,14 @@ function AuthContainer({
     >
       {background?.pattern ? (
         <Pattern
-          color={background.patternColor ?? "#FFFFFF"}
+          color={background.patternColor ?? ON_DARK_SURFACE.ink}
           kind={background.pattern as PatternKind}
           opacity={background.patternOpacity ?? 0.18}
         />
       ) : null}
       <SafeAreaView className="flex-1" edges={outerEdges}>
         <View className="flex-1">
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <TouchableWithoutFeedback accessible={false} onPress={Keyboard.dismiss}>
             <View
               className="items-center justify-end px-6 pt-12 pb-14 relative"
               style={{ minHeight: "28%" }}

@@ -18,7 +18,7 @@ test.each([
   await render(element);
   const label = screen.getByText(/Pagada|DEV|Vegano/);
   expect(StyleSheet.flatten(label.props.style)).toMatchObject({
-    fontSize: 10,
+    fontSize: 12,
     lineHeight: 16,
     fontFamily: family,
   });
@@ -50,4 +50,11 @@ test("icon badge shows the capped count, a dot, or nothing", async () => {
 test("count badge never renders an empty bubble", async () => {
   await render(<CountBadge count="" />);
   expect(screen.toJSON()).toBeNull();
+});
+
+test("a pill can take another typography variant", async () => {
+  await render(<Badge label="Pagada" textVariant="caption" variant="success" />);
+  const style = StyleSheet.flatten(screen.getByText("Pagada").props.style);
+  expect(style.fontSize).toBe(13);
+  expect(style.fontFamily).toBe(fontFamilies.mono);
 });

@@ -91,6 +91,11 @@ function Sheet({
     <OverlayPortal onBack={visible ? back : undefined}>
       <SheetSurface
         dismissible={dismissible}
+        footer={
+          footer ? (
+            <View className="border-t border-border-light px-4 py-3">{footer}</View>
+          ) : undefined
+        }
         header={header}
         onExited={exited}
         onRequestClose={close}
@@ -110,9 +115,6 @@ function Sheet({
         ) : (
           <View style={{ flex: 1, minHeight: 0, paddingHorizontal: 16 }}>{children}</View>
         )}
-        {footer ? (
-          <View className="border-t border-border-light px-4 py-3">{footer}</View>
-        ) : null}
       </SheetSurface>
     </OverlayPortal>
   );

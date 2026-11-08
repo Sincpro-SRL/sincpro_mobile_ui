@@ -1,4 +1,5 @@
 import { Display } from "@sincpro/mobile-ui/Display";
+import { inputTextStyle } from "@sincpro/mobile-ui/Form/input-text";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -14,9 +15,10 @@ import {
 
 type FieldState = "error" | "focused" | "default";
 
-// `card`: filled surface with shadow, the default of forms built with the DS.
+// `card`: filled surface, the default of forms built with the DS. Same box as the
+// Select, DatePicker, PickerField and Dropdown triggers.
 const cardBox = tv({
-  base: "rounded-lg bg-bg-card shadow-sm",
+  base: "rounded-lg bg-bg-card",
   variants: {
     state: {
       error: "border-2 border-danger",
@@ -87,7 +89,7 @@ function SecureToggle({
  *
  * | look      | label                  | field                                   | bottom space |
  * | --------- | ---------------------- | --------------------------------------- | ------------ |
- * | `card`    | bodySmall, medium      | card surface + shadow, rounded-lg, ≥48  | 8            |
+ * | `card`    | bodySmall, semibold    | card surface, rounded-lg, ≥48           | 8            |
  * | `outline` | bodyLarge              | border only, rounded, 44 high           | 16           |
  */
 function FormInput({
@@ -156,7 +158,7 @@ function FormInput({
           className={outlineInput({ state })}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          style={style}
+          style={[inputTextStyle(), style]}
           {...shared}
           {...props}
         />
@@ -180,20 +182,20 @@ function FormInput({
   return (
     <View className={cn("mb-2", className)}>
       {label ? (
-        <Typography.Text className="mb-1 font-medium text-text-primary" variant="bodySmall">
+        <Typography.Text className="mb-1 text-text-primary" semibold variant="bodySmall">
           {label}
         </Typography.Text>
       ) : null}
       <View className={cn(cardBox({ state }), secure && "flex-row items-center")}>
         <TextInput
           className={cn(
-            "px-3 py-2.5 text-sm min-h-[48px] text-text-primary",
+            "px-3 py-2.5 min-h-[48px] text-text-primary",
             multiline && "min-h-[64px] pt-2.5",
             secure && "flex-1",
           )}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          style={[{ minHeight: multiline ? 64 : 48 }, style]}
+          style={[inputTextStyle(), { minHeight: multiline ? 64 : 48 }, style]}
           textAlignVertical={multiline ? "top" : "center"}
           {...shared}
           {...props}

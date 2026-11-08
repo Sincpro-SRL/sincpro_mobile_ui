@@ -1,6 +1,7 @@
 import { FlashList } from "@shopify/flash-list";
-import { Actions } from "@sincpro/mobile-ui/Actions";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import { DialogActions } from "@sincpro/mobile-ui/Dialog/dialog-actions";
+import type { SnapPoint } from "@sincpro/mobile-ui/Dialog/SheetSurface";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { fontFamilies, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -178,22 +179,21 @@ function EditValueEditor({
             {footerAdornment}
           </View>
         ) : null}
-        <Actions.Button
-          disabled={pending}
-          onPress={close}
-          title={cancelLabel}
-          variant="secondary"
-        />
-        <Actions.Button
-          disabled={blocked}
-          loading={pending}
-          onPress={() => void save()}
-          title={confirmLabel}
+        <DialogActions
+          cancel={{ disabled: pending, onPress: close, title: cancelLabel }}
+          confirm={{
+            disabled: blocked,
+            loading: pending,
+            onPress: () => void save(),
+            title: confirmLabel,
+          }}
         />
       </View>
     </View>
   );
 }
+
+const EDIT_SNAP_POINTS: SnapPoint[] = ["60%"];
 
 function EditValue(props: EditValueProps) {
   const busy = useRef(false);
@@ -208,6 +208,9 @@ function EditValue(props: EditValueProps) {
         }
       }}
       scrollable={false}
+      // One detent: the editor draws its own actions at the bottom of its content, which
+      // a second, taller detent would push below the screen while resting.
+      snapPoints={EDIT_SNAP_POINTS}
       testID={props.testID}
       title={props.title}
       visible={props.visible}

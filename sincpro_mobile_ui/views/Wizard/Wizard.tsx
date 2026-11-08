@@ -119,7 +119,11 @@ const WizardGo: FC<WizardGoProps> = ({ step, children, onPress }) => {
     return <>{(children as any)(handlePress)}</>;
   }
 
-  return <TouchableOpacity onPress={handlePress}>{children}</TouchableOpacity>;
+  return (
+    <TouchableOpacity accessibilityRole="button" onPress={handlePress}>
+      {children}
+    </TouchableOpacity>
+  );
 };
 
 const WizardBack: FC<WizardBackProps> = ({ children, onPress }) => {
@@ -138,7 +142,11 @@ const WizardBack: FC<WizardBackProps> = ({ children, onPress }) => {
     return <>{(children as any)(handlePress)}</>;
   }
 
-  return <TouchableOpacity onPress={handlePress}>{children}</TouchableOpacity>;
+  return (
+    <TouchableOpacity accessibilityRole="button" onPress={handlePress}>
+      {children}
+    </TouchableOpacity>
+  );
 };
 
 export const Wizard = {

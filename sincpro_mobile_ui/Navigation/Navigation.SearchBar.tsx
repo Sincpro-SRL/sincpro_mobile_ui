@@ -5,7 +5,10 @@ import SearchSuggestions, {
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import { appliedTextStyle } from "@sincpro/mobile-ui/theme/typography";
+import {
+  appliedTextStyle,
+  type typographyVariants,
+} from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useState } from "react";
 import { Keyboard, TextInput, View } from "react-native";
@@ -24,6 +27,11 @@ export interface SearchBarProps {
   accessibilityLabel?: string;
   clearAccessibilityLabel?: string;
   suggestions?: SearchSuggestionsProps;
+  /**
+   * Typography variant of the query. Defaults to `bodyReadable` (17), the size of the native
+   * iOS search field; pass `body` (14) to match the other fields of a dense screen.
+   */
+  textVariant?: keyof typeof typographyVariants;
 }
 
 /**
@@ -44,6 +52,7 @@ function SearchBar({
   accessibilityLabel,
   clearAccessibilityLabel = "Limpiar",
   suggestions,
+  textVariant = "bodyReadable",
 }: SearchBarProps) {
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
@@ -82,7 +91,7 @@ function SearchBar({
           returnKeyType="search"
           selectionColor={theme.primary}
           style={{
-            ...appliedTextStyle("bodyReadable"),
+            ...appliedTextStyle(textVariant),
             minHeight: 48,
             paddingVertical: 8,
           }}
@@ -91,7 +100,7 @@ function SearchBar({
           value={value}
         />
       ) : (
-        <Typography.Text className="flex-1 text-text-tertiary" variant="bodyReadable">
+        <Typography.Text className="flex-1 text-text-tertiary" variant={textVariant}>
           {value || placeholder}
         </Typography.Text>
       )}

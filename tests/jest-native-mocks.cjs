@@ -25,6 +25,7 @@ jest.mock("@sincpro/mobile-ui/Dialog/SheetSurface", () => {
     onRequestClose,
     onExited,
     header,
+    footer,
     children,
     testID,
   }) {
@@ -51,6 +52,7 @@ jest.mock("@sincpro/mobile-ui/Dialog/SheetSurface", () => {
             { accessibilityViewIsModal: true, onAccessibilityEscape: requestClose, testID },
             header,
             children,
+            footer,
           )
         : null,
     );

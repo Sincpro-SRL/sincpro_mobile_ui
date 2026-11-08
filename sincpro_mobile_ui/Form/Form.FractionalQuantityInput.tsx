@@ -9,7 +9,7 @@ import { tv } from "tailwind-variants";
 
 const fractionalQuantityInput = tv({
   slots: {
-    container: "flex-row items-center border border-brand-accent rounded-full px-1",
+    container: "flex-row items-center border border-primary rounded-full px-1",
     button: "w-9 h-9 rounded-full justify-center items-center",
     valueContainer: "min-w-[60px] items-center px-3",
   },
@@ -33,6 +33,8 @@ interface FractionalQuantityInputProps {
   quickAddIncrements?: number[];
 }
 
+/** The 36-point step buttons reach a 48-point target without covering the value. */
+const STEP_SLOP = { top: 6, bottom: 6, left: 4, right: 4 } as const;
 function parseLocalizedNumber(raw: string): number {
   let s = raw.trim();
   if (s === "") return 0;
@@ -127,20 +129,24 @@ function FractionalQuantityInput({
   const containerStyles = fractionalQuantityInput();
 
   return (
-    <View
-      accessibilityLabel={`Cantidad ${formatted}`}
-      className={containerStyles.container()}
-      style={style}
-    >
+    <View className={containerStyles.container()} style={style}>
       <TouchableOpacity
+        accessibilityLabel="Disminuir"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: disabled || value <= 0 }}
         className={decrementStyles.button()}
         disabled={disabled || value <= 0}
+        hitSlop={STEP_SLOP}
         onPress={handleDecrement}
       >
         <Display.Icon name="remove" size={16} />
       </TouchableOpacity>
 
       <TouchableOpacity
+        accessibilityHint="Abre el editor de cantidad"
+        accessibilityLabel={`Cantidad ${formatted}`}
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
         className={containerStyles.valueContainer()}
         disabled={disabled}
         onPress={openModal}
@@ -151,8 +157,12 @@ function FractionalQuantityInput({
       </TouchableOpacity>
 
       <TouchableOpacity
+        accessibilityLabel="Aumentar"
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
         className={incrementStyles.button()}
         disabled={disabled}
+        hitSlop={STEP_SLOP}
         onPress={handleIncrement}
       >
         <Display.Icon name="add" size={16} />

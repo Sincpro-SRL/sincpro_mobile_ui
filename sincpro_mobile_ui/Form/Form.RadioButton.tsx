@@ -37,7 +37,14 @@ function RadioButton({ label, selected, onPress }: RadioButtonProps) {
   const styles = radioButton({ selected });
 
   return (
-    <TouchableOpacity activeOpacity={0.7} className={styles.container()} onPress={onPress}>
+    <TouchableOpacity
+      accessibilityLabel={label}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: selected }}
+      activeOpacity={0.7}
+      className={styles.container()}
+      onPress={onPress}
+    >
       <View className={styles.radioCircle()}>
         {selected && <View className={styles.radioInner()} />}
       </View>

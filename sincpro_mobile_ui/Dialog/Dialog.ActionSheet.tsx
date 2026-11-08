@@ -1,3 +1,4 @@
+import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import type { IconName } from "@sincpro/mobile-ui/Display/icon-map";
@@ -67,18 +68,13 @@ function ActionSheet({
     <Sheet
       dismissible={pending === undefined}
       footer={
-        <Pressable
-          accessibilityLabel={cancelLabel}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: pending !== undefined }}
+        <Button
+          className="self-center"
           disabled={pending !== undefined}
           onPress={close}
-          style={{ minHeight: 48, justifyContent: "center", alignItems: "center" }}
-        >
-          <Typography.Text className="text-text-accent" semibold>
-            {cancelLabel}
-          </Typography.Text>
-        </Pressable>
+          title={cancelLabel}
+          variant="link"
+        />
       }
       onClose={close}
       testID={testID}

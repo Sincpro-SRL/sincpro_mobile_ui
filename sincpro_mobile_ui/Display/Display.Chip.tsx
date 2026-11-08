@@ -3,6 +3,7 @@ import { PillLabel } from "@sincpro/mobile-ui/Display/pill";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { type ThemeTokens, useTheme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import type { typographyVariants } from "@sincpro/mobile-ui/theme/typography";
 import { View } from "react-native";
 
 const chip = tv({
@@ -45,6 +46,8 @@ export interface ChipProps extends VariantProps<typeof chip> {
   onRemove?: () => void;
   className?: string;
   testID?: string;
+  /** Typography variant of the label. Defaults to the shared pill metrics (12/16). */
+  textVariant?: keyof typeof typographyVariants;
 }
 
 function Chip({
@@ -55,12 +58,15 @@ function Chip({
   onRemove,
   className,
   testID,
+  textVariant,
 }: ChipProps) {
   const theme = useTheme();
   const styles = chip({ tone, selected });
   const content = (
     <>
-      <PillLabel className={styles.label()}>{label}</PillLabel>
+      <PillLabel className={styles.label()} variant={textVariant}>
+        {label}
+      </PillLabel>
       {onRemove ? (
         <Pressable accessibilityLabel={`Quitar ${label}`} hitSlop={8} onPress={onRemove}>
           <Icon color={removeIconColor(theme)[tone ?? "neutral"]} name="close" size={14} />

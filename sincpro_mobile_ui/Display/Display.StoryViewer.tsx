@@ -2,6 +2,7 @@ import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
@@ -161,10 +162,7 @@ function StoryViewer({
                   {title}
                 </Typography.Text>
                 {time ? (
-                  <Typography.Text
-                    style={{ color: "rgba(255,255,255,0.7)" }}
-                    variant="caption"
-                  >
+                  <Typography.Text style={{ color: ON_DARK_SURFACE.muted }} variant="caption">
                     {time}
                   </Typography.Text>
                 ) : null}
@@ -172,7 +170,7 @@ function StoryViewer({
               {subtitle ? (
                 <Typography.Text
                   numberOfLines={1}
-                  style={{ color: "rgba(255,255,255,0.8)" }}
+                  style={{ color: ON_DARK_SURFACE.muted }}
                   variant="caption"
                 >
                   {subtitle}
@@ -186,7 +184,11 @@ function StoryViewer({
                 hitSlop={8}
                 onPress={onToggleMute}
               >
-                <Icon color="#fff" name={muted ? "mute" : "volume"} size={22} />
+                <Icon
+                  color={ON_DARK_SURFACE.ink}
+                  name={muted ? "mute" : "volume"}
+                  size={22}
+                />
               </Pressable>
             ) : null}
             {onTogglePause ? (
@@ -196,7 +198,11 @@ function StoryViewer({
                 onPress={onTogglePause}
                 style={{ marginLeft: 14 }}
               >
-                <Icon color="#fff" name={paused ? "play" : "pause"} size={22} />
+                <Icon
+                  color={ON_DARK_SURFACE.ink}
+                  name={paused ? "play" : "pause"}
+                  size={22}
+                />
               </Pressable>
             ) : null}
             {onMore ? (
@@ -206,7 +212,7 @@ function StoryViewer({
                 onPress={onMore}
                 style={{ marginLeft: 14 }}
               >
-                <Icon color="#fff" name="more" size={22} />
+                <Icon color={ON_DARK_SURFACE.ink} name="more" size={22} />
               </Pressable>
             ) : null}
             <Pressable
@@ -215,7 +221,7 @@ function StoryViewer({
               onPress={onClose}
               style={{ marginLeft: 14 }}
             >
-              <Icon color="#fff" name="close" size={24} />
+              <Icon color={ON_DARK_SURFACE.ink} name="close" size={24} />
             </Pressable>
           </View>
         </LinearGradient>

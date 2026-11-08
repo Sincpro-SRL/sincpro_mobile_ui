@@ -47,7 +47,7 @@ function AvatarGroup({ items, max = 4, size = 36, className, testID }: AvatarGro
             borderColor: theme.bg.card,
           }}
         >
-          <Typography.Text className="text-text-secondary font-semibold text-xs">
+          <Typography.Text className="text-text-secondary" semibold>
             +{overflow}
           </Typography.Text>
         </View>

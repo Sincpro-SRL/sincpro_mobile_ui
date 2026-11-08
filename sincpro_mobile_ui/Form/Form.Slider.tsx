@@ -42,7 +42,7 @@ function Slider({
       {label || formatValue ? (
         <View className="flex-row items-center justify-between">
           {label ? (
-            <Typography.Text className="font-medium text-text-primary" variant="bodySmall">
+            <Typography.Text className="text-text-primary" semibold variant="bodySmall">
               {label}
             </Typography.Text>
           ) : null}

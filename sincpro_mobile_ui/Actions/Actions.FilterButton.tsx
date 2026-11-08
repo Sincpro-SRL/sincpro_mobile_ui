@@ -23,7 +23,7 @@ const filterChip = tv({
 const filterChipText = tv({
   variants: {
     active: {
-      true: "text-text-on-primary font-semibold",
+      true: "text-text-on-primary",
       false: "text-text-secondary",
     },
   },
@@ -81,7 +81,7 @@ export function FilterChip({
         {label}
       </Typography.Text>
       {count ? (
-        <Typography.Text className={cn(textClass, "font-semibold")} variant="bodySmall">
+        <Typography.Text className={textClass} variant="bodySmall">
           {count}
         </Typography.Text>
       ) : null}

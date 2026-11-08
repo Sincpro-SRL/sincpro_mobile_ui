@@ -55,7 +55,7 @@ function ActionButtons({
             <Icon color={theme.text.inverse} name={action.icon} size={20} />
           ) : null}
           {action.label ? (
-            <Typography.Text className="text-text-inverse text-xs mt-1">
+            <Typography.Text className="text-text-inverse mt-1">
               {action.label}
             </Typography.Text>
           ) : null}

@@ -71,7 +71,7 @@ function Dock({
           accessibilityLabel={expanded ? collapseLabel : moreLabel}
           accessibilityRole="button"
           accessibilityState={{ expanded, disabled: expanded && !dismissible }}
-          className="flex-1 flex-row items-center justify-center gap-2 rounded-lg bg-bg-muted px-3"
+          className="flex-1 flex-row items-center justify-center gap-2 rounded-md bg-bg-muted px-3"
           disabled={expanded && !dismissible}
           onPress={() => requestExpanded(!expanded)}
           style={{ minWidth: 48, minHeight: 48 }}

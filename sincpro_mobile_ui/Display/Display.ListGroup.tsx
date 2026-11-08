@@ -2,6 +2,7 @@ import SectionHeader, {
   type SectionHeaderAction,
   type SectionHeaderProps,
 } from "@sincpro/mobile-ui/Display/Display.SectionHeader";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { Children, type ComponentProps, type ReactNode } from "react";
@@ -42,17 +43,25 @@ function ListGroup({
   contentStyle,
   separatorStyle,
 }: ListGroupProps) {
+  const theme = useTheme();
   const rows = Children.toArray(children);
 
   return (
     <View className={cn("gap-2", className)} style={style} testID={testID}>
-      <SectionHeader {...headerProps} action={action} subtitle={description} title={title} />
+      <SectionHeader
+        variant="group"
+        {...headerProps}
+        action={action}
+        subtitle={description}
+        title={title}
+      />
       <View
         className={cn(
-          surface === "inset" && "rounded-2xl bg-bg-card overflow-hidden",
+          surface === "inset" &&
+            "rounded-lg bg-bg-card border border-border-light overflow-hidden",
           contentClassName,
         )}
-        style={contentStyle}
+        style={[surface === "inset" ? theme.shadow.sm : undefined, contentStyle]}
         testID={testID ? `${testID}-content` : undefined}
       >
         {rows.map((row, index) => (
@@ -78,8 +87,8 @@ function ListGroup({
       </View>
       {typeof footer === "string" ? (
         <Typography.Text
-          className="text-text-secondary px-4"
-          variant="bodySmall"
+          className="text-text-tertiary px-4"
+          variant="caption"
           {...footerTextProps}
         >
           {footer}

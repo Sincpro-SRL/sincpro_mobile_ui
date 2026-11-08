@@ -50,10 +50,7 @@ function FAB({
     >
       <Icon color={theme.icon.inverse} name={icon} size={24} />
       {label ? (
-        <Typography.Text
-          className="text-text-on-primary font-semibold"
-          style={{ flexShrink: 1 }}
-        >
+        <Typography.Text className="text-text-on-primary" semibold style={{ flexShrink: 1 }}>
           {label}
         </Typography.Text>
       ) : null}

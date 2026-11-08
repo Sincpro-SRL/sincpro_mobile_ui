@@ -1,5 +1,6 @@
 import { PillLabel } from "@sincpro/mobile-ui/Display/pill";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import type { typographyVariants } from "@sincpro/mobile-ui/theme/typography";
 import { View } from "react-native";
 
 const badge = tv({
@@ -60,14 +61,16 @@ export type BadgeProps = {
   label: string;
   variant: BadgeVariants | BadgeVariant | string;
   className?: string;
+  /** Typography variant of the label. Defaults to the shared pill metrics (12/16). */
+  textVariant?: keyof typeof typographyVariants;
 };
 
-function Badge({ label, variant, className }: BadgeProps) {
+function Badge({ label, variant, className, textVariant }: BadgeProps) {
   const styles = badge({ variant: variant as BadgeVariant });
 
   return (
     <View className={styles.root({ className })}>
-      <PillLabel className={styles.text()} semibold>
+      <PillLabel className={styles.text()} semibold variant={textVariant}>
         {label}
       </PillLabel>
     </View>

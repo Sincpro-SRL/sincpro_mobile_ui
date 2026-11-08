@@ -3,7 +3,7 @@ import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import { overlayStore } from "@sincpro/mobile-ui/Dialog/overlay.store";
 import { OverlayHost } from "@sincpro/mobile-ui/Dialog/OverlayHost";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
-import { BackHandler, Text } from "react-native";
+import { BackHandler, Dimensions, StyleSheet, Text } from "react-native";
 
 jest.unmock("@sincpro/mobile-ui/Dialog/SheetSurface");
 jest.mock("react-native-safe-area-context", () => ({
@@ -135,4 +135,26 @@ test("toasts always draw above sheets, even when a sheet opens later", () => {
   detach();
   expect(overlayStore.entries()).toEqual([]);
   expect(overlayStore.hasHost()).toBe(false);
+});
+
+test("the footer rises by the resting offset so it stays on screen at the lower snap point", async () => {
+  await render(
+    <Sheet
+      footer={<Text>Aplicar</Text>}
+      onClose={jest.fn()}
+      snapPoints={["50%", "90%"]}
+      title="Filtros"
+      visible
+    >
+      <Text>Contenido</Text>
+    </Sheet>,
+  );
+  const { height } = Dimensions.get("window");
+  // The panel is 90% tall and rests showing 50%: the footer moves up the other 40%.
+  let pinned: ReturnType<typeof screen.getByText> | null = screen.getByText("Aplicar");
+  while (pinned && !StyleSheet.flatten(pinned.props.style)?.transform) pinned = pinned.parent;
+  const [{ translateY }] = StyleSheet.flatten(pinned?.props.style).transform as [
+    { translateY: number },
+  ];
+  expect(translateY).toBeCloseTo(-height * 0.4);
 });

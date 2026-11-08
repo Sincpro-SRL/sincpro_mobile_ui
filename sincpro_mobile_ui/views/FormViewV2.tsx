@@ -336,7 +336,7 @@ function Group({
     );
 
   // Title alignment is identical in both variants (same inset as the card's content).
-  const header = title ? <Display.SectionHeader title={title} /> : null;
+  const header = title ? <Display.SectionHeader title={title} variant="group" /> : null;
 
   if (withMargin) {
     return (

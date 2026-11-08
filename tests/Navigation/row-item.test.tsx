@@ -1,6 +1,8 @@
 import { expect, jest, test } from "@jest/globals";
 import RowItem from "@sincpro/mobile-ui/Navigation/Navigation.RowItem";
+import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
 import { render, screen, userEvent } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 
 const row = {
   item: { id: 1 },
@@ -41,3 +43,14 @@ test.each(["prop", "item"] as const)(
     expect(press).not.toHaveBeenCalled();
   },
 );
+
+test("default row reads like Content.Row and drops an empty subtitle", async () => {
+  await render(<RowItem item={{ ...row, rowSubtitle: undefined }} />);
+  const title = screen.getByText("Registro");
+  expect(StyleSheet.flatten(title.props.style)).toMatchObject({
+    fontSize: 14,
+    fontFamily: fontFamilies.semiBold,
+  });
+  expect(title.props.numberOfLines).toBe(1);
+  expect(screen.queryByText("Detalle")).toBeNull();
+});

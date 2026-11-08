@@ -1,10 +1,11 @@
+import { PillLabel } from "@sincpro/mobile-ui/Display/pill";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 const badge = tv({
   slots: {
     root: "px-2.5 py-1.5 rounded-lg self-start",
-    text: "text-xs font-semibold",
+    text: "",
   },
   variants: {
     variant: {
@@ -32,6 +33,10 @@ const badge = tv({
         root: "bg-container-danger",
         text: "text-danger",
       },
+      accent: {
+        root: "bg-accent",
+        text: "text-text-on-accent",
+      },
     },
   },
   defaultVariants: {
@@ -48,6 +53,7 @@ export enum BadgeVariants {
   INFO_DARK = "infoDark",
   DANGER = "danger",
   SUCCESS_DARK = "successDark",
+  ACCENT = "accent",
 }
 
 export type BadgeProps = {
@@ -61,9 +67,9 @@ function Badge({ label, variant, className }: BadgeProps) {
 
   return (
     <View className={styles.root({ className })}>
-      <Text className={styles.text()} numberOfLines={1}>
+      <PillLabel className={styles.text()} semibold>
         {label}
-      </Text>
+      </PillLabel>
     </View>
   );
 }

@@ -1,5 +1,5 @@
+import { PillLabel } from "@sincpro/mobile-ui/Display/pill";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 
@@ -24,9 +24,7 @@ function Tag({ label, leading, dotColor, className, testID }: TagProps) {
         <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: dotColor }} />
       ) : null}
       {leading}
-      <Typography.Text className="text-text-secondary text-xs font-medium" numberOfLines={1}>
-        {label}
-      </Typography.Text>
+      <PillLabel className="text-text-secondary">{label}</PillLabel>
     </View>
   );
 }

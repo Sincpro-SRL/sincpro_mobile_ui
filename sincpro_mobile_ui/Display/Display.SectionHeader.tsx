@@ -52,7 +52,7 @@ function SectionHeader({
           accessibilityRole="header"
           className="text-text-primary"
           semibold
-          variant={variant === "mobile" ? "bodyReadable" : "subtitle"}
+          variant="subtitle"
           {...titleTextProps}
         >
           {title}
@@ -60,7 +60,7 @@ function SectionHeader({
         {subtitle ? (
           <Typography.Text
             className="text-text-secondary"
-            variant={variant === "mobile" ? "bodyLarge" : "bodySmall"}
+            variant="bodySmall"
             {...subtitleTextProps}
           >
             {subtitle}

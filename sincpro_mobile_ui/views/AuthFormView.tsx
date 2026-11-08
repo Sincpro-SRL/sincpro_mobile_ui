@@ -35,7 +35,7 @@ function AuthFormView({
   const renderTitle = () => {
     if (!title) return null;
     return (
-      <Text semibold variant="h4">
+      <Text bold variant="h3">
         {title}
       </Text>
     );
@@ -43,7 +43,11 @@ function AuthFormView({
 
   const renderDescription = () => {
     if (!description) return null;
-    return <Text variant="body">{description}</Text>;
+    return (
+      <Text className="mt-1 text-text-secondary" variant="body">
+        {description}
+      </Text>
+    );
   };
 
   return (
@@ -54,8 +58,8 @@ function AuthFormView({
       keyboardFormProps={keyboardFormProps}
       onBackPress={onBack}
     >
-      <View className="m-4">
-        <View className="mb-5">
+      <View>
+        <View className="mb-6">
           {renderTitle()}
           {renderDescription()}
         </View>

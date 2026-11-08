@@ -1,7 +1,8 @@
 import { ErrorBoundary } from "@sincpro/mobile-ui/Feedback";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 export type WizardStepId = string;
 
@@ -136,9 +137,9 @@ export function WizardProvider({
             <View className="bg-bg-card rounded-xl p-6 min-w-[200px] items-center shadow-lg">
               <ActivityIndicator className="text-warning" size="large" />
               {loadingMessage && (
-                <Text className="mt-4 text-base text-text-primary text-center">
+                <Typography.Text align="center" className="mt-4">
                   {loadingMessage}
-                </Text>
+                </Typography.Text>
               )}
             </View>
           </View>

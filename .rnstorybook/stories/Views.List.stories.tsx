@@ -36,7 +36,7 @@ type Story = StoryObj;
 function ListViewLargeHeaderStory() {
   const [filter, setFilter] = useState("Todos");
   return (
-    <View style={{ alignSelf: "stretch" }}>
+    <View style={{ flex: 1 }}>
       <ListViewV2.Root items={[]} name="Inventario" onSearch={() => {}}>
         {/* Header large: sin bg card, título grande, acción tinted verde */}
         <ListViewV2.Header
@@ -98,7 +98,10 @@ function ListViewLargeHeaderStory() {
   );
 }
 
-export const LargeHeader: Story = { render: () => <ListViewLargeHeaderStory /> };
+export const LargeHeader: Story = {
+  parameters: { layout: "fullscreen", ownsScroll: true, ownsTopInset: true },
+  render: () => <ListViewLargeHeaderStory />,
+};
 
 export const KeyboardInteraction: Story = {
   parameters: { layout: "fullscreen", ownsScroll: true, ownsTopInset: true },

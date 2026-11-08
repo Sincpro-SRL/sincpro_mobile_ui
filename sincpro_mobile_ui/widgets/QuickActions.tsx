@@ -1,4 +1,5 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
+import { CountBadge } from "@sincpro/mobile-ui/Display/count-badge";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -73,26 +74,7 @@ export function QuickActions({ items, title }: QuickActionsProps) {
 
             {/* Badge */}
             {item.badge != null ? (
-              <View
-                style={{
-                  position: "absolute",
-                  top: 2,
-                  right: 4,
-                  minWidth: 18,
-                  height: 18,
-                  borderRadius: 999,
-                  backgroundColor: theme.danger,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 4,
-                  borderWidth: 2,
-                  borderColor: theme.bg.card,
-                }}
-              >
-                <Typography.Text style={{ color: "#FFFFFF", fontSize: 9, lineHeight: 11 }}>
-                  {item.badge}
-                </Typography.Text>
-              </View>
+              <CountBadge anchor={{ top: 2, right: 4 }} count={item.badge} />
             ) : null}
 
             {/* Label */}

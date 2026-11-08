@@ -57,9 +57,9 @@ export default function SearchSuggestions({
             onPress={() => onSelect(item)}
             style={{ minHeight: 48, justifyContent: "center" }}
           >
-            <Typography.Text variant="bodyReadable">{item.label}</Typography.Text>
+            <Typography.Text variant="body">{item.label}</Typography.Text>
             {item.description ? (
-              <Typography.Text className="text-text-secondary" variant="bodyLarge">
+              <Typography.Text className="text-text-secondary" variant="bodySmall">
                 {item.description}
               </Typography.Text>
             ) : null}

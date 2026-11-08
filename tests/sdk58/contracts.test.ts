@@ -110,6 +110,61 @@ test("React Native Pressable never takes className (NativeWind interop re-render
   }
 });
 
+test("KeyboardAwareScrollView lives only in Form.KeyboardForm", () => {
+  // keyboard-controller wraps its scroll and sends `style` to the inner view, so an
+  // absolute or margin style is silently lost (PromoModal showed half a backdrop).
+  // Every keyboard-aware scroll goes through KeyboardForm; the rest use ScrollView.
+  for (const file of sourceFiles(sourceRoot)) {
+    const relative = path.relative(sourceRoot, file);
+    if (relative === path.join("Form", "Form.KeyboardForm.tsx")) continue;
+    assert(
+      !/\bKeyboardAwareScrollView\b/.test(readFileSync(file, "utf8")),
+      `${relative}: use Form.KeyboardForm (or a plain ScrollView when there are no inputs)`,
+    );
+  }
+});
+
+test("DS text goes through Typography so it gets the configured fonts", () => {
+  // The tailwind preset cannot follow configureFonts: a raw RN Text with `font-*`
+  // classes falls back to the system font (Badge and Chip rendered San Francisco).
+  const allowed = new Set([
+    path.join("Typography", "Typography.Text.tsx"),
+    path.join("Display", "Display.Icon.tsx"),
+    path.join("widgets", "JSONViewer.tsx"),
+  ]);
+  for (const file of sourceFiles(sourceRoot)) {
+    if (!file.endsWith(".tsx")) continue;
+    const relative = path.relative(sourceRoot, file);
+    if (allowed.has(relative)) continue;
+    const source = ts.createSourceFile(
+      file,
+      readFileSync(file, "utf8"),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    for (const statement of source.statements) {
+      if (
+        !ts.isImportDeclaration(statement) ||
+        !ts.isStringLiteral(statement.moduleSpecifier) ||
+        statement.moduleSpecifier.text !== "react-native"
+      ) {
+        continue;
+      }
+      const bindings = statement.importClause?.namedBindings;
+      if (!bindings || !ts.isNamedImports(bindings)) continue;
+      for (const binding of bindings.elements) {
+        if (binding.isTypeOnly || statement.importClause?.isTypeOnly) continue;
+        assert.notEqual(
+          binding.propertyName?.text ?? binding.name.text,
+          "Text",
+          `${relative}: render text with Typography.Text`,
+        );
+      }
+    }
+  }
+});
+
 test("SDK58 package has bounded peers, required Expo UI and no bundled React copies", () => {
   const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   for (const [name, range] of Object.entries(manifest.peerDependencies)) {

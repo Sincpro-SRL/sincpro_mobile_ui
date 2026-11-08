@@ -166,7 +166,7 @@ function OptionsEditor({
             <Typography.Text
               className={section === item.id ? "text-text-accent" : "text-text-secondary"}
               semibold={section === item.id}
-              variant="bodyLarge"
+              variant="bodySmall"
             >
               {item.label}
             </Typography.Text>
@@ -180,7 +180,7 @@ function OptionsEditor({
       >
         <KeyboardForm contentContainerStyle={{ paddingVertical: 16, gap: 16 }}>
           {!editing ? (
-            <Typography.Text className="text-text-secondary" variant="bodyLarge">
+            <Typography.Text className="text-text-secondary" variant="bodySmall">
               {describeCriteria(draft.filter, fields)}
             </Typography.Text>
           ) : null}
@@ -196,7 +196,7 @@ function OptionsEditor({
             />
           ) : section === "saved" ? (
             <>
-              <Typography.Text variant="bodyReadable">
+              <Typography.Text variant="body">
                 Una configuración incluye búsqueda, condiciones, orden y niveles de
                 agrupación. Cargarla todavía no modifica la colección.
               </Typography.Text>
@@ -238,7 +238,7 @@ function OptionsEditor({
             </>
           ) : (
             <>
-              <Typography.Text variant="bodyReadable">
+              <Typography.Text variant="body">
                 {section === "sort"
                   ? "El primer campo tiene prioridad; los siguientes resuelven empates."
                   : "Los grupos se anidan en este orden. La app aplica los niveles al conjunto completo."}
@@ -253,7 +253,7 @@ function OptionsEditor({
                 const sort = draft.sort.find((entry) => entry.field === id);
                 return (
                   <View className="gap-2 border-b border-border-light pb-3" key={id}>
-                    <Typography.Text semibold variant="bodyReadable">
+                    <Typography.Text semibold variant="body">
                       {index + 1}. {field?.label ?? `${id} (no disponible)`}
                     </Typography.Text>
                     {section === "sort" ? (

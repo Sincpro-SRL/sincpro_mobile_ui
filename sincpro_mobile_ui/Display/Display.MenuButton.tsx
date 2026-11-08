@@ -1,3 +1,5 @@
+import { CountBadge } from "@sincpro/mobile-ui/Display/count-badge";
+import Badge, { type BadgeVariant } from "@sincpro/mobile-ui/Display/Display.Badge";
 import SwipeableRow, {
   type SwipeRowAction,
 } from "@sincpro/mobile-ui/Display/Display.SwipeableRow";
@@ -27,109 +29,21 @@ function badgeLabel(badge: MenuButtonBadge): string {
 
 /**
  * Inline status/count badge on the right of the row.
- * Presets: `"active"` (green pill), `"inactive"` (yellow pill), `"new"` (accent pill).
- * Any string / number renders a danger count chip.
+ * Presets: `"active"` (success badge), `"inactive"` (warning badge), `"new"` (accent badge).
+ * Any other string / number renders the DS count badge.
  */
 export type MenuButtonBadge = "active" | "inactive" | "new" | string | number;
 
+const BADGE_PRESETS: Record<string, BadgeVariant> = {
+  active: "success",
+  inactive: "warning",
+  new: "accent",
+};
+
 function BadgeChip({ badge }: { badge: MenuButtonBadge }) {
-  const theme = useTheme();
-
-  if (badge === "active") {
-    return (
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4,
-          backgroundColor: theme.container.success,
-          paddingHorizontal: 8,
-          paddingVertical: 3,
-          borderRadius: 999,
-        }}
-      >
-        <View
-          style={{ width: 6, height: 6, borderRadius: 999, backgroundColor: theme.success }}
-        />
-        <Typography.Text
-          semibold
-          style={{ color: theme.success, fontSize: 11 }}
-          variant="caption"
-        >
-          {BADGE_LABELS.active}
-        </Typography.Text>
-      </View>
-    );
-  }
-
-  if (badge === "inactive") {
-    return (
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4,
-          backgroundColor: theme.container.warning,
-          paddingHorizontal: 8,
-          paddingVertical: 3,
-          borderRadius: 999,
-        }}
-      >
-        <View
-          style={{ width: 6, height: 6, borderRadius: 999, backgroundColor: theme.warning }}
-        />
-        <Typography.Text
-          semibold
-          style={{ color: theme.warning, fontSize: 11 }}
-          variant="caption"
-        >
-          {BADGE_LABELS.inactive}
-        </Typography.Text>
-      </View>
-    );
-  }
-
-  if (badge === "new") {
-    return (
-      <View
-        style={{
-          backgroundColor: theme.accent,
-          paddingHorizontal: 8,
-          paddingVertical: 3,
-          borderRadius: 999,
-        }}
-      >
-        <Typography.Text
-          semibold
-          style={{ color: theme.text.onAccent, fontSize: 11 }}
-          variant="caption"
-        >
-          {BADGE_LABELS.new}
-        </Typography.Text>
-      </View>
-    );
-  }
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.danger,
-        minWidth: 20,
-        height: 20,
-        borderRadius: 999,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingHorizontal: 6,
-      }}
-    >
-      <Typography.Text
-        style={{ color: "#FFFFFF", fontSize: 11, lineHeight: 14 }}
-        variant="caption"
-      >
-        {badge}
-      </Typography.Text>
-    </View>
-  );
+  const preset = BADGE_PRESETS[String(badge)];
+  if (preset) return <Badge label={badgeLabel(badge)} variant={preset} />;
+  return <CountBadge count={badge} />;
 }
 
 // ─── Tailwind slots ───────────────────────────────────────────────────────────

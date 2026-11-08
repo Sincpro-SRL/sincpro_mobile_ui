@@ -83,9 +83,9 @@ test("mobile filters expose selection and disabled state without truncating labe
   );
   expect(screen.getByRole("button").props.accessibilityState.selected).toBe(true);
   expect(screen.getByText("Pendientes de revisión").props.numberOfLines).toBeUndefined();
-  expect(
-    ReactNative.StyleSheet.flatten(screen.getByRole("button").props.style),
-  ).toMatchObject({ minHeight: 48, minWidth: 48 });
+  // Compact chip (32-36 points), 48-point touch target through hitSlop, like Material 3.
+  const chip = screen.getByRole("button");
+  expect(chip.props.hitSlop).toMatchObject({ top: 8, bottom: 8 });
   await rerender(
     <FilterButton
       active

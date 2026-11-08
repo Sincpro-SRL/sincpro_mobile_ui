@@ -1,13 +1,14 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { PillLabel } from "@sincpro/mobile-ui/Display/pill";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { type ThemeTokens, useTheme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 const chip = tv({
   slots: {
     root: "flex-row items-center self-start rounded-full px-3 py-1.5 gap-1",
-    label: "text-xs font-medium",
+    label: "",
   },
   variants: {
     tone: {
@@ -17,8 +18,9 @@ const chip = tv({
       warning: { root: "bg-container-warning", label: "text-container-on-warning" },
       danger: { root: "bg-container-danger", label: "text-container-on-danger" },
     },
+    // The border takes the place of one point of padding, so selecting never resizes the chip.
     selected: {
-      true: { root: "border border-primary" },
+      true: { root: "border border-primary px-[11px] py-[5px]" },
     },
   },
   defaultVariants: {
@@ -58,9 +60,7 @@ function Chip({
   const styles = chip({ tone, selected });
   const content = (
     <>
-      <Text className={styles.label()} numberOfLines={1}>
-        {label}
-      </Text>
+      <PillLabel className={styles.label()}>{label}</PillLabel>
       {onRemove ? (
         <Pressable accessibilityLabel={`Quitar ${label}`} hitSlop={8} onPress={onRemove}>
           <Icon color={removeIconColor(theme)[tone ?? "neutral"]} name="close" size={14} />

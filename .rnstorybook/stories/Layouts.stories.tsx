@@ -30,6 +30,7 @@ function AuthTask() {
           Bienvenido
         </Typography.Text>
       }
+      onBackPress={() => setSaved(false)}
     >
       <Form.Input label="Nombre" onChangeText={setName} testID="layout-name" value={name} />
       <Form.Input
@@ -65,9 +66,21 @@ export const ContainerLayout: Story = {
 
 export const Gradient: Story = {
   render: () => (
-    <Display.GradientSurface className="p-6" preset="brand">
-      <Typography.Text style={{ color: "#FFFFFF" }}>Superficie de marca</Typography.Text>
-    </Display.GradientSurface>
+    <Container edges={["top", "left", "right"]}>
+      <View style={{ gap: 12, padding: 16 }}>
+        <Display.GradientSurface padding="lg" preset="brand">
+          <Typography.Text semibold style={{ color: "#FFFFFF" }} variant="subtitle">
+            Superficie de marca
+          </Typography.Text>
+          <Typography.Text style={{ color: "#FFFFFFCC" }} variant="bodySmall">
+            Gradiente del tema activo, con radio y padding del DS.
+          </Typography.Text>
+        </Display.GradientSurface>
+        <Display.GradientSurface padding="md" preset="night-green">
+          <Typography.Text style={{ color: "#FFFFFF" }}>Preset night-green</Typography.Text>
+        </Display.GradientSurface>
+      </View>
+    </Container>
   ),
 };
 

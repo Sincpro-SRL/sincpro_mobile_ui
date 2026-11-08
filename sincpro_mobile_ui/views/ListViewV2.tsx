@@ -4,6 +4,7 @@ import {
   type ListRenderItemInfo,
   type ViewToken,
 } from "@shopify/flash-list";
+import { FilterChip } from "@sincpro/mobile-ui/Actions/Actions.FilterButton";
 import { Display } from "@sincpro/mobile-ui/Display";
 import SearchHistory, {
   type SearchHistoryProps,
@@ -20,7 +21,7 @@ import {
 } from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
-import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
+import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import { type IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
@@ -43,7 +44,6 @@ import {
   ScrollView,
   type ScrollViewProps,
   StyleProp,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
@@ -271,48 +271,6 @@ function HeaderSearchHistory(props: SearchHistoryProps) {
 
 function HeaderFilters({ children }: { children: ReactNode }) {
   return <View className="px-4 py-2 items-center">{children}</View>;
-}
-
-interface FilterChipProps {
-  label: string;
-  active?: boolean;
-  onPress: () => void;
-}
-
-// Active filter uses the action color. The capsule is a pill; the rest of the chrome is not.
-const filterChip = tv({
-  base: "py-1.5 px-3.5 items-center justify-center rounded-full",
-  variants: {
-    active: {
-      true: "bg-primary",
-      false: "bg-bg-muted",
-    },
-  },
-  defaultVariants: { active: false },
-});
-
-const filterChipText = tv({
-  variants: {
-    active: {
-      true: "text-text-on-primary font-semibold",
-      false: "text-text-secondary",
-    },
-  },
-  defaultVariants: { active: false },
-});
-
-function FilterChip({ label, active = false, onPress }: FilterChipProps) {
-  return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      className={filterChip({ active })}
-      onPress={onPress}
-    >
-      <Typography.Text className={filterChipText({ active })} variant="bodySmall">
-        {label}
-      </Typography.Text>
-    </TouchableOpacity>
-  );
 }
 
 function FilterChips({ children }: { children: ReactNode }) {
@@ -835,13 +793,31 @@ function RowActions({ children, style }: RowActionsProps) {
 interface RowActionButtonProps {
   icon: ReactNode;
   onPress?: () => void;
+  /** What the action does, read by screen readers, e.g. "Más opciones". */
+  accessibilityLabel?: string;
+  testID?: string;
 }
 
-function RowActionButton({ icon, onPress }: RowActionButtonProps) {
+/** Grows the target to 48 points tall; sideways it stops at half the gap between actions. */
+const ROW_ACTION_SLOP = { top: 8, bottom: 8, left: 2, right: 2 } as const;
+
+/** Compact icon action inside a row. */
+function RowActionButton({
+  icon,
+  onPress,
+  accessibilityLabel,
+  testID,
+}: RowActionButtonProps) {
   return (
-    <TouchableOpacity className="p-1.5 rounded" onPress={onPress}>
+    <Pressable
+      accessibilityLabel={accessibilityLabel}
+      className="p-1.5 rounded"
+      hitSlop={ROW_ACTION_SLOP}
+      onPress={onPress}
+      testID={testID}
+    >
       {icon}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

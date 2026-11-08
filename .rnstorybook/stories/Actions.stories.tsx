@@ -10,46 +10,58 @@ export default meta;
 
 type Story = StoryObj;
 
-// ─── Button ───────────────────────────────────────────────────────────────────
-
-export const Buttons: Story = {
-  name: "Button — variants",
-  render: () => (
-    <View style={{ gap: 12 }}>
-      <Actions.Button onPress={() => {}} title="primary (default)" />
-      <Actions.Button onPress={() => {}} title="accent" variant="accent" />
-      <Actions.Button onPress={() => {}} title="secondary" variant="secondary" />
-      <Actions.Button onPress={() => {}} title="outline" variant="outline" />
-      <Actions.Button onPress={() => {}} title="outlineDanger" variant="outlineDanger" />
-      <Actions.Button onPress={() => {}} title="flat" variant="flat" />
-      <Actions.Button onPress={() => {}} title="link" variant="link" />
-      <Actions.Button loading onPress={() => {}} title="loading…" />
-      <Actions.Button disabled onPress={() => {}} title="disabled" />
-    </View>
-  ),
-};
-
-export const ButtonSizes: Story = {
-  name: "Button — sizes",
-  render: () => (
-    <View style={{ gap: 12 }}>
-      <Actions.Button onPress={() => {}} size="small" title="small" />
-      <Actions.Button onPress={() => {}} size="medium" title="medium (default)" />
-      <Actions.Button onPress={() => {}} size="large" title="large" />
-    </View>
-  ),
-};
-
 // ─── IconButton ───────────────────────────────────────────────────────────────
+// Button variants and sizes live in "Components/Actions/Button".
+
+const ICON_BUTTON_VARIANTS = ["ghost", "primary", "secondary", "tertiary"] as const;
 
 export const IconButtons: Story = {
   name: "IconButton",
   render: () => (
-    <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
-      <Actions.IconButton icon="add" onPress={() => {}} />
-      <Actions.IconButton icon="delete" onPress={() => {}} variant="secondary" />
-      <Actions.IconButton icon="share" onPress={() => {}} variant="primary" />
-      <Actions.IconButton icon="settings" onPress={() => {}} rounded />
+    <View style={{ gap: 16 }}>
+      {ICON_BUTTON_VARIANTS.map((variant) => (
+        <View key={variant} style={{ gap: 4 }}>
+          <Typography.Text className="text-text-secondary" variant="caption">
+            {variant}
+          </Typography.Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <Actions.IconButton
+              accessibilityLabel="Agregar"
+              icon="add"
+              onPress={() => {}}
+              size="small"
+              variant={variant}
+            />
+            <Actions.IconButton
+              accessibilityLabel="Compartir"
+              icon="share"
+              onPress={() => {}}
+              variant={variant}
+            />
+            <Actions.IconButton
+              accessibilityLabel="Ajustes"
+              icon="settings"
+              onPress={() => {}}
+              size="large"
+              variant={variant}
+            />
+            <Actions.IconButton
+              accessibilityLabel="Ajustes"
+              icon="settings"
+              onPress={() => {}}
+              rounded
+              variant={variant}
+            />
+            <Actions.IconButton
+              accessibilityLabel="Eliminar"
+              disabled
+              icon="delete"
+              onPress={() => {}}
+              variant={variant}
+            />
+          </View>
+        </View>
+      ))}
     </View>
   ),
 };

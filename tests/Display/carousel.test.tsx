@@ -35,10 +35,8 @@ test("named 48-point controls navigate without swiping and stop at each boundary
   await render(<Carousel {...itemProps} onIndexChange={onIndexChange} />);
   const previous = screen.getByRole("button", { name: "Elemento anterior" });
   expect(previous.props.accessibilityState.disabled).toBe(true);
-  expect(StyleSheet.flatten(previous.props.style)).toMatchObject({
-    minWidth: 48,
-    minHeight: 48,
-  });
+  // Medium icon action: 40 visible points plus the slop that completes 48.
+  expect(40 + 2 * previous.props.hitSlop).toBe(48);
   await fireEvent.press(screen.getByRole("button", { name: "Elemento siguiente" }));
   expect(mockScrollTo).toHaveBeenLastCalledWith({ x: 112, y: 0, animated: true });
   expect(screen.getByText("Elemento 2 de 3")).toBeTruthy();

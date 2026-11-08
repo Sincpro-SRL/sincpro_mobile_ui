@@ -121,7 +121,7 @@ test("auth header uses available layout height and a branded surface with explic
     screen.root?.queryAll((node) => node.props.colors !== undefined)[0]?.props.colors;
   expect(gradientColors()).toEqual(theme.gradient.primary.map(processColor));
   const header = screen.getByText("Logo").parent;
-  expect(StyleSheet.flatten(header?.props.style)).toMatchObject({ height: "30%" });
+  expect(StyleSheet.flatten(header?.props.style)).toMatchObject({ minHeight: "28%" });
   const card = screen.getByTestId("template-scroll").parent;
   expect(card?.props.className).toContain("flex-1");
   expect(StyleSheet.flatten(card?.props.style)?.minHeight).toBeUndefined();

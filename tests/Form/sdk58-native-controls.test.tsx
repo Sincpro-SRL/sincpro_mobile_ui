@@ -546,7 +546,7 @@ test("EditValue disables editing and cancellation until its save resolves", asyn
   await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
 });
 
-test("Android datetime collects both date and time without committing cancelled drafts", async () => {
+test("Android datetime confirms in Material dialogs and drops a cancelled time", async () => {
   jest.replaceProperty(Platform, "OS", "android");
   const change = jest.fn<(date: Date) => void>();
   await render(
@@ -559,7 +559,16 @@ test("Android datetime collects both date and time without committing cancelled 
     />,
   );
   await fireEvent.press(screen.getByRole("button", { name: "Entrega" }));
+  const datePicker = screen.getByTestId("delivery-date-picker");
+  expect(datePicker.props.presentation).toBe("dialog");
+  expect(datePicker.props.display).toBe("default");
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
   const date = new Date(2026, 1, 4, 9, 30);
+  await fireEvent(datePicker, "valueChange", {}, date);
+  expect(change).not.toHaveBeenCalled();
+  await fireEvent(screen.getByTestId("delivery-time-picker"), "dismiss");
+  expect(change).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByRole("button", { name: "Entrega" }));
   await fireEvent(screen.getByTestId("delivery-date-picker"), "valueChange", {}, date);
   await fireEvent(
     screen.getByTestId("delivery-time-picker"),
@@ -567,9 +576,32 @@ test("Android datetime collects both date and time without committing cancelled 
     {},
     new Date(2030, 2, 5, 16, 45),
   );
-  expect(change).not.toHaveBeenCalled();
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
   await waitFor(() => expect(change).toHaveBeenCalledWith(new Date(2026, 1, 4, 16, 45)));
+});
+
+test("Android select applies the tapped option and dismissal publishes nothing", async () => {
+  jest.replaceProperty(Platform, "OS", "android");
+  const change = jest.fn<(value: number) => void>();
+  await render(
+    <Select
+      label="Cantidad"
+      onChange={change}
+      options={[
+        { label: "Diez", value: 10 },
+        { label: "Veinte", value: 20 },
+      ]}
+      value={10}
+    />,
+  );
+  await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Diez" }));
+  expect(screen.queryByRole("button", { name: "Aplicar" })).toBeNull();
+  expect(screen.queryByTestId("native-picker")).toBeNull();
+  await fireEvent.press(screen.getByRole("button", { name: "Cerrar" }));
+  expect(change).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Diez" }));
+  await fireEvent.press(screen.getByRole("radio", { name: "Veinte" }));
+  await waitFor(() => expect(change).toHaveBeenCalledWith(20));
+  expect(screen.getByTestId("native-sheet").props.index).toBe(-1);
 });
 
 test("date limits are checked before applying and cancellation does not publish a draft", async () => {

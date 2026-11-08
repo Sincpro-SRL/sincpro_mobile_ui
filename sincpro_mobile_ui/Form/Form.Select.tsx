@@ -7,7 +7,7 @@ import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useRef, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 
 export type SelectOption<T extends string | number> = {
   label: string;
@@ -30,6 +30,50 @@ export type SelectProps<T extends string | number> = {
   className?: string;
   testID?: string;
 };
+
+function SelectOptions<T extends string | number>({
+  options,
+  value,
+  blocked,
+  onSelect,
+}: {
+  options: readonly SelectOption<T>[];
+  value: T | null;
+  blocked: boolean;
+  onSelect: (value: T) => void;
+}) {
+  const theme = useTheme();
+  if (!options.length) {
+    return <Typography.Text>No hay opciones disponibles.</Typography.Text>;
+  }
+  return (
+    <View className="gap-2">
+      {options.map((option, index) => {
+        const selected = option.value === value;
+        return (
+          <Pressable
+            accessibilityLabel={option.label}
+            accessibilityRole="radio"
+            accessibilityState={{ disabled: blocked, selected }}
+            className={cn(
+              "flex-row items-center gap-3 rounded-lg border px-3",
+              selected ? "border-primary bg-primary/10" : "border-border-default",
+            )}
+            disabled={blocked}
+            key={`${index}:${String(option.value)}`}
+            onPress={() => onSelect(option.value)}
+            style={{ minHeight: 48 }}
+          >
+            <Typography.Text className="flex-1 text-text-primary">
+              {option.label}
+            </Typography.Text>
+            {selected ? <Icon color={theme.primary} name="check" size={18} /> : null}
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
 
 function Select<T extends string | number>({
   options,
@@ -57,19 +101,19 @@ function Select<T extends string | number>({
   const selected = options.find((option) => option.value === value);
   const draftIndex = options.findIndex((option) => option.value === draftValue);
   const blocked = disabled || readOnly || loading || pending;
+  const android = Platform.OS === "android";
   const close = () => {
     if (saving.current) return;
     setOpen(false);
     onBlur?.();
   };
-  const save = async () => {
-    const option = options.find((option) => option.value === draftValue);
-    if (!option || blocked || saving.current) return;
+  const commit = async (next: T | null) => {
+    if (next === null || blocked || saving.current) return;
     saving.current = true;
     setPending(true);
     setFailure(undefined);
     try {
-      await onChange(option.value);
+      await onChange(next);
       setOpen(false);
       onBlur?.();
     } catch (cause) {
@@ -129,18 +173,28 @@ function Select<T extends string | number>({
       <Sheet
         dismissible={!pending}
         footer={
-          <Actions.Button
-            disabled={blocked || draftIndex < 0}
-            loading={pending}
-            onPress={() => void save()}
-            title={confirmLabel}
-          />
+          android ? undefined : (
+            <Actions.Button
+              disabled={blocked || draftIndex < 0}
+              loading={pending}
+              onPress={() => void commit(draftValue)}
+              title={confirmLabel}
+            />
+          )
         }
         onClose={close}
         title={title ?? label ?? "Seleccionar"}
         visible={open}
       >
-        {open ? (
+        {open && android ? (
+          <SelectOptions
+            blocked={blocked}
+            onSelect={(next) => void commit(next)}
+            options={options}
+            value={value}
+          />
+        ) : null}
+        {open && !android ? (
           <Host
             colorScheme={appearance}
             matchContents={{ vertical: true }}
@@ -167,7 +221,7 @@ function Select<T extends string | number>({
             </Picker>
           </Host>
         ) : null}
-        {!options.length ? (
+        {open && !android && !options.length ? (
           <Typography.Text>No hay opciones disponibles.</Typography.Text>
         ) : null}
         {draftValue !== null && draftIndex < 0 ? (

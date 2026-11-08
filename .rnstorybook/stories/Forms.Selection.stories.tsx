@@ -2,7 +2,7 @@ import Select from "@sincpro/mobile-ui/Form/Form.Select";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 const meta = {
   title: "Components/Inputs/Select",
@@ -18,7 +18,9 @@ export function MobileSelection({ long = false }: { long?: boolean }) {
     <View style={{ gap: 16 }}>
       <Typography.Heading variant="h3">Preferencias</Typography.Heading>
       <Typography.Text variant="bodyLarge">
-        La selección se abre en una hoja inferior, no en un desplegable de escritorio.
+        {Platform.OS === "android"
+          ? "En Android la hoja lista las opciones. Tocar una la aplica."
+          : "En iOS la hoja muestra la rueda nativa. Aplicar confirma la opción."}
       </Typography.Text>
       <Select
         label="Canal de aviso"

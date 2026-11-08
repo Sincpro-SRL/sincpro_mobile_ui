@@ -6,7 +6,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Platform, View } from "react-native";
 
 export type DatePickerProps = {
@@ -37,6 +37,23 @@ function comparableDate(value: Date, mode: DatePickerProps["mode"]): number {
     : value.getTime();
 }
 
+function withCalendarDay(base: Date, day: Date): Date {
+  const next = new Date(base);
+  next.setFullYear(day.getFullYear(), day.getMonth(), day.getDate());
+  return next;
+}
+
+function withClockTime(base: Date, time: Date): Date {
+  const next = new Date(base);
+  next.setHours(
+    time.getHours(),
+    time.getMinutes(),
+    time.getSeconds(),
+    time.getMilliseconds(),
+  );
+  return next;
+}
+
 function DatePicker({
   value,
   onChange,
@@ -54,31 +71,44 @@ function DatePicker({
   const theme = useTheme();
   const appearance = relativeLuminance(theme.bg.card) < 0.179 ? "dark" : "light";
   const saving = useRef(false);
+  const dialogSession = useRef(0);
+  const visibleOwner = useRef(0);
   const [open, setOpen] = useState(false);
+  const [phase, setPhase] = useState<"date" | "time">("date");
   const [draft, setDraft] = useState(() => value ?? new Date());
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const blocked = disabled || readOnly || pending;
+  const android = Platform.OS === "android";
+  useLayoutEffect(() => {
+    if (!android || !open) return;
+    visibleOwner.current = dialogSession.current;
+  }, [android, open, phase]);
   const fmt = format ?? ((date: Date) => defaultFormat(date, mode));
   const close = () => {
     if (!saving.current) setOpen(false);
   };
-  const save = async () => {
+  const outOfRange = (next: Date) =>
+    (minimumDate !== undefined &&
+      comparableDate(next, mode) < comparableDate(minimumDate, mode)) ||
+    (maximumDate !== undefined &&
+      comparableDate(next, mode) > comparableDate(maximumDate, mode));
+  const apply = async (next: Date) => {
+    if (android) setOpen(false);
     if (blocked || saving.current) return;
-    if (
-      (minimumDate && comparableDate(draft, mode) < comparableDate(minimumDate, mode)) ||
-      (maximumDate && comparableDate(draft, mode) > comparableDate(maximumDate, mode))
-    ) {
+    if (outOfRange(next)) {
       setError("Selecciona una fecha y hora dentro del rango permitido.");
+      setDraft(next);
       return;
     }
     saving.current = true;
     setPending(true);
     setError(undefined);
     try {
-      await onChange(draft);
+      await onChange(next);
       setOpen(false);
     } catch (cause) {
+      setDraft(next);
       setError(
         cause instanceof Error && cause.message.trim()
           ? cause.message
@@ -89,11 +119,43 @@ function DatePicker({
       setPending(false);
     }
   };
-  const update = (date: Date) => {
-    if (blocked || saving.current) return;
+  const update = (date: Date | undefined) => {
+    if (!date || blocked || saving.current) return;
     setDraft(date);
     setError(undefined);
   };
+  const confirmAndroid = (date: Date | undefined) => {
+    if (!date || blocked || saving.current) return;
+    if (mode === "datetime" && phase === "date") {
+      dialogSession.current += 1;
+      setDraft((current) => withCalendarDay(current, date));
+      setPhase("time");
+      setError(undefined);
+      return;
+    }
+    const next = mode === "datetime" ? withClockTime(draft, date) : date;
+    void apply(next);
+  };
+  const dismissAndroid = () => {
+    if (dialogSession.current !== visibleOwner.current) return;
+    setOpen(false);
+  };
+  const openPicker = () => {
+    const initial = error ? draft : (value ?? new Date());
+    const clamped =
+      minimumDate && comparableDate(initial, mode) < comparableDate(minimumDate, mode)
+        ? minimumDate
+        : maximumDate && comparableDate(initial, mode) > comparableDate(maximumDate, mode)
+          ? maximumDate
+          : initial;
+    dialogSession.current += 1;
+    visibleOwner.current = dialogSession.current;
+    setDraft(clamped);
+    setPhase("date");
+    setError(undefined);
+    setOpen(true);
+  };
+  const androidMode = mode === "datetime" ? phase : mode;
 
   return (
     <View className={cn("gap-1", className)} testID={testID}>
@@ -110,19 +172,7 @@ function DatePicker({
         accessibilityValue={{ text: value ? fmt(value) : placeholder }}
         className="flex-row items-center gap-3 rounded-lg border border-input bg-bg-card px-3"
         disabled={blocked}
-        onPress={() => {
-          const initial = value ?? new Date();
-          setDraft(
-            minimumDate && comparableDate(initial, mode) < comparableDate(minimumDate, mode)
-              ? minimumDate
-              : maximumDate &&
-                  comparableDate(initial, mode) > comparableDate(maximumDate, mode)
-                ? maximumDate
-                : initial,
-          );
-          setError(undefined);
-          setOpen(true);
-        }}
+        onPress={openPicker}
         style={{ minHeight: 48, minWidth: 48 }}
       >
         <Typography.Text
@@ -137,72 +187,88 @@ function DatePicker({
           size={18}
         />
       </Pressable>
-      <Sheet
-        dismissible={!pending}
-        footer={
-          <Actions.Button
-            disabled={blocked}
-            loading={pending}
-            onPress={() => void save()}
-            title="Aplicar"
-          />
-        }
-        onClose={close}
-        title={label ?? (mode === "time" ? "Seleccionar hora" : "Seleccionar fecha")}
-        visible={open}
-      >
-        {open ? (
-          <View
-            accessibilityElementsHidden={blocked}
-            importantForAccessibility={blocked ? "no-hide-descendants" : "auto"}
-            pointerEvents={blocked ? "none" : "auto"}
-          >
-            <DateTimePicker
-              accentColor={theme.primary}
+      {android && error ? (
+        <Typography.Text
+          accessibilityLiveRegion="polite"
+          accessibilityRole="alert"
+          className="text-danger"
+          selectable
+        >
+          {error}
+        </Typography.Text>
+      ) : null}
+      {android && open ? (
+        <DateTimePicker
+          accentColor={theme.primary}
+          display="default"
+          key={androidMode}
+          maximumDate={maximumDate}
+          minimumDate={minimumDate}
+          mode={androidMode}
+          negativeButton={{ label: "Cancelar" }}
+          onDismiss={dismissAndroid}
+          onValueChange={(_event, date) => confirmAndroid(date)}
+          positiveButton={{
+            label: mode === "datetime" && phase === "date" ? "Continuar" : "Aplicar",
+          }}
+          presentation="dialog"
+          testID={
+            testID
+              ? `${testID}-${androidMode === "time" ? "time" : "date"}-picker`
+              : undefined
+          }
+          themeVariant={appearance}
+          value={draft}
+        />
+      ) : null}
+      {android ? null : (
+        <Sheet
+          dismissible={!pending}
+          footer={
+            <Actions.Button
               disabled={blocked}
-              display={mode === "time" || mode === "datetime" ? "spinner" : "inline"}
-              maximumDate={maximumDate}
-              minimumDate={minimumDate}
-              mode={Platform.OS === "android" && mode === "datetime" ? "date" : mode}
-              onValueChange={(_event, date) => update(date)}
-              presentation="inline"
-              testID={testID ? `${testID}-date-picker` : undefined}
-              themeVariant={appearance}
-              value={draft}
+              loading={pending}
+              onPress={() => void apply(draft)}
+              title="Aplicar"
             />
-            {Platform.OS === "android" && mode === "datetime" ? (
+          }
+          onClose={close}
+          title={label ?? (mode === "time" ? "Seleccionar hora" : "Seleccionar fecha")}
+          visible={open}
+        >
+          {open ? (
+            <View
+              accessibilityElementsHidden={blocked}
+              importantForAccessibility={blocked ? "no-hide-descendants" : "auto"}
+              pointerEvents={blocked ? "none" : "auto"}
+            >
               <DateTimePicker
                 accentColor={theme.primary}
-                mode="time"
-                onValueChange={(_event, date) => {
-                  const next = new Date(draft);
-                  next.setHours(
-                    date.getHours(),
-                    date.getMinutes(),
-                    date.getSeconds(),
-                    date.getMilliseconds(),
-                  );
-                  update(next);
-                }}
+                disabled={blocked}
+                display={mode === "time" || mode === "datetime" ? "spinner" : "inline"}
+                maximumDate={maximumDate}
+                minimumDate={minimumDate}
+                mode={mode}
+                onValueChange={(_event, date) => update(date)}
                 presentation="inline"
-                testID={testID ? `${testID}-time-picker` : undefined}
+                testID={testID ? `${testID}-date-picker` : undefined}
                 themeVariant={appearance}
                 value={draft}
               />
-            ) : null}
-          </View>
-        ) : null}
-        {error ? (
-          <Typography.Text
-            accessibilityLiveRegion="polite"
-            accessibilityRole="alert"
-            className="pt-3 text-danger"
-            selectable
-          >
-            {error}
-          </Typography.Text>
-        ) : null}
-      </Sheet>
+            </View>
+          ) : null}
+          {error ? (
+            <Typography.Text
+              accessibilityLiveRegion="polite"
+              accessibilityRole="alert"
+              className="pt-3 text-danger"
+              selectable
+            >
+              {error}
+            </Typography.Text>
+          ) : null}
+        </Sheet>
+      )}
     </View>
   );
 }

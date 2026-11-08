@@ -124,6 +124,7 @@ function SliderDemo() {
 function DatePickerDemo() {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<Date | null>(null);
+  const [when, setWhen] = useState<Date | null>(null);
   return (
     <View style={{ gap: 16 }}>
       <Form.DatePicker
@@ -138,6 +139,13 @@ function DatePickerDemo() {
         onChange={setTime}
         placeholder="Elegí una hora"
         value={time}
+      />
+      <Form.DatePicker
+        label="Fecha y hora"
+        mode="datetime"
+        onChange={setWhen}
+        placeholder="Elegí fecha y hora"
+        value={when}
       />
     </View>
   );

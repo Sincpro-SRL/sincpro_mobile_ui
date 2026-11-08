@@ -148,7 +148,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "postinstall": "patch-package",
+    "postinstall": "if command -v patch-package >/dev/null; then patch-package; fi",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios"

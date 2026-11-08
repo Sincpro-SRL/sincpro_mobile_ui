@@ -10,7 +10,7 @@ const meta: Meta = { title: "Components/Data Display/Image" };
 export default meta;
 type Story = StoryObj;
 
-const PHOTO = "https://reactnative.dev/img/oss_logo.png";
+const PHOTO = "https://reactnative.dev/img/tiny_logo.png";
 const PLACEHOLDER = { blurhash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj" };
 
 export const Recovery: Story = {

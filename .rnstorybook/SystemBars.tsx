@@ -36,5 +36,4 @@ export function useCanvasStatusBar(style?: StatusBarStyle) {
     setOverride(style ?? null);
     return () => setOverride(null);
   }, [setOverride, style]);
-  if (!setOverride) throw new Error("Storybook canvas must be inside SystemBars");
 }

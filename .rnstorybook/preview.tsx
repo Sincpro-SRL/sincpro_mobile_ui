@@ -152,7 +152,7 @@ function ThemeFrame({
             bottomOffset={20}
             contentContainerStyle={{
               flexGrow: 1,
-              justifyContent: screen ? "flex-start" : "center",
+              justifyContent: "flex-start",
               padding: 16,
             }}
             keyboardShouldPersistTaps="handled"

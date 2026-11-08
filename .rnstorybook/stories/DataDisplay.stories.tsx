@@ -9,7 +9,7 @@ export default meta;
 
 type Story = StoryObj;
 
-const PHOTO = { uri: "https://reactnative.dev/img/oss_logo.png" };
+const PHOTO = { uri: "https://reactnative.dev/img/tiny_logo.png" };
 
 export const ImageWithFallback: Story = {
   render: () => (

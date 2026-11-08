@@ -8,7 +8,7 @@ export default meta;
 
 type Story = StoryObj;
 
-const PHOTO = { uri: "https://reactnative.dev/img/oss_logo.png" };
+const PHOTO = { uri: "https://reactnative.dev/img/tiny_logo.png" };
 
 const STORY_ITEMS = [
   { id: "1", image: PHOTO, label: "Tu historia" },

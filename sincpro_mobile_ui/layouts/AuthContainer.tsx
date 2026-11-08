@@ -1,25 +1,22 @@
 import { Display } from "@sincpro/mobile-ui/Display";
-import GradientSurface, {
-  resolveGradientPreset,
-} from "@sincpro/mobile-ui/Display/Display.GradientSurface";
+import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
 import KeyboardForm, {
   type KeyboardFormProps,
 } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
-import ScreenStatusBar from "@sincpro/mobile-ui/layouts/ScreenStatusBar";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
 import { Keyboard, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { type Edge, SafeAreaView } from "react-native-safe-area-context";
 
 interface AuthContainerProps {
   header: ReactNode;
   children: ReactNode;
   onBackPress?: () => void;
   className?: string;
-  barStyle?: "light-content" | "dark-content";
+  edges?: Edge[];
   keyboardToolbar?: boolean;
   keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
   /** Gradient + optional texture surface for the header area. Defaults to the `brand`
@@ -35,8 +32,8 @@ function AuthContainer({
   onBackPress,
   background,
   className,
-  barStyle,
-  keyboardToolbar = false,
+  edges = ["top", "bottom", "left", "right"],
+  keyboardToolbar = true,
   keyboardFormProps,
 }: AuthContainerProps) {
   const theme = useTheme();
@@ -51,13 +48,6 @@ function AuthContainer({
       start={background?.start ?? (background?.colors ? { x: 0, y: 0 } : undefined)}
       style={{ flex: 1 }}
     >
-      <ScreenStatusBar
-        backgroundColor={
-          background?.colors?.[0] ??
-          resolveGradientPreset(background?.surface ?? "brand").colors[0]
-        }
-        barStyle={barStyle}
-      />
       {background?.pattern ? (
         <Pattern
           color={background.patternColor ?? "#FFFFFF"}
@@ -65,7 +55,7 @@ function AuthContainer({
           opacity={background.patternOpacity ?? 0.18}
         />
       ) : null}
-      <SafeAreaView className="flex-1" edges={["top"]}>
+      <SafeAreaView className="flex-1" edges={edges}>
         <View className="flex-1">
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="justify-center items-center relative" style={{ height: "30%" }}>
@@ -76,9 +66,8 @@ function AuthContainer({
                 >
                   <Display.Icon
                     color={background?.textColor ?? theme.text.inverse}
-                    name="arrow-back"
+                    name="back"
                     size={24}
-                    type="ionicons"
                   />
                 </TouchableOpacity>
               )}

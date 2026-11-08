@@ -10,16 +10,6 @@ jest.mock("@sincpro/mobile-ui/Dialog/Confirmation.context", () => ({
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("@sincpro/mobile-ui/Dialog/Dialog.NativeSheet", () => {
-  const mockReact = jest.requireActual<typeof import("react")>("react");
-  const { View } = require("react-native");
-  return {
-    __esModule: true,
-    default: ({ visible, children }: { visible: boolean; children: React.ReactNode }) =>
-      visible ? mockReact.createElement(View, {}, children) : null,
-  };
-});
-
 test("search and quick filters refine real results and reset recovers from empty", async () => {
   await render(<CollectionRecipe />);
   await fireEvent.press(screen.getByRole("button", { name: "Pendientes" }));

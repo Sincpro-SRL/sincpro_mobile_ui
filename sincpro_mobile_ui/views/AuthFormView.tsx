@@ -6,6 +6,7 @@ import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { ReactNode } from "react";
 import { View } from "react-native";
+import type { Edge } from "react-native-safe-area-context";
 
 const Logo = Display.Logo;
 const Text = Typography.Text;
@@ -17,7 +18,7 @@ interface AuthFormProps {
   onBack?: () => void;
   FormNode: ReactNode;
   background?: AppBarBackground;
-  barStyle?: "light-content" | "dark-content";
+  edges?: Edge[];
   keyboardToolbar?: boolean;
   keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
 }
@@ -29,7 +30,7 @@ function AuthFormView({
   onBack,
   FormNode,
   background,
-  barStyle,
+  edges,
   keyboardToolbar,
   keyboardFormProps,
 }: AuthFormProps) {
@@ -50,7 +51,7 @@ function AuthFormView({
   return (
     <AuthContainer
       background={background}
-      barStyle={barStyle}
+      edges={edges}
       header={<Logo size="large" source={logoSource} />}
       keyboardFormProps={keyboardFormProps}
       keyboardToolbar={keyboardToolbar}

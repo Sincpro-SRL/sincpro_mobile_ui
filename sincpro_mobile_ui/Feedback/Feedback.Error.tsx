@@ -20,7 +20,7 @@ function Error({ message, onRetry, onBack, onHome, className, testID }: ErrorPro
       className={cn("flex-1 items-center justify-center px-4", className)}
       testID={testID}
     >
-      <Icon color={theme.danger} name="exclamation-circle" size={80} type="fontawesome5" />
+      <Icon color={theme.danger} name="error" size={80} />
       <Typography.Text
         accessibilityRole="header"
         className="pt-4 text-text-primary"

@@ -1,15 +1,19 @@
-import { expect, jest, test } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { afterEach, beforeEach, expect, jest, test } from "@jest/globals";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { processColor, StyleSheet, Text } from "react-native";
 import AuthFormView from "@sincpro/mobile-ui/views/AuthFormView";
 import FormView from "@sincpro/mobile-ui/views/FormViewV2";
 import ListView from "@sincpro/mobile-ui/views/ListViewV2";
-import { HomeHeader } from "@sincpro/mobile-ui/widgets/HomeHeader";
+import AppBar from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { BottomInsetContext } from "@sincpro/mobile-ui/layouts/BottomInset";
 import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
 import { theme } from "@sincpro/mobile-ui/theme";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
+jest.mock("react-native-keyboard-controller", () => ({
+  KeyboardStickyView: require("react-native").View,
+  KeyboardController: { dismiss: jest.fn() },
+}));
 jest.mock("@sincpro/mobile-ui/Display/Display.Logo", () => () => null);
 jest.mock("@sincpro/mobile-ui/index", () => ({
   Display: jest.requireActual<typeof import("@sincpro/mobile-ui/Display")>(
@@ -41,6 +45,13 @@ jest.mock("@sincpro/mobile-ui/Form/Form.KeyboardForm", () => {
   return ({ children, ...props }: { children: React.ReactNode }) =>
     mockReact.createElement(View, { ...props, testID: "template-scroll" }, children);
 });
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+afterEach(async () => {
+  await act(async () => jest.runOnlyPendingTimersAsync());
+  jest.useRealTimers();
+});
 
 test("form template preserves default appearance and merges public keyboard configuration", async () => {
   const { rerender } = await render(
@@ -52,7 +63,7 @@ test("form template preserves default appearance and merges public keyboard conf
       </FormView.Root>
     </BottomInsetContext.Provider>,
   );
-  expect(screen.getByTestId("template-scroll").props.toolbar).toBe(false);
+  expect(screen.getByTestId("template-scroll").props.toolbar).toBe(true);
   expect(
     StyleSheet.flatten(screen.getByTestId("template-scroll").props.contentContainerStyle),
   ).toMatchObject({ paddingBottom: 72, flexGrow: 1 });
@@ -92,10 +103,10 @@ test("auth template keeps its original defaults and forwards keyboard configurat
     <AuthFormView FormNode={<Text>Campos</Text>} title="Ingresar" />,
   );
   expect(screen.getByTestId("template-scroll").props).toMatchObject({
-    toolbar: false,
-    bottomOffset: 50,
+    toolbar: true,
     bounces: false,
   });
+  expect(screen.getByTestId("template-scroll").props.bottomOffset).toBeUndefined();
   await rerender(
     <AuthFormView
       FormNode={<Text>Campos</Text>}
@@ -152,24 +163,29 @@ test.each(["list", "form"] as const)(
       );
     const { rerender } = await render(renderHeader());
     const insetViews = () =>
-      screen.root?.queryAll((node) => StyleSheet.flatten(node.props.style)?.paddingTop === 24);
+      screen.root?.queryAll(
+        (node) => StyleSheet.flatten(node.props.style)?.paddingTop === 24,
+      );
     expect(insetViews()).toHaveLength(1);
     await rerender(renderHeader(false));
     expect(insetViews()).toHaveLength(0);
   },
 );
 
-test("legacy home header reserves its top inset inside the gradient", async () => {
-  const { rerender } = await render(<HomeHeader title="Tickets" />);
+test("branded app bar reserves one top inset inside its surface", async () => {
+  const { rerender } = await render(
+    <AppBar background={{ surface: "brand" }} title="Tickets" />,
+  );
   const viewsWithTopPadding = (paddingTop: number) =>
     screen.root?.queryAll(
       (node) => StyleSheet.flatten(node.props.style)?.paddingTop === paddingTop,
       { includeSelf: true },
     );
-  expect(viewsWithTopPadding(64)).toHaveLength(1);
-  await rerender(<HomeHeader safeArea={false} title="Tickets" />);
-  expect(viewsWithTopPadding(64)).toHaveLength(0);
-  expect(viewsWithTopPadding(40)).toHaveLength(1);
+  expect(viewsWithTopPadding(24)).toHaveLength(1);
+  await rerender(
+    <AppBar background={{ surface: "brand" }} safeArea={false} title="Tickets" />,
+  );
+  expect(viewsWithTopPadding(24)).toHaveLength(0);
 });
 
 test.each(["populated", "empty", "error"] as const)(
@@ -229,4 +245,32 @@ test("default list row activates the host callback without changing the original
   expect(press).toHaveBeenCalledTimes(1);
   expect(press.mock.calls[0][0]).toBe(item);
   expect(item).toEqual({ id: 1, name: "Registro original" });
+});
+
+test("form content reserves measured sticky footer and clears it when hidden or removed", async () => {
+  const content = (loading: boolean, footer: boolean) => (
+    <FormView.Root isLoading={loading} item={{ id: 1 }} name="Registro" withContainer={false}>
+      <FormView.Content>
+        <Text>Último campo</Text>
+      </FormView.Content>
+      {footer ? (
+        <FormView.Footer>
+          <Text>Guardar cambios</Text>
+        </FormView.Footer>
+      ) : null}
+    </FormView.Root>
+  );
+  const { rerender } = await render(content(false, true));
+  const footer = screen.root?.queryAll((node) =>
+    node.props.className?.includes("bg-bg-card px-4 py-3"),
+  )[0];
+  if (!footer) throw new Error("Missing sticky footer layout");
+  await fireEvent(footer, "layout", {
+    nativeEvent: { layout: { x: 0, y: 0, width: 400, height: 64 } },
+  });
+  expect(screen.getByTestId("template-scroll").props.stickyFooterHeight).toBe(64);
+  await rerender(content(true, true));
+  expect(screen.getByTestId("template-scroll").props.stickyFooterHeight).toBe(0);
+  await rerender(content(false, false));
+  expect(screen.getByTestId("template-scroll").props.stickyFooterHeight).toBe(0);
 });

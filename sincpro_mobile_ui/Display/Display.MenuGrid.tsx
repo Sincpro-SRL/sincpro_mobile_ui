@@ -1,14 +1,12 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import MenuCard from "@sincpro/mobile-ui/Display/Display.MenuCard";
-import { IconType } from "@sincpro/mobile-ui/utils/icon";
-import { ComponentType } from "react";
 import { View } from "react-native";
 
 export interface MenuGridItem {
   id: string;
   title: string;
-  iconType?: IconType;
   onPress?: () => void;
-  customIcon?: ComponentType<{ size?: number; color?: string }>;
+  icon: IconName;
 }
 
 export interface MenuGridProps {
@@ -22,8 +20,7 @@ export function MenuGrid({ items, size = "md" }: MenuGridProps) {
     <View className="flex-row flex-wrap justify-start p-2 bg-bg-page">
       {items.map((item) => (
         <MenuCard
-          customIcon={item.customIcon}
-          iconType={item.iconType}
+          icon={item.icon}
           key={item.id}
           onPress={item.onPress}
           size={size}

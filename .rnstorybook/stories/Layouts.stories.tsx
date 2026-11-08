@@ -1,102 +1,92 @@
-import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
-import PinIcon from "@sincpro/mobile-ui/icons/PinIcon";
-import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
-import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
+import { Actions } from "@sincpro/mobile-ui/Actions";
+import { Display } from "@sincpro/mobile-ui/Display";
+import { Form } from "@sincpro/mobile-ui/Form";
 import AuthContainer from "@sincpro/mobile-ui/layouts/AuthContainer";
 import Container from "@sincpro/mobile-ui/layouts/Container";
-import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import ScrollContainer from "@sincpro/mobile-ui/layouts/ScrollContainer";
-import TabNavigatorLayout from "@sincpro/mobile-ui/layouts/TabNavigatorLayout";
+import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
 import { View } from "react-native";
 
-const meta: Meta = { title: "Components/Layout" };
+const meta: Meta = {
+  title: "Components/Layout",
+  parameters: { layout: "fullscreen", ownsScroll: true, ownsTopInset: true },
+};
 export default meta;
 
 type Story = StoryObj;
 
+function AuthTask() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [saved, setSaved] = useState(false);
+  return (
+    <AuthContainer
+      edges={["top"]}
+      header={
+        <Typography.Text style={{ color: "#FFFFFF" }} variant="h3">
+          Bienvenido
+        </Typography.Text>
+      }
+    >
+      <Form.Input label="Nombre" onChangeText={setName} testID="layout-name" value={name} />
+      <Form.Input
+        autoCapitalize="none"
+        keyboardType="email-address"
+        label="Correo"
+        onChangeText={setEmail}
+        testID="layout-email"
+        value={email}
+      />
+      <Actions.Button
+        disabled={!name.trim() || !email.trim()}
+        onPress={() => setSaved(true)}
+        title="Continuar"
+      />
+      {saved ? (
+        <Typography.Text>Datos preparados en esta demostración.</Typography.Text>
+      ) : null}
+    </AuthContainer>
+  );
+}
+
 export const ContainerLayout: Story = {
   render: () => (
     <Container>
-      <Typography.Text>Contenido dentro de Container</Typography.Text>
+      <Navigation.AppBar title="Contenido" />
+      <Typography.Text>
+        El header reserva arriba; el contenedor solo los laterales.
+      </Typography.Text>
     </Container>
   ),
 };
 
 export const Gradient: Story = {
   render: () => (
-    <GradientContainer className="p-6 rounded-lg">
-      <Typography.Text className="text-text-inverse">GradientContainer</Typography.Text>
-    </GradientContainer>
+    <Display.GradientSurface className="p-6" preset="brand">
+      <Typography.Text style={{ color: "#FFFFFF" }}>Superficie de marca</Typography.Text>
+    </Display.GradientSurface>
   ),
 };
 
 export const Scroll: Story = {
   render: () => (
-    <ScrollContainer>
-      {Array.from({ length: 12 }).map((_, i) => (
-        <View className="bg-bg-muted p-4 my-1 rounded" key={i}>
-          <Typography.Text>Fila {i + 1}</Typography.Text>
-        </View>
-      ))}
-    </ScrollContainer>
+    <Container>
+      <Navigation.AppBar title="Contenido desplazable" />
+      <ScrollContainer>
+        {Array.from({ length: 12 }, (_, index) => (
+          <View className="bg-bg-muted p-4 my-1 rounded" key={index}>
+            <Typography.Text>Fila {index + 1}</Typography.Text>
+          </View>
+        ))}
+      </ScrollContainer>
+    </Container>
   ),
 };
 
 export const Auth: Story = {
-  render: () => (
-    <View style={{ height: 640 }}>
-      <AuthContainer
-        header={
-          <Typography.Text className="text-text-inverse" variant="h3">
-            Bienvenido
-          </Typography.Text>
-        }
-        onBackPress={() => {}}
-      >
-        <Typography.Text>Contenido del formulario sobre la hoja blanca.</Typography.Text>
-      </AuthContainer>
-    </View>
-  ),
-};
-
-const TABS = [
-  { path: "home", label: "Inicio", Icon: HomeIcon },
-  { path: "routes", label: "Ruta", Icon: PinIcon },
-  { path: "settings", label: "Ajustes", Icon: SettingsIcon },
-  { path: "profile", label: "Perfil", Icon: ProfileIcon },
-];
-
-function TabNavigatorDemo() {
-  const [current, setCurrent] = useState("home");
-  return (
-    <View style={{ height: 560 }}>
-      <TabNavigatorLayout
-        content={
-          <View className="flex-1 items-center justify-center">
-            <Typography.Text variant="h4">Tab activo: {current}</Typography.Text>
-          </View>
-        }
-        currentPath={current}
-        onTabPress={setCurrent}
-      >
-        <TabNavigatorLayout.Tabs>
-          {TABS.map((t) => (
-            <TabNavigatorLayout.Tab
-              Icon={t.Icon}
-              key={t.path}
-              label={t.label}
-              path={t.path}
-            />
-          ))}
-        </TabNavigatorLayout.Tabs>
-      </TabNavigatorLayout>
-    </View>
-  );
-}
-
-export const TabNavigator: Story = {
-  render: () => <TabNavigatorDemo />,
+  parameters: { statusBarStyle: "light" },
+  render: () => <AuthTask />,
 };

@@ -86,7 +86,7 @@ function FilterSheet({
         style={{ minHeight: 44 }}
         testID={testID ? `${testID}-trigger` : undefined}
       >
-        <Icon color={theme.icon.secondary} name="options-outline" size={18} />
+        <Icon color={theme.icon.secondary} name="filter" size={18} />
         <Typography.Text className="text-text-primary" variant="buttonSmall">
           {triggerLabel}
         </Typography.Text>
@@ -101,7 +101,6 @@ function FilterSheet({
         ) : null}
       </Pressable>
       <Sheet
-        dismissOnBackdrop
         footer={
           <View className="flex-row gap-3">
             {onClear ? (
@@ -121,7 +120,6 @@ function FilterSheet({
           </View>
         }
         onClose={() => setVisible(false)}
-        showCloseButton
         testID={testID ? `${testID}-sheet` : undefined}
         title={title}
         visible={visible}

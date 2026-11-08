@@ -139,7 +139,7 @@ export const typographyVariants = {
     fontFamily: fontFamilies.titleBlack,
     fontWeight: fontWeights.titleBlack,
     lineHeight: fontSizes["7xl"] * lineHeights.tight,
-    letterSpacing: letterSpacing.tight,
+    letterSpacing: -1.2,
   },
 
   // Headings (title role)
@@ -148,14 +148,14 @@ export const typographyVariants = {
     fontFamily: fontFamilies.title,
     fontWeight: fontWeights.title,
     lineHeight: fontSizes["5xl"] * lineHeights.tight,
-    letterSpacing: letterSpacing.tight,
+    letterSpacing: -0.8,
   },
   h2: {
     fontSize: fontSizes["4xl"],
     fontFamily: fontFamilies.title,
     fontWeight: fontWeights.title,
     lineHeight: fontSizes["4xl"] * lineHeights.snug,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: -0.4,
   },
   h3: {
     fontSize: fontSizes["3xl"],
@@ -343,12 +343,39 @@ export const variantFontRole: Record<keyof typeof typographyVariants, FontRole> 
   subtitle: "medium",
 };
 
+/* The shipped files stop at Bold 700. Asking iOS/Android for 800 or 900 on
+ * that file synthesizes a faux face and drops the loaded family. Rendering
+ * uses the weight of the file that was actually registered. */
+const loadedFaceWeight: Record<string, TextStyle["fontWeight"]> = {
+  IBMPlexMono_400Regular: "400",
+  IBMPlexMono_500Medium: "500",
+  IBMPlexSans_300Light: "300",
+  IBMPlexSans_400Regular: "400",
+  IBMPlexSans_500Medium: "500",
+  IBMPlexSans_600SemiBold: "600",
+  IBMPlexSans_700Bold: "700",
+};
+
+export function appliedTextStyle(
+  variant: keyof typeof typographyVariants,
+  bold = false,
+  semibold = false,
+): TextStyle {
+  const fontFamily = resolveTextFontFamily(variant, bold, semibold);
+  const { fontWeight, ...metrics } = typographyVariants[variant];
+  return {
+    ...metrics,
+    fontFamily,
+    fontWeight: loadedFaceWeight[fontFamily] ?? fontWeight,
+  };
+}
+
 /* -------------------- Utility Functions -------------------- */
 export const createTextStyle = (
   variant: keyof typeof typographyVariants,
   overrides?: Partial<TextStyle>,
 ): TextStyle => ({
-  ...typographyVariants[variant],
+  ...appliedTextStyle(variant),
   ...overrides,
 });
 

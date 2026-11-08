@@ -1,4 +1,5 @@
-import { Dialog, type EditableValueModalChip } from "@sincpro/mobile-ui/Dialog";
+import { Actions } from "@sincpro/mobile-ui/Actions";
+import { Dialog } from "@sincpro/mobile-ui/Dialog";
 import { Display } from "@sincpro/mobile-ui/Display";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { normalizeQuantity, roundTo } from "@sincpro/mobile-ui/utils/quantity";
@@ -110,8 +111,8 @@ function FractionalQuantityInput({
     setModalVisible(true);
   }
 
-  function confirmDraft() {
-    let parsed = parseLocalizedNumber(draft);
+  function confirmDraft(nextDraft: string) {
+    let parsed = parseLocalizedNumber(nextDraft);
     parsed = roundTo(parsed, precision);
     if (parsed < 0) parsed = 0;
     if (parsed > maxValue) parsed = maxValue;
@@ -120,15 +121,6 @@ function FractionalQuantityInput({
   }
 
   const formatted = useMemo(() => value.toFixed(precision), [value, precision]);
-
-  const modalChips: EditableValueModalChip[] = (chips as number[]).map((item) => ({
-    label: `+${item}`,
-    onPress: () => {
-      const base = parseLocalizedNumber(draft) || 0;
-      const next = roundTo(base + item, precision);
-      setDraft(String(next));
-    },
-  }));
 
   const decrementStyles = fractionalQuantityInput({ disabled: disabled || value <= 0 });
   const incrementStyles = fractionalQuantityInput({ disabled });
@@ -145,7 +137,7 @@ function FractionalQuantityInput({
         disabled={disabled || value <= 0}
         onPress={handleDecrement}
       >
-        <Display.Icon name="minus" size={16} type="feather" />
+        <Display.Icon name="remove" size={16} />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -163,14 +155,30 @@ function FractionalQuantityInput({
         disabled={disabled}
         onPress={handleIncrement}
       >
-        <Display.Icon name="plus" size={16} type="feather" />
+        <Display.Icon name="add" size={16} />
       </TouchableOpacity>
 
       <Dialog.EditValue
-        chips={modalChips}
+        footerAdornment={
+          <View className="flex-row flex-wrap gap-2">
+            {chips.map((item, index) => (
+              <Actions.Button
+                key={`${item}-${index}`}
+                onPress={() =>
+                  setDraft((current) =>
+                    String(roundTo(parseLocalizedNumber(current) + item, precision)),
+                  )
+                }
+                size="small"
+                title={`+${item}`}
+                variant="secondary"
+              />
+            ))}
+          </View>
+        }
         keyboardType="decimal-pad"
-        onCancel={() => setModalVisible(false)}
-        onChangeValue={setDraft}
+        onChange={setDraft}
+        onClose={() => setModalVisible(false)}
         onConfirm={confirmDraft}
         placeholder={`0${precision > 0 ? ",".padEnd(precision + 1, "0") : ""}`}
         rightAdornment={

@@ -37,7 +37,7 @@ function Rating({
         const star = (
           <Icon
             color={filled ? theme.warning : theme.icon.disabled}
-            name={filled ? "star" : "star-outline"}
+            name={filled ? "rating" : "rating-empty"}
             size={size}
           />
         );

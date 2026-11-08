@@ -1,9 +1,9 @@
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type { ComponentRef, Ref } from "react";
+import type { Ref } from "react";
 import { useState } from "react";
-import { TextInput, type TextInputProps, View } from "react-native";
+import { TextInput, type TextInputInstance, type TextInputProps, View } from "react-native";
 
 const inputContainer = tv({
   base: "rounded-lg bg-bg-card shadow-sm",
@@ -18,7 +18,7 @@ const inputContainer = tv({
 });
 
 interface FormInputProps extends TextInputProps {
-  ref?: Ref<ComponentRef<typeof TextInput>>;
+  ref?: Ref<TextInputInstance>;
   label: string;
   error?: string;
   tooltip?: string;

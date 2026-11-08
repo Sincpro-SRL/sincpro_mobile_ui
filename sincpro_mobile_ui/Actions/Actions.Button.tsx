@@ -1,6 +1,7 @@
-import { useConfirmationContext } from "@sincpro/mobile-ui/Dialog/Confirmation.context";
+import { requestConfirmation } from "@sincpro/mobile-ui/Dialog/requestConfirmation";
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type React from "react";
@@ -107,8 +108,11 @@ const textColor = tv({
 
 // ─── Color / size helpers ─────────────────────────────────────────────────────
 
-function getLoadingColor(variant: string): string {
-  const map: Record<string, string> = {
+function getLoadingColor(
+  variant: NonNullable<ButtonProps["variant"]>,
+  theme: ReturnType<typeof useTheme>,
+): string {
+  const map: Record<NonNullable<ButtonProps["variant"]>, string> = {
     primary: theme.text.onAccent,
     accent: theme.text.accent,
     cta: theme.text.onAccent,
@@ -120,12 +124,16 @@ function getLoadingColor(variant: string): string {
     link: theme.text.accent,
     transparent: theme.text.inverse,
   };
-  return map[variant] ?? theme.text.inverse;
+  return map[variant];
 }
 
-function getIconColor(variant: string, disabled: boolean): string {
+function getIconColor(
+  variant: NonNullable<ButtonIconProps["variant"]>,
+  disabled: boolean,
+  theme: ReturnType<typeof useTheme>,
+): string {
   if (disabled) {
-    const map: Record<string, string> = {
+    const map: Record<NonNullable<ButtonIconProps["variant"]>, string> = {
       primary: theme.text.onAccent + "70",
       accent: theme.text.accent + "70",
       cta: theme.text.onAccent + "70",
@@ -137,9 +145,9 @@ function getIconColor(variant: string, disabled: boolean): string {
       link: theme.icon.disabled,
       transparent: theme.icon.inverse + "70",
     };
-    return map[variant] ?? theme.icon.disabled;
+    return map[variant];
   }
-  const map: Record<string, string> = {
+  const map: Record<NonNullable<ButtonIconProps["variant"]>, string> = {
     primary: theme.text.onAccent,
     accent: theme.text.accent,
     cta: theme.text.onAccent,
@@ -151,7 +159,7 @@ function getIconColor(variant: string, disabled: boolean): string {
     link: theme.text.accent,
     transparent: theme.icon.inverse,
   };
-  return map[variant] ?? theme.icon.inverse;
+  return map[variant];
 }
 
 const iconSizeMap = { small: 16, medium: 20, large: 28 } as const;
@@ -189,28 +197,25 @@ const Button: FC<ButtonProps> = ({
   accessibilityState,
   ...accessibilityProps
 }) => {
-  const { show, hide } = useConfirmationContext();
-  const textColorClass = textColor({ variant: variant as any, disabled });
-  const loadingColorValue = getLoadingColor(variant as any);
-  const textVariantValue = textVariantMap[size as keyof typeof textVariantMap] ?? "button";
+  const theme = useTheme();
+  const resolvedVariant = variant ?? "primary";
+  const resolvedSize = size ?? "medium";
+  const textColorClass = textColor({ variant: resolvedVariant, disabled });
+  const loadingColorValue = getLoadingColor(resolvedVariant, theme);
+  const textVariantValue = textVariantMap[resolvedSize];
 
-  const handlePress = useCallback(() => {
+  const handlePress = useCallback(async () => {
     if (confirm && onPress) {
-      show({
+      const confirmed = await requestConfirmation({
         title: "Confirmar acción",
         message: confirm,
         confirmText: "Confirmar",
         cancelText: "Cancelar",
-        onConfirm: () => {
-          hide();
-          onPress();
-        },
-        onCancel: () => hide(),
       });
-    } else if (onPress) {
-      onPress();
+      if (!confirmed) return;
     }
-  }, [onPress, confirm, show, hide]);
+    onPress?.();
+  }, [onPress, confirm]);
 
   if (variant === "link") {
     return (
@@ -288,7 +293,7 @@ const Button: FC<ButtonProps> = ({
 // ─── ButtonIcon ───────────────────────────────────────────────────────────────
 
 export interface ButtonIconProps extends VariantProps<typeof buttonIcon>, AccessibilityProps {
-  icon: string;
+  icon: IconName;
   onPress?: () => void;
   confirm?: string;
   loading?: boolean;
@@ -310,28 +315,25 @@ const ButtonIcon: FC<ButtonIconProps> = ({
   accessibilityState,
   ...accessibilityProps
 }) => {
-  const { show, hide } = useConfirmationContext();
-  const iconColorValue = getIconColor(variant as any, disabled);
-  const iconSizeValue = iconSizeMap[size as keyof typeof iconSizeMap] ?? 20;
-  const loadingColorValue = getLoadingColor(variant as any);
+  const theme = useTheme();
+  const resolvedVariant = variant ?? "primary";
+  const resolvedSize = size ?? "medium";
+  const iconColorValue = getIconColor(resolvedVariant, disabled, theme);
+  const iconSizeValue = iconSizeMap[resolvedSize];
+  const loadingColorValue = getLoadingColor(resolvedVariant, theme);
 
-  const handlePress = useCallback(() => {
+  const handlePress = useCallback(async () => {
     if (confirm && onPress) {
-      show({
+      const confirmed = await requestConfirmation({
         title: "Confirmar acción",
         message: confirm,
         confirmText: "Confirmar",
         cancelText: "Cancelar",
-        onConfirm: () => {
-          hide();
-          onPress();
-        },
-        onCancel: () => hide(),
       });
-    } else if (onPress) {
-      onPress();
+      if (!confirmed) return;
     }
-  }, [onPress, confirm, show, hide]);
+    onPress?.();
+  }, [onPress, confirm]);
 
   return (
     <TouchableOpacity

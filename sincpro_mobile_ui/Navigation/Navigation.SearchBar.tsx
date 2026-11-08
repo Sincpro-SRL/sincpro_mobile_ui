@@ -5,10 +5,7 @@ import SearchSuggestions, {
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import {
-  resolveTextFontFamily,
-  typographyVariants,
-} from "@sincpro/mobile-ui/theme/typography";
+import { appliedTextStyle } from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useState } from "react";
 import { Keyboard, TextInput, View } from "react-native";
@@ -85,8 +82,7 @@ function SearchBar({
           returnKeyType="search"
           selectionColor={theme.primary}
           style={{
-            ...typographyVariants.bodyReadable,
-            fontFamily: resolveTextFontFamily("bodyReadable"),
+            ...appliedTextStyle("bodyReadable"),
             minHeight: 48,
             paddingVertical: 8,
           }}
@@ -114,7 +110,7 @@ function SearchBar({
             justifyContent: "center",
           }}
         >
-          <Icon color={theme.icon.tertiary} name="close-circle" size={18} />
+          <Icon color={theme.icon.tertiary} name="dismiss" size={18} />
         </Pressable>
       ) : null}
     </View>

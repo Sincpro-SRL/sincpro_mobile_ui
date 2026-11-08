@@ -4,6 +4,7 @@ import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { ComponentType } from "react";
 import { Modal, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface PromoModalProps {
@@ -85,7 +86,18 @@ export function PromoModal({
       </TouchableWithoutFeedback>
 
       {/* Centered card — absolutely positioned so TouchableWithoutFeedback covers the full backdrop */}
-      <View
+      <KeyboardAwareScrollView
+        bottomOffset={24}
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingLeft: insets.left + 24,
+          paddingRight: insets.right + 24,
+          paddingTop: insets.top + 16,
+          paddingBottom: insets.bottom + 16,
+        }}
+        keyboardShouldPersistTaps="handled"
         pointerEvents="box-none"
         style={{
           position: "absolute",
@@ -93,9 +105,6 @@ export function PromoModal({
           left: 0,
           right: 0,
           bottom: 0,
-          alignItems: "center",
-          justifyContent: "center",
-          paddingHorizontal: 24,
         }}
       >
         <View
@@ -211,7 +220,7 @@ export function PromoModal({
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </KeyboardAwareScrollView>
     </Modal>
   );
 }

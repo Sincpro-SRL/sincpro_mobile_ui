@@ -10,13 +10,13 @@ export type IRowItem<T> = UIItem & {
 };
 
 export interface IRowItemProps<T> extends UIItem {
-  item: IRowItem<T> | T;
+  item: IRowItem<T>;
 }
 
 export interface IListView<T> extends UICollectionItem<T> {
   name: string;
   description?: string;
-  items: T[];
+  items: readonly T[];
   isLoading?: boolean;
   onRefresh?: () => void | Promise<void>;
   onBack?: () => void | Promise<void>;
@@ -81,6 +81,6 @@ export function toRowItem<T>(item: T, index: number, mapKeys?: RowKeys<T>): IRow
   };
 }
 
-export function toRowItems<T>(items: T[], mapKeys?: RowKeys<T>): IRowItem<T>[] {
+export function toRowItems<T>(items: readonly T[], mapKeys?: RowKeys<T>): IRowItem<T>[] {
   return items.map((item, index) => toRowItem(item, index, mapKeys));
 }

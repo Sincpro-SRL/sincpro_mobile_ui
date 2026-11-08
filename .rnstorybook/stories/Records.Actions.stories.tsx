@@ -1,7 +1,6 @@
 import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import IconButton from "@sincpro/mobile-ui/Actions/Actions.IconButton";
 import ActionSheet from "@sincpro/mobile-ui/Dialog/Dialog.ActionSheet";
-import NativeSheet from "@sincpro/mobile-ui/Dialog/Dialog.NativeSheet";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Card from "@sincpro/mobile-ui/Display/Display.Card";
 import KeyValue from "@sincpro/mobile-ui/Display/Display.KeyValue";
@@ -85,7 +84,7 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
             />
             <IconButton
               accessibilityLabel="Opciones del registro"
-              icon="more-horizontal"
+              icon="more"
               onPress={() => setActionsOpen(true)}
             />
           </View>
@@ -105,7 +104,6 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
       />
       <Sheet
         onClose={() => setFiltersOpen(false)}
-        showCloseButton
         title="Filtrar registros"
         visible={filtersOpen}
       >
@@ -127,7 +125,7 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
           />
         </View>
       </Sheet>
-      <NativeSheet
+      <Sheet
         onClose={() => setSummaryOpen(false)}
         title="Resumen del registro"
         visible={summaryOpen}
@@ -145,7 +143,7 @@ export function MobileRecords({ long = false }: { long?: boolean }) {
             marca; cerrar vuelve a la lista.
           </Typography.Text>
         </View>
-      </NativeSheet>
+      </Sheet>
     </View>
   );
 }

@@ -1,5 +1,5 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Feedback } from "@sincpro/mobile-ui/Feedback";
-import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
@@ -164,7 +164,7 @@ export const Banner: Story = {
         tone="danger"
       />
       <Feedback.Banner
-        action={<Form.Button onPress={() => {}} size="small" title="Actualizar" />}
+        action={<Actions.Button onPress={() => {}} size="small" title="Actualizar" />}
         message="Hay una nueva versión disponible. Actualizá para obtener las últimas mejoras y correcciones de esta pantalla."
         title="Actualización disponible"
         tone="info"
@@ -240,7 +240,7 @@ export const EmptyStateRich: Story = {
       <Feedback.EmptyState
         actionLabel="Explorar productos"
         description="Cuando agregues productos aparecerán acá."
-        icon="cart-outline"
+        icon="cart"
         onAction={() => {}}
         title="Tu carrito está vacío"
       />

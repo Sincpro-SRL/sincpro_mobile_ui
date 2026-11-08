@@ -1,13 +1,14 @@
 import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { Modal, Pressable as RNPressable, View } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface StoryViewerSlide {
@@ -54,6 +55,7 @@ function StoryViewer({
   testID,
 }: StoryViewerProps) {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const reducedMotion = useReducedMotion();
   const current = slides[index];
 
@@ -114,7 +116,8 @@ function StoryViewer({
             left: 0,
             right: 0,
             paddingTop: insets.top + 8,
-            paddingHorizontal: 10,
+            paddingLeft: insets.left + 10,
+            paddingRight: insets.right + 10,
           }}
         >
           <View style={{ flexDirection: "row", gap: 4 }}>
@@ -183,7 +186,7 @@ function StoryViewer({
                 hitSlop={8}
                 onPress={onToggleMute}
               >
-                <Icon color="#fff" name={muted ? "volume-mute" : "volume-high"} size={22} />
+                <Icon color="#fff" name={muted ? "mute" : "volume"} size={22} />
               </Pressable>
             ) : null}
             {onTogglePause ? (
@@ -203,7 +206,7 @@ function StoryViewer({
                 onPress={onMore}
                 style={{ marginLeft: 14 }}
               >
-                <Icon color="#fff" name="ellipsis-horizontal" size={22} />
+                <Icon color="#fff" name="more" size={22} />
               </Pressable>
             ) : null}
             <Pressable
@@ -224,7 +227,7 @@ function StoryViewer({
             onPress={goNext}
             style={{
               position: "absolute",
-              right: 8,
+              right: insets.right + 8,
               top: "50%",
               width: 36,
               height: 36,
@@ -234,24 +237,25 @@ function StoryViewer({
               justifyContent: "center",
             }}
           >
-            <Icon color={theme.text.primary} name="chevron-forward" size={22} />
+            <Icon color={theme.text.primary} name="next" size={22} />
           </Pressable>
         ) : null}
 
         {/* Footer */}
         {footer ? (
-          <View
+          <KeyboardStickyView
             style={{
               position: "absolute",
               left: 0,
               right: 0,
               bottom: 0,
               paddingBottom: insets.bottom + 8,
-              paddingHorizontal: 16,
+              paddingLeft: insets.left + 16,
+              paddingRight: insets.right + 16,
             }}
           >
             {footer}
-          </View>
+          </KeyboardStickyView>
         ) : null}
       </View>
     </Modal>

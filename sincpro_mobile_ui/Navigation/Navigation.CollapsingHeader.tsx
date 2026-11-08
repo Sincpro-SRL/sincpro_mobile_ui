@@ -1,4 +1,3 @@
-import ScreenStatusBar from "@sincpro/mobile-ui/layouts/ScreenStatusBar";
 import AppBar, {
   type AppBarActionProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
@@ -18,7 +17,6 @@ export interface CollapsingHeaderProps {
   largeHeight?: number;
   /** Reserves the status-bar space (insets.top). `false` to embed/demo. */
   safeArea?: boolean;
-  barStyle?: "light-content" | "dark-content";
   testID?: string;
 }
 
@@ -46,7 +44,6 @@ function CollapsingHeader({
   actions,
   largeHeight = subtitle ? 72 : 56,
   safeArea = true,
-  barStyle,
   testID,
 }: CollapsingHeaderProps) {
   const theme = useTheme();
@@ -75,18 +72,11 @@ function CollapsingHeader({
 
   return (
     <View style={{ backgroundColor: theme.bg.card }} testID={testID}>
-      {safeArea || barStyle !== undefined ? (
-        <ScreenStatusBar backgroundColor={theme.bg.card} barStyle={barStyle} />
-      ) : null}
       <View style={{ paddingTop: safeArea ? insets.top : 0 }}>
         <View className="flex-row items-center px-3 gap-2 min-h-[52px]">
           <View style={{ minWidth: 38 }}>
             {onBack ? (
-              <AppBar.Action
-                accessibilityLabel="Volver"
-                icon="chevron-back"
-                onPress={onBack}
-              />
+              <AppBar.Action accessibilityLabel="Volver" icon="back" onPress={onBack} />
             ) : null}
           </View>
           <Animated.View className="flex-1" style={{ opacity: compactTitleOpacity }}>

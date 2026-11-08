@@ -51,7 +51,7 @@ function PriceTag({
           >
             {format(originalAmount, currency)}
           </Typography.Text>
-          <View className="bg-danger-light rounded px-1.5 py-0.5">
+          <View className="bg-container-danger rounded px-1.5 py-0.5">
             <Typography.Text className="text-danger font-semibold" variant="caption">
               -{off}%
             </Typography.Text>

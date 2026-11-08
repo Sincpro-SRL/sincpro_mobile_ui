@@ -17,17 +17,14 @@ export interface KeyboardFormProps extends KeyboardAwareScrollViewProps {
   children: ReactNode;
   ref?: Ref<KeyboardAwareScrollViewRef>;
   toolbar?: boolean;
+  stickyFooterHeight?: number;
   toolbarProps?: Omit<KeyboardToolbarProps, "onHeightChange">;
-  toolbarLabels?: Pick<
-    KeyboardToolbarProps,
-    "previousLabel" | "nextLabel" | "doneLabel" | "showDoneLabel"
-  >;
 }
 
 export default function KeyboardForm({
   children,
   toolbar = true,
-  toolbarLabels,
+  stickyFooterHeight = 0,
   toolbarProps,
   bottomOffset,
   style,
@@ -38,7 +35,9 @@ export default function KeyboardForm({
     <View style={{ flex: 1 }}>
       <NativeToolbar.Group style={{ flex: 1 }}>
         <KeyboardAwareScrollView
-          bottomOffset={bottomOffset ?? (toolbar ? toolbarHeight + 24 : 20)}
+          bottomOffset={
+            bottomOffset ?? stickyFooterHeight + (toolbar ? toolbarHeight + 24 : 24)
+          }
           keyboardShouldPersistTaps="handled"
           style={[{ flex: 1 }, style]}
           {...props}
@@ -48,8 +47,8 @@ export default function KeyboardForm({
       </NativeToolbar.Group>
       {toolbar ? (
         <KeyboardToolbar
-          {...toolbarLabels}
           {...toolbarProps}
+          bottomGapOffset={-stickyFooterHeight}
           onHeightChange={setToolbarHeight}
         />
       ) : null}

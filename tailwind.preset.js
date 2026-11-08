@@ -69,10 +69,6 @@ module.exports = {
         warning: "rgb(var(--warning) / <alpha-value>)",
         danger: "rgb(var(--danger) / <alpha-value>)",
         info: "rgb(var(--info) / <alpha-value>)",
-        "success-light": "rgb(var(--success-light) / <alpha-value>)",
-        "warning-light": "rgb(var(--warning-light) / <alpha-value>)",
-        "danger-light": "rgb(var(--danger-light) / <alpha-value>)",
-        "info-light": "rgb(var(--info-light) / <alpha-value>)",
         container: {
           primary: "rgb(var(--container-primary) / <alpha-value>)",
           "on-primary": "rgb(var(--container-on-primary) / <alpha-value>)",

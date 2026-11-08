@@ -37,17 +37,7 @@ const GRADIENT_PRESETS = {
   },
 } as const;
 
-/**
- * Aliases kept for backwards compatibility. These were the original names; the
- * canonical ones are above. Use the canonical names in new code.
- * @deprecated use `warm` instead of `gold-mesh`.
- */
-const DEPRECATED_PRESETS = {
-  "gold-mesh": "warm",
-} as const satisfies Record<string, keyof typeof GRADIENT_PRESETS>;
-
-export type GradientPreset =
-  keyof typeof GRADIENT_PRESETS | keyof typeof DEPRECATED_PRESETS | "brand";
+export type GradientPreset = keyof typeof GRADIENT_PRESETS | "brand";
 
 const surface = tv({
   variants: {
@@ -81,12 +71,10 @@ export interface GradientSurfaceProps extends VariantProps<typeof surface> {
 }
 
 export function resolveGradientPreset(preset: GradientPreset = "warm") {
-  const resolvedPreset = preset === "gold-mesh" ? DEPRECATED_PRESETS[preset] : preset;
-  const surface =
-    resolvedPreset === "brand" ? GRADIENT_PRESETS.warm : GRADIENT_PRESETS[resolvedPreset];
+  const surface = preset === "brand" ? GRADIENT_PRESETS.warm : GRADIENT_PRESETS[preset];
   return {
     ...surface,
-    colors: resolvedPreset === "brand" ? theme.gradient.primary : surface.colors,
+    colors: preset === "brand" ? theme.gradient.primary : surface.colors,
   };
 }
 

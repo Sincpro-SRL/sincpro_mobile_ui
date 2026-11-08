@@ -57,7 +57,7 @@ function QuantitySelector({
         disabled={value <= min}
         onPress={handleDecrement}
       >
-        <Display.Icon name="minus" size={16} type="feather" />
+        <Display.Icon name="remove" size={16} />
       </TouchableOpacity>
 
       <View className={containerStyles.valueContainer()}>
@@ -71,7 +71,7 @@ function QuantitySelector({
         disabled={value >= max}
         onPress={handleIncrement}
       >
-        <Display.Icon name="plus" size={16} type="feather" />
+        <Display.Icon name="add" size={16} />
       </TouchableOpacity>
     </View>
   );

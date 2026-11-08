@@ -1,6 +1,5 @@
 import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import IconButton from "@sincpro/mobile-ui/Actions/Actions.IconButton";
-import NativeSheet from "@sincpro/mobile-ui/Dialog/Dialog.NativeSheet";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Card from "@sincpro/mobile-ui/Display/Display.Card";
 import CopyableText from "@sincpro/mobile-ui/Display/Display.CopyableText";
@@ -94,7 +93,7 @@ export function CollectionRecipe({
           className="bg-container-primary rounded-lg items-center justify-center"
           style={{ width: 56, height: 56 }}
         >
-          <Icon color={theme.container.onPrimary} name="document-text-outline" size={24} />
+          <Icon color={theme.container.onPrimary} name="document" size={24} />
         </View>
       )}
     </View>
@@ -103,9 +102,8 @@ export function CollectionRecipe({
     <IconButton
       accessibilityLabel={`${saved.includes(record.id) ? "Quitar de guardados" : "Guardar"} ${record.title}`}
       accessibilityState={{ selected: saved.includes(record.id) }}
-      icon={saved.includes(record.id) ? "bookmark" : "bookmark-outline"}
+      icon={saved.includes(record.id) ? "bookmark" : "bookmark-empty"}
       onPress={() => toggleSaved(record.id)}
-      type="ionicons"
     />
   );
 
@@ -204,12 +202,7 @@ export function CollectionRecipe({
       <Typography.Text className="text-text-secondary" variant="bodySmall">
         Datos e ilustraciones locales de demostración.
       </Typography.Text>
-      <Sheet
-        onClose={() => setMoreOpen(false)}
-        showCloseButton
-        title="Más filtros"
-        visible={moreOpen}
-      >
+      <Sheet onClose={() => setMoreOpen(false)} title="Más filtros" visible={moreOpen}>
         <View style={{ gap: 16 }}>
           <Checkbox
             isChecked={featuredDraft}
@@ -229,7 +222,7 @@ export function CollectionRecipe({
           />
         </View>
       </Sheet>
-      <NativeSheet
+      <Sheet
         onClose={() => setDetail(null)}
         title={selected?.title ?? "Detalle del recurso"}
         visible={selected !== undefined}
@@ -253,7 +246,7 @@ export function CollectionRecipe({
             />
           </View>
         ) : null}
-      </NativeSheet>
+      </Sheet>
     </View>
   );
 }

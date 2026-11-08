@@ -48,11 +48,13 @@ function HierarchyExample({ comfortable = false }: { comfortable?: boolean }) {
         footer="Sincronizado hace 2 minutos"
         title="Recientes"
       >
-        {[
-          ["Reporte mensual", "Hoy · Finanzas", "document-text-outline"],
-          ["Inventario", "Ayer · Operaciones", "cube-outline"],
-          ["Guía del equipo", "4 nov · General", "book-outline"],
-        ].map(([title, subtitle, icon]) => (
+        {(
+          [
+            ["Reporte mensual", "Hoy · Finanzas", "document"],
+            ["Inventario", "Ayer · Operaciones", "package"],
+            ["Guía del equipo", "4 nov · General", "book"],
+          ] as const
+        ).map(([title, subtitle, icon]) => (
           <Display.ListItem
             chevron
             density={comfortable ? "comfortable" : "compact"}
@@ -115,8 +117,8 @@ function Divider({ title }: { title: string }) {
 export const Roles: Story = {
   render: () => (
     <View style={{ gap: 20 }}>
-      {/* ── SATOSHI (título de marca) ─────────────────────────────── */}
-      <Divider title="IBM Plex Sans · roles de título" />
+      {/* titles */}
+      <Divider title="Títulos · IBM Plex Sans" />
 
       <Row label="display · 48 / Black">
         <Typography.Text variant="display">Sincpro</Typography.Text>
@@ -131,8 +133,8 @@ export const Roles: Story = {
         <Typography.Text variant="h3">Pedidos del día</Typography.Text>
       </Row>
 
-      {/* ── INTER (UI / body) ────────────────────────────────────── */}
-      <Divider title="Inter · roles de UI y cuerpo" />
+      {/* interface */}
+      <Divider title="Interfaz · IBM Plex Sans" />
 
       <Row label="h4 · 20 / Medium">
         <Typography.Text variant="h4">Inventario general</Typography.Text>
@@ -173,8 +175,8 @@ export const Roles: Story = {
         <Typography.Text variant="button">Confirmar pedido</Typography.Text>
       </Row>
 
-      {/* ── FIRA CODE (datos, fechas, metadata) ──────────────────── */}
-      <Divider title="Fira Code · datos, fechas y metadata" />
+      {/* data */}
+      <Divider title="Datos · IBM Plex Mono" />
 
       <Row label="overline · 11 / Regular · MAYÚSCULAS + tracking">
         <Typography.Text variant="overline">Total facturado · jun 2026</Typography.Text>
@@ -209,20 +211,20 @@ export const Roles: Story = {
           borderColor: "rgba(0,0,0,0.08)",
         }}
       >
-        {/* header: Satoshi */}
+        {/* title */}
         <Typography.Text className="text-text-secondary" variant="overline">
           Orden · 22 jun 2026
         </Typography.Text>
         <Typography.Text variant="h3">Resumen de facturación</Typography.Text>
 
-        {/* body: Inter */}
+        {/* body */}
         <Typography.Text className="text-text-secondary" variant="bodySmall">
           Pedido confirmado · Envío estándar · Pago contra entrega
         </Typography.Text>
 
         <View style={{ height: 1, backgroundColor: "rgba(0,0,0,0.06)", marginVertical: 4 }} />
 
-        {/* data: Fira Code */}
+        {/* data */}
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Typography.Text className="text-text-secondary" variant="caption">
             Subtotal

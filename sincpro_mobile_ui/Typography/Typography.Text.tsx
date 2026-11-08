@@ -1,9 +1,5 @@
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import {
-  resolveTextFontFamily,
-  Typography,
-  typographyVariants,
-} from "@sincpro/mobile-ui/theme/typography";
+import { appliedTextStyle, typographyVariants } from "@sincpro/mobile-ui/theme/typography";
 import type React from "react";
 import { StyleSheet, Text, type TextProps, type TextStyle } from "react-native";
 
@@ -13,14 +9,9 @@ import { StyleSheet, Text, type TextProps, type TextStyle } from "react-native";
  * Uses NativeWind className for: spacing, colors, transforms, alignment
  * Uses style prop for: typography variants (fontFamily, fontSize, lineHeight)
  *
- * Reason: Custom fonts (Montserrat) not in Tailwind, complex typography system
- *
- * @deprecated color prop - Use className instead: e.g. className="text-text-primary" or className="text-text-accent"
  */
 interface AppTextProps extends TextProps {
   variant?: keyof typeof typographyVariants;
-  /** @deprecated Use className="text-{color}" instead */
-  color?: string;
   bold?: boolean;
   semibold?: boolean;
   italic?: boolean;
@@ -32,7 +23,6 @@ interface AppTextProps extends TextProps {
 
 function AppText({
   variant = "body",
-  color,
   bold = false,
   italic = false,
   underline = false,
@@ -44,8 +34,6 @@ function AppText({
   children,
   ...props
 }: AppTextProps) {
-  const baseStyle = Typography.variants[variant];
-
   const textClassName = cn(
     "text-text-primary",
     align === "center" && "text-center",
@@ -60,9 +48,7 @@ function AppText({
   );
 
   const textStyle: TextStyle = {
-    ...baseStyle,
-    ...(color ? { color } : {}),
-    fontFamily: resolveTextFontFamily(variant, bold, semibold),
+    ...appliedTextStyle(variant, bold, semibold),
     ...StyleSheet.flatten(style),
   };
 

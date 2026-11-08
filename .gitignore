@@ -11,3 +11,7 @@ android/
 .vscode/
 *.iml
 *.tgz
+
+# Agent skills stay in the user store (~/.agents). This package does not vendor them.
+.agents/
+skills-lock.json

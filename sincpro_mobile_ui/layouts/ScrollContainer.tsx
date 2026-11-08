@@ -1,40 +1,41 @@
-import ScreenStatusBar from "@sincpro/mobile-ui/layouts/ScreenStatusBar";
-import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import React, { ReactNode } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { type StyleProp, View, type ViewStyle } from "react-native";
+import {
+  KeyboardAwareScrollView,
+  type KeyboardAwareScrollViewProps,
+} from "react-native-keyboard-controller";
+import { type Edge, SafeAreaView } from "react-native-safe-area-context";
 
-type ScrollContainerProps = {
+type ScrollContainerProps = Omit<KeyboardAwareScrollViewProps, "children"> & {
   children: ReactNode;
-  contentContainerStyle?: object;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   className?: string;
-  barStyle?: "light-content" | "dark-content";
+  edges?: Edge[];
 };
 
 function ScrollContainer({
   children,
   contentContainerStyle = {},
   className,
-  barStyle,
+  edges = ["left", "right"],
+  bottomOffset = 72,
+  style,
+  ...props
 }: ScrollContainerProps) {
-  const theme = useTheme();
-
   return (
-    <SafeAreaView className={cn("flex-1 bg-bg-card", className)}>
-      <ScreenStatusBar backgroundColor={theme.bg.card} barStyle={barStyle} />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="flex-1"
+    <SafeAreaView className={cn("flex-1 bg-bg-card", className)} edges={edges}>
+      <KeyboardAwareScrollView
+        bottomOffset={bottomOffset}
+        contentContainerStyle={[{ flexGrow: 1, padding: 16 }, contentContainerStyle]}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        style={[{ flex: 1 }, style]}
+        {...props}
       >
-        <ScrollView
-          contentContainerStyle={[{ flexGrow: 1, padding: 16 }, contentContainerStyle]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View className="flex-1">{children}</View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <View className="flex-1">{children}</View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

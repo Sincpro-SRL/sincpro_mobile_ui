@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 import Pressable, { type PressableProps } from "@sincpro/mobile-ui/primitives/Pressable";
@@ -261,11 +262,11 @@ const toast = tv({
   },
 });
 
-const iconByVariant: Record<Exclude<ToastVariant, "loading">, string> = {
-  info: "information-circle",
-  success: "checkmark-circle",
+const iconByVariant: Record<Exclude<ToastVariant, "loading">, IconName> = {
+  info: "info",
+  success: "success",
   warning: "warning",
-  danger: "close-circle",
+  danger: "dismiss",
 };
 
 function ToastItem({

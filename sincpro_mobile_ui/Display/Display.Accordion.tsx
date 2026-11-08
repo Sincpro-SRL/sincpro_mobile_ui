@@ -45,7 +45,7 @@ function AccordionItem({
           {title}
         </Typography.Text>
         <View style={{ transform: [{ rotate: open ? "180deg" : "0deg" }] }}>
-          <Icon color={theme.icon.secondary} name="chevron-down" size={18} />
+          <Icon color={theme.icon.secondary} name="expand" size={18} />
         </View>
       </Pressable>
       {open ? <View className="pb-3">{children}</View> : null}

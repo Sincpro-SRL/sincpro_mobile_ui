@@ -3,7 +3,7 @@ import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 interface ListViewContextValue<T> {
   name: string;
   description?: string;
-  items: T[];
+  items: readonly T[];
   isLoading: boolean;
   hasError: boolean;
   errorMessage?: string;
@@ -12,8 +12,8 @@ interface ListViewContextValue<T> {
   setShowRefreshing: (value: boolean) => void;
   onRefresh?: () => Promise<void>;
   onRetry?: () => void;
-  onPressItem?: (item: T) => void;
-  onDeleteItem?: (item: T) => void;
+  onPressItem?(item: T): void;
+  onDeleteItem?(item: T): void;
   onSearch?: (query: string) => void;
   onBack?: () => void;
   onLoadMore?: () => void;
@@ -21,7 +21,7 @@ interface ListViewContextValue<T> {
   hasMore: boolean;
 }
 
-const Context = createContext<ListViewContextValue<any> | null>(null);
+const Context = createContext<ListViewContextValue<unknown> | null>(null);
 
 export function ListViewProvider<T>({
   name,
@@ -44,7 +44,7 @@ export function ListViewProvider<T>({
 }: {
   name: string;
   description?: string;
-  items: T[];
+  items: readonly T[];
   isLoading?: boolean;
   hasError?: boolean;
   errorMessage?: string;
@@ -61,7 +61,7 @@ export function ListViewProvider<T>({
   children: ReactNode;
 }) {
   const [showRefreshing, setShowRefreshing] = useState(false);
-  const value = useMemo(
+  const value = useMemo<ListViewContextValue<T>>(
     () => ({
       name,
       description,
@@ -106,7 +106,7 @@ export function ListViewProvider<T>({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
-export function useListView<T>() {
+export function useListView<T = unknown>() {
   const context = useContext(Context);
   if (!context) {
     throw new Error("useListView must be used within ListViewV2");

@@ -82,11 +82,11 @@
 - **Causa:** `adaptiveIcon.foregroundImage` apunta a un icono full-bleed (con su propio fondo). Android le agrega su `backgroundColor` + máscara → doble fondo / recorte.
 - **Fix:** el foreground debe ser **transparente** con el glifo centrado dentro de la safe-zone (~58–66%). Generar con Pillow/sips un PNG 1024 transparente con el logo centrado; `backgroundColor` sólido aparte.
 
-### 🔴 Pantalla en blanco tras el splash → layouts de `@sincpro/mobile-ui` en vez del core (sin `<Outlet/>`)
+### 🔴 Pantalla en blanco tras el splash → layouts presentacionales usados como navegador
 
-- **Síntoma:** el splash carga y se desvanece, pero ninguna pantalla aparece (ni el login). La infra arranca bien en los logs; el router monta (warnings de React Router) pero nada renderiza.
-- **Causa:** `AppRoutes.tsx` importa `PlainLayout`/`TabNavigatorLayout` desde **`@sincpro/mobile-ui/layouts/*`** (versiones **presentacionales**, renderizan `children`/`content` pero **no `<Outlet/>`**). Usados como _layout routes_ de react-router v6, las rutas hijas montan en `<Outlet/>` — que no existe → ninguna ruta hija renderiza → blanco. Típico tras una migración: el remapeo manda `@apk/ui/layouts/*` → `@sincpro/mobile-ui/layouts/*`, pero estos dos son la excepción.
-- **Fix:** importar las versiones **router-aware del core**: `import { PlainLayout, TabNavigatorLayout } from "@sincpro/mobile"` (viven en `@sincpro/mobile/ui/layouts/router_layouts`; el core posee el router e inyecta `<Outlet/>`, `location` y `navigate`). El JSX (`.Tabs`/`.Tab`) es idéntico.
+- **Síntoma:** el splash desaparece pero no se monta ninguna pantalla.
+- **Causa:** un layout de mobile-ui solo presenta `children`; no registra rutas ni monta un navegador. Los wrappers antiguos `TabNavigatorLayout` se eliminaron.
+- **Fix:** el host monta su navegador, restaura la sesión antes de decidir los guards y compone los providers de AppShell. mobile-ui no registra rutas ni reserva el borde que ya cubre ese navegador. Durante las fases de publicación, no mezclar consumidores viejos con esta major.
 - **Otras causas de blanco tras splash:** fuentes no cargadas (usar `useAppFonts()` + `SplashScreen` en el AppShell); y el `const enum` de arriba (rutas con `path` undefined).
 
 ---

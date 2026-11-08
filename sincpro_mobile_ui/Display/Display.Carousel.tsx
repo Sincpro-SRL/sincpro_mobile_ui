@@ -244,7 +244,7 @@ function Carousel<T>({
             <IconButton
               accessibilityLabel={previousAccessibilityLabel}
               disabled={!controls.canPrevious}
-              icon="chevron-left"
+              icon="back"
               onPress={controls.previous}
             />
             <Typography.Text {...paginationTextProps} accessibilityLiveRegion="polite">
@@ -253,7 +253,7 @@ function Carousel<T>({
             <IconButton
               accessibilityLabel={nextAccessibilityLabel}
               disabled={!controls.canNext}
-              icon="chevron-right"
+              icon="next"
               onPress={controls.next}
             />
           </View>

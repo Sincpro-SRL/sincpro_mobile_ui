@@ -1,6 +1,7 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
@@ -14,20 +15,20 @@ const banner = tv({
   },
   variants: {
     tone: {
-      info: { root: "bg-info-light border-info/30", title: "text-info" },
-      success: { root: "bg-success-light border-success/30", title: "text-success" },
-      warning: { root: "bg-warning-light border-warning/30", title: "text-warning" },
-      danger: { root: "bg-danger-light border-danger/30", title: "text-danger" },
+      info: { root: "bg-container-info border-info/30", title: "text-info" },
+      success: { root: "bg-container-success border-success/30", title: "text-success" },
+      warning: { root: "bg-container-warning border-warning/30", title: "text-warning" },
+      danger: { root: "bg-container-danger border-danger/30", title: "text-danger" },
     },
   },
   defaultVariants: { tone: "info" },
 });
 
-const iconByTone: Record<string, { name: string; color: string }> = {
-  info: { name: "information-circle", color: theme.info },
-  success: { name: "checkmark-circle", color: theme.success },
-  warning: { name: "warning", color: theme.warning },
-  danger: { name: "alert-circle", color: theme.danger },
+const iconByTone: Record<NonNullable<BannerProps["tone"]>, IconName> = {
+  info: "info",
+  success: "success",
+  warning: "warning",
+  danger: "error",
 };
 
 export interface BannerProps extends VariantProps<typeof banner> {
@@ -48,8 +49,9 @@ function Banner({
   className,
   testID,
 }: BannerProps) {
-  const styles = banner({ tone });
-  const icon = iconByTone[tone ?? "info"];
+  const theme = useTheme();
+  const resolvedTone = tone ?? "info";
+  const styles = banner({ tone: resolvedTone });
 
   return (
     <View
@@ -58,7 +60,7 @@ function Banner({
       className={styles.root({ className })}
       testID={testID}
     >
-      <Icon color={icon.color} name={icon.name} size={20} />
+      <Icon color={theme[resolvedTone]} name={iconByTone[resolvedTone]} size={20} />
       <View className="flex-1 gap-0.5">
         {title ? <Typography.Text className={styles.title()}>{title}</Typography.Text> : null}
         <Typography.Text className={styles.message()}>{message}</Typography.Text>

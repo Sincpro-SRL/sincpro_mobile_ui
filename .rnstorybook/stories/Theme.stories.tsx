@@ -1,5 +1,5 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Display } from "@sincpro/mobile-ui/Display";
-import { Form } from "@sincpro/mobile-ui/Form";
 import {
   DEFAULT_DARK_THEME,
   DEFAULT_THEME,
@@ -79,8 +79,8 @@ function ThemePanel({ tokens, label }: { tokens: ThemeTokens; label: string }) {
         <Display.Badge label="success" variant="success" />
         <Display.Badge label="danger" variant="danger" />
       </View>
-      <Form.Button title="Secondary" variant="secondary" />
-      <Form.Button title="Outline" variant="outline" />
+      <Actions.Button title="Secondary" variant="secondary" />
+      <Actions.Button title="Outline" variant="outline" />
       <View className="bg-bg-card border border-border-default rounded-lg p-3">
         <Typography.Text className="text-text-primary">Card sobre bg-card</Typography.Text>
         <Typography.Text className="text-text-secondary text-sm">

@@ -1,10 +1,13 @@
-import { BottomSheet } from "@sincpro/mobile-ui/Dialog/BottomSheet";
-import { Display, Form } from "@sincpro/mobile-ui/index";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { FlashList } from "@shopify/flash-list";
+import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
+import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { TimezoneLocale } from "@sincpro/mobile-ui/utils/timezone";
+import type { TimezoneLocale } from "@sincpro/mobile-ui/utils/timezone";
 import { useMemo, useState } from "react";
-import { FlatList, TextInput, TouchableOpacity, View } from "react-native";
+import { TextInput, View } from "react-native";
 
 interface TimeZoneSelectorModalProps {
   visible: boolean;
@@ -36,20 +39,23 @@ function TimezoneRow({
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const theme = useTheme();
+
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
-      className={`flex-row items-center p-4 border-b border-border-light ${
-        isSelected ? "bg-info-light" : "bg-white"
-      }`}
+    <Pressable
+      accessibilityHint={item.locale}
+      accessibilityLabel={item.label}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: isSelected, selected: isSelected }}
+      className="flex-row items-center p-4 border-b border-border-light"
       onPress={onSelect}
+      style={{
+        minHeight: 64,
+        backgroundColor: isSelected ? theme.container.info : theme.bg.card,
+      }}
+      testID={`timezone-${item.timezone}`}
     >
-      <Display.Icon
-        color={isSelected ? theme.info : theme.text.secondary}
-        name="schedule"
-        size={24}
-        type="material"
-      />
+      <Icon color={isSelected ? theme.info : theme.text.secondary} name="time" size={24} />
       <View className="ml-3 flex-1">
         <Typography.Text semibold>{item.label}</Typography.Text>
         <Typography.Text className="text-text-tertiary text-xs">
@@ -58,17 +64,19 @@ function TimezoneRow({
       </View>
       {isSelected && (
         <View className="w-6 h-6 rounded-full bg-info items-center justify-center">
-          <Display.Icon color={theme.text.inverse} name="check" size={16} type="material" />
+          <Icon color={theme.text.inverse} name="check" size={16} />
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
 function EmptyState() {
+  const theme = useTheme();
+
   return (
     <View className="p-8 items-center justify-center" style={{ minHeight: 200 }}>
-      <Display.Icon color={theme.text.tertiary} name="search-off" size={48} type="material" />
+      <Icon color={theme.text.tertiary} name="search-empty" size={48} />
       <Typography.Text className="text-text-secondary text-center mt-4">
         {"No se encontraron zonas horarias"}
       </Typography.Text>
@@ -76,17 +84,13 @@ function EmptyState() {
   );
 }
 
-/**
- * @deprecated Domain/region-coupled (hardcoded LatAm timezones + Spanish copy); relocated
- * to the core. Import from `@sincpro/mobile/ui/components/molecules` instead. Kept here for
- * backwards compatibility and removed in the next major.
- */
 function TimeZoneSelectorModal({
   visible,
   onClose,
   onSelect,
   currentTimezone,
 }: TimeZoneSelectorModalProps) {
+  const theme = useTheme();
   const [query, setQuery] = useState("");
   const [selectedTimezone, setSelectedTimezone] = useState<string | null>(
     currentTimezone || null,
@@ -103,6 +107,7 @@ function TimeZoneSelectorModal({
     if (!query.trim()) return timezoneList;
 
     const normalizedQuery = query
+      .trim()
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
@@ -128,59 +133,65 @@ function TimeZoneSelectorModal({
   }
 
   return (
-    <BottomSheet.Root onClose={onClose} size="large" visible={visible}>
-      <BottomSheet.Header>
+    <Sheet
+      footer={
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <Button onPress={onClose} title={"Cancelar"} variant="outline" />
+          </View>
+          {selectedTimezone && (
+            <View className="flex-1">
+              <Button onPress={handleConfirm} title={"Confirmar"} variant="primary" />
+            </View>
+          )}
+        </View>
+      }
+      onClose={onClose}
+      scrollable={false}
+      snapPoints={["90%"]}
+      testID="timezone-sheet"
+      title="Zona Horaria"
+      visible={visible}
+    >
+      <View className="flex-1">
         <View className="px-5 pb-3">
-          <Typography.Text bold variant="subtitle">
-            {"Zona Horaria"}
-          </Typography.Text>
-          <Typography.Text className="text-text-secondary text-xs">
+          <Typography.Text className="text-text-secondary text-xs mb-3">
             {"Selecciona tu zona horaria"}
           </Typography.Text>
-        </View>
-        <View className="px-5 pb-3">
           <TextInput
+            accessibilityLabel="Buscar zona horaria"
             className="bg-bg-muted px-4 py-3 rounded-xl"
             onChangeText={setQuery}
             placeholder={"Buscar zona horaria..."}
             placeholderTextColor={theme.text.tertiary}
             selectionColor={theme.primary}
+            style={{ color: theme.text.primary }}
+            testID="timezone-search"
             underlineColorAndroid="transparent"
             value={query}
           />
         </View>
-      </BottomSheet.Header>
-
-      <BottomSheet.Content scrollable>
-        {filteredTimezones.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <FlatList
-            data={filteredTimezones}
-            keyExtractor={(item) => item.timezone}
-            renderItem={({ item }) => (
-              <TimezoneRow
-                isSelected={selectedTimezone === item.timezone}
-                item={item}
-                onSelect={() => setSelectedTimezone(item.timezone)}
-              />
-            )}
-            scrollEnabled={false}
-          />
-        )}
-      </BottomSheet.Content>
-
-      <BottomSheet.Actions layout="horizontal">
-        <View className="flex-1">
-          <Form.Button onPress={onClose} title={"Cancelar"} variant="outline" />
-        </View>
-        {selectedTimezone && (
-          <View className="flex-1">
-            <Form.Button onPress={handleConfirm} title={"Confirmar"} variant="primary" />
-          </View>
-        )}
-      </BottomSheet.Actions>
-    </BottomSheet.Root>
+        <FlashList<TimezoneItem>
+          contentContainerStyle={{ flexGrow: 1 }}
+          data={filteredTimezones}
+          extraData={selectedTimezone}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          keyExtractor={(item) => item.timezone}
+          ListEmptyComponent={EmptyState}
+          maintainVisibleContentPosition={{ disabled: true }}
+          renderItem={({ item }) => (
+            <TimezoneRow
+              isSelected={selectedTimezone === item.timezone}
+              item={item}
+              onSelect={() => setSelectedTimezone(item.timezone)}
+            />
+          )}
+          style={{ flex: 1 }}
+          testID="timezone-list"
+        />
+      </View>
+    </Sheet>
   );
 }
 

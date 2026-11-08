@@ -189,13 +189,13 @@ export const MenuButtonSwipe: Story = {
         swipeActions={[
           {
             label: "Editar",
-            icon: "create-outline",
+            icon: "edit",
             color: "#2563EB",
             onPress: () => alert("Editar"),
           },
           {
             label: "Eliminar",
-            icon: "trash-outline",
+            icon: "delete",
             color: "#DC2626",
             onPress: () => alert("Eliminar"),
           },
@@ -209,7 +209,7 @@ export const MenuButtonSwipe: Story = {
         swipeActions={[
           {
             label: "Cerrar turno",
-            icon: "close-circle-outline",
+            icon: "dismiss",
             color: "#F59E0B",
             onPress: () => alert("Cerrar"),
           },
@@ -217,7 +217,7 @@ export const MenuButtonSwipe: Story = {
         swipeLeftActions={[
           {
             label: "Extender",
-            icon: "time-outline",
+            icon: "time",
             color: "#16A34A",
             onPress: () => alert("Extender"),
           },
@@ -230,7 +230,7 @@ export const MenuButtonSwipe: Story = {
         swipeActions={[
           {
             label: "Desvincular",
-            icon: "unlink-outline",
+            icon: "unlink",
             color: "#6B7280",
             onPress: () => alert("Desvincular"),
           },
@@ -320,12 +320,12 @@ export const MenuDefault: Story = {
     <View style={{ alignItems: "flex-end", padding: 16 }}>
       <Navigation.Menu
         items={[
-          { label: "Editar", icon: "create-outline", onPress: () => alert("Editar") },
-          { label: "Duplicar", icon: "copy-outline", onPress: () => alert("Duplicar") },
+          { label: "Editar", icon: "edit", onPress: () => alert("Editar") },
+          { label: "Duplicar", icon: "copy", onPress: () => alert("Duplicar") },
           { separator: true },
           {
             label: "Eliminar",
-            icon: "trash-outline",
+            icon: "delete",
             destructive: true,
             onPress: () => alert("Eliminar"),
           },
@@ -348,10 +348,10 @@ export const MenuCustomTrigger: Story = {
         </Typography.Text>
         <Navigation.Menu
           items={[
-            { label: "Exportar CSV", icon: "download-outline", onPress: () => alert("CSV") },
-            { label: "Exportar PDF", icon: "document-outline", onPress: () => alert("PDF") },
+            { label: "Exportar CSV", icon: "download", onPress: () => alert("CSV") },
+            { label: "Exportar PDF", icon: "document", onPress: () => alert("PDF") },
             { separator: true },
-            { label: "Archivar", icon: "archive-outline", onPress: () => alert("Archivar") },
+            { label: "Archivar", icon: "archive", onPress: () => alert("Archivar") },
           ]}
           trigger={
             <TouchableOpacity
@@ -368,7 +368,7 @@ export const MenuCustomTrigger: Story = {
               }}
             >
               <Typography.Text variant="bodySmall">Acciones</Typography.Text>
-              <Display.Icon name="chevron-down-outline" size={14} />
+              <Display.Icon name="expand" size={14} />
             </TouchableOpacity>
           }
         />
@@ -382,18 +382,18 @@ export const MenuCustomTrigger: Story = {
           items={[
             {
               label: "Configuración",
-              icon: "settings-outline",
+              icon: "settings",
               onPress: () => alert("Config"),
             },
             {
               label: "Notificaciones",
-              icon: "notifications-outline",
+              icon: "notifications",
               onPress: () => alert("Notif"),
             },
             { separator: true },
             {
               label: "Cerrar sesión",
-              icon: "log-out-outline",
+              icon: "logout",
               destructive: true,
               onPress: () => alert("Logout"),
             },
@@ -402,7 +402,7 @@ export const MenuCustomTrigger: Story = {
             <TouchableOpacity
               style={{ padding: 6, borderRadius: 8, backgroundColor: "#F3F4F6" }}
             >
-              <Display.Icon name="settings-outline" size={20} />
+              <Display.Icon name="settings" size={20} />
             </TouchableOpacity>
           }
         />
@@ -421,13 +421,13 @@ export const MenuItemTypes: Story = {
         </Typography.Text>
         <Navigation.Menu
           items={[
-            { label: "Editar", icon: "create-outline", onPress: () => alert("Editar") },
-            { label: "Mover", icon: "arrow-forward-outline", onPress: () => alert("Mover") },
-            { label: "Compartir", icon: "share-outline", onPress: () => alert("Compartir") },
+            { label: "Editar", icon: "edit", onPress: () => alert("Editar") },
+            { label: "Mover", icon: "next", onPress: () => alert("Mover") },
+            { label: "Compartir", icon: "share", onPress: () => alert("Compartir") },
             { separator: true },
             {
               label: "Eliminar",
-              icon: "trash-outline",
+              icon: "delete",
               destructive: true,
               onPress: () => alert("Eliminar"),
             },
@@ -436,7 +436,7 @@ export const MenuItemTypes: Story = {
             <TouchableOpacity
               style={{ padding: 4, borderRadius: 6, backgroundColor: "#F3F4F6" }}
             >
-              <Display.Icon name="ellipsis-horizontal" size={20} />
+              <Display.Icon name="more" size={20} />
             </TouchableOpacity>
           }
         />
@@ -457,7 +457,7 @@ export const MenuItemTypes: Story = {
             <TouchableOpacity
               style={{ padding: 4, borderRadius: 6, backgroundColor: "#F3F4F6" }}
             >
-              <Display.Icon name="ellipsis-horizontal" size={20} />
+              <Display.Icon name="more" size={20} />
             </TouchableOpacity>
           }
         />
@@ -471,19 +471,19 @@ export const MenuItemTypes: Story = {
           items={[
             {
               label: "Publicar",
-              icon: "cloud-upload-outline",
+              icon: "upload-cloud",
               onPress: () => alert("Publicar"),
             },
             {
               label: "Aprobar (sin permiso)",
-              icon: "checkmark-circle-outline",
+              icon: "success",
               disabled: true,
               onPress: () => {},
             },
             { separator: true },
             {
               label: "Rechazar",
-              icon: "close-circle-outline",
+              icon: "dismiss",
               destructive: true,
               onPress: () => alert("Rechazar"),
             },
@@ -492,7 +492,7 @@ export const MenuItemTypes: Story = {
             <TouchableOpacity
               style={{ padding: 4, borderRadius: 6, backgroundColor: "#F3F4F6" }}
             >
-              <Display.Icon name="ellipsis-horizontal" size={20} />
+              <Display.Icon name="more" size={20} />
             </TouchableOpacity>
           }
         />

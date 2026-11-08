@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
 import { theme } from "@sincpro/mobile-ui/theme";
@@ -9,7 +10,7 @@ export interface PermissionCardProps {
   title: string;
   description?: string;
   granted?: boolean;
-  icon?: string;
+  icon?: IconName;
   grantedLabel?: string;
   deniedLabel?: string;
   actionLabel?: string;
@@ -23,7 +24,7 @@ function PermissionCard({
   title,
   description,
   granted = false,
-  icon = "lock-closed",
+  icon = "lock",
   grantedLabel = "Permiso activo",
   deniedLabel = "Permiso inactivo",
   actionLabel = "Permitir",
@@ -41,7 +42,7 @@ function PermissionCard({
       <View className="flex-row items-start gap-3">
         <Icon
           color={granted ? theme.success : theme.danger}
-          name={granted ? "checkmark-circle" : icon}
+          name={granted ? "success" : icon}
           size={32}
         />
         <View className="flex-1 gap-1">

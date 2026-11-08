@@ -11,7 +11,7 @@ interface EmptyProps {
 function Empty({ handleGoHome, className }: EmptyProps) {
   return (
     <View className={cn("flex-1 items-center justify-center px-4", className)}>
-      <Icon name="sad-cry" size={80} type="fontawesome5" />
+      <Icon name="empty" size={80} />
       <Typography.Text className="pt-4 text-text-primary" semibold variant="h3">
         ¡Oops!
       </Typography.Text>

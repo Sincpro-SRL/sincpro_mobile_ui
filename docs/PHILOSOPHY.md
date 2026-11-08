@@ -99,7 +99,9 @@ El consumidor decide cuándo y cómo adoptarlos:
 - **Flat / minimal**: superficies tokenizadas (`bg-bg-card`/`bg-bg-page`) + **hairline** (`border-border-light`) + sombra sutil como una opción, sin eliminar defaults con gradiente.
 - **Color con intención**: `primary` para fills/CTAs; `text.accent` para texto brand; el resto en neutros. El consumidor puede elegir gradientes o superficies planas.
 - **Aire y jerarquía** por tipografía/spacing, no por bloques de color.
-- **Cómo se introduce sin romper v1**: una alternativa visual no depreca por sí sola el componente existente. Las APIs legacy ya marcadas mantienen sus exports; no se programa otro rediseño de `Button` ni una migración visual como consecuencia de mejorar teclado, foco o composición.
+- **Modernización SDK 58**: la adopción breaking está autorizada; se borran las APIs
+  legacy ya marcadas y sus exports. La personalización visual sigue disponible mediante
+  tokens, estilos y slots públicos, sin conservar otro motor por compatibilidad.
 
 ## Padding & safe-area: ¿interno o externo?
 
@@ -108,14 +110,22 @@ El consumidor decide cuándo y cómo adoptarlos:
 - **Padding interno (default del DS, personalizable)**: el espaciado _dentro_ del componente (entre icono y texto, alto de la barra, gutters de las filas) tiene un default consistente. Se puede ajustar mediante tokens, `className`, `style` o estilos de slots públicos; no es una restricción de identidad. Si una región no lo permite todavía, es una limitación por resolver.
 - **Contexto externo (lo controla quien lo usa)**: márgenes de pantalla, posición, y la **safe-area**. Las barras que viven al borde (`AppBar`, `CollapsingHeader`, `BottomNav`) reservan la safe-area por defecto (`safeArea={true}`) porque ese es el caso real (arriba/abajo de pantalla), **pero es un prop**: `safeArea={false}` al embeber (dentro de un `FloatingBar`, en demos, o en layouts anidados) para no duplicar el espacio del status/nav bar. Síntoma de no respetarlo: padding-top/bottom "de más" al apilar barras o anidarlas.
 
-## Estrategia híbrida `@expo/ui` + NativeWind (2026-06)
+## Estrategia `@expo/ui` + NativeWind (SDK 58)
 
-> `@expo/ui` (SDK 57) es **estable, en Expo Go, oficial de Expo** (60+ componentes nativos SwiftUI/Compose). Pero **no toma `className`/tokens** y se ve como el OS (Material/Cupertino). Decisión: **híbrido**.
+`@expo/ui` es el motor oficial de controles y sheets. NativeWind conserva la
+presentación de marca; los controles nativos reciben tintes y modifiers públicos.
 
-- **Nativo (`@expo/ui` u otra lib nativa)** — para primitivos donde el _comportamiento/feel nativo_ vale más que la marca: **date/time pickers** (`Form.DatePicker` sobre `@react-native-community/datetimepicker` ✅), `Switch`, `BottomSheet`/`ContextMenu`. Tinte vía props/`modifiers`, no className.
-- **Lección (no todo nativo gana)**: el `Slider` de `@expo/ui` se probó y **se descartó** — su estilo Material con ticks no respeta los tokens y se ve peor que un slider tokenizado. `Form.Slider` volvió a `@react-native-community/slider` (track en `primary`, limpio). Regla: nativo **solo** cuando mejora UX _sin_ romper la marca; si el control nativo se ve "ajeno", gana el tokenizado.
+- **Nativo (`@expo/ui`)** — date/time picker, slider, selección, menú, segmented control
+  y una sola Sheet sobre `community/bottom-sheet`. No se conserva gorhom, otra Sheet
+  propia ni el picker/slider de react-native-community.
 - **Marca (NativeWind+tokens)** — para la _capa visual de identidad_, que DEBE verse igual en iOS/Android: `Button`, `Card`/`ProductCard`/`MediaCard`, `Badge`/`Chip`/`Tag`, `Typography`, `AppBar`/headers, listas, feedback. Acá lo nativo fragmentaría el look y tiraría los tokens.
-- **Empaque**: los componentes sobre `@expo/ui` (o gorhom) se exponen **solo por subpath** con la dep como **peer opcional** → el barrel de la categoría NO arrastra el módulo nativo. Verificado: `dist/Form/index.js` con 0 refs a `@expo/ui`; `Form/Form.Slider` lo importa externo.
+- **Empaque**: `@expo/ui` es obligatorio. El host lo instala explícitamente con Expo;
+  un peer opcional no puede ocultar una dependencia usada por el catálogo habitual.
+- **Iconos y listas**: `Display.Icon` usa SF Symbols/Material mediante `ICON_MAP`.
+  ListViewV2, timezone y opciones de edición usan FlashList v2, sin clones de entidades.
+- **Barras y teclado**: el host controla las barras con Expo, cada borde tiene un dueño
+  y keyboard-controller coordina campo, toolbar y CTA. No hay StatusBar/KeyboardAvoidingView
+  de RN dentro de layouts.
 - **Por qué híbrido y no 100% nativo**: un design system existe para dar **look de marca consistente**; 100% `@expo/ui` deja de serlo (se ve como cada OS) y descarta la arquitectura de tokens. El híbrido toma lo nativo donde suma sin perder la identidad.
 
 ## Decisiones técnicas aprendidas (gotchas)

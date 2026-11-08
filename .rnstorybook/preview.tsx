@@ -5,85 +5,166 @@ import {
   setActiveTheme,
   themeToVars,
 } from "@sincpro/mobile-ui/theme";
+import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
 import type { Preview } from "@storybook/react-native";
+import type { StatusBarStyle } from "expo-status-bar";
+import * as SystemUI from "expo-system-ui";
 import { vars } from "nativewind";
 import { type ReactNode, useLayoutEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Appearance, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { type Edge, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { useCanvasStatusBar } from "./SystemBars";
 
 const THEMES = {
   light: DEFAULT_THEME,
   dark: DEFAULT_DARK_THEME,
 } as const;
 type ThemeKey = keyof typeof THEMES;
+type ThemeTokens = (typeof THEMES)[ThemeKey];
 const ORDER: ThemeKey[] = ["light", "dark"];
-const NEXT_LABEL: Record<ThemeKey, string> = {
-  light: "☾ Dark",
-  dark: "☀ Light",
-};
+const SHOW_CHROME = process.env.EXPO_PUBLIC_STORYBOOK_TEST !== "1";
 
-function ThemeFrame({
-  children,
-  screen = false,
-  ownsScroll = false,
+function AppearanceBar({
+  mode,
+  onToggle,
+  tokens,
 }: {
-  children: ReactNode;
-  screen?: boolean;
-  ownsScroll?: boolean;
+  mode: ThemeKey;
+  onToggle: () => void;
+  tokens: ThemeTokens;
 }) {
-  const [mode, setMode] = useState<ThemeKey>("light");
-  const tokens = THEMES[mode];
-  useLayoutEffect(() => setActiveTheme(tokens), [tokens]);
-
-  const toggle = () => {
-    const next = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
-    setMode(next);
-  };
-
+  const nextIsDark = mode === "light";
   return (
-    <View style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}>
+    <View
+      style={{
+        alignItems: "center",
+        backgroundColor: tokens.bg.card,
+        borderTopColor: tokens.border.default,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        flexDirection: "row",
+        gap: 12,
+        justifyContent: "space-between",
+        minHeight: 52,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+      }}
+    >
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{
+            color: tokens.text.primary,
+            fontFamily: fontFamilies.medium,
+            fontSize: 15,
+            letterSpacing: -0.2,
+          }}
+        >
+          Apariencia
+        </Text>
+        <Text
+          style={{
+            color: tokens.text.secondary,
+            fontFamily: fontFamilies.regular,
+            fontSize: 12,
+            marginTop: 1,
+          }}
+        >
+          {mode === "light" ? "Tema claro" : "Tema oscuro"}
+        </Text>
+      </View>
       <Pressable
-        accessibilityLabel={mode === "light" ? "Activar tema oscuro" : "Activar tema claro"}
+        accessibilityLabel={nextIsDark ? "Activar tema oscuro" : "Activar tema claro"}
         accessibilityRole="button"
-        onPress={toggle}
+        onPress={onToggle}
         style={{
-          position: screen ? "relative" : "absolute",
-          alignSelf: "flex-end",
-          zIndex: 1,
-          top: screen ? undefined : 8,
-          right: screen ? undefined : 8,
-          margin: screen ? 8 : undefined,
-          minHeight: screen ? 48 : undefined,
-          justifyContent: "center",
-          paddingHorizontal: 12,
-          paddingVertical: 6,
+          alignItems: "center",
+          backgroundColor: tokens.bg.inverse,
           borderRadius: 999,
-          backgroundColor: mode === "dark" ? "#F1F5F9" : "#0F172A",
+          justifyContent: "center",
+          minHeight: 40,
+          paddingHorizontal: 16,
         }}
         testID="storybook-theme-toggle"
       >
-        <Text style={{ color: mode === "dark" ? "#0F172A" : "#F1F5F9", fontSize: 12 }}>
-          {NEXT_LABEL[mode]}
+        <Text
+          style={{
+            color: tokens.text.inverse,
+            fontFamily: fontFamilies.medium,
+            fontSize: 14,
+            letterSpacing: 0.1,
+          }}
+        >
+          {nextIsDark ? "Oscuro" : "Claro"}
         </Text>
       </Pressable>
-      {ownsScroll ? (
-        <View style={{ flex: 1 }}>{children}</View>
-      ) : (
-        <KeyboardAwareScrollView
-          bottomOffset={20}
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: screen ? "flex-start" : "center",
-            padding: 16,
-          }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          style={{ flex: 1, backgroundColor: tokens.bg.page }}
-        >
-          {children}
-        </KeyboardAwareScrollView>
-      )}
     </View>
+  );
+}
+
+function ThemeFrame({
+  children,
+  ownsScroll = false,
+  ownsTopInset = false,
+  screen = false,
+  statusBarStyle,
+}: {
+  children: ReactNode;
+  ownsScroll?: boolean;
+  ownsTopInset?: boolean;
+  screen?: boolean;
+  statusBarStyle?: StatusBarStyle;
+}) {
+  const systemScheme = useColorScheme();
+  useCanvasStatusBar(statusBarStyle);
+  const insets = useSafeAreaInsets();
+  const [manualMode, setManualMode] = useState<ThemeKey | null>(null);
+  const mode = manualMode ?? (systemScheme === "dark" ? "dark" : "light");
+  const tokens = THEMES[mode];
+  useLayoutEffect(() => {
+    setActiveTheme(tokens);
+    Appearance.setColorScheme(manualMode ?? "unspecified");
+    void SystemUI.setBackgroundColorAsync(tokens.bg.page).catch((error: unknown) =>
+      console.error("[Storybook] Could not update system background", error),
+    );
+  }, [manualMode, tokens]);
+  useLayoutEffect(() => () => Appearance.setColorScheme("unspecified"), []);
+
+  const edges: Edge[] = ["left", "right"];
+  if (!screen) edges.push("top");
+  if (!SHOW_CHROME) edges.push("bottom");
+  const topInset = screen && !ownsTopInset ? insets.top : 0;
+  const toggle = () => {
+    const next = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
+    setManualMode(next);
+  };
+
+  return (
+    <SafeAreaView
+      edges={edges}
+      style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
+    >
+      <View style={{ flex: 1, paddingTop: topInset }}>
+        {ownsScroll ? (
+          <View style={{ flex: 1 }}>{children}</View>
+        ) : (
+          <KeyboardAwareScrollView
+            bottomOffset={20}
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "flex-start",
+              padding: 16,
+            }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1, backgroundColor: tokens.bg.page }}
+          >
+            {children}
+          </KeyboardAwareScrollView>
+        )}
+      </View>
+      {SHOW_CHROME ? <AppearanceBar mode={mode} onToggle={toggle} tokens={tokens} /> : null}
+    </SafeAreaView>
   );
 }
 
@@ -92,7 +173,9 @@ const preview: Preview = {
     (Story, context) => (
       <ThemeFrame
         ownsScroll={context.parameters.ownsScroll === true}
+        ownsTopInset={context.parameters.ownsTopInset === true}
         screen={context.parameters.layout === "fullscreen"}
+        statusBarStyle={context.parameters.statusBarStyle}
       >
         <ConfirmationProvider>
           <Story />
@@ -101,6 +184,8 @@ const preview: Preview = {
     ),
   ],
   parameters: {
+    noSafeArea: true,
+    hideFullScreenButton: true,
     controls: {
       matchers: { color: /(background|color)$/i, date: /Date$/ },
     },

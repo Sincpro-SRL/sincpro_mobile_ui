@@ -13,10 +13,10 @@ import {
   type SegmentedControlProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
 import { useTheme } from "@sincpro/mobile-ui/theme";
-import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import { FormViewProvider, useFormView } from "@sincpro/mobile-ui/views/FormViewV2.context";
 import React, { ReactNode } from "react";
-import { RefreshControl, View } from "react-native";
+import { RefreshControl, useWindowDimensions, View, type ViewInstance } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import type { Edge } from "react-native-safe-area-context";
 
 interface FormViewProps<T> {
@@ -33,12 +33,25 @@ interface FormViewProps<T> {
   onRetry?: () => void;
   onBack?: () => void;
   withContainer?: boolean;
+  edges?: Edge[];
   children: ReactNode;
 }
 
 const RefreshErrorContext = React.createContext<((error: unknown) => void) | undefined>(
   undefined,
 );
+const FooterHeightContext = React.createContext<{
+  height: number;
+  setHeight: (height: number) => void;
+} | null>(null);
+
+function useFooterHeight() {
+  const context = React.useContext(FooterHeightContext);
+  if (!context) {
+    throw new Error("FormViewV2.Content and Footer must be used within FormViewV2.Root");
+  }
+  return context;
+}
 
 export async function refreshFormData(
   onRefresh: (() => Promise<void>) | undefined,
@@ -74,12 +87,16 @@ function FormViewRoot<T>({
   onRetry,
   onBack,
   withContainer = true,
+  edges = ["left", "right"],
   children,
 }: FormViewProps<T>) {
+  const [footerHeight, setFooterHeight] = React.useState(0);
+  const footerContext = React.useMemo(
+    () => ({ height: footerHeight, setHeight: setFooterHeight }),
+    [footerHeight],
+  );
   const Wrapper = withContainer ? Container : View;
-  const wrapperProps = withContainer
-    ? { edges: ["bottom", "left", "right"] as Edge[] }
-    : { style: { flex: 1 } };
+  const wrapperProps = withContainer ? { edges } : { style: { flex: 1 } };
 
   return (
     <FormViewProvider
@@ -97,7 +114,9 @@ function FormViewRoot<T>({
     >
       <RefreshErrorContext.Provider value={onRefreshError}>
         <ErrorBoundary>
-          <Wrapper {...wrapperProps}>{children}</Wrapper>
+          <FooterHeightContext.Provider value={footerContext}>
+            <Wrapper {...wrapperProps}>{children}</Wrapper>
+          </FooterHeightContext.Provider>
         </ErrorBoundary>
       </RefreshErrorContext.Provider>
     </FormViewProvider>
@@ -107,7 +126,6 @@ function FormViewRoot<T>({
 interface HeaderProps {
   /** Reserve the top inset; disable when the host already handles it. */
   safeArea?: boolean;
-  barStyle?: "light-content" | "dark-content";
   /** AppBar display variant. `large` = big title (list/index screens). `center` = modal/detail. */
   variant?: "default" | "large" | "center";
   /** Surface tone. `dark` = always-dark hero. `gradient` = brand accent gradient. */
@@ -126,13 +144,10 @@ interface HeaderProps {
    * See `AppBarBackground` for the full shape.
    */
   background?: AppBarBackground;
-  /** @deprecated Pass `variant` prop instead. */
-  logoSource?: ImageSource;
 }
 
 function Header({
   safeArea = true,
-  barStyle,
   variant = "default",
   tone,
   actions,
@@ -146,7 +161,6 @@ function Header({
     <AppBar
       actions={actions}
       background={background}
-      barStyle={barStyle}
       onBack={onBack}
       safeArea={safeArea}
       subheader={children}
@@ -186,7 +200,7 @@ function HeaderSegmented<T extends string>(props: SegmentedControlProps<T>) {
 
 function Content({
   withMargin = false,
-  keyboardToolbar = false,
+  keyboardToolbar = true,
   keyboardFormProps,
   children,
 }: {
@@ -209,6 +223,8 @@ function Content({
     setShowRefreshing,
   } = useFormView();
   const bottomInset = useBottomInset();
+  const { height: measuredFooterHeight } = useFooterHeight();
+  const stickyFooterHeight = isLoading || isEmpty ? 0 : measuredFooterHeight;
   const theme = useTheme();
   const onRefreshError = React.useContext(RefreshErrorContext);
 
@@ -240,6 +256,7 @@ function Content({
           />
         )
       }
+      stickyFooterHeight={stickyFooterHeight}
       style={[{ flex: 1, backgroundColor: theme.bg.page }, keyboardFormProps?.style]}
       toolbar={keyboardToolbar}
     >
@@ -258,20 +275,6 @@ function Content({
       )}
     </KeyboardForm>
   );
-}
-
-/**
- * @deprecated Content already handles isEmpty/!item by rendering Feedback.Empty internally.
- * Use `<FormViewV2.Content>` directly — this wrapper is redundant.
- */
-function Form({ children }: { children: ReactNode }) {
-  const { isEmpty, item } = useFormView();
-
-  if (isEmpty || !item) {
-    return <Feedback.Empty />;
-  }
-
-  return <>{children}</>;
 }
 
 /** Layout wrapper for a set of Group cards. Content already handles isEmpty/loading states. */
@@ -379,15 +382,35 @@ function Section({
 
 function Footer({ children }: { children: ReactNode }) {
   const { isEmpty, isLoading } = useFormView();
+  const { setHeight } = useFooterHeight();
+  const frame = React.useRef<ViewInstance>(null);
+  const { height: windowHeight } = useWindowDimensions();
+  const [bottomGap, setBottomGap] = React.useState(0);
+
+  React.useEffect(() => () => setHeight(0), [setHeight]);
 
   if (isEmpty || isLoading) {
     return null;
   }
 
-  // Sticky bottom bar (lives outside the scroll). No shadow — a top hairline integrates it
-  // with the form instead of reading as a detached floating card.
   return (
-    <View className="bg-bg-card px-4 py-3 border-t border-border-light">{children}</View>
+    <View
+      onLayout={() => {
+        frame.current?.measureInWindow((_x, y, _width, height) =>
+          setBottomGap(Math.max(0, windowHeight - y - height)),
+        );
+      }}
+      ref={frame}
+    >
+      <KeyboardStickyView offset={{ closed: 0, opened: bottomGap }}>
+        <View
+          className="bg-bg-card px-4 py-3 border-t border-border-light"
+          onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
+        >
+          {children}
+        </View>
+      </KeyboardStickyView>
+    </View>
   );
 }
 
@@ -400,7 +423,6 @@ const HeaderWithSubComponents = Object.assign(Header, {
 
 // Nested Content components
 const ContentWithSubComponents = Object.assign(Content, {
-  Form,
   Groups,
   Group,
   Section,

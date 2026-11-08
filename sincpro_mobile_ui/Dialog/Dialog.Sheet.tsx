@@ -1,170 +1,109 @@
-/* eslint-disable react-hooks/refs */
-// This file uses the canonical RN patterns: useRef(new Animated.Value()).current and PanResponder
-// created inside useState. Those hooks rules warn — they're not bugs here. Documented at the
-// eslint config level (see eslint.config.js:30-33).
-
+import BottomSheet, { BottomSheetView } from "@expo/ui/community/bottom-sheet";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useSheetTranslation } from "@sincpro/mobile-ui/utils/useSheetTranslation";
 import { vars } from "nativewind";
-import { type ReactNode, useRef, useState } from "react";
-import { Animated, Modal, PanResponder, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { ReactNode } from "react";
+import { ScrollView, View } from "react-native";
 
-/**
- * @deprecated A provider is no longer required. `SheetProvider` is a no-op passthrough
- * kept to avoid breaking prior wiring. Remove it when you can.
- */
-export function SheetProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>;
-}
-
-export interface SheetProps {
+export type SheetProps = {
   visible: boolean;
   onClose: () => void;
+  title?: string;
   children: ReactNode;
   footer?: ReactNode;
-  footerClassName?: string;
-  title?: string;
-  /** Max sheet height (fraction of the screen). Default 0.9. */
-  maxHeightRatio?: number;
-  /** Allow closing by tapping the dim backdrop. Default `false` (handle/button only). */
-  dismissOnBackdrop?: boolean;
-  /** Show a visible close button in the sheet header. */
-  showCloseButton?: boolean;
+  snapPoints?: (string | number)[];
+  scrollable?: boolean;
+  dismissible?: boolean;
   testID?: string;
-}
+};
 
-/**
- * Bottom sheet on RN's native `Modal`: bottom-anchored, dim backdrop, handle with
- * **swipe-down to close** (handle only). By default it does NOT close on backdrop tap
- * (`dismissOnBackdrop`). No provider or native deps. Import via subpath `Dialog/Sheet`.
- */
+const SNAP_POINTS = ["60%", "90%"];
+
 function Sheet({
   visible,
   onClose,
+  title,
   children,
   footer,
-  footerClassName,
-  title,
-  maxHeightRatio = 0.9,
-  dismissOnBackdrop = false,
-  showCloseButton = false,
+  snapPoints = SNAP_POINTS,
+  scrollable = true,
+  dismissible = true,
   testID,
 }: SheetProps) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const { translateY, reducedMotion } = useSheetTranslation(visible);
-  const gesture = useRef({ onClose, reducedMotion });
-  gesture.current = { onClose, reducedMotion };
-
-  const [pan] = useState(() =>
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_, g) => g.dy > 2,
-      onPanResponderGrant: () => translateY.stopAnimation(),
-      onPanResponderMove: (_, g) => {
-        if (g.dy > 0) translateY.setValue(g.dy);
-      },
-      onPanResponderRelease: (_, g) => {
-        if (g.dy > 100 || g.vy > 0.5) {
-          translateY.stopAnimation();
-          gesture.current.onClose();
-        } else {
-          if (gesture.current.reducedMotion) translateY.setValue(0);
-          else Animated.spring(translateY, { toValue: 0, useNativeDriver: true }).start();
-        }
-      },
-    }),
-  );
+  const close = () => {
+    if (visible && dismissible) onClose();
+  };
 
   return (
-    <Modal
-      animationType="none"
-      onRequestClose={onClose}
-      presentationStyle="overFullScreen"
-      transparent
-      visible={visible}
+    <BottomSheet
+      backgroundStyle={{ backgroundColor: theme.bg.card }}
+      enablePanDownToClose={dismissible}
+      index={visible ? 0 : -1}
+      onClose={close}
+      snapPoints={snapPoints}
     >
-      <View className="flex-1 justify-end" testID={testID}>
-        {/* Dim backdrop: does NOT close on tap (unless dismissOnBackdrop) */}
+      <BottomSheetView style={{ flex: 1 }}>
         <View
-          className="absolute inset-0 bg-black/50"
-          onResponderRelease={dismissOnBackdrop ? onClose : undefined}
-          onStartShouldSetResponder={() => dismissOnBackdrop}
-        />
-        <Animated.View
           accessibilityViewIsModal
-          className="rounded-t-3xl"
           importantForAccessibility="yes"
-          onAccessibilityEscape={onClose}
-          style={[
-            vars(themeToVars(theme)),
-            {
-              backgroundColor: theme.bg.card,
-              paddingBottom: insets.bottom + 12,
-              maxHeight: `${Math.round(maxHeightRatio * 100)}%`,
-              transform: [{ translateY }],
-            },
-          ]}
+          onAccessibilityEscape={close}
+          style={[vars(themeToVars(theme)), { flex: 1, minHeight: 0 }]}
+          testID={testID}
         >
-          {/* Drag zone: ONLY the top handle */}
-          <View
-            accessibilityElementsHidden
-            className="items-center pt-3 pb-2"
-            {...pan.panHandlers}
-          >
-            <View className="w-12 h-1.5 rounded-full bg-border-strong" />
-          </View>
-          {title || showCloseButton ? (
-            <View className="flex-row items-center px-4 pb-1">
-              {title ? (
-                <Typography.Text
-                  accessibilityRole="header"
-                  className="flex-1 text-text-primary"
-                  semibold
-                  variant="subtitle"
-                >
-                  {title}
-                </Typography.Text>
-              ) : null}
-              {showCloseButton ? (
-                <Pressable
-                  accessibilityLabel="Cerrar"
-                  accessibilityRole="button"
-                  className="items-center justify-center rounded-lg"
-                  hitSlop={8}
-                  onPress={onClose}
-                  style={{ minWidth: 48, minHeight: 48 }}
-                >
-                  <Typography.Text className="text-text-accent" variant="bodySmall">
-                    Cerrar
-                  </Typography.Text>
-                </Pressable>
-              ) : null}
-            </View>
-          ) : null}
-          <ScrollView
-            contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingTop: 4,
-              paddingBottom: footer ? 12 : 0,
-            }}
-            style={{ flexShrink: 1 }}
-          >
-            {children}
-          </ScrollView>
-          {footer ? (
-            <View
-              className={`border-t border-border-light px-4 pt-3 ${footerClassName ?? ""}`}
+          <View className="flex-row items-center gap-3 px-4 pb-2">
+            {title ? (
+              <Typography.Text
+                accessibilityRole="header"
+                className="flex-1 text-text-primary"
+                semibold
+                variant="subtitle"
+              >
+                {title}
+              </Typography.Text>
+            ) : (
+              <View className="flex-1" />
+            )}
+            <Pressable
+              accessibilityLabel="Cerrar"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !dismissible }}
+              disabled={!dismissible}
+              onPress={close}
+              style={{
+                minHeight: 48,
+                minWidth: 48,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              {footer}
-            </View>
+              <Typography.Text
+                className={dismissible ? "text-text-accent" : "text-text-disabled"}
+                variant="bodySmall"
+              >
+                Cerrar
+              </Typography.Text>
+            </Pressable>
+          </View>
+          {scrollable ? (
+            <ScrollView
+              contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+              keyboardDismissMode="on-drag"
+              keyboardShouldPersistTaps="handled"
+              style={{ flex: 1, minHeight: 0 }}
+            >
+              {children}
+            </ScrollView>
+          ) : (
+            <View style={{ flex: 1, minHeight: 0, paddingHorizontal: 16 }}>{children}</View>
+          )}
+          {footer ? (
+            <View className="border-t border-border-light px-4 py-3">{footer}</View>
           ) : null}
-        </Animated.View>
-      </View>
-    </Modal>
+        </View>
+      </BottomSheetView>
+    </BottomSheet>
   );
 }
 

@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
@@ -6,7 +7,7 @@ import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface FABProps {
-  icon: string;
+  icon: IconName;
   onPress: () => void;
   label?: string;
   position?: "bottom-right" | "bottom-left";

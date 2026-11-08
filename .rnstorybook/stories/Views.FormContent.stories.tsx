@@ -1,3 +1,4 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 /**
  * Views/Form/Content — piezas de contenido de FormViewV2.Content:
  * Group/Section (con title) y cómo Content responde a loading/error/empty.
@@ -159,7 +160,7 @@ function FormViewGroupWithTitleStory() {
   const [notes, setNotes] = useState("");
 
   return (
-    <View style={{ height: 680, alignSelf: "stretch" }}>
+    <View style={{ flex: 1, alignSelf: "stretch" }}>
       <FormViewV2.Root
         item={{ name }}
         name="Nuevo cliente"
@@ -198,7 +199,7 @@ function FormViewGroupWithTitleStory() {
         </FormViewV2.Content>
 
         <FormViewV2.Footer>
-          <Form.Button onPress={() => {}} title="Guardar cliente" />
+          <Actions.Button onPress={() => {}} title="Guardar cliente" />
         </FormViewV2.Footer>
       </FormViewV2.Root>
     </View>

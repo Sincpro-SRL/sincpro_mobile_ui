@@ -8,7 +8,7 @@ import { useWindowDimensions } from "react-native";
 
 const meta: Meta = {
   title: "Patterns/Collections/Large List",
-  parameters: { layout: "fullscreen", ownsScroll: true },
+  parameters: { layout: "fullscreen", ownsScroll: true, ownsTopInset: true },
 };
 export default meta;
 type Story = StoryObj;
@@ -26,37 +26,32 @@ export const VirtualizedSelection: Story = {
     const listProps = useMemo(
       () => ({
         extraData: selected,
-        initialNumToRender: 12,
-        maxToRenderPerBatch: 8,
-        windowSize: 7,
-        getItemLayout: (_data: unknown, index: number) => ({
-          length: rowHeight,
-          offset: rowHeight * index,
-          index,
-        }),
+        drawDistance: 500,
       }),
-      [rowHeight, selected],
+      [selected],
     );
     return (
       <ListView.Root items={ITEMS} name="Registros" withContainer={false}>
         <ListView.Header variant="default">
           <Typography.Text accessibilityLiveRegion="polite">
-            {selected
-              ? `Seleccionado: ${selected}`
-              : "2000 registros, renderizados por ventana"}
+            {selected ? `Seleccionado: ${selected}` : "2000 registros con reciclado nativo"}
           </Typography.Text>
         </ListView.Header>
-        <ListView.Content listProps={listProps} testID="large-record-list" withMargin={false}>
-          {(item) => (
+        <ListView.Content<(typeof ITEMS)[number]>
+          listProps={listProps}
+          testID="large-record-list"
+          withMargin={false}
+        >
+          {(item, row) => (
             <Pressable
-              accessibilityLabel={item.rowTitle}
+              accessibilityLabel={row.rowTitle}
               accessibilityState={{ selected: selected === item.id }}
               className="border-b border-border-light px-4 justify-center"
               hitSlop={0}
               onPress={() => setSelected(item.id)}
-              style={{ height: rowHeight }}
+              style={{ minHeight: rowHeight, paddingVertical: 8 }}
             >
-              <Typography.Text>{item.rowTitle}</Typography.Text>
+              <Typography.Text>{row.rowTitle}</Typography.Text>
               <Typography.Text variant="caption">
                 {selected === item.id ? "Seleccionado" : "Toca para seleccionar"}
               </Typography.Text>

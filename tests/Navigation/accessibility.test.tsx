@@ -1,3 +1,4 @@
+import type { SegmentedControlProps } from "@expo/ui/community/segmented-control";
 import { expect, jest, test } from "@jest/globals";
 import { AppBar } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { BottomNav } from "@sincpro/mobile-ui/Navigation/Navigation.BottomNav";
@@ -11,6 +12,14 @@ jest.mock("@sincpro/mobile-ui/Display/Display.Pattern", () => ({ Pattern: () => 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
+jest.mock("@expo/ui/community/segmented-control", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return {
+    __esModule: true,
+    default: (props: SegmentedControlProps) => mockReact.createElement(View, props),
+  };
+});
 
 test("AppBar exposes its title as a header and a default 48 point back action", async () => {
   await render(<AppBar onBack={jest.fn()} title="Pedidos" />);
@@ -49,52 +58,51 @@ test("BottomNav exposes a tab list and selected tab with a default 48 point targ
   expect(screen.getByText("Pedidos").props.numberOfLines).toBeUndefined();
 });
 
-test("segmented options keep tab semantics and meet the 48 point target by default", async () => {
+test("native segmented options preserve selected values and meet the 48 point target", async () => {
+  const onChange = jest.fn<(value: string) => void>();
   await render(
     <SegmentedControl
-      onChange={jest.fn()}
+      onChange={onChange}
       options={[
         { label: "Abiertos", value: "open" },
         { label: "Cerrados", value: "closed" },
       ]}
+      testID="views"
       value="open"
     />,
   );
 
-  expect(screen.getByRole("tab", { name: "Abiertos" }).props.accessibilityState).toEqual({
-    selected: true,
+  const native = screen.getByTestId("views-segments-0");
+  expect(native.props.values).toEqual(["Abiertos", "Cerrados"]);
+  expect(native.props.selectedIndex).toBe(0);
+  expect(StyleSheet.flatten(native.props.style)).toMatchObject({ minHeight: 48 });
+  await fireEvent(native, "change", {
+    nativeEvent: { selectedSegmentIndex: 1, value: "Cerrados" },
   });
-  expect(screen.getByRole("tab", { name: "Abiertos" }).props.style).toMatchObject({
-    minHeight: 48,
-    minWidth: 48,
-  });
-  expect(StyleSheet.flatten(screen.getByText("Abiertos").props.style).fontSize).toBe(14);
+  expect(onChange).toHaveBeenCalledWith("closed");
 });
 
-test("mobile segmented labels wrap and styles stay locally customizable", async () => {
+test("native segmented labels remain complete and container styles stay locally customizable", async () => {
   await render(
     <SegmentedControl
       accessibilityLabel="Vista del inventario"
-      labelTextProps={{ style: { fontSize: 18, fontWeight: "700" } }}
-      onChange={jest.fn()}
+      onChange={jest.fn<(value: string) => void>()}
       options={[{ label: "Registros pendientes de sincronización", value: "pending" }]}
-      optionStyle={{ paddingVertical: 12 }}
+      style={{ paddingVertical: 12 }}
+      testID="inventory-view"
       value="pending"
     />,
   );
-  const label = screen.getByText("Registros pendientes de sincronización");
+  const label = screen.getByText("Vista del inventario");
   expect(label.props.numberOfLines).toBeUndefined();
-  expect(StyleSheet.flatten(label.props.style)).toMatchObject({
-    fontSize: 18,
-    fontWeight: "700",
-  });
-  const tab = screen.getByRole("tab");
-  expect(StyleSheet.flatten(tab.props.style)).toMatchObject({
-    minHeight: 48,
-    minWidth: 48,
+  expect(label.props.allowFontScaling).not.toBe(false);
+  expect(StyleSheet.flatten(screen.getByTestId("inventory-view").props.style)).toMatchObject({
     paddingVertical: 12,
   });
-  expect(tab.props.hitSlop).toBe(0);
+  const native = screen.getByTestId("inventory-view-segments-0");
+  expect(native.props.values).toEqual(["Registros pendientes de sincronización"]);
+  expect(native.props.accessibilityLabel).toBe("Vista del inventario");
+  expect(StyleSheet.flatten(native.props.style).minHeight).toBe(48);
 });
 
 test("labeled AppBar actions grow with scaled multiline text instead of a fixed height", async () => {
@@ -131,24 +139,35 @@ test.each(["none", "pill", "pill-text", "bar", "glow"] as const)(
 );
 
 test("disabled segmented options expose state and cannot dispatch changes", async () => {
-  const onChange = jest.fn();
+  const onChange = jest.fn<(value: string) => void>();
   const options = [
     { label: "Lista", value: "list" },
-    { label: "Mapa", value: "map", disabled: true, accessibilityHint: "Requiere ubicación" },
+    { label: "Mapa", value: "map", disabled: true },
   ];
   const { rerender } = await render(
-    <SegmentedControl onChange={onChange} options={options} value="list" />,
+    <SegmentedControl onChange={onChange} options={options} testID="views" value="list" />,
   );
-  const map = screen.getByRole("tab", { name: "Mapa" });
-  expect(map.props.accessibilityState).toMatchObject({ selected: false, disabled: true });
-  expect(map.props.accessibilityHint).toBe("Requiere ubicación");
-  await fireEvent.press(map);
+  const map = screen.getByTestId("views-segments-1");
+  expect(map.props.enabled).toBe(false);
+  expect(map.props.selectedIndex).toBe(-1);
+  await fireEvent(map, "change", { nativeEvent: { selectedSegmentIndex: 0, value: "Mapa" } });
   expect(onChange).not.toHaveBeenCalled();
-  await fireEvent.press(screen.getByRole("tab", { name: "Lista" }));
+  await fireEvent(screen.getByTestId("views-segments-0"), "change", {
+    nativeEvent: { selectedSegmentIndex: 0, value: "Lista" },
+  });
   expect(onChange).toHaveBeenCalledWith("list");
   await rerender(
-    <SegmentedControl disabled onChange={onChange} options={options} value="list" />,
+    <SegmentedControl
+      disabled
+      onChange={onChange}
+      options={options}
+      testID="views"
+      value="list"
+    />,
   );
-  await fireEvent.press(screen.getByRole("tab", { name: "Lista" }));
+  expect(screen.getByTestId("views-segments-0").props.enabled).toBe(false);
+  await fireEvent(screen.getByTestId("views-segments-0"), "change", {
+    nativeEvent: { selectedSegmentIndex: 0, value: "Lista" },
+  });
   expect(onChange).toHaveBeenCalledTimes(1);
 });

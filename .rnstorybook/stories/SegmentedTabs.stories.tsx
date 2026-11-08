@@ -24,7 +24,6 @@ export const AccessibleSegments: Story = {
               label: "Archivados",
               value: "archived",
               disabled: true,
-              accessibilityHint: "No disponible en esta demostración",
             },
           ]}
           value={value}
@@ -61,22 +60,21 @@ export const Segmented: Story = {
   render: () => <SegmentedDemo />,
 };
 
-// ─── With icons (top layout) ─────────────────────────────────────────────────
+// ─── Destinations ───────────────────────────────────────────────────────────
 
-const ICON_VIEWS_TOP = [
-  { label: "Inicio", value: "home", icon: "home-outline" },
-  { label: "Mapa", value: "map", icon: "map-outline" },
-  { label: "Perfil", value: "profile", icon: "person-outline" },
+const DESTINATIONS = [
+  { label: "Inicio", value: "home" },
+  { label: "Mapa", value: "map" },
+  { label: "Perfil", value: "profile" },
 ] as const;
 
-function SegmentedIconsTopDemo() {
-  const [view, setView] = useState<(typeof ICON_VIEWS_TOP)[number]["value"]>("home");
+function DestinationSegmentsDemo() {
+  const [view, setView] = useState<(typeof DESTINATIONS)[number]["value"]>("home");
   return (
     <View style={{ gap: 12 }}>
       <Navigation.SegmentedControl
-        iconLayout="top"
         onChange={setView}
-        options={[...ICON_VIEWS_TOP]}
+        options={[...DESTINATIONS]}
         value={view}
       />
       <Typography.Text className="text-text-secondary">Vista activa: {view}</Typography.Text>
@@ -84,26 +82,25 @@ function SegmentedIconsTopDemo() {
   );
 }
 
-export const SegmentedWithIconsTop: Story = {
-  name: "Segmented — icons top",
-  render: () => <SegmentedIconsTopDemo />,
+export const DestinationSegments: Story = {
+  name: "Segmented — native destinations",
+  render: () => <DestinationSegmentsDemo />,
 };
 
-// ─── With icons (left layout) ────────────────────────────────────────────────
+// ─── Display modes ──────────────────────────────────────────────────────────
 
-const ICON_VIEWS_LEFT = [
-  { label: "Lista", value: "list", icon: "list-outline" },
-  { label: "Grid", value: "grid", icon: "grid-outline" },
+const DISPLAY_MODES = [
+  { label: "Lista", value: "list" },
+  { label: "Cuadrícula", value: "grid" },
 ] as const;
 
-function SegmentedIconsLeftDemo() {
-  const [view, setView] = useState<(typeof ICON_VIEWS_LEFT)[number]["value"]>("list");
+function DisplayModeSegmentsDemo() {
+  const [view, setView] = useState<(typeof DISPLAY_MODES)[number]["value"]>("list");
   return (
     <View style={{ gap: 12 }}>
       <Navigation.SegmentedControl
-        iconLayout="left"
         onChange={setView}
-        options={[...ICON_VIEWS_LEFT]}
+        options={[...DISPLAY_MODES]}
         value={view}
       />
       <Typography.Text className="text-text-secondary">Vista activa: {view}</Typography.Text>
@@ -111,9 +108,9 @@ function SegmentedIconsLeftDemo() {
   );
 }
 
-export const SegmentedWithIconsLeft: Story = {
-  name: "Segmented — icons left",
-  render: () => <SegmentedIconsLeftDemo />,
+export const DisplayModeSegments: Story = {
+  name: "Segmented — native display modes",
+  render: () => <DisplayModeSegmentsDemo />,
 };
 
 // ─── Steps ───────────────────────────────────────────────────────────────────
@@ -167,13 +164,13 @@ export const TabsIconLeft: Story = {
     <View style={{ height: 280 }}>
       <Navigation.Tabs defaultValue="pedidos">
         <Navigation.Tabs.List>
-          <Navigation.Tabs.Trigger icon="receipt-outline" value="pedidos">
+          <Navigation.Tabs.Trigger icon="receipt" value="pedidos">
             Pedidos
           </Navigation.Tabs.Trigger>
-          <Navigation.Tabs.Trigger icon="map-outline" value="mapa">
+          <Navigation.Tabs.Trigger icon="map" value="mapa">
             Mapa
           </Navigation.Tabs.Trigger>
-          <Navigation.Tabs.Trigger icon="person-outline" value="perfil">
+          <Navigation.Tabs.Trigger icon="profile" value="perfil">
             Perfil
           </Navigation.Tabs.Trigger>
         </Navigation.Tabs.List>
@@ -205,17 +202,13 @@ export const TabsIconTop: Story = {
     <View style={{ height: 300 }}>
       <Navigation.Tabs defaultValue="info">
         <Navigation.Tabs.List>
-          <Navigation.Tabs.Trigger
-            icon="information-circle-outline"
-            iconLayout="top"
-            value="info"
-          >
+          <Navigation.Tabs.Trigger icon="info" iconLayout="top" value="info">
             Info
           </Navigation.Tabs.Trigger>
-          <Navigation.Tabs.Trigger icon="cube-outline" iconLayout="top" value="items">
+          <Navigation.Tabs.Trigger icon="package" iconLayout="top" value="items">
             Ítems
           </Navigation.Tabs.Trigger>
-          <Navigation.Tabs.Trigger icon="time-outline" iconLayout="top" value="log">
+          <Navigation.Tabs.Trigger icon="time" iconLayout="top" value="log">
             Historial
           </Navigation.Tabs.Trigger>
         </Navigation.Tabs.List>
@@ -279,13 +272,13 @@ export const TabsFilledIcons: Story = {
     <View style={{ height: 280, padding: 16 }}>
       <Navigation.Tabs defaultValue="lista" variant="filled">
         <Navigation.Tabs.List>
-          <Navigation.Tabs.Trigger icon="list-outline" value="lista">
+          <Navigation.Tabs.Trigger icon="list" value="lista">
             Lista
           </Navigation.Tabs.Trigger>
-          <Navigation.Tabs.Trigger icon="grid-outline" value="grid">
+          <Navigation.Tabs.Trigger icon="grid" value="grid">
             Grid
           </Navigation.Tabs.Trigger>
-          <Navigation.Tabs.Trigger icon="map-outline" value="mapa">
+          <Navigation.Tabs.Trigger icon="map" value="mapa">
             Mapa
           </Navigation.Tabs.Trigger>
         </Navigation.Tabs.List>

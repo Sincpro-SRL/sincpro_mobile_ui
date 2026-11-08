@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import ExpoImage, { type ExpoImageProps } from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Skeleton from "@sincpro/mobile-ui/Feedback/Feedback.Skeleton";
@@ -13,7 +14,7 @@ export interface DisplayImageProps extends Omit<ExpoImageProps, "source" | "styl
   height?: number;
   aspectRatio?: number;
   radius?: number;
-  fallbackIcon?: string;
+  fallbackIcon?: IconName;
   className?: string;
   style?: ExpoImageProps["style"];
   containerStyle?: StyleProp<ViewStyle>;
@@ -29,7 +30,7 @@ function ImageContent({
   radius = 12,
   contentFit = "cover",
   placeholder,
-  fallbackIcon = "image-outline",
+  fallbackIcon = "image",
   className,
   style,
   containerStyle,

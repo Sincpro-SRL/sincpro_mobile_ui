@@ -1,5 +1,5 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 import { Toast, ToastProvider, useToast } from "@sincpro/mobile-ui/Feedback";
-import { Form } from "@sincpro/mobile-ui/Form";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { View } from "react-native";
@@ -51,25 +51,28 @@ function ToastButtons() {
   return (
     <View style={{ gap: 10 }}>
       <Label>Variantes</Label>
-      <Form.Button onPress={() => toast.success("Guardado correctamente")} title="Success" />
-      <Form.Button
+      <Actions.Button
+        onPress={() => toast.success("Guardado correctamente")}
+        title="Success"
+      />
+      <Actions.Button
         onPress={() => toast.info("Información útil")}
         title="Info"
         variant="secondary"
       />
-      <Form.Button
+      <Actions.Button
         onPress={() => toast.warning("Revisá los datos")}
         title="Warning"
         variant="outline"
       />
-      <Form.Button
+      <Actions.Button
         onPress={() => toast.danger("Algo salió mal")}
         title="Danger"
         variant="outlineDanger"
       />
 
       <Label>Acción (botón dentro del toast)</Label>
-      <Form.Button
+      <Actions.Button
         onPress={() =>
           toast.show({
             action: { label: "Deshacer", onPress: () => toast.success("Restaurado") },
@@ -82,29 +85,29 @@ function ToastButtons() {
       />
 
       <Label>Cerrable (✕)</Label>
-      <Form.Button
+      <Actions.Button
         onPress={() =>
           toast.show({ dismissible: true, message: "Tocá la ✕ para cerrar", variant: "info" })
         }
         title="Cerrable (dismissible)"
         variant="secondary"
       />
-      <Form.Button
+      <Actions.Button
         onPress={() => toast.loading("Persistente — se cierra con ✕")}
         title="Loading persistente (✕ automática)"
         variant="secondary"
       />
 
       <Label>Apilar vs consolidar</Label>
-      <Form.Button onPress={stackThree} title="Apilar 3 (sin id)" variant="outline" />
-      <Form.Button
+      <Actions.Button onPress={stackThree} title="Apilar 3 (sin id)" variant="outline" />
+      <Actions.Button
         onPress={consolidateThree}
         title="Consolidar 3 (mismo id)"
         variant="outline"
       />
 
       <Label>Async</Label>
-      <Form.Button
+      <Actions.Button
         onPress={() =>
           toast.promise(wait(1500), {
             error: "No se pudo guardar",
@@ -115,10 +118,14 @@ function ToastButtons() {
         title="promise() — cargando → éxito"
         variant="cta"
       />
-      <Form.Button onPress={processQueue} title="Cola de ejecución (3 ítems)" variant="cta" />
+      <Actions.Button
+        onPress={processQueue}
+        title="Cola de ejecución (3 ítems)"
+        variant="cta"
+      />
 
       <Label>Contenido compuesto</Label>
-      <Form.Button
+      <Actions.Button
         onPress={() =>
           toast.show({
             render: ({ dismiss, update }) => (

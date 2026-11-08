@@ -9,7 +9,7 @@ const badge = tv({
   variants: {
     variant: {
       info: {
-        root: "bg-info-light",
+        root: "bg-container-info",
         text: "text-info",
       },
       infoDark: {
@@ -17,11 +17,11 @@ const badge = tv({
         text: "text-text-on-primary",
       },
       warning: {
-        root: "bg-warning-light",
+        root: "bg-container-warning",
         text: "text-warning",
       },
       success: {
-        root: "bg-success-light",
+        root: "bg-container-success",
         text: "text-success",
       },
       successDark: {
@@ -29,7 +29,7 @@ const badge = tv({
         text: "text-text-on-primary",
       },
       danger: {
-        root: "bg-danger-light",
+        root: "bg-container-danger",
         text: "text-danger",
       },
     },

@@ -1,149 +1,185 @@
+import { type MenuAction, MenuView } from "@expo/ui/community/menu";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { useTheme } from "@sincpro/mobile-ui/theme";
-import { cn } from "@sincpro/mobile-ui/theme/tw";
-import { Typography } from "@sincpro/mobile-ui/Typography";
-import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
-import { cloneElement, type ReactElement, type ReactNode, useRef, useState } from "react";
+import { ICON_MAP, type IconName } from "@sincpro/mobile-ui/Display/icon-map";
+import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
+import { unstable_getMaterialSymbolSourceAsync } from "expo-symbols";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Dimensions,
-  Modal,
-  Pressable as RNPressable,
+  ActivityIndicator,
+  Alert,
+  type ImageSourcePropType,
+  Platform,
+  type StyleProp,
   View,
-  type ViewInstance,
+  type ViewStyle,
 } from "react-native";
 
-export interface MenuItem {
+export type MenuItem = {
   label: string;
-  icon?: string;
+  icon?: IconName;
   destructive?: boolean;
   disabled?: boolean;
-  onPress: () => void;
-}
+  onPress: () => void | Promise<void>;
+};
 
-export interface MenuSeparator {
+export type MenuSeparator = {
   separator: true;
-}
+};
 
 export type MenuEntry = MenuItem | MenuSeparator;
 
-export interface MenuProps {
-  items: MenuEntry[];
+export type MenuProps = {
+  items: readonly MenuEntry[];
   trigger?: ReactNode;
-  menuWidth?: number;
+  title?: string;
+  disabled?: boolean;
+  accessibilityLabel?: string;
+  style?: StyleProp<ViewStyle>;
   testID?: string;
-}
+};
 
-interface Anchor {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-function Menu({ items, trigger, menuWidth = 220, testID }: MenuProps) {
+function Menu({
+  items,
+  trigger,
+  title,
+  disabled = false,
+  accessibilityLabel = "Más opciones",
+  style,
+  testID,
+}: MenuProps) {
   const theme = useTheme();
-  const reducedMotion = useReducedMotion();
-  const triggerRef = useRef<ViewInstance>(null);
-  const [anchor, setAnchor] = useState<Anchor | null>(null);
+  const running = useRef(false);
+  const [pending, setPending] = useState(false);
+  const blocked = disabled || pending || !items.some((entry) => !("separator" in entry));
+  const [sources, setSources] = useState<Map<string, ImageSourcePropType>>(() => new Map());
+  const requests = useMemo(
+    () =>
+      items.flatMap((entry) =>
+        "separator" in entry || !entry.icon
+          ? []
+          : [
+              {
+                icon: entry.icon,
+                color: entry.destructive ? theme.danger : theme.icon.secondary,
+              },
+            ],
+      ),
+    [items, theme.danger, theme.icon.secondary],
+  );
 
-  const open = () => {
-    triggerRef.current?.measureInWindow((x, y, width, height) => {
-      setAnchor({ x, y, width, height });
+  useEffect(() => {
+    if (Platform.OS !== "android" || !requests.length) return;
+    let active = true;
+    void Promise.all(
+      requests.map(async ({ icon, color }) => ({
+        key: `${icon}:${color}`,
+        source: await unstable_getMaterialSymbolSourceAsync(ICON_MAP[icon].md, 24, color),
+      })),
+    ).then(
+      (results) => {
+        if (!active) return;
+        const next = new Map<string, ImageSourcePropType>();
+        for (const { key, source } of results) {
+          if (source) next.set(key, source);
+        }
+        setSources(next);
+      },
+      (cause: unknown) => {
+        console.error("[Navigation.Menu] Could not render native icons", cause);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, [requests]);
+
+  const groups: MenuAction[][] = [[]];
+  items.forEach((entry, index) => {
+    if ("separator" in entry) {
+      if (groups[groups.length - 1].length) groups.push([]);
+      return;
+    }
+    const color = entry.disabled
+      ? theme.text.disabled
+      : entry.destructive
+        ? theme.danger
+        : theme.text.primary;
+    const imageColor = entry.destructive ? theme.danger : theme.icon.secondary;
+    groups[groups.length - 1].push({
+      id: String(index),
+      title: entry.label,
+      titleColor: color,
+      image: entry.icon
+        ? Platform.OS === "ios"
+          ? ICON_MAP[entry.icon].sf
+          : sources.get(`${entry.icon}:${imageColor}`)
+        : undefined,
+      imageColor,
+      attributes: { disabled: blocked || entry.disabled, destructive: entry.destructive },
     });
-  };
-
-  const close = () => setAnchor(null);
-
-  const screen = Dimensions.get("window");
-  const right = anchor ? Math.max(8, screen.width - (anchor.x + anchor.width)) : 8;
-  const top = anchor ? anchor.y + anchor.height + 4 : 0;
+  });
+  const sections = groups.filter((group) => group.length > 0);
+  const actions: MenuAction[] =
+    sections.length > 1
+      ? sections.map((subactions, index) => ({
+          id: `section-${index}`,
+          title: "",
+          displayInline: true,
+          subactions,
+        }))
+      : (sections[0] ?? []);
 
   return (
-    <View collapsable={false} ref={triggerRef} testID={testID}>
-      {trigger ? (
-        // eslint-disable-next-line react-hooks/refs
-        cloneElement(trigger as ReactElement<{ onPress: () => void }>, { onPress: open })
-      ) : (
-        <Pressable
-          accessibilityLabel="Más opciones"
+    <View pointerEvents={blocked ? "none" : "auto"} style={style} testID={testID}>
+      <MenuView
+        actions={actions}
+        colorScheme={relativeLuminance(theme.bg.card) < 0.179 ? "dark" : "light"}
+        onPressAction={({ nativeEvent }) => {
+          const entry = items.find((_, index) => String(index) === nativeEvent.event);
+          if (!entry || "separator" in entry || blocked || entry.disabled || running.current)
+            return;
+          running.current = true;
+          setPending(true);
+          void Promise.resolve()
+            .then(() => entry.onPress())
+            .catch((cause: unknown) => {
+              Alert.alert(
+                "No se pudo completar la acción",
+                cause instanceof Error && cause.message.trim()
+                  ? cause.message
+                  : "Vuelve a intentarlo.",
+              );
+            })
+            .finally(() => {
+              running.current = false;
+              setPending(false);
+            });
+        }}
+        style={{ minWidth: 48, minHeight: 48 }}
+        testID={testID ? `${testID}-native-menu` : undefined}
+        title={title}
+      >
+        <View
+          accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"
-          onPress={open}
+          accessibilityState={{ disabled: blocked, busy: pending }}
+          accessible
+          pointerEvents="none"
           style={{
             minWidth: 48,
             minHeight: 48,
             alignItems: "center",
             justifyContent: "center",
+            opacity: blocked ? 0.5 : 1,
           }}
         >
-          <Icon color={theme.icon.secondary} name="ellipsis-vertical" size={22} />
-        </Pressable>
-      )}
-
-      <Modal
-        animationType={reducedMotion ? "none" : "fade"}
-        onRequestClose={close}
-        presentationStyle="overFullScreen"
-        transparent
-        visible={anchor !== null}
-      >
-        <RNPressable onPress={close} style={{ flex: 1 }}>
-          <View
-            accessibilityViewIsModal
-            className="rounded-lg py-1"
-            onAccessibilityEscape={close}
-            style={{
-              position: "absolute",
-              top,
-              right,
-              width: menuWidth,
-              backgroundColor: theme.bg.popover,
-              borderWidth: 1,
-              borderColor: theme.border.light,
-              ...theme.shadow.lg,
-            }}
-          >
-            {items.map((entry, index) => {
-              if ("separator" in entry && entry.separator) {
-                return <View className="my-1 h-px bg-border-default" key={`sep-${index}`} />;
-              }
-              const item = entry as MenuItem;
-              return (
-                <Pressable
-                  accessibilityLabel={item.label}
-                  accessibilityRole="menuitem"
-                  accessibilityState={{ disabled: item.disabled }}
-                  className="flex-row items-center gap-3 px-4 py-3"
-                  disabled={item.disabled}
-                  key={item.label}
-                  onPress={() => {
-                    close();
-                    item.onPress();
-                  }}
-                  style={{ minHeight: 48 }}
-                >
-                  {item.icon ? (
-                    <Icon
-                      color={item.destructive ? theme.danger : theme.icon.secondary}
-                      name={item.icon}
-                      size={18}
-                    />
-                  ) : null}
-                  <Typography.Text
-                    className={cn(
-                      "flex-1 text-sm",
-                      item.destructive ? "text-danger" : "text-text-primary",
-                      item.disabled && "text-text-disabled",
-                    )}
-                  >
-                    {item.label}
-                  </Typography.Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </RNPressable>
-      </Modal>
+          {pending ? (
+            <ActivityIndicator color={theme.primary} />
+          ) : (
+            (trigger ?? <Icon color={theme.icon.secondary} name="more-vertical" size={22} />)
+          )}
+        </View>
+      </MenuView>
     </View>
   );
 }

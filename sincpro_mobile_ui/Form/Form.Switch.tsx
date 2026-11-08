@@ -1,4 +1,4 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { Switch as RNSwitch, View } from "react-native";
@@ -20,6 +20,7 @@ function Switch({
   className,
   testID,
 }: SwitchProps) {
+  const theme = useTheme();
   return (
     <View className={cn("flex-row items-center justify-between gap-3", className)}>
       {label ? (

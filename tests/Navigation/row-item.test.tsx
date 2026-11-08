@@ -2,7 +2,13 @@ import { expect, jest, test } from "@jest/globals";
 import RowItem from "@sincpro/mobile-ui/Navigation/Navigation.RowItem";
 import { render, screen, userEvent } from "@testing-library/react-native";
 
-const row = { id: 1, index: 0, rowTitle: "Registro", rowSubtitle: "Detalle" };
+const row = {
+  item: { id: 1 },
+  id: 1,
+  index: 0,
+  rowTitle: "Registro",
+  rowSubtitle: "Detalle",
+};
 
 test("row callback prop takes precedence over the legacy item callback", async () => {
   const legacyPress = jest.fn();

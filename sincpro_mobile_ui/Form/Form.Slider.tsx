@@ -1,5 +1,5 @@
-import RNSlider from "@react-native-community/slider";
-import { theme } from "@sincpro/mobile-ui/theme";
+import NativeSlider from "@expo/ui/community/slider";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
@@ -13,16 +13,13 @@ export interface SliderProps {
   label?: string;
   formatValue?: (value: number) => string;
   disabled?: boolean;
+  readOnly?: boolean;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   className?: string;
   testID?: string;
 }
 
-/**
- * **Tokenized** slider (track in `primary`) on `@react-native-community/slider` — clean,
- * on-brand, consistent across iOS/Android. (The `@expo/ui` Slider was evaluated but its
- * Material style with ticks ignores the tokens → not a case where native wins.)
- * Subpath `Form/Slider`; **optional** peer dep.
- */
 function Slider({
   value,
   onChange,
@@ -32,9 +29,14 @@ function Slider({
   label,
   formatValue,
   disabled = false,
+  readOnly = false,
+  accessibilityLabel,
+  accessibilityHint,
   className,
   testID,
 }: SliderProps) {
+  const theme = useTheme();
+  const blocked = disabled || readOnly;
   return (
     <View className={cn("gap-1", className)} testID={testID}>
       {label || formatValue ? (
@@ -51,14 +53,22 @@ function Slider({
           ) : null}
         </View>
       ) : null}
-      <RNSlider
-        disabled={disabled}
-        maximumTrackTintColor={theme.bg.muted}
+      <NativeSlider
+        accessibilityHint={accessibilityHint}
+        accessibilityLabel={accessibilityLabel ?? label ?? "Valor"}
+        disabled={blocked}
+        maximumTrackTintColor={theme.container.primary}
         maximumValue={max}
         minimumTrackTintColor={theme.primary}
         minimumValue={min}
-        onValueChange={onChange}
+        onValueChange={(next) => {
+          if (blocked) return;
+          const snapped = step > 0 ? min + Math.round((next - min) / step) * step : next;
+          onChange(Math.min(max, Math.max(min, snapped)));
+        }}
         step={step}
+        style={{ minHeight: 48 }}
+        testID={testID ? `${testID}-slider` : undefined}
         thumbTintColor={theme.primary}
         value={value}
       />

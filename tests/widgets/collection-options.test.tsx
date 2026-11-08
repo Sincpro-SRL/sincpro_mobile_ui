@@ -1,28 +1,52 @@
 import { expect, jest, test } from "@jest/globals";
+import { type CollectionQuery, type CriteriaGroup } from "@sincpro/mobile-ui/utils/criteria";
+import CollectionOptions from "@sincpro/mobile-ui/widgets/CollectionOptions";
+import FilterBuilder from "@sincpro/mobile-ui/widgets/FilterBuilder";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { useState } from "react";
 
 import {
-  QueryCollection,
   initialQuery,
+  QueryCollection,
   queryFields,
 } from "../../.rnstorybook/stories/Collections.Query.stories";
-import { type CriteriaGroup } from "@sincpro/mobile-ui/utils/criteria";
-import FilterBuilder from "@sincpro/mobile-ui/widgets/FilterBuilder";
-import CollectionOptions from "@sincpro/mobile-ui/widgets/CollectionOptions";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
-jest.mock("@sincpro/mobile-ui/Dialog/Confirmation.context", () => ({
-  useConfirmationContext: () => ({ show: jest.fn(), hide: jest.fn() }),
-}));
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
+jest.mock("react-native-keyboard-controller", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  const keyboardView = (props: { children?: React.ReactNode }) =>
+    mockReact.createElement(View, props);
+  return { KeyboardStickyView: keyboardView, KeyboardAwareScrollView: keyboardView };
+});
 jest.mock("@sincpro/mobile-ui/Form/Form.KeyboardForm", () => {
   const mockReact = jest.requireActual<typeof import("react")>("react");
-  const { View } = require("react-native");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return ({ children }: { children: React.ReactNode }) =>
     mockReact.createElement(View, {}, children);
+});
+jest.mock("@expo/ui/community/bottom-sheet", () => {
+  const mockReact = jest.requireActual<typeof import("react")>("react");
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return {
+    __esModule: true,
+    default: ({
+      children,
+      index,
+      ...rest
+    }: {
+      children: React.ReactNode;
+      index: number;
+      onClose: () => void;
+    }) => {
+      const props = { ...rest, index, testID: "native-sheet" };
+      return mockReact.createElement(View, props, index >= 0 ? children : null);
+    },
+    BottomSheetView: View,
+  };
 });
 
 function Builder({ onChange }: { onChange: (value: CriteriaGroup) => void }) {
@@ -40,7 +64,7 @@ function Builder({ onChange }: { onChange: (value: CriteriaGroup) => void }) {
 }
 
 test("nested builder preserves group joins and commits only complete conditions", async () => {
-  const change = jest.fn();
+  const change = jest.fn<(value: CriteriaGroup) => void>();
   await render(<Builder onChange={change} />);
   await fireEvent.press(screen.getByRole("button", { name: "Añadir grupo" }));
   await fireEvent.press(screen.getByRole("button", { name: "Añadir condición" }));
@@ -64,7 +88,7 @@ test("nested builder preserves group joins and commits only complete conditions"
 });
 
 test("number editing preserves minus and decimal drafts and emits typed values", async () => {
-  const change = jest.fn();
+  const change = jest.fn<(value: CriteriaGroup) => void>();
   await render(<Builder onChange={change} />);
   await fireEvent.press(screen.getByRole("button", { name: "Añadir condición" }));
   await fireEvent.press(screen.getByRole("button", { name: "Campo: Título" }));
@@ -82,8 +106,8 @@ test("number editing preserves minus and decimal drafts and emits typed values",
 });
 
 test("workspace cannot apply an unfinished condition; cancel never applies", async () => {
-  const apply = jest.fn();
-  const close = jest.fn();
+  const apply = jest.fn<(query: CollectionQuery) => void>();
+  const close = jest.fn<() => void>();
   await render(
     <CollectionOptions
       fields={queryFields}
@@ -104,7 +128,7 @@ test("workspace cannot apply an unfinished condition; cancel never applies", asy
 });
 
 test("externally replaced builder trees provide explicit recovery rather than crashing", async () => {
-  const change = jest.fn();
+  const change = jest.fn<(value: CriteriaGroup) => void>();
   const { rerender } = await render(
     <FilterBuilder
       fields={queryFields}
@@ -141,12 +165,12 @@ test("saved configurations load into draft and apply all dimensions together", a
 });
 
 test("sorting priorities can be added, flipped and moved without mutating applied state", async () => {
-  const apply = jest.fn();
+  const apply = jest.fn<(query: CollectionQuery) => void>();
   await render(
     <CollectionOptions
       fields={queryFields}
       onApply={apply}
-      onClose={jest.fn()}
+      onClose={jest.fn<() => void>()}
       sortFields={[
         { id: "title", label: "Título" },
         { id: "amount", label: "Importe" },
@@ -186,8 +210,8 @@ test("failed saving stays explicit, retains the name and allows retry", async ()
   await render(
     <CollectionOptions
       fields={queryFields}
-      onApply={jest.fn()}
-      onClose={jest.fn()}
+      onApply={jest.fn<(query: CollectionQuery) => void>()}
+      onClose={jest.fn<() => void>()}
       onSave={save}
       value={initialQuery}
       visible

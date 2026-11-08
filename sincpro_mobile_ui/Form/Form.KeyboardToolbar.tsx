@@ -2,13 +2,14 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { type ComponentRef, type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   type StyleProp,
   StyleSheet,
   type TextStyle,
   useWindowDimensions,
   View,
+  type ViewInstance,
   type ViewStyle,
 } from "react-native";
 import {
@@ -31,6 +32,7 @@ export interface KeyboardToolbarProps {
   actionStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
   iconSize?: number;
+  bottomGapOffset?: number;
   testID?: string;
   renderActionContent?: (
     action: KeyboardToolbarAction,
@@ -49,11 +51,12 @@ export default function KeyboardToolbar({
   actionStyle,
   labelStyle,
   iconSize = 20,
+  bottomGapOffset = 0,
   testID = "keyboard-toolbar",
   renderActionContent,
 }: KeyboardToolbarProps) {
   const theme = useTheme();
-  const frame = useRef<ComponentRef<typeof View>>(null);
+  const frame = useRef<ViewInstance>(null);
   const { height: windowHeight } = useWindowDimensions();
   const [bottomGap, setBottomGap] = useState(0);
   const [height, setHeight] = useState(48);
@@ -76,13 +79,7 @@ export default function KeyboardToolbar({
     return (
       <Icon
         color={disabled ? theme.text.tertiary : theme.text.accent}
-        name={
-          action === "previous"
-            ? "chevron-up"
-            : action === "next"
-              ? "chevron-down"
-              : "checkmark"
-        }
+        name={action === "previous" ? "collapse" : action === "next" ? "expand" : "check"}
         size={iconSize}
       />
     );
@@ -101,7 +98,7 @@ export default function KeyboardToolbar({
       style={StyleSheet.absoluteFill}
     >
       <KeyboardStickyView
-        offset={{ closed: height, opened: bottomGap - 8 }}
+        offset={{ closed: height, opened: bottomGap + bottomGapOffset - 8 }}
         style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
       >
         <View

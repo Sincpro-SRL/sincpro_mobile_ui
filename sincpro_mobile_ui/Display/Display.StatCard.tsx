@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -8,7 +9,7 @@ import { View } from "react-native";
 export interface StatCardProps {
   label: string;
   value: string | number;
-  icon?: string;
+  icon?: IconName;
   delta?: number;
   deltaSuffix?: string;
   hint?: string;
@@ -52,7 +53,7 @@ function StatCard({
         <View className="flex-row items-center gap-1">
           {hasDelta ? (
             <>
-              <Icon color={deltaColor} name={up ? "arrow-up" : "arrow-down"} size={14} />
+              <Icon color={deltaColor} name={up ? "up" : "down"} size={14} />
               <Typography.Text style={{ color: deltaColor }} variant="caption">
                 {Math.abs(delta)}
                 {deltaSuffix}

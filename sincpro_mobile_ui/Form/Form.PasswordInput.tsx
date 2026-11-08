@@ -33,9 +33,8 @@ const PasswordField: React.FC<PasswordFieldProps> = ({ label, error, inputProps 
       >
         <Display.Icon
           color={theme.text.primary}
-          name={showPassword ? "eye-off-outline" : "eye-outline"}
+          name={showPassword ? "hidden" : "visibility"}
           size={22}
-          type="ionicons"
         />
       </TouchableOpacity>
     </View>

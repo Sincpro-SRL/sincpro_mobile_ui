@@ -1,3 +1,4 @@
+import { Actions } from "@sincpro/mobile-ui/Actions";
 /**
  * Views/List — ListViewV2: contenedor de una colección (lista / índice / resultados).
  *
@@ -8,7 +9,6 @@
  * VirtualizedList-in-ScrollView del decorator de Storybook.
  */
 import { Display } from "@sincpro/mobile-ui/Display";
-import { Form } from "@sincpro/mobile-ui/Form";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -70,7 +70,7 @@ function ListViewLargeHeaderStory() {
               showDivider={i < INVENTORY_ITEMS.length - 1}
             >
               <ListViewV2.Content.Row.Avatar>
-                <LeadingIcon name="cube-outline" />
+                <LeadingIcon name="package" />
               </ListViewV2.Content.Row.Avatar>
               <ListViewV2.Content.Row.Content>
                 <ListViewV2.Content.Row.Title
@@ -101,7 +101,7 @@ function ListViewLargeHeaderStory() {
 export const LargeHeader: Story = { render: () => <ListViewLargeHeaderStory /> };
 
 export const KeyboardInteraction: Story = {
-  parameters: { layout: "fullscreen", ownsScroll: true },
+  parameters: { layout: "fullscreen", ownsScroll: true, ownsTopInset: true },
   render: function KeyboardInteraction() {
     const [selected, setSelected] = useState("");
     const [query, setQuery] = useState("");
@@ -141,17 +141,17 @@ function ListViewWithActionsBarStory() {
       <ListViewV2.Root items={[]} name="Pedidos" onBack={() => {}}>
         {/* Header compact (default) */}
         <ListViewV2.Header
-          actions={<Navigation.AppBar.Action icon="filter-outline" onPress={() => {}} />}
+          actions={<Navigation.AppBar.Action icon="filter" onPress={() => {}} />}
           variant="default"
         />
 
         {/* ActionsBar: SIBLING del Header — barra secundaria debajo del AppBar */}
         <ListViewV2.Header.ActionsBar>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Seleccionar todo" variant="outline" />
+            <Actions.Button onPress={() => {}} title="Seleccionar todo" variant="outline" />
           </View>
           <View style={{ flex: 1 }}>
-            <Form.Button
+            <Actions.Button
               onPress={() => {}}
               title={`Eliminar (${selected.length})`}
               variant="outline"
@@ -185,7 +185,7 @@ function ListViewWithActionsBarStory() {
                   }}
                 >
                   {selected.includes(item.id) ? (
-                    <Display.Icon color="#fff" name="checkmark" size={13} type="ionicons" />
+                    <Display.Icon color="#fff" name="check" size={13} />
                   ) : null}
                 </View>
               </ListViewV2.Content.Row.Avatar>
@@ -226,7 +226,7 @@ function ListViewWithFloatingButtonStory() {
                 showDivider={i < INVENTORY_ITEMS.length - 1}
               >
                 <ListViewV2.Content.Row.Avatar>
-                  <LeadingIcon name="cube-outline" />
+                  <LeadingIcon name="package" />
                 </ListViewV2.Content.Row.Avatar>
                 <ListViewV2.Content.Row.Content>
                   <ListViewV2.Content.Row.Title>{item.name}</ListViewV2.Content.Row.Title>
@@ -284,7 +284,7 @@ function ListViewWithSegmentedStory() {
               showDivider={i < rows.length - 1}
             >
               <ListViewV2.Content.Row.Avatar>
-                <LeadingIcon name="cube-outline" />
+                <LeadingIcon name="package" />
               </ListViewV2.Content.Row.Avatar>
               <ListViewV2.Content.Row.Content>
                 <ListViewV2.Content.Row.Title>{item.name}</ListViewV2.Content.Row.Title>
@@ -338,7 +338,7 @@ function ListViewSearchWithHistoryStory() {
                 showDivider={i < results.length - 1}
               >
                 <ListViewV2.Content.Row.Avatar>
-                  <LeadingIcon name="cube-outline" />
+                  <LeadingIcon name="package" />
                 </ListViewV2.Content.Row.Avatar>
                 <ListViewV2.Content.Row.Content>
                   <ListViewV2.Content.Row.Title>{item.name}</ListViewV2.Content.Row.Title>
@@ -433,10 +433,10 @@ export const HeaderVariants: Story = {
         <Navigation.AppBar onBack={() => {}} safeArea={false} title="Seleccionar" />
         <DocActionsBar>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Cancelar" variant="outline" />
+            <Actions.Button onPress={() => {}} title="Cancelar" variant="outline" />
           </View>
           <View style={{ flex: 1 }}>
-            <Form.Button onPress={() => {}} title="Confirmar (3)" />
+            <Actions.Button onPress={() => {}} title="Confirmar (3)" />
           </View>
         </DocActionsBar>
       </VariantFrame>

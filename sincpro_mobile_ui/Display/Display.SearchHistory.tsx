@@ -1,3 +1,4 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { theme } from "@sincpro/mobile-ui/theme";
@@ -11,7 +12,7 @@ export interface SearchHistoryProps {
   onRemove: (value: string) => void;
   onClearAll?: () => void;
   title?: string;
-  icon?: string;
+  icon?: IconName;
   className?: string;
   testID?: string;
 }
@@ -22,7 +23,7 @@ function SearchHistory({
   onRemove,
   onClearAll,
   title = "Búsquedas recientes",
-  icon = "time-outline",
+  icon = "time",
   className,
   testID,
 }: SearchHistoryProps) {

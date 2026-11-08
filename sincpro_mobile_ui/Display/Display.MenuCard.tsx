@@ -1,26 +1,18 @@
+import type { IconName } from "@sincpro/mobile-ui/Display";
 import CircleButton from "@sincpro/mobile-ui/Display/Display.CircleButton";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { IconType } from "@sincpro/mobile-ui/utils/icon";
-import { ComponentType } from "react";
 import { TouchableOpacity, View } from "react-native";
 
 export interface MenuCardProps {
   title: string;
-  iconType?: IconType;
   onPress?: () => void;
-  customIcon?: ComponentType<{ size?: number; color?: string }>;
+  icon: IconName;
   /** `"md"` = 2-column grid (default). `"sm"` = 3-column grid, smaller icon. */
   size?: "sm" | "md";
 }
 
-export function MenuCard({
-  title,
-  iconType = "ionicons",
-  onPress,
-  customIcon,
-  size = "md",
-}: MenuCardProps) {
+export function MenuCard({ title, onPress, icon, size = "md" }: MenuCardProps) {
   const theme = useTheme();
   const isSmall = size === "sm";
 
@@ -40,11 +32,7 @@ export function MenuCard({
       }}
     >
       <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <CircleButton
-          customIcon={customIcon}
-          iconType={iconType}
-          size={isSmall ? "sm" : "md"}
-        />
+        <CircleButton icon={icon} size={isSmall ? "sm" : "md"} />
         <Typography.Text
           numberOfLines={2}
           style={{

@@ -4,14 +4,14 @@ import type { KeyboardToolbarProps } from "@sincpro/mobile-ui/Form/Form.Keyboard
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import FormView from "@sincpro/mobile-ui/views/FormViewV2";
 import type { Meta, StoryObj } from "@storybook/react-native";
-import { type ComponentRef, useRef, useState } from "react";
-import { TextInput, View } from "react-native";
+import { useRef, useState } from "react";
+import { type TextInputInstance, View } from "react-native";
 import { KeyboardController } from "react-native-keyboard-controller";
 
 const meta = {
   title: "Patterns/Forms/Keyboard navigation",
   excludeStories: ["KeyboardNavigation"],
-  parameters: { layout: "fullscreen", ownsScroll: true },
+  parameters: { layout: "fullscreen", ownsScroll: true, ownsTopInset: true },
 } satisfies Meta;
 export default meta;
 type Story = StoryObj;
@@ -21,9 +21,9 @@ export function KeyboardNavigation({
 }: {
   toolbarProps?: Omit<KeyboardToolbarProps, "onHeightChange">;
 } = {}) {
-  const email = useRef<ComponentRef<typeof TextInput>>(null);
-  const phone = useRef<ComponentRef<typeof TextInput>>(null);
-  const notes = useRef<ComponentRef<typeof TextInput>>(null);
+  const email = useRef<TextInputInstance>(null);
+  const phone = useRef<TextInputInstance>(null);
+  const notes = useRef<TextInputInstance>(null);
   const [values, setValues] = useState({ name: "", email: "", phone: "", notes: "" });
   const [saved, setSaved] = useState(false);
   const update = (key: keyof typeof values, value: string) => {
@@ -74,13 +74,6 @@ export function KeyboardNavigation({
             testID="contact-notes"
             value={values.notes}
           />
-          <Button
-            onPress={() => {
-              KeyboardController.dismiss();
-              setSaved(true);
-            }}
-            title="Guardar contacto de ejemplo"
-          />
           {saved ? (
             <Typography.Text accessibilityLiveRegion="polite">
               Contacto guardado en esta demostración
@@ -91,6 +84,15 @@ export function KeyboardNavigation({
           </Typography.Text>
         </View>
       </FormView.Content>
+      <FormView.Footer>
+        <Button
+          onPress={() => {
+            KeyboardController.dismiss();
+            setSaved(true);
+          }}
+          title="Guardar contacto de ejemplo"
+        />
+      </FormView.Footer>
     </FormView.Root>
   );
 }

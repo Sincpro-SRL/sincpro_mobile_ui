@@ -16,8 +16,8 @@ const avatar = tv({
       default: "bg-bg-hover",
       primary: "bg-primary/20",
       secondary: "bg-secondary/20",
-      success: "bg-success-light",
-      warning: "bg-warning-light",
+      success: "bg-container-success",
+      warning: "bg-container-warning",
     },
   },
   defaultVariants: {

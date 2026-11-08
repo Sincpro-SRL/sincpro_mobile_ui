@@ -1,8 +1,6 @@
 import { Display, type MenuGridItem } from "@sincpro/mobile-ui/Display";
 import BoxTimeIcon from "@sincpro/mobile-ui/icons/BoxTimeIcon";
 import HomeIcon from "@sincpro/mobile-ui/icons/HomeIcon";
-import PinIcon from "@sincpro/mobile-ui/icons/PinIcon";
-import ProfileIcon from "@sincpro/mobile-ui/icons/ProfileIcon";
 import SettingsIcon from "@sincpro/mobile-ui/icons/SettingsIcon";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import JsonPreview from "@sincpro/mobile-ui/widgets/JSONViewer";
@@ -21,18 +19,18 @@ type Story = StoryObj;
 // ─── Shared fixtures ─────────────────────────────────────────────────────────
 
 const gridItems: MenuGridItem[] = [
-  { id: "1", title: "Odoo", customIcon: HomeIcon },
-  { id: "2", title: "Eventos", customIcon: BoxTimeIcon },
-  { id: "3", title: "Impresora", customIcon: SettingsIcon },
-  { id: "4", title: "Perfil", customIcon: ProfileIcon },
+  { id: "1", title: "Odoo", icon: "server" },
+  { id: "2", title: "Eventos", icon: "time" },
+  { id: "3", title: "Impresora", icon: "printer" },
+  { id: "4", title: "Perfil", icon: "profile" },
 ];
 
 const quickItems: QuickActionItem[] = [
-  { id: "1", label: "Odoo", customIcon: HomeIcon, badge: 3 },
-  { id: "2", label: "Eventos", customIcon: BoxTimeIcon },
-  { id: "3", label: "Fallos", customIcon: SettingsIcon, badge: "!" },
-  { id: "4", label: "Ubicación", customIcon: PinIcon },
-  { id: "5", label: "Perfil", customIcon: ProfileIcon },
+  { id: "1", label: "Odoo", icon: "server", badge: 3 },
+  { id: "2", label: "Eventos", icon: "time" },
+  { id: "3", label: "Fallos", icon: "error", badge: "!" },
+  { id: "4", label: "Ubicación", icon: "location" },
+  { id: "5", label: "Perfil", icon: "profile" },
 ];
 
 const bannerItems: PromoBannerItem[] = [
@@ -72,30 +70,16 @@ export const MenuCardWidget: Story = {
         size=&quot;md&quot; (2-col default)
       </Typography.Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        <Display.MenuCard customIcon={HomeIcon} onPress={() => {}} title="Principal" />
-        <Display.MenuCard
-          customIcon={SettingsIcon}
-          onPress={() => {}}
-          title="Configurar impresora"
-        />
+        <Display.MenuCard icon="home" onPress={() => {}} title="Principal" />
+        <Display.MenuCard icon="printer" onPress={() => {}} title="Configurar impresora" />
       </View>
       <Typography.Text className="text-text-tertiary" variant="caption">
         size=&quot;sm&quot; (3-col)
       </Typography.Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        <Display.MenuCard customIcon={HomeIcon} onPress={() => {}} size="sm" title="Inicio" />
-        <Display.MenuCard
-          customIcon={BoxTimeIcon}
-          onPress={() => {}}
-          size="sm"
-          title="Eventos"
-        />
-        <Display.MenuCard
-          customIcon={SettingsIcon}
-          onPress={() => {}}
-          size="sm"
-          title="Ajustes"
-        />
+        <Display.MenuCard icon="home" onPress={() => {}} size="sm" title="Inicio" />
+        <Display.MenuCard icon="time" onPress={() => {}} size="sm" title="Eventos" />
+        <Display.MenuCard icon="settings" onPress={() => {}} size="sm" title="Ajustes" />
       </View>
     </View>
   ),

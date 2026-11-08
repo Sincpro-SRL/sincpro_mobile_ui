@@ -77,7 +77,7 @@ function ListItem({
         {value ? (
           <Typography.Text
             className="text-text-secondary flex-shrink"
-            variant={comfortable ? "bodyReadable" : "body"}
+            variant="body"
             {...valueTextProps}
           >
             {value}
@@ -97,7 +97,7 @@ function ListItem({
         <Typography.Text
           className={mobile && disabled ? "text-text-disabled" : "text-text-primary"}
           semibold={!mobile || comfortable}
-          variant={comfortable ? "bodyReadable" : "body"}
+          variant="body"
           {...titleTextProps}
         >
           {title}
@@ -105,7 +105,7 @@ function ListItem({
         {subtitle ? (
           <Typography.Text
             className="text-text-secondary"
-            variant={comfortable ? "bodyLarge" : "bodySmall"}
+            variant="bodySmall"
             {...subtitleTextProps}
           >
             {subtitle}

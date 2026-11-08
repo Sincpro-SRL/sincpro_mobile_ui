@@ -34,10 +34,28 @@ const iconButton = tv({
   },
 });
 
+type IconButtonVariant = NonNullable<VariantProps<typeof iconButton>["variant"]>;
+type IconButtonSize = NonNullable<VariantProps<typeof iconButton>["size"]>;
+
+/** The visible button keeps its size; the touch target always reaches 48 points. */
+const TOUCH_SLOP: Record<IconButtonSize, number> = { small: 8, medium: 4, large: 0 };
+
+function useIconColor(variant: IconButtonVariant) {
+  const theme = useTheme();
+  const colors: Record<IconButtonVariant, string> = {
+    primary: theme.text.onPrimary,
+    secondary: theme.text.accent,
+    tertiary: theme.text.onAccent,
+    ghost: theme.text.accent,
+  };
+  return colors[variant];
+}
+
 export interface IconButtonProps extends VariantProps<typeof iconButton>, AccessibilityProps {
   icon: IconName;
   onPress: () => void;
   loading?: boolean;
+  /** Overrides the ink of the variant, e.g. an inverse icon over a brand header. */
   iconColor?: string;
   className?: string;
   testID?: string;
@@ -57,14 +75,15 @@ function IconButton({
   accessibilityState,
   ...accessibilityProps
 }: IconButtonProps) {
-  const theme = useTheme();
-  const resolvedColor = iconColor ?? theme.text.accent;
+  const variantColor = useIconColor(variant ?? "ghost");
+  const resolvedColor = iconColor ?? variantColor;
 
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       className={iconButton({ variant, size, rounded, disabled, className })}
       disabled={disabled || loading}
+      hitSlop={TOUCH_SLOP[size ?? "medium"]}
       onPress={onPress}
       {...accessibilityProps}
       accessibilityRole="button"
@@ -73,7 +92,6 @@ function IconButton({
         disabled: disabled || loading,
         busy: loading,
       }}
-      style={{ minHeight: 48, minWidth: 48 }}
       testID={testID}
     >
       {loading ? (

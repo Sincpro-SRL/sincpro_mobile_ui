@@ -187,24 +187,28 @@ test("compact groups distinguish section, regular row and quiet supporting roles
   expect(textStyle("Dato")).toMatchObject({ fontSize: 14, fontWeight: "400" });
 });
 
-test("comfortable mobile density explicitly preserves the previous 17/16 reading roles", async () => {
-  await render(
+test("density changes spacing and weight, not the type scale of the system", async () => {
+  const sizes = () =>
+    ["Lectura", "Valor", "Ayuda"].map(
+      (text) => ReactNative.StyleSheet.flatten(screen.getByText(text).props.style).fontSize,
+    );
+  const row = (density: "compact" | "comfortable") => (
     <ListItem
-      density="comfortable"
+      density={density}
       subtitle="Ayuda"
       title="Lectura"
       value="Valor"
       variant="mobile"
-    />,
+    />
   );
-  for (const text of ["Lectura", "Valor"]) {
-    expect(ReactNative.StyleSheet.flatten(screen.getByText(text).props.style).fontSize).toBe(
-      17,
-    );
-  }
-  expect(ReactNative.StyleSheet.flatten(screen.getByText("Ayuda").props.style).fontSize).toBe(
-    16,
-  );
+  const { rerender } = await render(row("compact"));
+  const compact = sizes();
+  await rerender(row("comfortable"));
+  expect(sizes()).toEqual(compact);
+  expect(compact).toEqual([14, 14, 13]);
+  expect(
+    ReactNative.StyleSheet.flatten(screen.getByText("Lectura").props.style).fontWeight,
+  ).toBe("600");
 });
 
 test("text and container overrides use native style precedence without losing content or actions", async () => {

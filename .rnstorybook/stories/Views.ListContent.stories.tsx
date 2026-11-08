@@ -122,10 +122,12 @@ function ListViewAllRowVariantsStory() {
             </ListViewV2.Content.Row.Content>
             <ListViewV2.Content.Row.Actions>
               <ListViewV2.Content.Row.ActionButton
+                accessibilityLabel="Compartir"
                 icon={<Display.Icon color={theme.icon.primary} name="share" size={18} />}
                 onPress={() => {}}
               />
               <ListViewV2.Content.Row.ActionButton
+                accessibilityLabel="Eliminar"
                 icon={<Display.Icon color={theme.icon.primary} name="delete" size={18} />}
                 onPress={() => {}}
               />

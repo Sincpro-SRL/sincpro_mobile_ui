@@ -56,9 +56,10 @@ const buttonIcon = tv({
       link: "bg-transparent",
       transparent: "bg-transparent border border-border-light",
     },
+    // Square partner of `Button`: as tall as a button (48), large matches 52.
     size: {
-      small: "w-9 h-9",
-      medium: "w-11 h-11",
+      small: "w-12 h-12",
+      medium: "w-12 h-12",
       large: "w-[52px] h-[52px]",
     },
     disabled: {
@@ -255,7 +256,7 @@ const Button: FC<ButtonProps> = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       className={button({ variant, size, disabled, className })}
       disabled={disabled || loading}
       onPress={handlePress}
@@ -337,7 +338,7 @@ const ButtonIcon: FC<ButtonIconProps> = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       className={buttonIcon({ variant, size, disabled, className })}
       disabled={disabled || loading}
       onPress={handlePress}

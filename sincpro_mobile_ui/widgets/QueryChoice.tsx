@@ -30,7 +30,7 @@ export default function QueryChoice<T extends string | number | boolean>({
         <Typography.Text className="text-text-secondary" variant="bodySmall">
           {label}
         </Typography.Text>
-        <Typography.Text variant="bodyReadable">
+        <Typography.Text variant="body">
           {selected?.label ?? "Seleccionar"} {open ? "−" : "+"}
         </Typography.Text>
       </Pressable>
@@ -50,7 +50,7 @@ export default function QueryChoice<T extends string | number | boolean>({
             >
               <Typography.Text
                 className={option.value === value ? "text-text-accent" : "text-text-primary"}
-                variant="bodyReadable"
+                variant="body"
               >
                 {option.value === value ? "✓ " : ""}
                 {option.label}

@@ -1,4 +1,5 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
+import { CountBadge } from "@sincpro/mobile-ui/Display/count-badge";
 import GradientSurface, {
   type GradientPoint,
   type GradientPreset,
@@ -116,16 +117,7 @@ function AppBarAction({
       testID={testID}
     >
       <Icon color={iconColor} name={icon ?? "circle"} size={bare ? 24 : 20} />
-      {badge != null ? (
-        <View
-          className="absolute bg-danger rounded-full min-w-[16px] h-4 px-1 items-center justify-center"
-          style={{ top: -2, right: -2, borderWidth: 2, borderColor: theme.bg.card }}
-        >
-          <Typography.Text style={{ color: theme.text.inverse, fontSize: 9, lineHeight: 11 }}>
-            {badge}
-          </Typography.Text>
-        </View>
-      ) : null}
+      {badge != null ? <CountBadge anchor={{ top: -4, right: -4 }} count={badge} /> : null}
     </Pressable>
   );
 }

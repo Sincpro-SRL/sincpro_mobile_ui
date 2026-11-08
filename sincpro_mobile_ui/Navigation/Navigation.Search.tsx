@@ -1,14 +1,13 @@
 import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
-import { FilterButtonGroup } from "@sincpro/mobile-ui/Actions/Actions.FilterButton";
+import {
+  FilterButtonGroup,
+  FilterChip,
+} from "@sincpro/mobile-ui/Actions/Actions.FilterButton";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
-import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import SearchHistory, {
   type SearchHistoryProps,
 } from "@sincpro/mobile-ui/Display/Display.SearchHistory";
-import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
-import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useState } from "react";
 import { View } from "react-native";
 
@@ -73,33 +72,19 @@ function FilterSheet({
   testID,
 }: SearchFilterSheetProps) {
   const [visible, setVisible] = useState(false);
-  const theme = useTheme();
   const countLabel = activeCount > 0 ? `, ${activeCount} activos` : "";
 
   return (
     <>
-      <Pressable
+      <FilterChip
         accessibilityLabel={`${triggerLabel}${countLabel}`}
-        accessibilityRole="button"
-        className="min-h-11 flex-row items-center justify-center gap-2 self-start rounded-full bg-bg-muted px-4"
+        active={activeCount > 0}
+        count={activeCount}
+        icon="filter"
+        label={triggerLabel}
         onPress={() => setVisible(true)}
-        style={{ minHeight: 44 }}
         testID={testID ? `${testID}-trigger` : undefined}
-      >
-        <Icon color={theme.icon.secondary} name="filter" size={18} />
-        <Typography.Text className="text-text-primary" variant="buttonSmall">
-          {triggerLabel}
-        </Typography.Text>
-        {activeCount > 0 ? (
-          <Typography.Text
-            accessibilityLabel={`${activeCount} filtros activos`}
-            className="text-text-accent"
-            variant="caption"
-          >
-            {activeCount}
-          </Typography.Text>
-        ) : null}
-      </Pressable>
+      />
       <Sheet
         footer={
           <View className="flex-row gap-3">

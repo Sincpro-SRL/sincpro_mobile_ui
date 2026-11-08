@@ -1,5 +1,6 @@
 import { ThemedActivityIndicator } from "@sincpro/mobile-ui/theme";
 import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
+import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 
@@ -161,7 +162,9 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
     return (
       <View className="p-4 items-center justify-center min-h-[200px]">
         <ThemedActivityIndicator size="large" />
-        <Text className="mt-2 text-text-secondary text-sm">Procesando JSON...</Text>
+        <Typography.Text className="mt-2 text-text-secondary" variant="bodySmall">
+          Procesando JSON...
+        </Typography.Text>
       </View>
     );
   }

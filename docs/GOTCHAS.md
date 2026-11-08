@@ -88,6 +88,12 @@
 - **Causa:** la sheet se declara en la pantalla y se dibuja en el `OverlayHost`. Al cambiar `visible`, la pantalla hace un commit en el que el portal sigue devolviendo `null` (sin cambio visible). En el mismo commit, el layout effect del portal actualiza el store y el host dibuja en un `nested-update`, **antes de pintar**. No hay un frame extra.
 - **Fix:** ninguno; es el costo del patrón portal (el mismo de `@gorhom/portal`). Sí es un problema un redundante que **no** venga seguido de un `nested-update`, o un aumento del conteo de renders.
 
+### 🔴 Un modal oscurece media pantalla y la tarjeta sale cortada abajo → `KeyboardAwareScrollView` con `style` de posición
+
+- **Síntoma:** en `PromoModal`, el fondo oscuro cubría solo la mitad de arriba y la tarjeta quedaba centrada en la mitad de abajo, cortada.
+- **Causa:** keyboard-controller (1.22) envuelve su scroll en un `ReanimatedClippingScrollView` con `flexGrow/flexShrink: 1` y le pasa el `style` al scroll **de adentro**. Un `position: "absolute"` o un margen se pierden y el envoltorio se reparte la columna con sus hermanos.
+- **Fix:** `KeyboardAwareScrollView` solo vive en `Form.KeyboardForm` (hay un contrato que lo exige). Sin inputs, se usa un `ScrollView` normal, que sí respeta `style`.
+
 ### Logo/branding desaparece tras migrar (Display.Logo, HomeHeader, AuthFormView)
 
 - **Síntoma:** login/perfil/home renderizan pero **sin logo** (espacio vacío donde iba el logo).
@@ -132,6 +138,18 @@
   - **async:** `attempt(task)` + `errorMessage(cause, fallback)` de `utils/async` (no lanzan; la limpieza va después);
   - **defaults:** constante de módulo o `prop ?? valor` en el cuerpo;
   - **objetos estables:** `const [value] = useState(() => new Animated.Value(0))`, que además no crea uno nuevo en cada render.
+
+### Un badge o pill sale en la fuente del sistema, o una clase `font-*`/`text-*` no hace nada
+
+- **Síntoma:** un texto del DS se ve en San Francisco/Roboto en vez de IBM Plex, o `className="text-xs font-semibold"` no cambia el tamaño ni el peso.
+- **Causa:** `Typography.Text` pone la variante (familia, tamaño, peso) en `style`, que gana sobre `className`. Un `Text` de RN con `font-*` toma la familia del preset de tailwind, que no sigue `configureFonts`, y el sistema cae a la fuente por defecto.
+- **Fix:** todo texto pasa por `Typography.Text`. El tamaño y el peso salen de `variant`/`semibold`/`bold`, y `className` queda para color y espaciado. Los pills usan `Display/pill` (`PillLabel`). Un contrato de `tests/sdk58` prohíbe importar `Text` de react-native fuera de Typography.
+
+### Un contador "99+" se ve como "99-" o "99·"
+
+- **Síntoma:** el contador de un ícono corta el último carácter.
+- **Causa:** un hijo `position: "absolute"` se mide contra el ancho de su padre (un ícono de 24pt). El texto no entra, salta de línea y el alto fijo lo recorta.
+- **Fix:** `CountBadge` con `anchor={{ top, right }}`, que lo monta en un contenedor ancho, sin toques y alineado a la derecha.
 
 ## Lint / tooling
 

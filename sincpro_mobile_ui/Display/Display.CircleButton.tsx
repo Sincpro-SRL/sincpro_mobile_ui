@@ -42,6 +42,7 @@ const SIZE_MAP = {
   lg: { icon: 40 },
 };
 
+/** Decorative icon in a filled circle (menu cards). Not an action: use `Actions.IconButton`. */
 export function CircleButton({
   size = "md",
   color,

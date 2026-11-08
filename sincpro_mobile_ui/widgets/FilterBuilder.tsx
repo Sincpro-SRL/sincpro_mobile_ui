@@ -90,7 +90,7 @@ export default function FilterBuilder({
   };
   return (
     <View className={className} style={{ gap: 16 }} testID={testID}>
-      <Typography.Text accessibilityRole="header" semibold variant="bodyReadable">
+      <Typography.Text accessibilityRole="header" semibold variant="body">
         {path.length ? `Grupo ${path.map((index) => index + 1).join(" › ")}` : "Condiciones"}
       </Typography.Text>
       {editing && condition ? (
@@ -230,7 +230,7 @@ export default function FilterBuilder({
           ) : null}
           {group.children.map((child, index) => (
             <View className="border-b border-border-light pb-3 gap-2" key={index}>
-              <Typography.Text variant="bodyReadable">
+              <Typography.Text variant="body">
                 {describeCriteria(child, fields)}
               </Typography.Text>
               <View className="flex-row flex-wrap gap-2">

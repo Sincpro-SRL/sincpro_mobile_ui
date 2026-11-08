@@ -3,8 +3,14 @@ import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { ComponentType } from "react";
-import { Modal, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface PromoModalProps {
@@ -28,8 +34,8 @@ export interface PromoModalProps {
 }
 
 /**
- * Bottom-anchored modal for news, promotions, or announcements.
- * Tapping outside (backdrop) also dismisses it.
+ * Full-screen modal with a centered card for news, promotions, or announcements.
+ * Tapping outside (backdrop) also dismisses it. The card scrolls when it does not fit.
  *
  * Usage:
  *   <PromoModal
@@ -85,9 +91,9 @@ export function PromoModal({
         />
       </TouchableWithoutFeedback>
 
-      {/* Centered card — absolutely positioned so TouchableWithoutFeedback covers the full backdrop */}
-      <KeyboardAwareScrollView
-        bottomOffset={24}
+      {/* Centered card over the whole backdrop. A plain ScrollView: the card has no
+          inputs, and keyboard-controller's scroll ignores an absolute `style`. */}
+      <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
@@ -99,13 +105,7 @@ export function PromoModal({
         }}
         keyboardShouldPersistTaps="handled"
         pointerEvents="box-none"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
+        style={StyleSheet.absoluteFill}
       >
         <View
           style={{
@@ -220,7 +220,7 @@ export function PromoModal({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </ScrollView>
     </Modal>
   );
 }

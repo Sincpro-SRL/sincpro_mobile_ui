@@ -79,16 +79,6 @@ export const Sizes: Story = {
   ),
 };
 
-export const States: Story = {
-  render: () => (
-    <View style={{ gap: 12 }}>
-      <Actions.Button title="Default" />
-      <Actions.Button loading title="Loading" />
-      <Actions.Button disabled title="Disabled" />
-    </View>
-  ),
-};
-
 export const IconButtons: Story = {
   render: () => (
     <View style={{ flexDirection: "row", gap: 12 }}>
@@ -101,7 +91,7 @@ export const IconButtons: Story = {
 
 const HIERARCHY = [
   { level: "Primary — acción principal", variant: "primary" },
-  { level: "CTA — realce (1 por vista)", variant: "cta" },
+  { level: "CTA — mismo relleno que primary", variant: "cta" },
   { level: "Secondary — bajo perfil", variant: "secondary" },
   { level: "Tertiary — link/inline", variant: "link" },
   { level: "Destructive — peligrosa", variant: "outlineDanger" },

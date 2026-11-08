@@ -1,4 +1,5 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
+import { CountBadge } from "@sincpro/mobile-ui/Display/count-badge";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
@@ -117,16 +118,11 @@ function BottomNav({
       <View>
         {name ? <Icon color={color} name={name} size={24} /> : null}
         {item.badge != null ? (
-          <View
-            className="absolute bg-danger rounded-full min-w-[16px] h-4 px-1 items-center justify-center"
-            style={{ top: -4, right: -10, borderWidth: 2, borderColor: surfaceColor }}
-          >
-            <Typography.Text
-              style={{ color: theme.text.inverse, fontSize: 9, lineHeight: 11 }}
-            >
-              {item.badge}
-            </Typography.Text>
-          </View>
+          <CountBadge
+            anchor={{ top: -4, right: -10 }}
+            count={item.badge}
+            ringColor={surfaceColor}
+          />
         ) : null}
       </View>
     );

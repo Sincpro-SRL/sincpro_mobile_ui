@@ -46,21 +46,24 @@ test("loading button announces busy and cannot activate its action", async () =>
   expect(onPress).not.toHaveBeenCalled();
 });
 
-test("icon action exposes a supplied name and a 48 point target", async () => {
-  const onPress = jest.fn();
-  await render(
-    <IconButton
-      accessibilityLabel="Más opciones"
-      icon="more"
-      onPress={onPress}
-      size="small"
-    />,
-  );
-  const button = screen.getByRole("button", { name: "Más opciones" });
-  expect(button.props.style).toMatchObject({ minWidth: 48, minHeight: 48 });
-  await fireEvent.press(button);
-  expect(onPress).toHaveBeenCalledTimes(1);
-});
+test.each([
+  ["small", 32],
+  ["medium", 40],
+  ["large", 48],
+] as const)(
+  "%s icon action keeps its visible size and reaches a 48 point target",
+  async (size, points) => {
+    const onPress = jest.fn();
+    await render(
+      <IconButton accessibilityLabel="Más opciones" icon="more" onPress={onPress} size={size} />,
+    );
+    const button = screen.getByRole("button", { name: "Más opciones" });
+    expect(button.props.style.minWidth).toBeUndefined();
+    expect(points + 2 * button.props.hitSlop).toBe(48);
+    await fireEvent.press(button);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  },
+);
 
 test("section and screen titles expose header semantics", async () => {
   await render(

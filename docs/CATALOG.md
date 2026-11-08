@@ -36,12 +36,26 @@ fonts and system scaling. Legacy `body` remains 14.
 
 Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
 alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
-alternative. Existing variants are retained; `primary` and `cta` currently share styling.
-Buttons/icon buttons use a 48-point minimum and multiline/scaled button text by default.
-Supply an accessible name for icon-only actions; the `accessibleSizing` prop was removed in v2.
-`FilterButton variant="mobile"` exposes selected/disabled state, a selected check and
-wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
-horizontal scrolling or wrapping; the default remains its legacy row layout.
+alternative. Existing variants are retained; `primary` and `cta` share the same styling.
+Buttons are 48 points tall with multiline/scaled text by default. Supply an accessible name
+for icon-only actions; the `accessibleSizing` prop was removed in v2.
+
+| Need | Use |
+|---|---|
+| Labeled action | `Actions.Button` |
+| Icon-only action in a toolbar, header, carousel or over a brand surface | `Actions.IconButton` (ghost by default; the icon takes the ink of its fill, `iconColor` overrides it) |
+| Square icon-only partner of a `Button` (same 48 height, same variants) | `Actions.Button.Icon` |
+| Icon action inside a list row | `ListViewV2.Content.Row.ActionButton` (pass `accessibilityLabel`) |
+| Screen-level create action | `Actions.FAB` |
+| Filter toggle | `Actions.FilterButton` (same chip as list and search filters) |
+
+`IconButton` sizes are what you see (small 32, medium 40, large 48); the touch target always
+reaches 48 points through `hitSlop`. `Display.CircleButton` is a decorative icon badge (no
+`onPress`), not an action.
+
+`FilterButton` renders the one filter chip of the DS (compact, `bodySmall`, 48-point target
+through `hitSlop`); `variant` is kept for compatibility. `FilterButtonGroup
+layout="scroll|wrap"` adds horizontal scrolling or wrapping; the default remains a row.
 `Actions.Dock` defaults to a fixed bottom bar with a primary action and optional summary.
 Press “Más opciones” to reveal secondary content in the canonical Expo sheet.
 Expansion delegates gestures, Back and native presentation to `Dialog.Sheet`; use
@@ -52,15 +66,6 @@ outside scroll views and reserve space below list content. `placement="footer"` 
 `FormViewV2.Footer`'s layout. Slots remount when moving between the screen and modal:
 keep drafts and submission state in the host.
 See [migration and adoption order](MOBILE_UX_MIGRATION.md).
-
-Recommended action hierarchy: `primary` for the task's main action, `secondary` for its
-alternative, `link` for a quiet action and `outlineDanger` for an explicit destructive
-alternative. Existing variants are retained; `primary` and `cta` currently share styling.
-Buttons/icon buttons use a 48-point minimum and multiline/scaled button text by default.
-Supply an accessible name for icon-only actions; the `accessibleSizing` prop was removed in v2.
-`FilterButton variant="mobile"` exposes selected/disabled state, a selected check and
-wrapping labels with 48-point targets. `FilterButtonGroup layout="scroll|wrap"` adds
-horizontal scrolling or wrapping; the default remains its legacy row layout.
 
 ### Inputs (`Form`)
 
@@ -78,6 +83,13 @@ the appearance open. Snap geometry belongs to `itemWidth`/`gap`, not `itemStyle`
 It is a ScrollView, not a replacement for large virtualized lists.
 
 `Card`, `Chip`, `Tag`, `Badge`, `Avatar`, `AvatarGroup`, `Accordion`, `ListItem`, `KeyValue`, `AmountSummary`, `DataTable`, `Stat`, `StatCard`, `Rating`, `SwipeableRow`, `SectionHeader`, `Timeline`, `Image`, `Carousel`, `Tooltip`, `StatusDot` (presence), `Divider`, `Monetary`, `Date` (variants `inline`/`withIcon`/`pill` + `relative`), `CopyableText`, `CountRecords`, `Logo`, `Icon`, `IconBadge` (icon + count/dot).
+
+Pills share one label: `Badge` (status, semibold; `StatusBadge` maps domain states to it),
+`Chip` (tone, selectable or removable) and `Tag` (metadata with dot or leading icon) render
+10/16 text in the DS font. Selecting a `Chip` never resizes it. Every notification count
+(`IconBadge`, `AppBar.Action badge`, `BottomNav` items, `QuickActions`, `MenuButton badge`)
+is the same 18-point `CountBadge`, capped at `99+`. `MenuButton` presets `active`/`inactive`/`new`
+render `Badge` success/warning/accent.
 
 `CopyableText` presents short values as tap-to-copy text with a familiar copy icon,
 pending spinner and transient checkmark without layout shift. `selectable` preserves native
@@ -292,18 +304,29 @@ which field to search or mutate the query. `Navigation.SearchSuggestions` is als
 
 ### Overlays (`Dialog`)
 
-`Sheet` — subpath `Dialog/Sheet`, backed by `@expo/ui/community/bottom-sheet`.
-This is the only sheet implementation; `@expo/ui` is a required peer.
-Use `visible/onClose`, optional `title/footer/snapPoints/dismissible`, and
-`scrollable={false}` when content owns a FlashList. Native Back and swipe dismissal
-return control through `onClose`; the visible close action is built in.
+`Sheet` — subpath `Dialog/Sheet`, drawn by the app's single `OverlayHost` in the same
+native window as the screen (`SheetSurface`: Reanimated + Gesture Handler). A closed sheet
+mounts nothing. Use `visible/onClose`, optional `title/footer/snapPoints/dismissible`,
+`onClosed` (after the exit animation) and `scrollable={false}` when content owns a FlashList.
+Android Back and swipe dismissal return control through `onClose`; the visible close action
+is built in.
+
+**Which dialog to use** (stories under `Components/Overlays`):
+
+| Need                                                               | Component                                               | Shape                                      |
+| ------------------------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------ |
+| Short yes/no, system look                                          | `Dialog.requestConfirmation`                            | Native centered alert (`Promise<boolean>`) |
+| Confirmation with our look, async action, pending and error states | `Dialog.Confirmation` / `useConfirmationContext().show` | Bottom sheet                               |
+| Pick one of several actions                                        | `Dialog.ActionSheet`                                    | Bottom sheet                               |
+| Edit one value                                                     | `Dialog.EditValue`                                      | Bottom sheet with input                    |
+| Free content                                                       | `Dialog.Sheet`                                          | Bottom sheet                               |
+| Announcement or promotion over the whole screen                    | `widgets/PromoModal`                                    | Full-screen modal, centered card           |
 
 `ActionSheet`, rich `Confirmation` (+`ConfirmationProvider`) and `EditValue` compose
 this sheet. Simple confirmations use `requestConfirmation` (native Alert).
 `EditValue` commits through `onConfirm(value)` and cancels through `onClose`.
 Supply `onChange` with staged `value` for controlled drafts, `{key,label,value}` options
 for presets, or `footerAdornment` for additive actions; persistence remains in the host.
-Theme variables are reapplied inside native portals.
 Stories under `Patterns/Records/Actions` demonstrate explicit row actions, undo, draft
 filters and selection cancellation; do not nest sheets.
 Essential swipe actions need an equivalent visible action:

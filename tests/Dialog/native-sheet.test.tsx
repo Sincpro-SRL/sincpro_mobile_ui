@@ -18,7 +18,7 @@ jest.mock("@expo/ui/community/bottom-sheet", () => {
       backgroundStyle,
     }: BottomSheetProps) => {
       const props = {
-        testID: "native-host",
+        testID: "native-sheet",
         index,
         onClose,
         snapPoints,
@@ -38,8 +38,8 @@ test("canonical sheet controls native presentation and provides a named close ac
       <Text>Contenido</Text>
     </Sheet>,
   );
-  expect(screen.getByTestId("native-host").props.index).toBe(0);
-  expect(screen.getByTestId("native-host").props.snapPoints).toEqual(["60%", "90%"]);
+  expect(screen.getByTestId("native-sheet").props.index).toBe(0);
+  expect(screen.getByTestId("native-sheet").props.snapPoints).toEqual(["60%", "90%"]);
   expect(screen.getByRole("header", { name: "Resumen" })).toBeTruthy();
   const action = screen.getByRole("button", { name: "Cerrar" });
   expect(action.props.style).toMatchObject({ minWidth: 48, minHeight: 48 });
@@ -50,8 +50,7 @@ test("canonical sheet controls native presentation and provides a named close ac
       <Text>Contenido</Text>
     </Sheet>,
   );
-  expect(screen.getByTestId("native-host").props.index).toBe(-1);
-  await fireEvent(screen.getByTestId("native-host"), "close");
+  expect(screen.queryByTestId("native-sheet")).toBeNull();
   expect(close).toHaveBeenCalledTimes(1);
 });
 
@@ -62,9 +61,9 @@ test("non-dismissible sheets disable native dismissal and accessible Close", asy
       <Text>Contenido</Text>
     </Sheet>,
   );
-  expect(screen.getByTestId("native-host").props.enablePanDownToClose).toBe(false);
+  expect(screen.getByTestId("native-sheet").props.enablePanDownToClose).toBe(false);
   await fireEvent.press(screen.getByRole("button", { name: "Cerrar" }));
-  await fireEvent(screen.getByTestId("native-host"), "close");
+  await fireEvent(screen.getByTestId("native-sheet"), "close");
   expect(close).not.toHaveBeenCalled();
 });
 
@@ -83,9 +82,9 @@ test("list sheets have no outer ScrollView and keep an independent footer", asyn
   );
   expect(
     screen
-      .getByTestId("native-host")
+      .getByTestId("native-sheet")
       .queryAll((node) => node.props.keyboardShouldPersistTaps === "handled"),
   ).toHaveLength(0);
   expect(screen.getByText("Aplicar")).toBeTruthy();
-  expect(screen.getByTestId("native-host").props.snapPoints).toEqual(["90%"]);
+  expect(screen.getByTestId("native-sheet").props.snapPoints).toEqual(["90%"]);
 });

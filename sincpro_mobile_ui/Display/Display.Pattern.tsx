@@ -1,5 +1,5 @@
 import { getBrandingMesh, getBrandingMeshSize } from "@sincpro/mobile-ui/branding";
-import { type PatternMode, theme } from "@sincpro/mobile-ui/theme";
+import { type PatternMode, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import {
   Image as RNImage,
@@ -87,6 +87,7 @@ function Pattern({
   style,
   testID,
 }: PatternProps) {
+  const theme = useTheme();
   const isMesh = kind === "mesh";
   const fromTheme = isMesh ? theme.pattern : undefined;
   const brandedSize = isMesh ? getBrandingMeshSize() : undefined;

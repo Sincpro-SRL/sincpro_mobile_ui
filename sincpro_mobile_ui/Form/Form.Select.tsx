@@ -6,6 +6,7 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { useRef, useState } from "react";
 import { ActivityIndicator, Platform, View } from "react-native";
 
@@ -112,19 +113,17 @@ function Select<T extends string | number>({
     saving.current = true;
     setPending(true);
     setFailure(undefined);
-    try {
+    const result = await attempt(async () => {
       await onChange(next);
       setOpen(false);
       onBlur?.();
-    } catch (cause) {
+    });
+    saving.current = false;
+    setPending(false);
+    if (!result.ok) {
       setFailure(
-        cause instanceof Error && cause.message.trim()
-          ? cause.message
-          : "No se pudo aplicar la selección. Vuelve a intentarlo.",
+        errorMessage(result.error, "No se pudo aplicar la selección. Vuelve a intentarlo."),
       );
-    } finally {
-      saving.current = false;
-      setPending(false);
     }
   };
 

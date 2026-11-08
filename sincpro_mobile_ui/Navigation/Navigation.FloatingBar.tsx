@@ -1,4 +1,4 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import type { ReactNode } from "react";
 import { View } from "react-native";
@@ -24,6 +24,7 @@ function FloatingBar({
   className,
   testID,
 }: FloatingBarProps) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const safe = position === "bottom" ? insets.bottom : insets.top;
 

@@ -75,11 +75,18 @@ No se añadió ningún peer ni se cambió el motor de listas.
 
 ## Contrato de listas
 
-`ListViewV2.Content listProps` expone configuración de FlashList v2 para reciclado,
-datos externos, viewability, fin de paginación y mantenimiento de posición visible.
+`ListViewV2.Content` tiene API propia; ningún tipo de FlashList cruza al consumidor, así que
+el motor puede cambiar sin tocar pantallas:
+
+- `tuning`: `drawDistance`, `rowType`, `extraData`, `initialIndex`, `loadMoreThreshold`,
+  `keepVisiblePosition`, `onVisibleRowsChange` y `visiblePercent`. `rowType` y
+  `onVisibleRowsChange` reciben el item original. `onVisibleRowsChange` se pasa desde el
+  primer render, porque el motor conecta la visibilidad una sola vez.
+- `ref` es un `ListViewHandle` (`scrollToIndex(index, { position })`, `scrollToTop`,
+  `scrollToEnd`). Sin lista visible (carga, vacío o error) las llamadas se ignoran.
+- `contentContainerStyle` permite personalizar el contenido.
+
 No permite reemplazar data/renderItem/keys/refresh por accidente.
-`listRef` es `FlashListRef<IRowItem<T>>` para scroll imperativo;
-`contentContainerStyle` permite personalizar contenido.
 
 - Los renderers de `Content` y los callbacks de Root reciben el item original, sin clonarlo
   ni agregarle campos. Esto preserva getters, campos privados `#` y objetos congelados.

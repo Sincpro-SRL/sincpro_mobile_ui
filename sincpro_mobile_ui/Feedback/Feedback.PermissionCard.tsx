@@ -1,7 +1,7 @@
+import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { BaseButton } from "@sincpro/mobile-ui/primitives/BaseButton";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
@@ -33,6 +33,7 @@ function PermissionCard({
   className,
   testID,
 }: PermissionCardProps) {
+  const theme = useTheme();
   return (
     <View
       className={cn("bg-bg-card rounded-xl p-4 border border-border-light", className)}
@@ -62,7 +63,7 @@ function PermissionCard({
           </Typography.Text>
           {!granted && onRequest ? (
             <View className="mt-2 self-start">
-              <BaseButton
+              <Button
                 loading={loading}
                 onPress={onRequest}
                 size="small"

@@ -1,57 +1,60 @@
-import KeyboardToolbar, {
-  type KeyboardToolbarProps,
-} from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
-import { type ReactNode, type Ref } from "react";
-import { useState } from "react";
-import { View } from "react-native";
-import type {
-  KeyboardAwareScrollViewProps,
-  KeyboardAwareScrollViewRef,
-} from "react-native-keyboard-controller";
+import { useKeyboardToolbarInset } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
+import type { ReactElement, ReactNode } from "react";
 import {
-  KeyboardAwareScrollView,
-  KeyboardToolbar as NativeToolbar,
-} from "react-native-keyboard-controller";
+  type RefreshControlProps,
+  type StyleProp,
+  StyleSheet,
+  type ViewStyle,
+} from "react-native";
+import { KeyboardAwareScrollView, KeyboardToolbar } from "react-native-keyboard-controller";
 
-export interface KeyboardFormProps extends KeyboardAwareScrollViewProps {
+/** Space kept between the focused input and whatever sits above the keyboard. */
+const FOCUS_GAP = 24;
+
+export interface KeyboardFormProps {
   children: ReactNode;
-  ref?: Ref<KeyboardAwareScrollViewRef>;
-  toolbar?: boolean;
+  /** Overrides the computed space below the focused input. */
+  bottomOffset?: number;
+  /** Height of a footer that stays above the keyboard, such as a sticky action bar. */
   stickyFooterHeight?: number;
-  toolbarProps?: Omit<KeyboardToolbarProps, "onHeightChange">;
+  style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  className?: string;
+  contentContainerClassName?: string;
+  keyboardShouldPersistTaps?: "always" | "handled" | "never";
+  showsVerticalScrollIndicator?: boolean;
+  bounces?: boolean;
+  refreshControl?: ReactElement<RefreshControlProps>;
+  /** iOS: let the system inset the content under large titles and NativeTabs. */
+  contentInsetAdjustmentBehavior?: "automatic" | "never";
+  testID?: string;
 }
 
+/**
+ * The one keyboard-aware scroll of a form. Its inputs form a toolbar group, so
+ * the global KeyboardToolbarHost moves focus only among them.
+ */
 export default function KeyboardForm({
   children,
-  toolbar = true,
-  stickyFooterHeight = 0,
-  toolbarProps,
   bottomOffset,
+  stickyFooterHeight = 0,
   style,
-  ...props
+  keyboardShouldPersistTaps = "handled",
+  ...scroll
 }: KeyboardFormProps) {
-  const [toolbarHeight, setToolbarHeight] = useState(48);
+  const toolbarInset = useKeyboardToolbarInset();
   return (
-    <View style={{ flex: 1 }}>
-      <NativeToolbar.Group style={{ flex: 1 }}>
-        <KeyboardAwareScrollView
-          bottomOffset={
-            bottomOffset ?? stickyFooterHeight + (toolbar ? toolbarHeight + 24 : 24)
-          }
-          keyboardShouldPersistTaps="handled"
-          style={[{ flex: 1 }, style]}
-          {...props}
-        >
-          {children}
-        </KeyboardAwareScrollView>
-      </NativeToolbar.Group>
-      {toolbar ? (
-        <KeyboardToolbar
-          {...toolbarProps}
-          bottomGapOffset={-stickyFooterHeight}
-          onHeightChange={setToolbarHeight}
-        />
-      ) : null}
-    </View>
+    <KeyboardToolbar.Group style={styles.fill}>
+      <KeyboardAwareScrollView
+        bottomOffset={bottomOffset ?? stickyFooterHeight + toolbarInset + FOCUS_GAP}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        style={[styles.fill, style]}
+        {...scroll}
+      >
+        {children}
+      </KeyboardAwareScrollView>
+    </KeyboardToolbar.Group>
   );
 }
+
+const styles = StyleSheet.create({ fill: { flex: 1 } });

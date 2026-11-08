@@ -1,6 +1,7 @@
 import { Actions } from "@sincpro/mobile-ui/Actions";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { type ReactNode, useRef, useState } from "react";
 import { View } from "react-native";
 
@@ -42,18 +43,16 @@ function Confirmation({
     saving.current = true;
     setPending(true);
     setError(undefined);
-    try {
+    const result = await attempt(async () => {
       await onConfirm();
       onClose();
-    } catch (cause) {
+    });
+    saving.current = false;
+    setPending(false);
+    if (!result.ok) {
       setError(
-        cause instanceof Error && cause.message.trim()
-          ? cause.message
-          : "No se pudo completar la operación. Vuelve a intentarlo.",
+        errorMessage(result.error, "No se pudo completar la operación. Vuelve a intentarlo."),
       );
-    } finally {
-      saving.current = false;
-      setPending(false);
     }
   };
 

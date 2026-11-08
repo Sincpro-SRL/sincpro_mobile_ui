@@ -1,3 +1,4 @@
+import { dateTimeFormat } from "@sincpro/mobile-ui/utils/intl";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -15,13 +16,30 @@ interface FormatDateOptions {
 }
 
 /**
+ * Reads ISO strings, SQLite `YYYY-MM-DD HH:mm:ss` and Date instances as one instant.
+ * A timestamp without a zone is UTC. A date-only value is UTC midnight.
+ */
+export function parseInstant(input: string | Date): Date | null {
+  if (input instanceof Date) {
+    return Number.isNaN(input.getTime()) ? null : input;
+  }
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  const withT = trimmed.replace(/^(\d{4}-\d{2}-\d{2}) /, "$1T");
+  const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/.test(withT);
+  const parsed = new Date(zoned || !withT.includes("T") ? withT : `${withT}Z`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/**
  * Formats a date in the given timezone, respecting the granularity of the input.
  *
  * Detection rules:
  * 1. If `input` is a 'YYYY-MM-DD' string (date only) => interpreted as midnight (00:00:00)
  *    in the target timezone and ONLY the date part is returned (no time).
- * 2. If `input` includes a time component (full ISO or Date) => converted to the target timezone
- *    and shown as date + time (HH:MM) unless overridden via `options.showTime`.
+ * 2. If `input` includes a time component (ISO, `YYYY-MM-DD HH:mm:ss`, or Date) => that
+ *    instant is formatted in the target timezone as date + time (HH:MM) unless overridden
+ *    via `options.showTime`. A value without a zone is read as UTC.
  * 3. When `options.showTime` is `true` or `false` it overrides the auto-detection.
  * 4. If `timezone` is null/undefined or invalid, the string "Error de formateo" is returned.
  *
@@ -65,20 +83,19 @@ export function formatDate(
   const deviceLocale = getLocales()?.[0]?.languageTag ?? fallbackLocale;
   const usedLocale = options?.locale ?? deviceLocale;
 
+  const raw = typeof input === "string" ? input.trim() : input.toISOString();
+  const normalized = raw.replace(/^(\d{4}-\d{2}-\d{2}) /, "$1T");
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(normalized);
+  const effectiveShowTime =
+    options?.showTime !== undefined
+      ? options.showTime
+      : !isDateOnly && /T\d{2}:\d{2}/.test(normalized);
+
   try {
-    const rawStr = typeof input === "string" ? input : input.toISOString();
-    const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(rawStr);
-
-    // Auto-detect showTime when not passed explicitly
-    const effectiveShowTime =
-      options?.showTime !== undefined
-        ? options.showTime
-        : !isDateOnly && /T\d{2}:\d{2}/.test(rawStr); // has a time component
-
-    const dateInstance = isDateOnly
-      ? dayjs.tz(`${rawStr}T00:00:00`, effectiveTimezone)
-      : dayjs.utc(rawStr).tz(effectiveTimezone);
-    const dateInZone = dateInstance.toDate();
+    const date = isDateOnly
+      ? dayjs.tz(`${normalized}T00:00:00`, effectiveTimezone).toDate()
+      : parseInstant(input);
+    if (!date || Number.isNaN(date.getTime())) return "Error de formateo";
 
     const formatOptions: Intl.DateTimeFormatOptions = {
       year: "numeric",
@@ -92,9 +109,8 @@ export function formatDate(
       formatOptions.minute = "2-digit";
     }
 
-    return new Intl.DateTimeFormat(usedLocale, formatOptions).format(dateInZone);
-  } catch (error) {
-    console.warn("Error formatting date:", error);
+    return dateTimeFormat(usedLocale, formatOptions).format(date);
+  } catch {
     return "Error de formateo";
   }
 }

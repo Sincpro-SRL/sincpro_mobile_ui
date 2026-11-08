@@ -1,7 +1,7 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import DisplayImage from "@sincpro/mobile-ui/Display/Display.Image";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
@@ -24,16 +24,19 @@ export interface MediaEmbedProps {
  * Opens the content on press (onPress). True inline embedding needs WebView (optional
  * peer) — this is the lightweight/portable piece; wrap it with your player if needed.
  */
+const PORTRAIT = 9 / 16;
+
 function MediaEmbed({
   thumbnail,
   onPress,
   duration,
   title,
   source,
-  aspectRatio = 9 / 16,
+  aspectRatio = PORTRAIT,
   className,
   testID,
 }: MediaEmbedProps) {
+  const theme = useTheme();
   return (
     <Pressable
       accessibilityLabel={title ?? "Reproducir video"}

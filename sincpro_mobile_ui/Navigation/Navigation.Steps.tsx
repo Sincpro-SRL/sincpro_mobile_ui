@@ -1,5 +1,5 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
@@ -12,6 +12,7 @@ export interface StepsProps {
 }
 
 function Steps({ steps, current, className, testID }: StepsProps) {
+  const theme = useTheme();
   return (
     <View
       accessibilityLabel={`Paso ${current + 1} de ${steps.length}`}

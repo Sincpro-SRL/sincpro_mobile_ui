@@ -1,7 +1,7 @@
 import { expect, jest, test } from "@jest/globals";
+import BaseButton from "@sincpro/mobile-ui/Actions/Actions.Button";
 import EmptyState from "@sincpro/mobile-ui/Feedback/Feedback.EmptyState";
 import ErrorState from "@sincpro/mobile-ui/Feedback/Feedback.Error";
-import BaseButton from "@sincpro/mobile-ui/primitives/BaseButton";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);

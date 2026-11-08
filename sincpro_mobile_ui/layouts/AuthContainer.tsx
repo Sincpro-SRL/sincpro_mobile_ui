@@ -4,21 +4,21 @@ import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pa
 import KeyboardForm, {
   type KeyboardFormProps,
 } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { ReactNode } from "react";
 import { Keyboard, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { type Edge, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface AuthContainerProps {
   header: ReactNode;
   children: ReactNode;
   onBackPress?: () => void;
   className?: string;
-  edges?: Edge[];
-  keyboardToolbar?: boolean;
-  keyboardFormProps?: Omit<KeyboardFormProps, "children" | "toolbar">;
+  edges?: SafeAreaEdge[];
+  keyboardFormProps?: Omit<KeyboardFormProps, "children">;
   /** Gradient + optional texture surface for the header area. Defaults to the `brand`
    *  preset. Set `background.pattern` to opt-in a texture (`dots` / `grid` /
    *  `diagonals`); compose `<Display.Pattern kind="mesh" />` outside if you want the
@@ -33,7 +33,6 @@ function AuthContainer({
   background,
   className,
   edges = ["top", "bottom", "left", "right"],
-  keyboardToolbar = true,
   keyboardFormProps,
 }: AuthContainerProps) {
   const theme = useTheme();
@@ -76,14 +75,12 @@ function AuthContainer({
           </TouchableWithoutFeedback>
           <View className="flex-1 bg-bg-card rounded-t-3xl shadow-lg">
             <KeyboardForm
-              bottomOffset={keyboardToolbar ? undefined : 50}
               bounces={false}
               className="flex-1"
               contentContainerClassName="flex-grow pb-10"
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               {...keyboardFormProps}
-              toolbar={keyboardToolbar}
             >
               <View className="p-4">{children}</View>
             </KeyboardForm>

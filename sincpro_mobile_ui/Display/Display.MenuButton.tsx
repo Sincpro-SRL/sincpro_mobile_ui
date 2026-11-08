@@ -15,6 +15,16 @@ export type MenuButtonSwipeAction = SwipeRowAction;
 
 // ─── Badge ───────────────────────────────────────────────────────────────────
 
+const BADGE_LABELS: Record<string, string> = {
+  active: "Activo",
+  inactive: "Inactivo",
+  new: "Nuevo",
+};
+
+function badgeLabel(badge: MenuButtonBadge): string {
+  return BADGE_LABELS[String(badge)] ?? String(badge);
+}
+
 /**
  * Inline status/count badge on the right of the row.
  * Presets: `"active"` (green pill), `"inactive"` (yellow pill), `"new"` (accent pill).
@@ -46,7 +56,7 @@ function BadgeChip({ badge }: { badge: MenuButtonBadge }) {
           style={{ color: theme.success, fontSize: 11 }}
           variant="caption"
         >
-          Activo
+          {BADGE_LABELS.active}
         </Typography.Text>
       </View>
     );
@@ -73,7 +83,7 @@ function BadgeChip({ badge }: { badge: MenuButtonBadge }) {
           style={{ color: theme.warning, fontSize: 11 }}
           variant="caption"
         >
-          Inactivo
+          {BADGE_LABELS.inactive}
         </Typography.Text>
       </View>
     );
@@ -94,7 +104,7 @@ function BadgeChip({ badge }: { badge: MenuButtonBadge }) {
           style={{ color: theme.text.onAccent, fontSize: 11 }}
           variant="caption"
         >
-          Nuevo
+          {BADGE_LABELS.new}
         </Typography.Text>
       </View>
     );
@@ -235,6 +245,8 @@ function MenuButton({
     if (toggle) {
       return (
         <Switch
+          accessibilityHint={description}
+          accessibilityLabel={label}
           onValueChange={toggle.onToggle}
           thumbColor={theme.bg.card}
           trackColor={{ false: theme.border.strong, true: theme.primary }}
@@ -266,8 +278,20 @@ function MenuButton({
     );
   })();
 
+  // A row with an action is one button for screen readers. A toggle row stays
+  // transparent so the Switch is the reachable control (a focusable parent would
+  // swallow it on iOS).
+  const announcesAsButton = !!onPress && !toggle;
+  const announced = [label, description, value, badge != null ? badgeLabel(badge) : null]
+    .filter(Boolean)
+    .join(", ");
+
   const row = (
     <TouchableOpacity
+      accessibilityLabel={announcesAsButton ? announced : undefined}
+      accessibilityRole={announcesAsButton ? "button" : undefined}
+      accessibilityState={announcesAsButton ? { disabled, busy: loading } : undefined}
+      accessible={announcesAsButton}
       activeOpacity={0.5}
       className={styles.container({ className })}
       disabled={disabled || (!onPress && !toggle)}

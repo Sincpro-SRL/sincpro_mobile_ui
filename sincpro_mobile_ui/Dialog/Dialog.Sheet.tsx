@@ -1,28 +1,31 @@
-import BottomSheet, { BottomSheetView } from "@expo/ui/community/bottom-sheet";
+import { OverlayPortal } from "@sincpro/mobile-ui/Dialog/OverlayHost";
+import { SheetSurface, type SnapPoint } from "@sincpro/mobile-ui/Dialog/SheetSurface";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { themeToVars, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import { vars } from "nativewind";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { ScrollView, View } from "react-native";
 
 export type SheetProps = {
   visible: boolean;
+  /** The user asked to close (Cerrar, backdrop, drag, Android back). Set `visible` to false. */
   onClose: () => void;
+  /** Runs after the close animation. Navigate or open another overlay from here. */
+  onClosed?: () => void;
   title?: string;
   children: ReactNode;
   footer?: ReactNode;
-  snapPoints?: (string | number)[];
+  snapPoints?: SnapPoint[];
   scrollable?: boolean;
   dismissible?: boolean;
   testID?: string;
 };
 
-const SNAP_POINTS = ["60%", "90%"];
+const SNAP_POINTS: SnapPoint[] = ["60%", "90%"];
 
 function Sheet({
   visible,
   onClose,
+  onClosed,
   title,
   children,
   footer,
@@ -31,79 +34,87 @@ function Sheet({
   dismissible = true,
   testID,
 }: SheetProps) {
-  const theme = useTheme();
+  const [present, setPresent] = useState(visible);
+  if (visible && !present) setPresent(true);
+  if (!present) return null;
+
   const close = () => {
     if (visible && dismissible) onClose();
   };
+  const exited = () => {
+    setPresent(false);
+    onClosed?.();
+  };
+  const back = () => {
+    close();
+    return true;
+  };
+
+  const header = (
+    <View className="flex-row items-center gap-3 px-4 pb-2">
+      {title ? (
+        <Typography.Text
+          accessibilityRole="header"
+          className="flex-1 text-text-primary"
+          semibold
+          variant="subtitle"
+        >
+          {title}
+        </Typography.Text>
+      ) : (
+        <View className="flex-1" />
+      )}
+      <Pressable
+        accessibilityLabel="Cerrar"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: !dismissible }}
+        disabled={!dismissible}
+        onPress={close}
+        style={{
+          minHeight: 48,
+          minWidth: 48,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography.Text
+          className={dismissible ? "text-text-accent" : "text-text-disabled"}
+          variant="bodySmall"
+        >
+          Cerrar
+        </Typography.Text>
+      </Pressable>
+    </View>
+  );
 
   return (
-    <BottomSheet
-      backgroundStyle={{ backgroundColor: theme.bg.card }}
-      enablePanDownToClose={dismissible}
-      index={visible ? 0 : -1}
-      onClose={close}
-      snapPoints={snapPoints}
-    >
-      <BottomSheetView style={{ flex: 1 }}>
-        <View
-          accessibilityViewIsModal
-          importantForAccessibility="yes"
-          onAccessibilityEscape={close}
-          style={[vars(themeToVars(theme)), { flex: 1, minHeight: 0 }]}
-          testID={testID}
-        >
-          <View className="flex-row items-center gap-3 px-4 pb-2">
-            {title ? (
-              <Typography.Text
-                accessibilityRole="header"
-                className="flex-1 text-text-primary"
-                semibold
-                variant="subtitle"
-              >
-                {title}
-              </Typography.Text>
-            ) : (
-              <View className="flex-1" />
-            )}
-            <Pressable
-              accessibilityLabel="Cerrar"
-              accessibilityRole="button"
-              accessibilityState={{ disabled: !dismissible }}
-              disabled={!dismissible}
-              onPress={close}
-              style={{
-                minHeight: 48,
-                minWidth: 48,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography.Text
-                className={dismissible ? "text-text-accent" : "text-text-disabled"}
-                variant="bodySmall"
-              >
-                Cerrar
-              </Typography.Text>
-            </Pressable>
-          </View>
-          {scrollable ? (
-            <ScrollView
-              contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
-              keyboardDismissMode="on-drag"
-              keyboardShouldPersistTaps="handled"
-              style={{ flex: 1, minHeight: 0 }}
-            >
-              {children}
-            </ScrollView>
-          ) : (
-            <View style={{ flex: 1, minHeight: 0, paddingHorizontal: 16 }}>{children}</View>
-          )}
-          {footer ? (
-            <View className="border-t border-border-light px-4 py-3">{footer}</View>
-          ) : null}
-        </View>
-      </BottomSheetView>
-    </BottomSheet>
+    <OverlayPortal onBack={visible ? back : undefined}>
+      <SheetSurface
+        dismissible={dismissible}
+        header={header}
+        onExited={exited}
+        onRequestClose={close}
+        snapPoints={snapPoints}
+        testID={testID}
+        visible={visible}
+      >
+        {scrollable ? (
+          <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            style={{ flex: 1, minHeight: 0 }}
+          >
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={{ flex: 1, minHeight: 0, paddingHorizontal: 16 }}>{children}</View>
+        )}
+        {footer ? (
+          <View className="border-t border-border-light px-4 py-3">{footer}</View>
+        ) : null}
+      </SheetSurface>
+    </OverlayPortal>
   );
 }
 

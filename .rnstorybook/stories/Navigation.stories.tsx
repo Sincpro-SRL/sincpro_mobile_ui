@@ -5,7 +5,7 @@ import { theme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { Meta, StoryObj } from "@storybook/react-native";
 import { useState } from "react";
-import { Animated, View } from "react-native";
+import { View } from "react-native";
 
 const meta: Meta = { title: "Components/Navigation" };
 export default meta;
@@ -460,28 +460,23 @@ function SearchBarStory() {
 }
 
 function CollapsingDemo() {
-  const [scrollY] = useState(() => new Animated.Value(0));
   return (
     <View style={{ height: 360 }}>
-      <Navigation.CollapsingHeader
-        actions={<Navigation.AppBar.Action icon="more" onPress={() => {}} />}
-        onBack={() => {}}
-        scrollY={scrollY}
-        subtitle="Desplazá para colapsar"
-        title="Inicio"
-      />
-      <Animated.ScrollView
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-          useNativeDriver: false,
-        })}
-        scrollEventThrottle={16}
-      >
-        {Array.from({ length: 20 }).map((_, i) => (
-          <View className="px-4 py-3 border-b border-border-light" key={i}>
-            <Typography.Text>Fila {i + 1}</Typography.Text>
-          </View>
-        ))}
-      </Animated.ScrollView>
+      <Navigation.CollapsingHeader.Root>
+        <Navigation.CollapsingHeader
+          actions={<Navigation.AppBar.Action icon="more" onPress={() => {}} />}
+          onBack={() => {}}
+          subtitle="Desplazá para colapsar"
+          title="Inicio"
+        />
+        <Navigation.CollapsingHeader.ScrollView>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <View className="px-4 py-3 border-b border-border-light" key={i}>
+              <Typography.Text>Fila {i + 1}</Typography.Text>
+            </View>
+          ))}
+        </Navigation.CollapsingHeader.ScrollView>
+      </Navigation.CollapsingHeader.Root>
     </View>
   );
 }

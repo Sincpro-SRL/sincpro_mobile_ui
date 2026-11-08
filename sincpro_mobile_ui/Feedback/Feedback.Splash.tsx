@@ -4,7 +4,7 @@ import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Loading from "@sincpro/mobile-ui/Feedback/Feedback.Loading";
 import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import type { ReactNode } from "react";
@@ -45,6 +45,7 @@ function HeroSplash({
   title?: string;
   subtitle?: string;
 }) {
+  const theme = useTheme();
   return (
     <GradientSurface
       className="flex-1 items-center justify-center"

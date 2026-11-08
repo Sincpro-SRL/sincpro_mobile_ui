@@ -6,6 +6,8 @@ import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
+import { dateTimeFormat } from "@sincpro/mobile-ui/utils/intl";
 import { useLayoutEffect, useRef, useState } from "react";
 import { Platform, View } from "react-native";
 
@@ -24,11 +26,23 @@ export type DatePickerProps = {
   testID?: string;
 };
 
+// Same output as toLocale{Time,,Date}String("es-BO"), with shared formatters.
+const DEFAULT_FORMATS = {
+  time: { hour: "2-digit", minute: "2-digit" },
+  datetime: {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  },
+  date: { year: "numeric", month: "numeric", day: "numeric" },
+} as const satisfies Record<string, Intl.DateTimeFormatOptions>;
+
 function defaultFormat(value: Date, mode: DatePickerProps["mode"]): string {
-  if (mode === "time")
-    return value.toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" });
-  if (mode === "datetime") return value.toLocaleString("es-BO");
-  return value.toLocaleDateString("es-BO");
+  const shape = mode === "time" || mode === "datetime" ? mode : "date";
+  return dateTimeFormat("es-BO", DEFAULT_FORMATS[shape]).format(value);
 }
 
 function comparableDate(value: Date, mode: DatePickerProps["mode"]): number {
@@ -104,19 +118,17 @@ function DatePicker({
     saving.current = true;
     setPending(true);
     setError(undefined);
-    try {
+    const result = await attempt(async () => {
       await onChange(next);
       setOpen(false);
-    } catch (cause) {
+    });
+    saving.current = false;
+    setPending(false);
+    if (!result.ok) {
       setDraft(next);
       setError(
-        cause instanceof Error && cause.message.trim()
-          ? cause.message
-          : "No se pudo aplicar la fecha. Vuelve a intentarlo.",
+        errorMessage(result.error, "No se pudo aplicar la fecha. Vuelve a intentarlo."),
       );
-    } finally {
-      saving.current = false;
-      setPending(false);
     }
   };
   const update = (date: Date | undefined) => {

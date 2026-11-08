@@ -2,7 +2,7 @@ import DisplayImage from "@sincpro/mobile-ui/Display/Display.Image";
 import PriceTag from "@sincpro/mobile-ui/Display/Display.PriceTag";
 import Rating from "@sincpro/mobile-ui/Display/Display.Rating";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
@@ -36,6 +36,7 @@ function ProductCard({
   className,
   testID,
 }: ProductCardProps) {
+  const theme = useTheme();
   return (
     <Pressable
       accessibilityLabel={title}

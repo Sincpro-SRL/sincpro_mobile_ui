@@ -2,6 +2,7 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
+import { attempt } from "@sincpro/mobile-ui/utils/async";
 import * as Clipboard from "expo-clipboard";
 import { useEffect, useRef, useState } from "react";
 import { AccessibilityInfo, ActivityIndicator, View } from "react-native";
@@ -59,12 +60,14 @@ function CopyableText({
     if (pending.current || disabled) return;
     pending.current = true;
     setStatus("copying");
-    let textToCopy: string;
-    try {
-      textToCopy = hasStaticValue ? value : getValue();
-      const copied = await Clipboard.setStringAsync(textToCopy);
+    const result = await attempt(async () => {
+      const text = hasStaticValue ? value : getValue();
+      const copied = await Clipboard.setStringAsync(text);
       if (!copied) throw new Error("El portapapeles no pudo copiar el texto");
-    } catch (cause) {
+      return text;
+    });
+    if (!result.ok) {
+      const cause = result.error;
       const error = cause instanceof Error ? cause : new Error(String(cause));
       setStatus("error");
       AccessibilityInfo.announceForAccessibility("No se pudo copiar. Toca para reintentar.");
@@ -73,6 +76,7 @@ function CopyableText({
       onCopyError?.(error);
       return;
     }
+    const textToCopy = result.value;
     pending.current = false;
     setCopiedValue(textToCopy);
     setStatus("copied");

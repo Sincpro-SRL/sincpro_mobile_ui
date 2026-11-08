@@ -1,183 +1,117 @@
-import { beforeEach, expect, jest, test } from "@jest/globals";
-import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
-import KeyboardToolbar from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
+import { expect, jest, test } from "@jest/globals";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
-import { createRef } from "react";
-import { StyleSheet, Text, type TextInputInstance } from "react-native";
-import { FocusedInputEvents, KeyboardController } from "react-native-keyboard-controller";
-import type { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
+import KeyboardForm from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import KeyboardToolbarHost from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
+import ScrollContainer from "@sincpro/mobile-ui/layouts/ScrollContainer";
+import { fireEvent, render, screen } from "@testing-library/react-native";
+import { createRef, type ElementType, type ReactNode } from "react";
+import { Platform, Text, type TextInputInstance } from "react-native";
 
-let mockKeyboardVisible = true;
-const mockAssureVisible = jest.fn();
-beforeEach(() => {
-  mockKeyboardVisible = true;
-});
+const mockToolbarProps: { current?: Record<string, unknown> } = {};
 
 jest.mock("react-native-keyboard-controller", () => {
   const mockReact = jest.requireActual<typeof import("react")>("react");
-  const { View, Text } = require("react-native");
-  const Container = ({ children, ...props }: { children: React.ReactNode }) =>
+  const { View } = require("react-native");
+  const Container = ({ children, ...props }: { children: ReactNode }) =>
     mockReact.createElement(View, props, children);
-  const Scroll = ({
-    ref,
-    ...props
-  }: {
-    children: React.ReactNode;
-    ref?: React.Ref<{ assureFocusedInputVisible: typeof mockAssureVisible }>;
-  }) => {
-    mockReact.useImperativeHandle(ref, () => ({
-      assureFocusedInputVisible: mockAssureVisible,
-    }));
-    return mockReact.createElement(Container, props);
+  const Toolbar = (props: Record<string, unknown>) => {
+    mockToolbarProps.current = props;
+    return mockReact.createElement(View, { testID: "keyboard-toolbar" });
   };
-  const Part = ({
-    button: Button,
-    children,
-    text,
-  }: {
-    button: React.ElementType;
-    children?: React.ReactNode;
-    text?: string;
-  }) =>
-    mockReact.createElement(Button, {
-      onPress: jest.fn(),
-      children: children ?? (text ? mockReact.createElement(Text, {}, text) : null),
-    });
   return {
-    FocusedInputEvents: { addListener: jest.fn(() => ({ remove: jest.fn() })) },
-    KeyboardController: { setFocusTo: jest.fn(), dismiss: jest.fn() },
-    KeyboardStickyView: Container,
-    KeyboardAwareScrollView: Scroll,
-    KeyboardToolbar: Object.assign(Container, {
-      Group: Container,
-      Prev: Part,
-      Next: Part,
-      Done: Part,
-    }),
-    useKeyboardState: (selector: (value: { isVisible: boolean }) => boolean) =>
-      selector({ isVisible: mockKeyboardVisible }),
+    KeyboardAwareScrollView: Container,
+    KeyboardToolbar: Object.assign(Toolbar, { Group: Container }),
   };
 });
 jest.mock("@sincpro/mobile-ui/Display/Display.Icon", () => () => null);
 
-test("keyboard form owns one scroll, reserves toolbar clearance and permits first-tap controls", async () => {
-  const { rerender } = await render(
-    <KeyboardForm testID="form-scroll">
-      <Input label="Nombre" value="" />
-    </KeyboardForm>,
+function onPlatform(os: "ios" | "android") {
+  jest.replaceProperty(Platform, "OS", os);
+}
+
+test("iOS mounts one library toolbar and every form reserves its height", async () => {
+  onPlatform("ios");
+  await render(
+    <>
+      <KeyboardForm testID="form-scroll">
+        <Input label="Nombre" value="" />
+      </KeyboardForm>
+      <KeyboardToolbarHost />
+    </>,
   );
-  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(72);
+  expect(screen.getAllByTestId("keyboard-toolbar")).toHaveLength(1);
+  expect(mockToolbarProps.current?.doneText).toBe("Listo");
+  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(42 + 24);
   expect(screen.getByTestId("form-scroll").props.keyboardShouldPersistTaps).toBe("handled");
-  expect(screen.getByRole("button", { name: "Campo siguiente" })).toBeTruthy();
-  await fireEvent(screen.getByTestId("keyboard-toolbar"), "layout", {
-    nativeEvent: { layout: { x: 0, y: 0, width: 400, height: 88 } },
-  });
-  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(112);
-  await rerender(
-    <KeyboardForm bottomOffset={90} toolbar={false} testID="form-scroll">
-      <Input label="Nombre" value="" />
-    </KeyboardForm>,
-  );
-  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(90);
-  expect(screen.queryByRole("button", { name: "Campo siguiente" })).toBeNull();
 });
 
-test("toolbar labels are localizable and its actions have 48-point non-overlapping targets", async () => {
+test("Android follows the IME action key: no toolbar and no reserved height", async () => {
+  onPlatform("android");
   await render(
-    <KeyboardToolbar
-      doneLabel="Close keyboard"
-      nextLabel="Next field"
-      previousLabel="Previous field"
-    />,
+    <>
+      <KeyboardForm testID="form-scroll">
+        <Input label="Nombre" value="" />
+      </KeyboardForm>
+      <KeyboardToolbarHost />
+    </>,
   );
-  const next = screen.getByRole("button", { name: "Next field" });
-  expect(StyleSheet.flatten(next.props.style)).toMatchObject({ minWidth: 48, minHeight: 48 });
-  expect(next.props.hitSlop).toBe(0);
-  expect(screen.getByRole("button", { name: "Close keyboard" })).toBeTruthy();
+  expect(screen.queryByTestId("keyboard-toolbar")).toBeNull();
+  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(24);
 });
 
-test("compact toolbar keeps names accessible without forcing visible text", async () => {
-  const { rerender } = await render(<KeyboardToolbar />);
-  expect(screen.getByRole("button", { name: "Ocultar teclado" })).toBeTruthy();
-  expect(screen.queryByText("Ocultar teclado")).toBeNull();
-  await rerender(
-    <KeyboardToolbar labelStyle={{ fontSize: 12, fontFamily: "CustomFont" }} showDoneLabel />,
-  );
-  expect(StyleSheet.flatten(screen.getByText("Ocultar teclado").props.style)).toMatchObject({
-    fontSize: 12,
-    fontFamily: "CustomFont",
-  });
+test("Android can opt in to the toolbar", async () => {
+  onPlatform("android");
+  await render(<KeyboardToolbarHost android doneLabel="Terminar" />);
+  expect(screen.getByTestId("keyboard-toolbar")).toBeTruthy();
+  expect(mockToolbarProps.current?.doneText).toBe("Terminar");
 });
 
-test("custom content and geometry retain native actions, names and disabled states", async () => {
+test("toolbar actions are announced in Spanish with a 44-point target", async () => {
+  onPlatform("ios");
+  await render(<KeyboardToolbarHost />);
+  const Button = mockToolbarProps.current?.button as ElementType;
+  const press = jest.fn();
   await render(
-    <KeyboardToolbar
-      actionStyle={{ borderRadius: 24 }}
-      className="rounded-full"
-      renderActionContent={(action, state) => (
-        <Text>{`${action}:${state.disabled ? "off" : "on"}`}</Text>
-      )}
-      style={{ borderRadius: 28, paddingHorizontal: 16 }}
-    />,
+    <>
+      <Button accessibilityHint="" accessibilityLabel="Next" onPress={press}>
+        <Text>›</Text>
+      </Button>
+      <Button accessibilityHint="" accessibilityLabel="Previous" onPress={jest.fn()}>
+        <Text>‹</Text>
+      </Button>
+      <Button accessibilityHint="" accessibilityLabel="Done" onPress={jest.fn()}>
+        <Text>Listo</Text>
+      </Button>
+    </>,
   );
-  expect(
-    StyleSheet.flatten(screen.getByTestId("keyboard-toolbar").props.style),
-  ).toMatchObject({
-    borderRadius: 28,
-    paddingHorizontal: 16,
-  });
   const next = screen.getByRole("button", { name: "Campo siguiente" });
-  expect(StyleSheet.flatten(next.props.style)).toMatchObject({ borderRadius: 24 });
-  expect(screen.getByText("next:off")).toBeTruthy();
-  const listener = jest.mocked(FocusedInputEvents.addListener).mock.calls.at(-1)?.[1];
-  if (!listener) throw new Error("Missing native focus subscription");
-  await act(() => listener({ current: 1, count: 3 }));
-  expect(screen.getByText("next:on")).toBeTruthy();
-  await fireEvent.press(screen.getByRole("button", { name: "Campo siguiente" }));
-  expect(KeyboardController.setFocusTo).toHaveBeenLastCalledWith("next");
-  await fireEvent.press(screen.getByRole("button", { name: "Ocultar teclado" }));
-  expect(KeyboardController.dismiss).toHaveBeenCalled();
+  expect(next.props.style).toMatchObject({ minWidth: 44, minHeight: 42 });
+  expect(screen.getByRole("button", { name: "Campo anterior" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Ocultar teclado" })).toBeTruthy();
+  await fireEvent.press(next);
+  expect(press).toHaveBeenCalledTimes(1);
 });
 
-test("KeyboardForm forwards native scroll ref and composes toolbar overrides", async () => {
-  const ref = createRef<KeyboardAwareScrollViewRef>();
-  await render(
-    <KeyboardForm
-      ref={ref}
-      toolbarProps={{ doneLabel: "Cerrar edición", showDoneLabel: true }}
-    >
-      <Input label="Campo" value="" />
-    </KeyboardForm>,
+test("keyboard form reserves sticky CTA plus toolbar clearance without replacing public offsets", async () => {
+  onPlatform("ios");
+  const { rerender } = await render(
+    <>
+      <KeyboardForm stickyFooterHeight={64} testID="sticky-form">
+        <Input label="Último campo" value="" />
+      </KeyboardForm>
+      <KeyboardToolbarHost />
+    </>,
   );
-  ref.current?.assureFocusedInputVisible();
-  expect(mockAssureVisible).toHaveBeenCalled();
-  expect(screen.getByRole("button", { name: "Cerrar edición" })).toBeTruthy();
-});
-
-test("toolbar follows native group boundaries and delegates focus traversal", async () => {
-  await render(<KeyboardToolbar />);
-  const listener = jest.mocked(FocusedInputEvents.addListener).mock.calls.at(-1)?.[1];
-  if (!listener) throw new Error("Missing native focus subscription");
-  await act(() => listener({ current: 1, count: 3 }));
-  await fireEvent.press(screen.getByRole("button", { name: "Campo siguiente" }));
-  expect(KeyboardController.setFocusTo).toHaveBeenLastCalledWith("next");
-  await fireEvent.press(screen.getByRole("button", { name: "Campo anterior" }));
-  expect(KeyboardController.setFocusTo).toHaveBeenLastCalledWith("prev");
-  await act(() => listener({ current: 2, count: 3 }));
-  expect(
-    screen.getByRole("button", { name: "Campo siguiente" }).props.accessibilityState.disabled,
-  ).toBe(true);
-});
-
-test("closed keyboard toolbar stays mounted but inaccessible", async () => {
-  const { rerender } = await render(<KeyboardToolbar />);
-  mockKeyboardVisible = false;
-  await rerender(<KeyboardToolbar />);
-  expect(screen.queryByRole("button", { name: "Campo siguiente" })).toBeNull();
-  expect(
-    screen.getByTestId("keyboard-toolbar", { includeHiddenElements: true }),
-  ).toBeTruthy();
+  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(64 + 42 + 24);
+  await rerender(
+    <>
+      <KeyboardForm bottomOffset={200} stickyFooterHeight={80} testID="sticky-form">
+        <Input label="Último campo" value="" />
+      </KeyboardForm>
+      <KeyboardToolbarHost />
+    </>,
+  );
+  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(200);
 });
 
 test("Form.Input forwards the native instance ref for return-key navigation", async () => {
@@ -200,27 +134,19 @@ test("Form.Input forwards the native instance ref for return-key navigation", as
   expect(submit).toHaveBeenCalledTimes(1);
 });
 
-test("keyboard form reserves sticky CTA plus toolbar clearance without replacing public offsets", async () => {
-  const { rerender } = await render(
-    <KeyboardForm stickyFooterHeight={64} testID="sticky-form">
-      <Input label="Último campo" value="" />
-    </KeyboardForm>,
+test("ScrollContainer is a KeyboardForm: same keyboard clearance, native iOS insets", async () => {
+  onPlatform("ios");
+  await render(
+    <>
+      <ScrollContainer testID="page-scroll">
+        <Input label="Notas" value="" />
+      </ScrollContainer>
+      <KeyboardToolbarHost />
+    </>,
   );
-  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(136);
-  await fireEvent(screen.getByTestId("keyboard-toolbar"), "layout", {
-    nativeEvent: { layout: { x: 0, y: 0, width: 400, height: 88 } },
-  });
-  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(176);
-  await rerender(
-    <KeyboardForm stickyFooterHeight={80} toolbar={false} testID="sticky-form">
-      <Input label="Último campo" value="" />
-    </KeyboardForm>,
-  );
-  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(104);
-  await rerender(
-    <KeyboardForm bottomOffset={200} stickyFooterHeight={80} testID="sticky-form">
-      <Input label="Último campo" value="" />
-    </KeyboardForm>,
-  );
-  expect(screen.getByTestId("sticky-form").props.bottomOffset).toBe(200);
+  const scroll = screen.getByTestId("page-scroll");
+  expect(scroll.props.bottomOffset).toBe(42 + 24);
+  expect(scroll.props.contentInsetAdjustmentBehavior).toBe("automatic");
+  expect(scroll.props.keyboardShouldPersistTaps).toBe("handled");
 });
+

@@ -11,6 +11,7 @@ const forbiddenImports = new Set([
   "@react-native-community/datetimepicker",
   "@react-native-community/slider",
   "@gorhom/bottom-sheet",
+  "@expo/ui/community/bottom-sheet",
 ]);
 const forbiddenNativeComponents = new Set([
   "StatusBar",
@@ -66,6 +67,49 @@ test("SDK58 source has one native control stack and host-owned system bars", () 
   }
 });
 
+test("React Native Pressable never takes className (NativeWind interop re-renders on touch)", () => {
+  for (const file of sourceFiles(sourceRoot)) {
+    if (!file.endsWith(".tsx")) continue;
+    const relative = path.relative(sourceRoot, file);
+    const source = ts.createSourceFile(
+      file,
+      readFileSync(file, "utf8"),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const aliases = new Set<string>();
+    function inspect(node: ts.Node) {
+      if (
+        ts.isImportDeclaration(node) &&
+        ts.isStringLiteral(node.moduleSpecifier) &&
+        node.moduleSpecifier.text === "react-native"
+      ) {
+        const bindings = node.importClause?.namedBindings;
+        if (bindings && ts.isNamedImports(bindings)) {
+          for (const binding of bindings.elements) {
+            if ((binding.propertyName?.text ?? binding.name.text) === "Pressable") {
+              aliases.add(binding.name.text);
+            }
+          }
+        }
+      }
+      if (
+        (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) &&
+        aliases.has(node.tagName.getText(source))
+      ) {
+        const hasClassName = node.attributes.properties.some(
+          (attribute) =>
+            ts.isJsxAttribute(attribute) && attribute.name.getText(source) === "className",
+        );
+        assert(!hasClassName, `${relative}: RN Pressable with className; use primitives/Pressable`);
+      }
+      ts.forEachChild(node, inspect);
+    }
+    inspect(source);
+  }
+});
+
 test("SDK58 package has bounded peers, required Expo UI and no bundled React copies", () => {
   const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   for (const [name, range] of Object.entries(manifest.peerDependencies)) {
@@ -89,6 +133,7 @@ test("SDK58 removed entrypoints are not retained as compatibility aliases", () =
     "layouts/ScreenStatusBar.tsx",
     "layouts/TabNavigatorLayout.tsx",
     "Form/Form.Button.tsx",
+    "primitives/BaseButton.tsx",
     "Form/Form.SearchBar.tsx",
     "Navigation/Navigation.Header.tsx",
     "Navigation/Navigation.TabIcon.tsx",

@@ -29,6 +29,51 @@ function MonetaryDemo() {
 
 export const Input: Story = { render: () => <InputDemo /> };
 
+/**
+ * Same field, two looks. `card` is the default of forms; `outline` is the look of the
+ * access forms (login, server, reset). `secure` adds the show/hide toggle in both.
+ */
+function LooksDemo() {
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  return (
+    <View style={{ gap: 24 }}>
+      <View>
+        <Form.Input label="Usuario (card)" onChangeText={setUser} value={user} />
+        <Form.Input
+          label="Contraseña (card)"
+          onChangeText={setPassword}
+          secure
+          value={password}
+        />
+      </View>
+      <View>
+        <Form.Input
+          label="Usuario (outline)"
+          look="outline"
+          onChangeText={setUser}
+          value={user}
+        />
+        <Form.Input
+          label="Contraseña (outline)"
+          look="outline"
+          onChangeText={setPassword}
+          secure
+          value={password}
+        />
+        <Form.Input
+          error="El servidor no responde"
+          label="Servidor"
+          look="outline"
+          value=""
+        />
+      </View>
+    </View>
+  );
+}
+
+export const InputLooks: Story = { render: () => <LooksDemo /> };
+
 export const MonetaryInput: Story = { render: () => <MonetaryDemo /> };
 
 function CheckboxDemo() {

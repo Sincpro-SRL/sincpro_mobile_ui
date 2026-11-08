@@ -1,5 +1,5 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
 import { View } from "react-native";
@@ -25,6 +25,7 @@ function IconBadge({
   accessibilityLabel,
   testID,
 }: IconBadgeProps) {
+  const theme = useTheme();
   const showCount = typeof count === "number" && count > 0;
   const showBadge = dot || showCount;
   const label = showCount ? (count > max ? `${max}+` : String(count)) : "";

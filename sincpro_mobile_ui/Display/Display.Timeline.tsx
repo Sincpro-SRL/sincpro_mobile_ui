@@ -1,5 +1,5 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
@@ -18,6 +18,7 @@ export interface TimelineProps {
 }
 
 function Timeline({ steps, current, className, testID }: TimelineProps) {
+  const theme = useTheme();
   return (
     <View className={className} testID={testID}>
       {steps.map((step, index) => {

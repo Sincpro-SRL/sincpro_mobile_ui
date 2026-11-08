@@ -46,9 +46,10 @@ storybook-e2e:
 	@MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true maestro test -e STORYBOOK_URL=$(STORYBOOK_URL) .maestro/
 
 build:
-	@echo "🏗️  Compilando @sincpro/mobile-ui -> dist (tsc + tsc-alias)..."
+	@echo "🏗️  Compilando @sincpro/mobile-ui -> dist (tipos con tsc, JS con React Compiler, alias con tsc-alias)..."
 	@rm -rf dist
-	@npx tsc -p tsconfig.build.json
+	@npx tsc -p tsconfig.build.json --emitDeclarationOnly
+	@node scripts/build-js.mjs
 	@npx tsc-alias -p tsconfig.build.json
 	@find sincpro_mobile_ui -name '*.css' -exec sh -c 'mkdir -p "dist/$$(dirname "$${1#sincpro_mobile_ui/}")" && cp "$$1" "dist/$${1#sincpro_mobile_ui/}"' _ {} \;
 	@echo "✓ Build listo en ./dist (JS + tipos; los subpaths se exponen vía exports)"
@@ -94,9 +95,17 @@ clean:
 	@rm -rf dist node_modules
 	@echo "✓ Cleaned"
 
+perf-test:
+	@echo "⏱  Reassure: renders y tiempos contra la línea base (.reassure/)"
+	@npx reassure
+
+perf-baseline:
+	@echo "⏱  Reassure: guardando la línea base de renders"
+	@npx reassure --baseline
+
 test:
 	@echo "🧪 Running node:test (runtime, tests/ at repo root)..."
 	@./node_modules/.bin/tsx --test 'tests/**/*.test.ts'
 	@./node_modules/.bin/jest --runInBand
 
-.PHONY: prepare-environment init format format-check lint typecheck check verify build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios storybook-e2e
+.PHONY: perf-test perf-baseline prepare-environment init format format-check lint typecheck check verify build verify-format update-version publish clean test storybook-check storybook storybook-android storybook-ios storybook-e2e

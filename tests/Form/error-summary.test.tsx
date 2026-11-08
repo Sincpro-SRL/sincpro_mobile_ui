@@ -87,7 +87,7 @@ test.each([{ custom: false }, { custom: true }])(
     function DraftForm({ errors }: { errors: readonly ErrorSummaryItem[] }) {
       const [values, setValues] = useState({ name: "Ana sin terminar", email: "ana@" });
       return (
-        <KeyboardForm testID="form-scroll" toolbar={false}>
+        <KeyboardForm testID="form-scroll">
           <ErrorSummary
             errors={errors}
             onSelectError={(id) => {

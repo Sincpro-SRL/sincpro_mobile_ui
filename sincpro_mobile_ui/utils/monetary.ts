@@ -2,6 +2,9 @@ import { Big } from "big.js";
 
 export function parseToMonetaryNumber(input?: string | number | null): number {
   if (input == null) return 0;
+  // A finite number is already a number: skip the string round trip, which also
+  // misread exponent forms (1e21 → "121").
+  if (typeof input === "number") return Number.isFinite(input) ? input : 0;
   const s = String(input).trim();
   if (!/[0-9]/.test(s)) return 0;
 
@@ -13,14 +16,17 @@ export function parseToMonetaryNumber(input?: string | number | null): number {
   }
 }
 
+// Building an Intl formatter is the expensive part (locale data lookup); format()
+// is cheap. One shared instance for every amount the app renders.
+const TWO_DECIMALS = new Intl.NumberFormat("de-DE", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** `1234.5` → `"1.234,50"`. Rounds half-up in decimal (Big), not in binary floating point. */
 export function formatTwoDecimals(value?: number | string | null): string {
-  const raw = parseToMonetaryNumber(value);
-  const rounded = new Big(raw).toFixed(2);
-  const num = Number(rounded);
-  return new Intl.NumberFormat("de-DE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(num);
+  const rounded = new Big(parseToMonetaryNumber(value)).toFixed(2);
+  return TWO_DECIMALS.format(Number(rounded));
 }
 
 export function calculateDiscountedTotal(total: number, discount: number): number {

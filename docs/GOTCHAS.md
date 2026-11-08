@@ -58,6 +58,36 @@
 
 ## UI / Expo / build nativo
 
+### 🔴 La app deja de responder a toques al cerrar una sheet o mientras se ve un toast
+
+- **Síntoma:** después de cerrar una sheet (o mientras hay un toast o una "píldora" de actividad visible) ningún toque responde; la pantalla se ve normal.
+- **Causa:** el overlay vive en **otra ventana nativa**. Un `Modal` de RN, o la sheet de `@expo/ui` (diálogo Compose en Android), captura todos los toques de la pantalla, y `pointerEvents="box-none"` no los devuelve a la ventana de abajo. Si se desmonta sin cerrarse (`index -1` sin `hide()`), la ventana puede quedar viva.
+- **Fix:** overlays en la misma ventana, en el `OverlayHost` (`Dialog.Sheet`, Toast). Nunca `Modal` salvo pantalla completa. Diagnóstico: `adb shell dumpsys window windows | grep "Window #"` muestra una ventana extra de la app.
+
+### 🔴 Freeze o toques erráticos en filas y botones → `Pressable` de RN con `className`
+
+- **Síntoma:** al tocar una fila o un botón la UI se traba o el toque no responde.
+- **Causa:** el interop de NativeWind sobre el `Pressable` de React Native re-entra en el render al tocar (peor con `style={({ pressed }) => …}`).
+- **Fix:** usar `@sincpro/mobile-ui/primitives/Pressable` (TouchableOpacity). El estado presionado va en `activeOpacity`; el seleccionado, en `style` con tokens.
+
+### La barra del teclado (anterior / siguiente) queda pegada abajo en Android
+
+- **Síntoma:** la barra no sigue al teclado, o queda visible sin teclado.
+- **Causa:** un formulario consciente del teclado dentro de una ventana aparte (sheet nativa o `Modal`): keyboard-controller solo sigue la ventana principal y el `Modal` de RN. Además, cada formulario montaba su propia barra.
+- **Fix:** una sola `Form.KeyboardToolbarHost` en la raíz (Android apagada por defecto) y sheets en el `OverlayHost` (misma ventana).
+
+### Lista lenta: todas las filas se repintan con cualquier cambio
+
+- **Síntoma:** escribir en el buscador o abrir algo hace que la lista entera se repinte.
+- **Causa:** renderer inline en `ListViewV2.Content`, un array nuevo en cada render (`items.slice(...)` sin memo) u overlays dentro de las filas.
+- **Fix:** renderer con `useCallback`, filas con `memo` y sin estado, datos con `useMemo`, una sola sheet por pantalla. Verificar con `make perf-test`.
+
+### Reassure marca "redundant updates" al abrir o cerrar una sheet (esperado)
+
+- **Síntoma:** `make perf-test` reporta `Redundant updates: 2` en el escenario de la sheet.
+- **Causa:** la sheet se declara en la pantalla y se dibuja en el `OverlayHost`. Al cambiar `visible`, la pantalla hace un commit en el que el portal sigue devolviendo `null` (sin cambio visible). En el mismo commit, el layout effect del portal actualiza el store y el host dibuja en un `nested-update`, **antes de pintar**. No hay un frame extra.
+- **Fix:** ninguno; es el costo del patrón portal (el mismo de `@gorhom/portal`). Sí es un problema un redundante que **no** venga seguido de un `nested-update`, o un aumento del conteo de renders.
+
 ### Logo/branding desaparece tras migrar (Display.Logo, HomeHeader, AuthFormView)
 
 - **Síntoma:** login/perfil/home renderizan pero **sin logo** (espacio vacío donde iba el logo).
@@ -90,6 +120,18 @@
 - **Otras causas de blanco tras splash:** fuentes no cargadas (usar `useAppFonts()` + `SplashScreen` en el AppShell); y el `const enum` de arriba (rutas con `path` undefined).
 
 ---
+
+### 🔴 `make build` falla con "React Compiler must compile every component"
+
+- **Síntoma:** el build lista `· skipped <archivo>: <motivo>` y termina con error.
+- **Causa:** React Compiler no puede compilar ese componente, y lo publicaría sin memoización automática. Los motivos que ya nos pasaron:
+  - `try/finally` (o `throw` dentro de `try/catch`) en un handler del componente;
+  - un parámetro por defecto con una expresión (`radius = size * 2`, `onPress = item.onPress`, `(a) => ...`);
+  - leer `ref.current` en el render (`useRef(new Animated.Value(0)).current`).
+- **Fix:**
+  - **async:** `attempt(task)` + `errorMessage(cause, fallback)` de `utils/async` (no lanzan; la limpieza va después);
+  - **defaults:** constante de módulo o `prop ?? valor` en el cuerpo;
+  - **objetos estables:** `const [value] = useState(() => new Animated.Value(0))`, que además no crea uno nuevo en cada render.
 
 ## Lint / tooling
 

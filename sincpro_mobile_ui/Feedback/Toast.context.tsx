@@ -1,3 +1,4 @@
+import { OverlayPortal } from "@sincpro/mobile-ui/Dialog/OverlayHost";
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
@@ -462,21 +463,25 @@ export function ToastProvider({
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <View
-        className="absolute left-0 right-0 px-4 gap-2 z-toast"
-        pointerEvents="box-none"
-        style={position === "top" ? { top: insets.top + 12 } : { bottom: insets.bottom + 12 }}
-      >
-        {toasts.map((entry) => (
-          <ToastItem
-            entry={entry}
-            key={entry.id}
-            onHide={hide}
-            onUpdate={update}
-            position={position}
-          />
-        ))}
-      </View>
+      <OverlayPortal layer="toast">
+        <View
+          className="absolute left-0 right-0 px-4 gap-2 z-toast"
+          pointerEvents="box-none"
+          style={
+            position === "top" ? { top: insets.top + 12 } : { bottom: insets.bottom + 12 }
+          }
+        >
+          {toasts.map((entry) => (
+            <ToastItem
+              entry={entry}
+              key={entry.id}
+              onHide={hide}
+              onUpdate={update}
+              position={position}
+            />
+          ))}
+        </View>
+      </OverlayPortal>
     </ToastContext.Provider>
   );
 }

@@ -1,8 +1,8 @@
 import {
   FlashList,
-  type FlashListProps,
   type FlashListRef,
   type ListRenderItemInfo,
+  type ViewToken,
 } from "@shopify/flash-list";
 import { Display } from "@sincpro/mobile-ui/Display";
 import SearchHistory, {
@@ -11,25 +11,31 @@ import SearchHistory, {
 import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
 import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
+import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import {
   SegmentedControl,
   type SegmentedControlProps,
 } from "@sincpro/mobile-ui/Navigation/Navigation.SegmentedControl";
+import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn, tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ListViewProvider, useListView } from "@sincpro/mobile-ui/views/ListViewV2.context";
 import { type IRowItem, toRowItems } from "@sincpro/mobile-ui/views/types/IListView";
-import React, {
+import {
   createContext,
   ReactNode,
   type Ref,
+  type RefObject,
   useCallback,
   useContext,
   useEffect,
+  useEffectEvent,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -41,7 +47,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import type { Edge } from "react-native-safe-area-context";
 
 interface ListViewProps<T> {
   name: string;
@@ -65,7 +70,7 @@ interface ListViewProps<T> {
   hasMore?: boolean;
   backgroundColor?: string;
   withContainer?: boolean;
-  edges?: Edge[];
+  edges?: SafeAreaEdge[];
   children: ReactNode;
 }
 
@@ -202,29 +207,19 @@ function Header({
   );
 }
 
+const SEARCH_DEBOUNCE_MS = 400;
+
 function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
   const { name, onSearch } = useListView();
   const [query, setQuery] = useState<string>(searchQuery);
-  const [debouncedQuery, setDebouncedQuery] = useState<string>(searchQuery);
-  const onSearchRef = React.useRef(onSearch);
+  // Reads the host's latest callback without restarting the debounce when its
+  // identity changes, so a new `onSearch` never repeats a search.
+  const search = useEffectEvent((value: string) => onSearch?.(value));
 
   useEffect(() => {
-    onSearchRef.current = onSearch;
-  }, [onSearch]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 400);
-
+    const timeout = setTimeout(() => search(query), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timeout);
   }, [query]);
-
-  useEffect(() => {
-    if (debouncedQuery !== undefined) {
-      onSearchRef.current?.(debouncedQuery);
-    }
-  }, [debouncedQuery]);
 
   if (!onSearch) {
     return null;
@@ -338,26 +333,60 @@ type ListScrollProps = Pick<
   "keyboardShouldPersistTaps" | "keyboardDismissMode" | "testID"
 >;
 
-export type ListViewVirtualizationProps<T = unknown> = Pick<
-  FlashListProps<IRowItem<T>>,
-  | "drawDistance"
-  | "maxItemsInRecyclePool"
-  | "getItemType"
-  | "extraData"
-  | "initialScrollIndex"
-  | "initialScrollIndexParams"
-  | "onViewableItemsChanged"
-  | "viewabilityConfig"
-  | "viewabilityConfigCallbackPairs"
-  | "onEndReachedThreshold"
-  | "maintainVisibleContentPosition"
->;
-
-interface ListContentOptions<T> {
-  listProps?: ListViewVirtualizationProps<T>;
-  listRef?: Ref<FlashListRef<IRowItem<T>>>;
-  contentContainerStyle?: StyleProp<ViewStyle>;
+/** A row on screen, as the screen knows it: the original item and its position. */
+export interface ListViewVisibleRow<T> {
+  item: T;
+  index: number;
 }
+
+/**
+ * Recycling and viewport options in the DS vocabulary. The engine behind them
+ * (FlashList v2 today) can change without touching a screen.
+ */
+export interface ListViewTuning<T> {
+  /** Pixels rendered ahead of the viewport. Raise it only if fast flings show blank rows. */
+  drawDistance?: number;
+  /**
+   * Rows with different layouts (header row, card, compact) return different types so
+   * the engine recycles each one into a view with the same shape.
+   */
+  rowType?: (item: T, index: number) => string | number;
+  /** A value outside `items` that changes how rows look (selection, mode). */
+  extraData?: unknown;
+  /** Row the list opens at. */
+  initialIndex?: number;
+  /** Distance to the end, in viewport heights, that triggers `onLoadMore`. Default 0.5. */
+  loadMoreThreshold?: number;
+  /** Keep the rows on screen in place when items are added above them (chat, timeline). */
+  keepVisiblePosition?: boolean;
+  /**
+   * Rows that became visible, with the original items. Pass it from the first render:
+   * the engine wires viewability once.
+   */
+  onVisibleRowsChange?: (rows: ListViewVisibleRow<T>[]) => void;
+  /** Percent of a row that must be on screen to count as visible. */
+  visiblePercent?: number;
+}
+
+export interface ListViewScrollOptions {
+  /** Default true. */
+  animated?: boolean;
+}
+
+/** Imperative scroll for `ListViewV2.Content ref`. Calls are ignored while no list is shown. */
+export interface ListViewHandle {
+  scrollToIndex(
+    index: number,
+    options?: ListViewScrollOptions & { position?: "start" | "center" | "end" },
+  ): Promise<void>;
+  scrollToTop(options?: ListViewScrollOptions): void;
+  scrollToEnd(options?: ListViewScrollOptions): void;
+}
+
+const VIEW_POSITION = { start: 0, center: 0.5, end: 1 } as const;
+const KEEP_POSITION_OFF = { disabled: true } as const;
+
+type EngineRef<T> = RefObject<FlashListRef<IRowItem<T>> | null>;
 
 function rowKey<T>(row: IRowItem<T>): string {
   return String(row.id);
@@ -369,14 +398,16 @@ function ContentList<T = unknown>({
   keyboardShouldPersistTaps,
   keyboardDismissMode,
   testID,
-  listProps,
-  listRef,
+  tuning,
+  engineRef,
   contentContainerStyle,
 }: {
   children?: (item: T, row: IRowItem<T>) => ReactNode;
   contentWithMargin: boolean;
-} & ListScrollProps &
-  ListContentOptions<T>) {
+  tuning?: ListViewTuning<T>;
+  engineRef: EngineRef<T>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+} & ListScrollProps) {
   const {
     items,
     onRefresh,
@@ -420,6 +451,36 @@ function ContentList<T = unknown>({
     [children, onPressItem, onDeleteItem, readonly],
   );
 
+  const rowType = tuning?.rowType;
+  const getItemType = useMemo(
+    () =>
+      rowType ? (row: IRowItem<T>, index: number) => rowType(row.item, index) : undefined,
+    [rowType],
+  );
+
+  const onVisibleRowsChange = tuning?.onVisibleRowsChange;
+  const onViewableItemsChanged = useMemo(
+    () =>
+      onVisibleRowsChange
+        ? ({ viewableItems }: { viewableItems: ViewToken<IRowItem<T>>[] }) =>
+            onVisibleRowsChange(
+              viewableItems.flatMap((token) =>
+                token.index === null ? [] : [{ item: token.item.item, index: token.index }],
+              ),
+            )
+        : undefined,
+    [onVisibleRowsChange],
+  );
+
+  const visiblePercent = tuning?.visiblePercent;
+  const viewabilityConfig = useMemo(
+    () =>
+      visiblePercent === undefined
+        ? undefined
+        : { itemVisiblePercentThreshold: visiblePercent },
+    [visiblePercent],
+  );
+
   return (
     <View
       style={{
@@ -430,12 +491,15 @@ function ContentList<T = unknown>({
       }}
     >
       <FlashList<IRowItem<T>>
-        {...listProps}
         contentContainerStyle={[
           bottomInset ? { paddingBottom: bottomInset } : undefined,
           contentContainerStyle,
         ]}
         data={rowItems}
+        drawDistance={tuning?.drawDistance}
+        extraData={tuning?.extraData}
+        getItemType={getItemType}
+        initialScrollIndex={tuning?.initialIndex}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         keyExtractor={rowKey}
@@ -447,7 +511,7 @@ function ContentList<T = unknown>({
           ) : undefined
         }
         maintainVisibleContentPosition={
-          listProps?.maintainVisibleContentPosition ?? { disabled: true }
+          tuning?.keepVisiblePosition ? undefined : KEEP_POSITION_OFF
         }
         onEndReached={
           onLoadMore
@@ -456,8 +520,9 @@ function ContentList<T = unknown>({
               }
             : undefined
         }
-        onEndReachedThreshold={listProps?.onEndReachedThreshold ?? 0.5}
-        ref={listRef}
+        onEndReachedThreshold={tuning?.loadMoreThreshold ?? 0.5}
+        onViewableItemsChanged={onViewableItemsChanged}
+        ref={engineRef}
         refreshControl={
           <RefreshControl
             colors={[theme.primary]}
@@ -469,9 +534,19 @@ function ContentList<T = unknown>({
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}
         testID={testID}
+        viewabilityConfig={viewabilityConfig}
       />
     </View>
   );
+}
+
+interface ContentProps<T> extends ListScrollProps {
+  /** Custom row renderer. Keep it stable with `useCallback`; rows go in `memo`. */
+  children?: (item: T, row: IRowItem<T>) => ReactNode;
+  withMargin?: boolean;
+  tuning?: ListViewTuning<T>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  ref?: Ref<ListViewHandle>;
 }
 
 function Content<T = unknown>({
@@ -480,14 +555,10 @@ function Content<T = unknown>({
   keyboardShouldPersistTaps = "handled",
   keyboardDismissMode = "none",
   testID,
-  listProps,
-  listRef,
+  tuning,
   contentContainerStyle,
-}: {
-  children?: (item: T, row: IRowItem<T>) => ReactNode;
-  withMargin?: boolean;
-} & ListScrollProps &
-  ListContentOptions<T>) {
+  ref,
+}: ContentProps<T>) {
   const {
     name,
     items,
@@ -504,6 +575,27 @@ function Content<T = unknown>({
   const bottomInset = useBottomInset();
   const theme = useTheme();
   const onRefreshError = useContext(RefreshErrorContext);
+  const engineRef = useRef<FlashListRef<IRowItem<T>>>(null);
+  const count = items.length;
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToIndex: async (index, options) => {
+        if (index < 0 || index >= count) return;
+        await engineRef.current?.scrollToIndex({
+          index,
+          animated: options?.animated ?? true,
+          viewPosition: VIEW_POSITION[options?.position ?? "start"],
+        });
+      },
+      scrollToTop: (options) =>
+        engineRef.current?.scrollToTop({ animated: options?.animated ?? true }),
+      scrollToEnd: (options) =>
+        engineRef.current?.scrollToEnd({ animated: options?.animated ?? true }),
+    }),
+    [count],
+  );
 
   const handleRefresh = useCallback(async () => {
     await refreshListData(onRefresh, onRefreshError, setShowRefreshing);
@@ -577,11 +669,11 @@ function Content<T = unknown>({
       <ContentList<T>
         contentContainerStyle={contentContainerStyle}
         contentWithMargin={withMargin}
+        engineRef={engineRef}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        listProps={listProps}
-        listRef={listRef}
         testID={testID}
+        tuning={tuning}
       >
         {children}
       </ContentList>
@@ -634,9 +726,9 @@ function RowRoot({
 
   if (onPress || onLongPress) {
     return (
-      <TouchableOpacity activeOpacity={0.7} onLongPress={onLongPress} onPress={onPress}>
+      <Pressable hitSlop={0} onLongPress={onLongPress} onPress={onPress}>
         {content}
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 
@@ -778,7 +870,6 @@ const RowWithSubComponents = Object.assign(RowRoot, {
 });
 
 const ContentWithSubComponents = Object.assign(Content, {
-  List: ContentList,
   Row: RowWithSubComponents,
 });
 
@@ -795,7 +886,8 @@ const ContentWithSubComponents = Object.assign(Content, {
  *     .Header.Segmented          — tab-like switch in the subheader (Activos / Archivados)
  *     .Header.Filters(.Chips/.Chip) — horizontal filter pills (SIBLING below the header)
  *     .Header.ActionsBar         — SIBLING bar below the header (bulk select, etc.)
- *   ListViewV2.Content           — FlashList body; `children` is an optional custom row renderer
+ *   ListViewV2.Content           — virtualized body; `children` is an optional custom row renderer,
+ *                                  `tuning` the recycling options, `ref` a `ListViewHandle`
  *     .Content.Row(.Avatar/.Content/.Title/.Subtitle/.Footer/.Actions/.ActionButton)
  *   ListViewV2.Footer        — pinned footer (hidden when empty)
  *   ListViewV2.FloatingButton — absolute FAB overlay

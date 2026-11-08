@@ -1,6 +1,6 @@
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { View } from "react-native";
 
 export interface RatingProps {
@@ -22,6 +22,7 @@ function Rating({
   className,
   testID,
 }: RatingProps) {
+  const theme = useTheme();
   const interactive = !readOnly && !!onChange;
 
   return (

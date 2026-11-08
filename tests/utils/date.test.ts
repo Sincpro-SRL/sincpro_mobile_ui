@@ -22,17 +22,24 @@ async function loadDateUtils() {
   const m: unknown = await import("@sincpro/mobile-ui/utils/date");
   const record = m as Record<string, unknown> & { default?: Record<string, unknown> };
   const fn = (record.formatDate ?? record.default?.formatDate) as
-    | ((input: string | Date, tz: string | null | undefined, opts?: { locale?: string | null; showTime?: boolean }) => string)
+    | ((
+        input: string | Date,
+        tz: string | null | undefined,
+        opts?: { locale?: string | null; showTime?: boolean },
+      ) => string)
     | undefined;
-  const fnDefault = (record.formatDateWithDefaultTimezone ?? record.default?.formatDateWithDefaultTimezone) as
-    | ((input: string | Date, opts?: { locale?: string | null; showTime?: boolean }) => string)
+  const fnDefault = (record.formatDateWithDefaultTimezone ??
+    record.default?.formatDateWithDefaultTimezone) as
+    | ((
+        input: string | Date,
+        opts?: { locale?: string | null; showTime?: boolean },
+      ) => string)
     | undefined;
-  const fnDate = (record.getCurrentDateInTimezone ?? record.default?.getCurrentDateInTimezone) as
-    | ((tz?: string | null) => string)
-    | undefined;
-  const fnDateTime = (record.getCurrentDateTimeInTimezone ?? record.default?.getCurrentDateTimeInTimezone) as
-    | ((tz?: string | null) => string)
-    | undefined;
+  const fnDate = (record.getCurrentDateInTimezone ??
+    record.default?.getCurrentDateInTimezone) as ((tz?: string | null) => string) | undefined;
+  const fnDateTime = (record.getCurrentDateTimeInTimezone ??
+    record.default?.getCurrentDateTimeInTimezone) as
+    ((tz?: string | null) => string) | undefined;
   return {
     formatDate: fn,
     formatDateWithDefaultTimezone: fnDefault,
@@ -43,8 +50,12 @@ async function loadDateUtils() {
 
 describe("utils/date", () => {
   it("exposes the four public functions", async () => {
-    const { formatDate, formatDateWithDefaultTimezone, getCurrentDateInTimezone, getCurrentDateTimeInTimezone } =
-      await loadDateUtils();
+    const {
+      formatDate,
+      formatDateWithDefaultTimezone,
+      getCurrentDateInTimezone,
+      getCurrentDateTimeInTimezone,
+    } = await loadDateUtils();
     assert.equal(typeof formatDate, "function");
     assert.equal(typeof formatDateWithDefaultTimezone, "function");
     assert.equal(typeof getCurrentDateInTimezone, "function");
@@ -56,12 +67,17 @@ describe("utils/date", () => {
     const out = formatDate!("2025-09-02", "America/Costa_Rica", { locale: "es-CR" });
     assert.equal(typeof out, "string");
     assert.ok(out.includes("2025"), `expected year in output, got: ${out}`);
-    assert.ok(!/\d{1,2}[:.]\d{2}/.test(out), `date-only output should not include time, got: ${out}`);
+    assert.ok(
+      !/\d{1,2}[:.]\d{2}/.test(out),
+      `date-only output should not include time, got: ${out}`,
+    );
   });
 
   it("formats a date+time string including time component", async () => {
     const { formatDate } = await loadDateUtils();
-    const out = formatDate!("2025-09-02T18:30:00Z", "America/Costa_Rica", { locale: "es-CR" });
+    const out = formatDate!("2025-09-02T18:30:00Z", "America/Costa_Rica", {
+      locale: "es-CR",
+    });
     assert.equal(typeof out, "string");
     assert.ok(out.includes("2025"));
     assert.ok(/\d{1,2}[:.]\d{2}/.test(out), `expected time in output, got: ${out}`);
@@ -78,8 +94,42 @@ describe("utils/date", () => {
 
   it("showTime=true forces time even when input is date-only", async () => {
     const { formatDate } = await loadDateUtils();
-    const out = formatDate!("2025-09-02", "America/Costa_Rica", { locale: "es-CR", showTime: true });
+    const out = formatDate!("2025-09-02", "America/Costa_Rica", {
+      locale: "es-CR",
+      showTime: true,
+    });
     assert.ok(/\d{1,2}[:.]\d{2}/.test(out), `showTime=true should add time, got: ${out}`);
+  });
+
+  it("formats a sqlite datetime as UTC", async () => {
+    const { formatDate } = await loadDateUtils();
+    const out = formatDate!("2025-09-02 18:30:00", "America/Costa_Rica", {
+      locale: "es-CR",
+    });
+    assert.ok(out.includes("2025"), `expected year in output, got: ${out}`);
+    assert.ok(/\d{1,2}[:.]\d{2}/.test(out), `expected time in output, got: ${out}`);
+  });
+
+  it("returns the sentinel string for an unparseable value", async () => {
+    const { formatDate } = await loadDateUtils();
+    assert.equal(formatDate!("no-es-fecha", "America/Costa_Rica"), "Error de formateo");
+  });
+
+  it("parses sqlite, iso and date-only values as one instant", async () => {
+    const { parseInstant } = (await import("@sincpro/mobile-ui/utils/date")) as {
+      parseInstant: (input: string | Date) => Date | null;
+    };
+    assert.equal(
+      parseInstant("2025-09-02 18:30:00")?.toISOString(),
+      "2025-09-02T18:30:00.000Z",
+    );
+    assert.equal(
+      parseInstant("2025-09-02T18:30:00-06:00")?.toISOString(),
+      "2025-09-03T00:30:00.000Z",
+    );
+    assert.equal(parseInstant("2025-09-02")?.toISOString(), "2025-09-02T00:00:00.000Z");
+    assert.equal(parseInstant("no-es-fecha"), null);
+    assert.equal(parseInstant(""), null);
   });
 
   it("returns the sentinel string for an invalid timezone", async () => {

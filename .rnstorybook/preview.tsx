@@ -1,4 +1,5 @@
-import { ConfirmationProvider } from "@sincpro/mobile-ui/Dialog";
+import { ConfirmationProvider, OverlayHost } from "@sincpro/mobile-ui/Dialog";
+import KeyboardToolbarHost from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
 import {
   DEFAULT_DARK_THEME,
   DEFAULT_THEME,
@@ -140,31 +141,35 @@ function ThemeFrame({
   };
 
   return (
-    <SafeAreaView
-      edges={edges}
-      style={[vars(themeToVars(tokens)), { flex: 1, backgroundColor: tokens.bg.page }]}
-    >
-      <View style={{ flex: 1, paddingTop: topInset }}>
-        {ownsScroll ? (
-          <View style={{ flex: 1 }}>{children}</View>
-        ) : (
-          <KeyboardAwareScrollView
-            bottomOffset={20}
-            contentContainerStyle={{
-              flexGrow: 1,
-              justifyContent: "flex-start",
-              padding: 16,
-            }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            style={{ flex: 1, backgroundColor: tokens.bg.page }}
-          >
-            {children}
-          </KeyboardAwareScrollView>
-        )}
-      </View>
-      {SHOW_CHROME ? <AppearanceBar mode={mode} onToggle={toggle} tokens={tokens} /> : null}
-    </SafeAreaView>
+    <View style={[vars(themeToVars(tokens)), { flex: 1 }]}>
+      <OverlayHost>
+        <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: tokens.bg.page }}>
+          <View style={{ flex: 1, paddingTop: topInset }}>
+            {ownsScroll ? (
+              <View style={{ flex: 1 }}>{children}</View>
+            ) : (
+              <KeyboardAwareScrollView
+                bottomOffset={20}
+                contentContainerStyle={{
+                  flexGrow: 1,
+                  justifyContent: "flex-start",
+                  padding: 16,
+                }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1, backgroundColor: tokens.bg.page }}
+              >
+                {children}
+              </KeyboardAwareScrollView>
+            )}
+          </View>
+          {SHOW_CHROME ? (
+            <AppearanceBar mode={mode} onToggle={toggle} tokens={tokens} />
+          ) : null}
+        </SafeAreaView>
+      </OverlayHost>
+      <KeyboardToolbarHost />
+    </View>
   );
 }
 

@@ -1,4 +1,4 @@
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
 
@@ -9,6 +9,7 @@ interface GradientContainerProps {
 }
 
 const GradientContainer = ({ children, style, className }: GradientContainerProps) => {
+  const theme = useTheme();
   const gradientColors = theme.gradient.primary;
 
   return (

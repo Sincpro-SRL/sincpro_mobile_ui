@@ -1,7 +1,7 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
@@ -27,6 +27,7 @@ function SearchHistory({
   className,
   testID,
 }: SearchHistoryProps) {
+  const theme = useTheme();
   if (items.length === 0) return null;
 
   return (

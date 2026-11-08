@@ -3,14 +3,57 @@ import AppBar, {
 } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
-import type { ReactNode } from "react";
-import { Animated, View } from "react-native";
+import { createContext, type ReactNode, use } from "react";
+import { type ScrollViewProps, View } from "react-native";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  type SharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+/** A scroll position read on the UI thread. Any Reanimated shared value fits. */
+export interface ScrollOffset {
+  get(): number;
+}
+
+const CollapsingContext = createContext<SharedValue<number> | null>(null);
+
+/** Connects a `CollapsingHeader` with the `CollapsingHeader.ScrollView` below it. */
+function Root({ children }: { children: ReactNode }) {
+  const offset = useSharedValue(0);
+  return (
+    <CollapsingContext value={offset}>
+      <View style={{ flex: 1 }}>{children}</View>
+    </CollapsingContext>
+  );
+}
+
+/** The scroll that drives the header. Its offset is written on the UI thread, never in JS. */
+function CollapsingScrollView(props: Omit<ScrollViewProps, "onScroll">) {
+  const offset = use(CollapsingContext);
+  if (!offset) {
+    throw new Error("CollapsingHeader.ScrollView must be inside CollapsingHeader.Root");
+  }
+  const onScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      offset.set(event.contentOffset.y);
+    },
+  });
+  return <Animated.ScrollView scrollEventThrottle={16} {...props} onScroll={onScroll} />;
+}
 
 export interface CollapsingHeaderProps {
   title: string;
   subtitle?: string;
-  scrollY: Animated.Value;
+  /**
+   * Scroll position from your own Reanimated scroll (FlashList, a custom list).
+   * Inside `CollapsingHeader.Root` it comes from `CollapsingHeader.ScrollView`.
+   */
+  scrollY?: ScrollOffset;
   onBack?: () => void;
   actions?: ReactNode;
   /** Extra height of the collapsing large-title (px). Default 56, or 72 with subtitle. */
@@ -23,17 +66,14 @@ export interface CollapsingHeaderProps {
 /**
  * Header with a large-title that **collapses on scroll** (merge of iOS 26 large title +
  * Material 3 large top app bar). The compact bar stays fixed and its title fades in while
- * scrolling; the large-title fades out and slides up. Controlled by an `Animated.Value`.
+ * scrolling; the large-title fades out and slides up.
  *
- * Usage: pass `scrollY` from your `Animated.ScrollView`. Since the large-title collapses its
- * `height` (not supported by the native driver), use `useNativeDriver: false`:
+ * Every frame runs on the UI thread (Reanimated): scrolling never waits for JS.
  * ```tsx
- * const scrollY = useRef(new Animated.Value(0)).current;
- * <CollapsingHeader title="Inicio" scrollY={scrollY} />
- * <Animated.ScrollView
- *   onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
- *   scrollEventThrottle={16}
- * />
+ * <CollapsingHeader.Root>
+ *   <CollapsingHeader title="Inicio" />
+ *   <CollapsingHeader.ScrollView>{content}</CollapsingHeader.ScrollView>
+ * </CollapsingHeader.Root>
  * ```
  */
 function CollapsingHeader({
@@ -48,27 +88,42 @@ function CollapsingHeader({
 }: CollapsingHeaderProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const rootOffset = use(CollapsingContext);
+  const offset = scrollY ?? rootOffset;
+  if (!offset) throw new Error("CollapsingHeader needs CollapsingHeader.Root or scrollY");
 
-  const largeOpacity = scrollY.interpolate({
-    inputRange: [0, largeHeight * 0.6],
-    outputRange: [1, 0],
-    extrapolate: "clamp",
+  const largeStyle = useAnimatedStyle(() => {
+    const y = offset.get();
+    return {
+      opacity: interpolate(y, [0, largeHeight * 0.6], [1, 0], Extrapolation.CLAMP),
+      transform: [
+        {
+          translateY: interpolate(
+            y,
+            [0, largeHeight],
+            [0, -largeHeight / 2],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    };
   });
-  const largeTranslate = scrollY.interpolate({
-    inputRange: [0, largeHeight],
-    outputRange: [0, -largeHeight / 2],
-    extrapolate: "clamp",
-  });
-  const largeContainerHeight = scrollY.interpolate({
-    inputRange: [0, largeHeight],
-    outputRange: [largeHeight, 0],
-    extrapolate: "clamp",
-  });
-  const compactTitleOpacity = scrollY.interpolate({
-    inputRange: [largeHeight * 0.6, largeHeight],
-    outputRange: [0, 1],
-    extrapolate: "clamp",
-  });
+  const largeContainerStyle = useAnimatedStyle(() => ({
+    height: interpolate(
+      offset.get(),
+      [0, largeHeight],
+      [largeHeight, 0],
+      Extrapolation.CLAMP,
+    ),
+  }));
+  const compactTitleStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      offset.get(),
+      [largeHeight * 0.6, largeHeight],
+      [0, 1],
+      Extrapolation.CLAMP,
+    ),
+  }));
 
   return (
     <View style={{ backgroundColor: theme.bg.card }} testID={testID}>
@@ -79,7 +134,7 @@ function CollapsingHeader({
               <AppBar.Action accessibilityLabel="Volver" icon="back" onPress={onBack} />
             ) : null}
           </View>
-          <Animated.View className="flex-1" style={{ opacity: compactTitleOpacity }}>
+          <Animated.View style={[{ flex: 1 }, compactTitleStyle]}>
             <Typography.Text
               className="text-text-primary"
               numberOfLines={1}
@@ -95,19 +150,18 @@ function CollapsingHeader({
         </View>
       </View>
 
-      <Animated.View style={{ height: largeContainerHeight, overflow: "hidden" }}>
-        <Animated.View
-          className="px-4 pb-2"
-          style={{ opacity: largeOpacity, transform: [{ translateY: largeTranslate }] }}
-        >
-          <Typography.Text className="text-text-primary" variant="h2">
-            {title}
-          </Typography.Text>
-          {subtitle ? (
-            <Typography.Text className="text-text-secondary" variant="bodySmall">
-              {subtitle}
+      <Animated.View style={[{ overflow: "hidden" }, largeContainerStyle]}>
+        <Animated.View style={largeStyle}>
+          <View className="px-4 pb-2">
+            <Typography.Text className="text-text-primary" variant="h2">
+              {title}
             </Typography.Text>
-          ) : null}
+            {subtitle ? (
+              <Typography.Text className="text-text-secondary" variant="bodySmall">
+                {subtitle}
+              </Typography.Text>
+            ) : null}
+          </View>
         </Animated.View>
       </Animated.View>
       <View className="border-b border-border-light" />
@@ -115,5 +169,10 @@ function CollapsingHeader({
   );
 }
 
+const CollapsingHeaderWithParts = Object.assign(CollapsingHeader, {
+  Root,
+  ScrollView: CollapsingScrollView,
+});
+
 export type { AppBarActionProps };
-export default CollapsingHeader;
+export default CollapsingHeaderWithParts;

@@ -1,5 +1,5 @@
 import Avatar from "@sincpro/mobile-ui/Display/Display.Avatar";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { View } from "react-native";
 
@@ -16,6 +16,7 @@ export interface AvatarGroupProps {
 }
 
 function AvatarGroup({ items, max = 4, size = 36, className, testID }: AvatarGroupProps) {
+  const theme = useTheme();
   const visible = items.slice(0, max);
   const overflow = items.length - visible.length;
   const overlap = Math.round(size / 3);

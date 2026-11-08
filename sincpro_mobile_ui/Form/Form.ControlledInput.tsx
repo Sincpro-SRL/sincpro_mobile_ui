@@ -1,5 +1,6 @@
+import Field, { type FieldRules } from "@sincpro/mobile-ui/Form/Form.Field";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
-import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
 
 interface ControlledInputProps<T extends FieldValues> {
   control: Control<T>;
@@ -10,37 +11,28 @@ interface ControlledInputProps<T extends FieldValues> {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   multiline?: boolean;
   numberOfLines?: number;
-  rules?: any;
+  rules?: FieldRules<T, Path<T>>;
   error?: string;
 }
 
 function ControlledInput<T extends FieldValues>({
   control,
   name,
-  label,
-  placeholder,
-  keyboardType,
-  autoCapitalize,
-  multiline,
-  numberOfLines,
   rules,
   error,
+  ...input
 }: ControlledInputProps<T>) {
   return (
-    <Controller
+    <Field
       control={control}
+      error={error}
       name={name}
-      render={({ field: { onChange, onBlur, value } }) => (
+      render={({ value, onChange, onBlur, error: message }) => (
         <Input
-          autoCapitalize={autoCapitalize}
-          error={error}
-          keyboardType={keyboardType}
-          label={label}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
+          {...input}
+          error={message}
           onBlur={onBlur}
-          onChangeText={onChange}
-          placeholder={placeholder}
+          onChangeText={onChange as (text: string) => void}
           value={value}
         />
       )}

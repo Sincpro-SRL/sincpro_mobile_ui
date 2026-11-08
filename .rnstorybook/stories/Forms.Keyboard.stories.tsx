@@ -1,6 +1,5 @@
 import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import Input from "@sincpro/mobile-ui/Form/Form.Input";
-import type { KeyboardToolbarProps } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbar";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import FormView from "@sincpro/mobile-ui/views/FormViewV2";
 import type { Meta, StoryObj } from "@storybook/react-native";
@@ -16,11 +15,7 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-export function KeyboardNavigation({
-  toolbarProps,
-}: {
-  toolbarProps?: Omit<KeyboardToolbarProps, "onHeightChange">;
-} = {}) {
+export function KeyboardNavigation() {
   const email = useRef<TextInputInstance>(null);
   const phone = useRef<TextInputInstance>(null);
   const notes = useRef<TextInputInstance>(null);
@@ -33,7 +28,7 @@ export function KeyboardNavigation({
   return (
     <FormView.Root item={values} name="Contacto" withContainer={false}>
       <FormView.Header />
-      <FormView.Content keyboardFormProps={{ toolbarProps }} keyboardToolbar withMargin>
+      <FormView.Content withMargin>
         <View style={{ gap: 20, paddingTop: 16 }}>
           <Input
             label="Nombre completo"
@@ -98,18 +93,3 @@ export function KeyboardNavigation({
 }
 
 export const ContactForm: Story = { render: () => <KeyboardNavigation /> };
-
-export const CustomToolbar: Story = {
-  render: () => (
-    <KeyboardNavigation
-      toolbarProps={{
-        doneLabel: "Listo",
-        showDoneLabel: true,
-        iconSize: 18,
-        style: { borderRadius: 16, marginHorizontal: 8 },
-        actionStyle: { borderRadius: 12 },
-        labelStyle: { fontSize: 13 },
-      }}
-    />
-  ),
-};

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 interface FormViewContextValue<T> {
   name: string;
@@ -47,27 +47,39 @@ export function FormViewProvider<T>({
 }) {
   const [showRefreshing, setShowRefreshing] = useState(false);
 
-  return (
-    <Context.Provider
-      value={{
-        name,
-        description,
-        item,
-        isLoading,
-        isEmpty,
-        hasError,
-        errorMessage,
-        readonly,
-        showRefreshing,
-        setShowRefreshing,
-        onRefresh,
-        onRetry,
-        onBack,
-      }}
-    >
-      {children}
-    </Context.Provider>
+  const value = useMemo(
+    () => ({
+      name,
+      description,
+      item,
+      isLoading,
+      isEmpty,
+      hasError,
+      errorMessage,
+      readonly,
+      showRefreshing,
+      setShowRefreshing,
+      onRefresh,
+      onRetry,
+      onBack,
+    }),
+    [
+      name,
+      description,
+      item,
+      isLoading,
+      isEmpty,
+      hasError,
+      errorMessage,
+      readonly,
+      showRefreshing,
+      onRefresh,
+      onRetry,
+      onBack,
+    ],
   );
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
 export function useFormView<T>() {

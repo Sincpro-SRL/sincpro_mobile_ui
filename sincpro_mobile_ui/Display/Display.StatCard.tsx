@@ -1,6 +1,6 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
-import { theme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
@@ -29,6 +29,7 @@ function StatCard({
   className,
   testID,
 }: StatCardProps) {
+  const theme = useTheme();
   const hasDelta = typeof delta === "number";
   const up = hasDelta && delta >= 0;
   const deltaColor = up ? theme.success : theme.danger;

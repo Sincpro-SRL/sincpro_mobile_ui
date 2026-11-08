@@ -18,6 +18,8 @@ export function MenuCard({ title, onPress, icon, size = "md" }: MenuCardProps) {
 
   return (
     <TouchableOpacity
+      accessibilityLabel={title}
+      accessibilityRole="button"
       activeOpacity={0.7}
       onPress={onPress}
       style={{

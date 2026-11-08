@@ -12,6 +12,8 @@ import {
   type ViewStyle,
 } from "react-native";
 
+const TOUCH_TARGET = { minHeight: 48, minWidth: 48 } as const;
+
 export interface ListItemProps {
   title: string;
   subtitle?: string;
@@ -133,6 +135,10 @@ function ListItem({
 
   if (onPress) {
     if (mobile) {
+      // The native Pressable is only the touch target; the row surface (classes, style,
+      // pressed background) is the inner View. A className on Pressable routes it
+      // through the NativeWind interop, which re-renders the row on every touch.
+      // `content` keeps its identity, so a press repaints the surface, not the texts.
       return (
         <NativePressable
           accessibilityHint={accessibilityHint ?? subtitle}
@@ -140,20 +146,19 @@ function ListItem({
           accessibilityRole="button"
           accessibilityState={{ disabled }}
           accessibilityValue={value !== undefined ? { text: value } : undefined}
-          className={base}
           disabled={disabled}
           onPress={onPress}
-          style={({ pressed }) => [
-            {
-              minHeight: 48,
-              minWidth: 48,
-              backgroundColor: pressed ? theme.bg.hover : undefined,
-            },
-            style,
-          ]}
+          style={TOUCH_TARGET}
           testID={testID}
         >
-          {content}
+          {({ pressed }) => (
+            <View
+              className={base}
+              style={[TOUCH_TARGET, pressed && { backgroundColor: theme.bg.hover }, style]}
+            >
+              {content}
+            </View>
+          )}
         </NativePressable>
       );
     }

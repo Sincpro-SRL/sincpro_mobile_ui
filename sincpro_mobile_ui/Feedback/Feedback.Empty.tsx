@@ -15,10 +15,7 @@ function Empty({ handleGoHome, className }: EmptyProps) {
       <Typography.Text className="pt-4 text-text-primary" semibold variant="h3">
         ¡Oops!
       </Typography.Text>
-      <Typography.Text
-        className="pt-2 text-center text-base leading-5.5 text-text-secondary"
-        variant="h5"
-      >
+      <Typography.Text className="pt-2 text-center text-text-secondary" variant="h5">
         No se encontraron registros disponibles.
       </Typography.Text>
     </View>

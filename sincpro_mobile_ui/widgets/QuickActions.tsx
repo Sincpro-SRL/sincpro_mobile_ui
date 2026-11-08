@@ -1,6 +1,7 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import { CountBadge } from "@sincpro/mobile-ui/Display/count-badge";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { GroupTitle } from "@sincpro/mobile-ui/Display/group-title";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ScrollView, TouchableOpacity, View } from "react-native";
@@ -32,13 +33,7 @@ export function QuickActions({ items, title }: QuickActionsProps) {
   return (
     <View>
       {title ? (
-        <Typography.Text
-          semibold
-          style={{ color: theme.text.secondary, marginBottom: 10, paddingHorizontal: 16 }}
-          variant="caption"
-        >
-          {title.toUpperCase()}
-        </Typography.Text>
+        <GroupTitle style={{ marginBottom: 10, paddingHorizontal: 16 }}>{title}</GroupTitle>
       ) : null}
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 12, gap: 4 }}

@@ -5,6 +5,7 @@ import Loading from "@sincpro/mobile-ui/Feedback/Feedback.Loading";
 import Spinner from "@sincpro/mobile-ui/Feedback/Feedback.Spinner";
 import GradientContainer from "@sincpro/mobile-ui/layouts/GradientContainer";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ImageSource } from "@sincpro/mobile-ui/utils/image";
 import type { ReactNode } from "react";
@@ -47,10 +48,14 @@ function HeroSplash({
 }) {
   const theme = useTheme();
   return (
+    // `className` styles the inner content; the surface itself needs `style` to fill the
+    // screen, or the hero splash collapses to zero height and the app shows a blank screen.
     <GradientSurface
       className="flex-1 items-center justify-center"
       preset="warm"
       radius="none"
+      style={{ flex: 1 }}
+      testID="hero-splash"
     >
       <Pattern color={theme.primary} kind="dots" opacity={0.16} size={26} />
       <View className="items-center">
@@ -63,13 +68,17 @@ function HeroSplash({
           />
         ) : null}
         {title ? (
-          <Typography.Text bold style={{ color: "#FFFFFF", fontSize: 28, letterSpacing: 1 }}>
+          <Typography.Text
+            bold
+            style={{ color: ON_DARK_SURFACE.ink, letterSpacing: 1 }}
+            variant="h2"
+          >
             {title}
           </Typography.Text>
         ) : null}
         {subtitle ? (
           <Typography.Text
-            style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, marginTop: 6 }}
+            style={{ color: ON_DARK_SURFACE.muted, fontSize: 13, marginTop: 6 }}
           >
             {subtitle}
           </Typography.Text>

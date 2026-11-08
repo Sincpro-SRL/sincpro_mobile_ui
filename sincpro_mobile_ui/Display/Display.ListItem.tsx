@@ -1,4 +1,4 @@
-import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { Chevron } from "@sincpro/mobile-ui/Display/chevron";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -83,11 +83,7 @@ function ListItem({
             {value}
           </Typography.Text>
         ) : null}
-        {chevron ? (
-          <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Icon color={theme.icon.tertiary} name="next" size={18} />
-          </View>
-        ) : null}
+        {chevron ? <Chevron /> : null}
       </View>
     ) : null);
   const content = (

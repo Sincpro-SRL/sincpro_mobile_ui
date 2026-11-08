@@ -8,6 +8,7 @@ import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { Pattern, type PatternKind } from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import type { ReactNode } from "react";
@@ -54,7 +55,7 @@ function AppBarAction({
   const bg = bare
     ? "transparent"
     : onDark
-      ? "rgba(255,255,255,0.14)"
+      ? ON_DARK_SURFACE.glass
       : tone === "tinted"
         ? theme.accent // solid brand-gold squircle (FAB-style)
         : theme.bg.card;
@@ -62,7 +63,7 @@ function AppBarAction({
     tone === "tinted"
       ? theme.text.onAccent // dark token on green surface
       : onDark
-        ? "#FFFFFF" // always white on tone="dark"/gradient surfaces; icon.inverse flips dark in dark-mode
+        ? ON_DARK_SURFACE.ink // always white on tone="dark"/gradient surfaces; icon.inverse flips dark in dark-mode
         : theme.icon.primary;
   // Plain (white) squircle gets a hairline so it reads as a contained button on a light bar.
   const showBorder = !bare && !onDark && tone !== "tinted";
@@ -249,14 +250,14 @@ function AppBar({
     gradient && !hasBackground
       ? theme.text.onAccent
       : hasBackground
-        ? (background?.textColor ?? "#FFFFFF")
-        : "#FFFFFF";
+        ? (background?.textColor ?? ON_DARK_SURFACE.ink)
+        : ON_DARK_SURFACE.ink;
   const titleStyle = colored ? { color: onColoredText } : undefined;
   const subtitleStyle =
     gradient && !hasBackground
       ? { color: theme.text.onAccent, opacity: 0.72 }
       : colored
-        ? { color: "rgba(255,255,255,0.7)" }
+        ? { color: ON_DARK_SURFACE.muted }
         : undefined;
 
   // Large variant on a plain surface should feel like the page itself (no card surface, no
@@ -313,7 +314,7 @@ function AppBar({
       {/* Texture overlay on top of the gradient surface */}
       {background?.pattern ? (
         <Pattern
-          color={background.patternColor ?? "#FFFFFF"}
+          color={background.patternColor ?? ON_DARK_SURFACE.ink}
           kind={background.pattern}
           opacity={background.patternOpacity ?? 0.18}
         />

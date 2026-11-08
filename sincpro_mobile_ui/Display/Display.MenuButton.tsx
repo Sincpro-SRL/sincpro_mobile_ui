@@ -1,3 +1,4 @@
+import { Chevron } from "@sincpro/mobile-ui/Display/chevron";
 import { CountBadge } from "@sincpro/mobile-ui/Display/count-badge";
 import Badge, { type BadgeVariant } from "@sincpro/mobile-ui/Display/Display.Badge";
 import SwipeableRow, {
@@ -183,11 +184,7 @@ function MenuButton({
             {value}
           </Typography.Text>
         ) : null}
-        {isClickable ? (
-          <Typography.Text style={{ color: theme.text.tertiary, fontSize: 20 }}>
-            ›
-          </Typography.Text>
-        ) : null}
+        {isClickable ? <Chevron /> : null}
       </View>
     );
   })();

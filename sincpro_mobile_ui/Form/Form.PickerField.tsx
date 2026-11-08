@@ -1,6 +1,7 @@
 import { FlashList } from "@shopify/flash-list";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { inputTextStyle } from "@sincpro/mobile-ui/Form/input-text";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -201,7 +202,7 @@ function PickerField<T extends string | number>({
             placeholderTextColor={theme.text.tertiary}
             returnKeyType="search"
             selectionColor={theme.primary}
-            style={{ color: theme.text.primary }}
+            style={[inputTextStyle(), { color: theme.text.primary }]}
             testID={testID ? `${testID}-search` : undefined}
             underlineColorAndroid="transparent"
             value={query}

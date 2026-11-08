@@ -1,3 +1,4 @@
+import { inputTextStyle } from "@sincpro/mobile-ui/Form/input-text";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { tv } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -11,7 +12,7 @@ const monetaryBox = tv({
   variants: {
     focused: {
       true: "border-2 border-border-focus",
-      false: "border border-border-default",
+      false: "border border-input",
     },
   },
   defaultVariants: { focused: false },
@@ -41,13 +42,11 @@ function MonetaryInput({
 
   return (
     <View className="flex-row">
-      <View className={monetaryBox({ focused: isFocused, className: "w-10 h-10" })}>
-        <Typography.Text className="text-xl" variant="body">
-          {currencySymbol}
-        </Typography.Text>
+      <View className={monetaryBox({ focused: isFocused, className: "w-12 h-12" })}>
+        <Typography.Text variant="body">{currencySymbol}</Typography.Text>
       </View>
       <View
-        className={monetaryBox({ focused: isFocused, className: "flex-1 h-10 ml-2 px-4" })}
+        className={monetaryBox({ focused: isFocused, className: "flex-1 h-12 ml-2 px-4" })}
       >
         <CurrencyInput
           delimiter="."
@@ -59,6 +58,7 @@ function MonetaryInput({
           placeholderTextColor={theme.text.tertiary}
           selectionColor={theme.primary}
           separator=","
+          style={inputTextStyle()}
           underlineColorAndroid="transparent"
           value={raw}
         />

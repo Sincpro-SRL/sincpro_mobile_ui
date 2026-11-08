@@ -165,6 +165,83 @@ test("DS text goes through Typography so it gets the configured fonts", () => {
   }
 });
 
+test("typed text uses the DS font in every field", () => {
+  // A TextInput without fontFamily renders the system font next to DS labels.
+  // PinInput's input is invisible: its digits are drawn by Typography cells.
+  const hidden = new Set([path.join("Form", "Form.PinInput.tsx")]);
+  for (const file of sourceFiles(sourceRoot)) {
+    if (!file.endsWith(".tsx")) continue;
+    const relative = path.relative(sourceRoot, file);
+    const text = readFileSync(file, "utf8");
+    if (hidden.has(relative) || !/<(TextInput|CurrencyInput)\b/.test(text)) continue;
+    assert(
+      /\b(inputTextStyle|appliedTextStyle|fontFamilies)\b/.test(text),
+      `${relative}: give the TextInput inputTextStyle() from Form/input-text`,
+    );
+  }
+});
+
+test("every touchable tells screen readers what it is", () => {
+  // primitives/Pressable defaults to role "button"; raw RN touchables must say it, or
+  // opt out with accessible={false} when they only dismiss the keyboard.
+  for (const file of sourceFiles(sourceRoot)) {
+    if (!file.endsWith(".tsx")) continue;
+    const relative = path.relative(sourceRoot, file);
+    const text = readFileSync(file, "utf8");
+    for (const match of text.matchAll(
+      /<(TouchableOpacity|TouchableWithoutFeedback|TouchableHighlight)\b([^>]*)>/gs,
+    )) {
+      assert(
+        /accessibilityRole|accessible=\{false\}/.test(match[2]),
+        `${relative}: ${match[1]} needs accessibilityRole (or accessible={false})`,
+      );
+    }
+  }
+});
+
+test("color classes only name tokens the tailwind preset defines", async () => {
+  // A missing token draws nothing: Divider used `bg-border-divider` and was invisible.
+  const preset = (await import(path.join(root, "tailwind.preset.js"))).default;
+  const names = new Set(["transparent", "current", "black", "white", "inherit"]);
+  const collect = (node: Record<string, unknown>, prefix: string) => {
+    for (const [key, value] of Object.entries(node)) {
+      const name = key === "DEFAULT" ? prefix : prefix ? `${prefix}-${key}` : key;
+      if (typeof value === "object" && value) collect(value as Record<string, unknown>, name);
+      else names.add(name);
+    }
+  };
+  collect((preset.theme.extend ?? preset.theme).colors, "");
+  const notColors =
+    /^(xs|sm|base|lg|[2-9]?xl|left|right|center|justify|[0-9]+|[tblrxy]|solid|dashed|dotted|none|only)$/;
+  for (const file of sourceFiles(sourceRoot)) {
+    const relative = path.relative(sourceRoot, file);
+    for (const match of readFileSync(file, "utf8").matchAll(
+      /(?<![\w-])(bg|text|border|border-[tblrxy])-([a-z][a-z0-9-]*)(?:\/\d+)?(?![\w-])/g,
+    )) {
+      if (notColors.test(match[2])) continue;
+      assert(names.has(match[2]), `${relative}: ${match[0]} names no color token`);
+    }
+  }
+});
+
+test("Typography.Text never asks for a size or weight by className", () => {
+  // The variant goes to `style`, which wins: `text-sm` or `font-semibold` would do nothing
+  // and lie about the rendered text. Use `variant`, `semibold`, `bold` or `style`.
+  for (const file of sourceFiles(sourceRoot)) {
+    if (!file.endsWith(".tsx")) continue;
+    const relative = path.relative(sourceRoot, file);
+    for (const match of readFileSync(file, "utf8").matchAll(/<Typography\.Text\b([^>]*)>/gs)) {
+      const classes = match[1].match(/className=(?:"([^"]*)"|\{([^}]*)\})/)?.[0] ?? "";
+      assert(
+        !/\b(font-(light|regular|medium|semibold|bold|extrabold)|text-(xs|sm|base|lg|[2-9]?xl))\b/.test(
+          classes,
+        ),
+        `${relative}: ${classes} — use variant/semibold instead of a className size or weight`,
+      );
+    }
+  }
+});
+
 test("SDK58 package has bounded peers, required Expo UI and no bundled React copies", () => {
   const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   for (const [name, range] of Object.entries(manifest.peerDependencies)) {

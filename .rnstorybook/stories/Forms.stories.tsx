@@ -34,8 +34,8 @@ export const Input: Story = { render: () => <InputDemo /> };
  * access forms (login, server, reset). `secure` adds the show/hide toggle in both.
  */
 function LooksDemo() {
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState("andres@sincpro.com.bo");
+  const [password, setPassword] = useState("secreto");
   return (
     <View style={{ gap: 24 }}>
       <View>
@@ -65,7 +65,7 @@ function LooksDemo() {
           error="El servidor no responde"
           label="Servidor"
           look="outline"
-          value=""
+          value="https://erp.sincpro.com.bo"
         />
       </View>
     </View>

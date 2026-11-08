@@ -1,5 +1,6 @@
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE, SCRIM } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { ComponentType } from "react";
@@ -78,11 +79,15 @@ export function PromoModal({
       visible={visible}
     >
       {/* Backdrop + centering container */}
-      <TouchableWithoutFeedback onPress={onDismiss}>
+      <TouchableWithoutFeedback
+        accessibilityLabel={dismissLabel}
+        accessibilityRole="button"
+        onPress={onDismiss}
+      >
         <View
           style={{
             flex: 1,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: SCRIM,
             alignItems: "center",
             justifyContent: "center",
             paddingHorizontal: 24,
@@ -110,7 +115,7 @@ export function PromoModal({
         <View
           style={{
             backgroundColor: theme.bg.card,
-            borderRadius: 28,
+            borderRadius: 24,
             borderWidth: 1,
             borderColor: theme.border.default,
             width: "100%",
@@ -134,13 +139,13 @@ export function PromoModal({
                   style={{
                     width: 64,
                     height: 64,
-                    borderRadius: 20,
-                    backgroundColor: "rgba(255,255,255,0.18)",
+                    borderRadius: 16,
+                    backgroundColor: ON_DARK_SURFACE.glass,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <Icon color="#FFFFFF" size={32} />
+                  <Icon color={ON_DARK_SURFACE.ink} size={32} />
                 </View>
               ) : null}
             </View>
@@ -187,15 +192,17 @@ export function PromoModal({
           <View style={{ paddingHorizontal: 24, paddingTop: 16, gap: 10 }}>
             {ctaLabel ? (
               <TouchableOpacity
-                activeOpacity={0.8}
+                accessibilityRole="button"
+                activeOpacity={0.7}
                 onPress={() => {
                   onPressCta?.();
                   onDismiss();
                 }}
                 style={{
                   backgroundColor: accent,
-                  borderRadius: 14,
-                  paddingVertical: 15,
+                  borderRadius: 8,
+                  minHeight: 48,
+                  justifyContent: "center",
                   alignItems: "center",
                 }}
               >
@@ -210,9 +217,10 @@ export function PromoModal({
             ) : null}
 
             <TouchableOpacity
+              accessibilityRole="button"
               activeOpacity={0.7}
               onPress={onDismiss}
-              style={{ alignItems: "center", paddingVertical: 12 }}
+              style={{ alignItems: "center", justifyContent: "center", minHeight: 48 }}
             >
               <Typography.Text style={{ color: theme.text.secondary }} variant="body">
                 {dismissLabel}

@@ -88,12 +88,14 @@ module.exports = {
         ring: "rgb(var(--ring) / <alpha-value>)",
         input: "rgb(var(--input) / <alpha-value>)",
       },
+      // The faces the DS loads (IBM Plex Sans). Components take fonts from Typography,
+      // which follows configureFonts; these classes only serve raw Text in host apps.
       fontFamily: {
-        light: ["Montserrat_300Light"],
-        regular: ["Montserrat_400Regular"],
-        medium: ["Montserrat_500Medium"],
-        semibold: ["Montserrat_600SemiBold"],
-        extrabold: ["Montserrat_800ExtraBold"],
+        light: ["IBMPlexSans_300Light"],
+        regular: ["IBMPlexSans_400Regular"],
+        medium: ["IBMPlexSans_500Medium"],
+        semibold: ["IBMPlexSans_600SemiBold"],
+        extrabold: ["IBMPlexSans_700Bold"],
       },
       fontSize: {
         xs: ["10px", { lineHeight: "16px" }],

@@ -1,5 +1,6 @@
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ComponentType } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
@@ -32,12 +33,14 @@ function BannerCard({ item }: { item: PromoBannerItem }) {
   const hasGradient = !!item.gradient;
   const Icon = item.icon;
 
-  const textColor = hasGradient ? "#FFFFFF" : theme.text.primary;
-  const subtextColor = hasGradient ? "rgba(255,255,255,0.75)" : theme.text.secondary;
+  const textColor = hasGradient ? ON_DARK_SURFACE.ink : theme.text.primary;
+  const subtextColor = hasGradient ? ON_DARK_SURFACE.muted : theme.text.secondary;
 
   return (
     <TouchableOpacity
-      activeOpacity={0.85}
+      accessibilityLabel={item.title}
+      accessibilityRole="button"
+      activeOpacity={0.7}
       onPress={item.onPress}
       style={{
         width: 280,
@@ -74,7 +77,7 @@ function BannerCard({ item }: { item: PromoBannerItem }) {
           >
             <Typography.Text
               semibold
-              style={{ color: "#FFFFFF", fontSize: 11 }}
+              style={{ color: ON_DARK_SURFACE.ink, fontSize: 11 }}
               variant="caption"
             >
               {item.badge}
@@ -90,12 +93,15 @@ function BannerCard({ item }: { item: PromoBannerItem }) {
                 width: 48,
                 height: 48,
                 borderRadius: 12,
-                backgroundColor: hasGradient ? "rgba(255,255,255,0.15)" : theme.bg.muted,
+                backgroundColor: hasGradient ? ON_DARK_SURFACE.glass : theme.bg.muted,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Icon color={hasGradient ? "#FFFFFF" : theme.icon.primary} size={24} />
+              <Icon
+                color={hasGradient ? ON_DARK_SURFACE.ink : theme.icon.primary}
+                size={24}
+              />
             </View>
           ) : null}
 
@@ -121,7 +127,7 @@ function BannerCard({ item }: { item: PromoBannerItem }) {
             style={{
               marginTop: 14,
               alignSelf: "flex-start",
-              backgroundColor: hasGradient ? "rgba(255,255,255,0.2)" : accent,
+              backgroundColor: hasGradient ? ON_DARK_SURFACE.glass : accent,
               borderRadius: 999,
               paddingHorizontal: 16,
               paddingVertical: 7,
@@ -129,7 +135,10 @@ function BannerCard({ item }: { item: PromoBannerItem }) {
           >
             <Typography.Text
               semibold
-              style={{ color: hasGradient ? "#FFFFFF" : theme.text.onAccent, fontSize: 13 }}
+              style={{
+                color: hasGradient ? ON_DARK_SURFACE.ink : theme.text.onAccent,
+                fontSize: 13,
+              }}
               variant="bodySmall"
             >
               {item.ctaLabel}

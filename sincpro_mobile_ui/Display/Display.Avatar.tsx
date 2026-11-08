@@ -1,4 +1,5 @@
 import { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
+import { fontSizes } from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { FC } from "react";
 import { View } from "react-native";
@@ -33,13 +34,16 @@ export interface AvatarProps extends Omit<VariantProps<typeof avatar>, "size"> {
 }
 
 const Avatar: FC<AvatarProps> = ({ initials, size, colorScheme = "default", className }) => {
-  // Map size prop to Tailwind text classes
-  const getTextSize = () => {
-    if (size && size <= 32) return "text-xs";
-    if (size && size <= 40) return "text-sm";
-    if (size && size <= 48) return "text-base";
-    return "text-lg";
-  };
+  // Initials grow with the avatar. A className size would lose to the variant, so the
+  // size goes to `style` from the type scale.
+  const initialsSize =
+    size && size <= 32
+      ? fontSizes.xs
+      : size && size <= 40
+        ? fontSizes.sm
+        : size && size <= 48
+          ? fontSizes.base
+          : fontSizes.lg;
 
   return (
     <View
@@ -47,7 +51,9 @@ const Avatar: FC<AvatarProps> = ({ initials, size, colorScheme = "default", clas
       style={size ? { width: size, height: size } : undefined}
     >
       <Typography.Text
-        className={cn("text-text-primary font-semibold", getTextSize())}
+        className="text-text-primary"
+        semibold
+        style={{ fontSize: initialsSize }}
         variant="body"
       >
         {initials}

@@ -1,7 +1,8 @@
 import { FlashList } from "@shopify/flash-list";
-import Button from "@sincpro/mobile-ui/Actions/Actions.Button";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import { DialogActions } from "@sincpro/mobile-ui/Dialog/dialog-actions";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { inputTextStyle } from "@sincpro/mobile-ui/Form/input-text";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
@@ -59,9 +60,7 @@ function TimezoneRow({
       <Icon color={isSelected ? theme.info : theme.text.secondary} name="time" size={24} />
       <View className="ml-3 flex-1">
         <Typography.Text semibold>{item.label}</Typography.Text>
-        <Typography.Text className="text-text-tertiary text-xs">
-          {item.locale}
-        </Typography.Text>
+        <Typography.Text className="text-text-tertiary">{item.locale}</Typography.Text>
       </View>
       {isSelected && (
         <View className="w-6 h-6 rounded-full bg-info items-center justify-center">
@@ -120,16 +119,12 @@ function TimeZoneSelectorModal({
   return (
     <Sheet
       footer={
-        <View className="flex-row gap-3">
-          <View className="flex-1">
-            <Button onPress={onClose} title={"Cancelar"} variant="outline" />
-          </View>
-          {selectedTimezone && (
-            <View className="flex-1">
-              <Button onPress={handleConfirm} title={"Confirmar"} variant="primary" />
-            </View>
-          )}
-        </View>
+        <DialogActions
+          cancel={{ onPress: onClose, title: "Cancelar" }}
+          confirm={
+            selectedTimezone ? { onPress: handleConfirm, title: "Confirmar" } : undefined
+          }
+        />
       }
       onClose={onClose}
       scrollable={false}
@@ -140,7 +135,7 @@ function TimeZoneSelectorModal({
     >
       <View className="flex-1">
         <View className="px-5 pb-3">
-          <Typography.Text className="text-text-secondary text-xs mb-3">
+          <Typography.Text className="text-text-secondary mb-3">
             {"Selecciona tu zona horaria"}
           </Typography.Text>
           <TextInput
@@ -150,7 +145,7 @@ function TimeZoneSelectorModal({
             placeholder={"Buscar zona horaria..."}
             placeholderTextColor={theme.text.tertiary}
             selectionColor={theme.primary}
-            style={{ color: theme.text.primary }}
+            style={[inputTextStyle(), { color: theme.text.primary }]}
             testID="timezone-search"
             underlineColorAndroid="transparent"
             value={query}

@@ -1,8 +1,10 @@
 import { cn, tv, type VariantProps } from "@sincpro/mobile-ui/theme/tw";
 import { View } from "react-native";
 
+// The divider names border tokens of the preset (its old color token did not exist and it
+// drew nothing). `default` is the line between list rows.
 const divider = tv({
-  base: "w-full bg-border-divider",
+  base: "w-full bg-border-default",
   variants: {
     spacing: {
       none: "my-0",
@@ -11,9 +13,9 @@ const divider = tv({
       lg: "my-3",
     },
     colorScheme: {
-      light: "bg-border-divider opacity-50",
-      default: "bg-border-divider",
-      dark: "bg-border-divider opacity-100",
+      light: "bg-border-light",
+      default: "bg-border-default",
+      dark: "bg-border-strong",
     },
   },
   defaultVariants: {

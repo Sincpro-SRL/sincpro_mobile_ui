@@ -1,9 +1,8 @@
-import { Actions } from "@sincpro/mobile-ui/Actions";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import { DialogActions } from "@sincpro/mobile-ui/Dialog/dialog-actions";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { type ReactNode, useRef, useState } from "react";
-import { View } from "react-native";
 
 export type ConfirmationProps = {
   visible: boolean;
@@ -60,21 +59,16 @@ function Confirmation({
     <Sheet
       dismissible={!pending}
       footer={
-        <View className="gap-2">
-          <Actions.Button
-            disabled={pending}
-            onPress={close}
-            title={cancelText}
-            variant="outline"
-          />
-          <Actions.Button
-            disabled={pending}
-            loading={pending}
-            onPress={() => void confirm()}
-            title={confirmText}
-            variant={destructive ? "outlineDanger" : "primary"}
-          />
-        </View>
+        <DialogActions
+          cancel={{ disabled: pending, onPress: close, title: cancelText }}
+          confirm={{
+            disabled: pending,
+            loading: pending,
+            onPress: () => void confirm(),
+            title: confirmText,
+          }}
+          confirmVariant={destructive ? "outlineDanger" : "primary"}
+        />
       }
       onClose={close}
       testID={testID}

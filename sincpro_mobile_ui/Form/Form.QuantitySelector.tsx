@@ -27,6 +27,8 @@ interface QuantitySelectorProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/** The 36-point step buttons reach a 48-point target without covering the value. */
+const STEP_SLOP = { top: 6, bottom: 6, left: 4, right: 4 } as const;
 function QuantitySelector({
   value,
   onChange,
@@ -53,8 +55,12 @@ function QuantitySelector({
   return (
     <View className={containerStyles.container()} style={style}>
       <TouchableOpacity
+        accessibilityLabel="Disminuir"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: value <= min }}
         className={decrementStyles.button()}
         disabled={value <= min}
+        hitSlop={STEP_SLOP}
         onPress={handleDecrement}
       >
         <Display.Icon name="remove" size={16} />
@@ -67,8 +73,12 @@ function QuantitySelector({
       </View>
 
       <TouchableOpacity
+        accessibilityLabel="Aumentar"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: value >= max }}
         className={incrementStyles.button()}
         disabled={value >= max}
+        hitSlop={STEP_SLOP}
         onPress={handleIncrement}
       >
         <Display.Icon name="add" size={16} />

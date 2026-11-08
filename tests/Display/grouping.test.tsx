@@ -173,17 +173,22 @@ test("compact groups distinguish section, regular row and quiet supporting roles
   );
   const textStyle = (text: string) =>
     ReactNative.StyleSheet.flatten(screen.getByText(text).props.style);
-  expect(textStyle("Sección")).toMatchObject({ fontSize: 16 });
+  // The group title is the uppercase caption of MenuSection, announced as a header.
+  const section = screen.getByRole("header", { name: "Sección" });
+  expect(textStyle("Sección")).toMatchObject({ fontSize: 13 });
+  expect(section.props.className).toContain("uppercase");
+  expect(section.props.className).toContain("text-text-secondary");
   expect(textStyle("Fila")).toMatchObject({
     fontSize: 14,
     fontWeight: "400",
     fontFamily: fontFamilies.regular,
   });
   expect(textStyle("Sección").fontFamily).not.toBe(textStyle("Fila").fontFamily);
-  for (const text of ["Descripción", "Ayuda", "Pie"]) {
+  for (const text of ["Descripción", "Ayuda"]) {
     expect(textStyle(text)).toMatchObject({ fontSize: 13, fontWeight: "400" });
     expect(screen.getByText(text).props.className).toContain("text-text-secondary");
   }
+  expect(screen.getByText("Pie").props.className).toContain("text-text-tertiary");
   expect(textStyle("Dato")).toMatchObject({ fontSize: 14, fontWeight: "400" });
 });
 

@@ -15,6 +15,7 @@ import Container from "@sincpro/mobile-ui/layouts/Container";
 import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
 import { Navigation } from "@sincpro/mobile-ui/Navigation";
 import type { AppBarBackground } from "@sincpro/mobile-ui/Navigation/Navigation.AppBar";
+import type { SearchBarProps } from "@sincpro/mobile-ui/Navigation/Navigation.SearchBar";
 import {
   SegmentedControl,
   type SegmentedControlProps,
@@ -209,7 +210,14 @@ function Header({
 
 const SEARCH_DEBOUNCE_MS = 400;
 
-function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
+function HeaderSearch({
+  searchQuery = "",
+  textVariant,
+}: {
+  searchQuery?: string;
+  /** Typography variant of the query; see `Navigation.SearchBar` (defaults to 17). */
+  textVariant?: SearchBarProps["textVariant"];
+}) {
   const { name, onSearch } = useListView();
   const [query, setQuery] = useState<string>(searchQuery);
   // Reads the host's latest callback without restarting the debounce when its
@@ -230,6 +238,7 @@ function HeaderSearch({ searchQuery = "" }: { searchQuery?: string }) {
       <Navigation.SearchBar
         onChangeText={setQuery}
         placeholder={`Buscar ${name}`}
+        textVariant={textVariant}
         value={query}
       />
     </View>

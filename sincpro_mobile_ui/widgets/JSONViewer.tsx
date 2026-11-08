@@ -1,4 +1,8 @@
-import { ThemedActivityIndicator } from "@sincpro/mobile-ui/theme";
+import {
+  ThemedActivityIndicator,
+  type ThemeTokens,
+  useTheme,
+} from "@sincpro/mobile-ui/theme";
 import { fontFamilies } from "@sincpro/mobile-ui/theme/typography";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import React, { useEffect, useMemo, useState } from "react";
@@ -29,21 +33,29 @@ const parseDeepJson = (value: any): any => {
   return value;
 };
 
-const JSON_COLORS = {
-  key: "#0066CC",
-  string: "#008000",
-  number: "#FF8C00",
-  boolean: "#9966CC",
-  null: "#999999",
-  punctuation: "#666666",
-};
+/** What each fragment is; the theme decides its color, so the viewer reads in dark mode. */
+type JsonRole =
+  "key" | "string" | "number" | "boolean" | "null" | "punctuation" | "warning" | "text";
+
+function jsonPalette(theme: ThemeTokens): Record<JsonRole, string> {
+  return {
+    key: theme.info,
+    string: theme.success,
+    number: theme.warning,
+    boolean: theme.accent,
+    null: theme.text.tertiary,
+    punctuation: theme.text.secondary,
+    warning: theme.warning,
+    text: theme.text.primary,
+  };
+}
 
 const MAX_JSON_SIZE = 500_000; // 500KB límite
 const MAX_LINES = 500; // Máximo 500 líneas con colores
 
 interface JsonLine {
   text: string;
-  color: string;
+  role: JsonRole;
 }
 
 function parseJsonToColoredLines(jsonString: string): JsonLine[] {
@@ -52,10 +64,10 @@ function parseJsonToColoredLines(jsonString: string): JsonLine[] {
     return [
       {
         text: `⚠️ JSON muy grande (${(jsonString.length / 1024).toFixed(1)}KB)\n\n`,
-        color: "#FF6600",
+        role: "warning",
       },
-      { text: "Mostrando como texto plano por performance...\n\n", color: "#666666" },
-      { text: jsonString, color: "#333333" },
+      { text: "Mostrando como texto plano por performance...\n\n", role: "punctuation" },
+      { text: jsonString, role: "text" },
     ];
   }
 
@@ -66,62 +78,51 @@ function parseJsonToColoredLines(jsonString: string): JsonLine[] {
     return [
       {
         text: `⚠️ JSON muy largo (${lines.length} líneas)\n\n`,
-        color: "#FF6600",
+        role: "warning",
       },
-      { text: "Mostrando como texto plano por performance...\n\n", color: "#666666" },
-      { text: jsonString, color: "#333333" },
+      { text: "Mostrando como texto plano por performance...\n\n", role: "punctuation" },
+      { text: jsonString, role: "text" },
     ];
   }
 
   const coloredLines: JsonLine[] = [];
 
   lines.forEach((line) => {
-    const trimmed = line.trim();
+    // Every `"key": value` line is colored, including the last one of an object (no comma).
+    const keyMatch = line.match(/^(\s*)"([^"]+)":\s*(.+)$/);
+    if (keyMatch) {
+      const indent = keyMatch[1];
+      const key = keyMatch[2];
+      const valueStr = keyMatch[3];
 
-    if (
-      !trimmed ||
-      trimmed === "{" ||
-      trimmed === "}" ||
-      trimmed === "[" ||
-      trimmed === "]" ||
-      trimmed === "," ||
-      trimmed.endsWith(",")
-    ) {
-      const keyMatch = line.match(/^(\s*)"([^"]+)":\s*(.+)$/);
+      coloredLines.push(
+        { text: indent, role: "punctuation" },
+        { text: `"${key}"`, role: "key" },
+        { text: ": ", role: "punctuation" },
+      );
 
-      if (keyMatch) {
-        const indent = keyMatch[1];
-        const key = keyMatch[2];
-        const valueStr = keyMatch[3];
-
-        coloredLines.push(
-          { text: indent, color: JSON_COLORS.punctuation },
-          { text: `"${key}"`, color: JSON_COLORS.key },
-          { text: ": ", color: JSON_COLORS.punctuation },
-        );
-
-        if (valueStr.startsWith('"')) {
-          coloredLines.push({ text: valueStr + "\n", color: JSON_COLORS.string });
-        } else if (!isNaN(Number(valueStr.replace(",", "")))) {
-          coloredLines.push({ text: valueStr + "\n", color: JSON_COLORS.number });
-        } else if (valueStr.startsWith("true") || valueStr.startsWith("false")) {
-          coloredLines.push({ text: valueStr + "\n", color: JSON_COLORS.boolean });
-        } else if (valueStr.startsWith("null")) {
-          coloredLines.push({ text: valueStr + "\n", color: JSON_COLORS.null });
-        } else {
-          coloredLines.push({ text: valueStr + "\n", color: JSON_COLORS.punctuation });
-        }
-        return;
+      if (valueStr.startsWith('"')) {
+        coloredLines.push({ text: valueStr + "\n", role: "string" });
+      } else if (!isNaN(Number(valueStr.replace(",", "")))) {
+        coloredLines.push({ text: valueStr + "\n", role: "number" });
+      } else if (valueStr.startsWith("true") || valueStr.startsWith("false")) {
+        coloredLines.push({ text: valueStr + "\n", role: "boolean" });
+      } else if (valueStr.startsWith("null")) {
+        coloredLines.push({ text: valueStr + "\n", role: "null" });
+      } else {
+        coloredLines.push({ text: valueStr + "\n", role: "punctuation" });
       }
+      return;
     }
 
-    coloredLines.push({ text: line + "\n", color: JSON_COLORS.punctuation });
+    coloredLines.push({ text: line + "\n", role: "punctuation" });
   });
 
   return coloredLines;
 }
 
 const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
+  const palette = jsonPalette(useTheme());
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Guard 3: format with a robust try-catch
@@ -141,12 +142,12 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
   }, [selectedJson]);
 
   // Guard 4: colorize with processing control
-  const coloredLines = useMemo(() => {
+  const coloredLines = useMemo<JsonLine[]>(() => {
     try {
       return parseJsonToColoredLines(formattedJson);
     } catch (error) {
       console.warn("[JSONViewer] Error coloring JSON:", error);
-      return [{ text: formattedJson, color: "#333333" }];
+      return [{ text: formattedJson, role: "text" }];
     }
   }, [formattedJson]);
 
@@ -180,7 +181,7 @@ const JsonPreview = ({ selectedJson }: { selectedJson: string }) => {
         }}
       >
         {coloredLines.map((line, index) => (
-          <Text key={index} style={{ color: line.color }}>
+          <Text key={index} style={{ color: palette[line.role] }}>
             {line.text}
           </Text>
         ))}

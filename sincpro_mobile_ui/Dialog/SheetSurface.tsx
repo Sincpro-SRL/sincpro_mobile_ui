@@ -1,4 +1,5 @@
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { SCRIM } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { type ReactNode, useEffect, useEffectEvent } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
@@ -40,6 +41,8 @@ export interface SheetSurfaceProps {
   onExited: () => void;
   /** Drag area at the top of the panel. */
   header: ReactNode;
+  /** Actions pinned to the visible bottom of the sheet at every snap point. */
+  footer?: ReactNode;
   children: ReactNode;
   testID?: string;
 }
@@ -55,6 +58,7 @@ export function SheetSurface({
   onRequestClose,
   onExited,
   header,
+  footer,
   children,
   testID,
 }: SheetSurfaceProps) {
@@ -145,6 +149,13 @@ export function SheetSurface({
     };
   });
 
+  // The panel is as tall as the highest snap point and rests pushed down, so a footer laid
+  // out at its bottom would sit off screen. It rises by the same amount the panel is
+  // pushed down (up to the resting offset), and sinks with the panel while it closes.
+  const footerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -Math.min(translateY.get(), restOffset) }],
+  }));
+
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateY.get(), [restOffset, hiddenOffset], [1, 0], "clamp"),
   }));
@@ -175,13 +186,18 @@ export function SheetSurface({
           </View>
         </GestureDetector>
         <KeyboardToolbar.Group style={styles.content}>{children}</KeyboardToolbar.Group>
+        {footer ? (
+          <Animated.View style={[{ backgroundColor: theme.bg.card }, footerStyle]}>
+            {footer}
+          </Animated.View>
+        ) : null}
       </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: { backgroundColor: "rgba(0,0,0,0.4)" },
+  backdrop: { backgroundColor: SCRIM },
   panel: {
     position: "absolute",
     left: 0,

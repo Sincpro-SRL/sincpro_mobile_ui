@@ -153,7 +153,7 @@ export interface ToastTextProps {
 
 function ToastTitle({ children, className }: ToastTextProps) {
   return (
-    <Typography.Text className={cn("text-sm font-semibold text-text-primary", className)}>
+    <Typography.Text className={cn("text-text-primary", className)}>
       {children}
     </Typography.Text>
   );
@@ -161,7 +161,7 @@ function ToastTitle({ children, className }: ToastTextProps) {
 
 function ToastDescription({ children, className }: ToastTextProps) {
   return (
-    <Typography.Text className={cn("text-sm text-text-secondary", className)}>
+    <Typography.Text className={cn("text-text-secondary", className)}>
       {children}
     </Typography.Text>
   );
@@ -183,9 +183,7 @@ function ToastActionButton({ label, onPress, className, style, ...props }: Toast
       onPress={onPress}
       style={[{ minHeight: 48, minWidth: 48 }, style]}
     >
-      <Typography.Text className="text-sm font-semibold text-text-accent">
-        {label}
-      </Typography.Text>
+      <Typography.Text className="text-text-accent">{label}</Typography.Text>
     </Pressable>
   );
 }

@@ -174,7 +174,8 @@ test.each(["confirmation", "edit", "dropdown", "sheet", "actions", "select"])(
     }
     const sheet = screen.getByTestId("native-sheet");
     expect(sheet.props.index).toBe(0);
-    expect(sheet.props.snapPoints).toEqual(["60%", "90%"]);
+    // Edit keeps its actions inside its content, so it uses a single detent.
+    expect(sheet.props.snapPoints).toEqual(kind === "edit" ? ["60%"] : ["60%", "90%"]);
     expect(sheet.props.animationType).toBeUndefined();
     expect(sheet.props.animateOnMount).toBeUndefined();
     expect(Animated.spring).not.toHaveBeenCalled();

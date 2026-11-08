@@ -15,7 +15,11 @@ export interface SectionHeaderProps {
   action?: SectionHeaderAction;
   className?: string;
   testID?: string;
-  variant?: "default" | "mobile";
+  /**
+   * `default`/`mobile`: section heading (subtitle, semibold). `group`: the uppercase caption
+   * that titles a group of rows, the same as `MenuSection`.
+   */
+  variant?: "default" | "mobile" | "group";
   titleTextProps?: Omit<
     ComponentProps<typeof Typography.Text>,
     "children" | "accessibilityRole"
@@ -41,6 +45,7 @@ function SectionHeader({
   actionStyle,
   actionTextProps,
 }: SectionHeaderProps) {
+  const group = variant === "group";
   return (
     <View
       className={cn("flex-row items-center justify-between px-4 py-2", className)}
@@ -50,9 +55,10 @@ function SectionHeader({
       <View className="flex-1" style={contentStyle}>
         <Typography.Text
           accessibilityRole="header"
-          className="text-text-primary"
+          className={group ? "text-text-secondary" : "text-text-primary"}
           semibold
-          variant="subtitle"
+          transform={group ? "uppercase" : "none"}
+          variant={group ? "caption" : "subtitle"}
           {...titleTextProps}
         >
           {title}
@@ -84,10 +90,7 @@ function SectionHeader({
             actionStyle,
           ]}
         >
-          <Typography.Text
-            className="text-text-accent text-sm font-semibold"
-            {...actionTextProps}
-          >
+          <Typography.Text className="text-text-accent" variant="button" {...actionTextProps}>
             {action.label}
           </Typography.Text>
         </Pressable>

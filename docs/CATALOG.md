@@ -72,6 +72,12 @@ See [migration and adoption order](MOBILE_UX_MIGRATION.md).
 `Input` (`look`: `card` | `outline`; `secure`), `Select`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `MonetaryInput`, `QuantitySelector`, `FractionalQuantityInput`, `PinInput`, `Slider`, `DatePicker` (Expo native picker), `SearchHistory` (recent searches), `Controlled*` (react-hook-form).
 Action filters live in `Actions`, search in `Navigation`.
 
+Every field shares one box and one label: 48 points tall (the `outline` access-form look is 44),
+`rounded-lg`, `border-input`, card surface without shadow, and a `bodySmall` semibold label
+(`outline` keeps its `bodyLarge` label). Typed text uses the `body` face of the configured
+fonts through `Form/input-text` (`inputTextStyle()`); a contract test makes every DS
+`TextInput` use it.
+
 ### Data Display (`Display`)
 
 `Carousel` provides previous/next actions and a localized page label for short
@@ -86,10 +92,18 @@ It is a ScrollView, not a replacement for large virtualized lists.
 
 Pills share one label: `Badge` (status, semibold; `StatusBadge` maps domain states to it),
 `Chip` (tone, selectable or removable) and `Tag` (metadata with dot or leading icon) render
-10/16 text in the DS font. Selecting a `Chip` never resizes it. Every notification count
+their label in the DS font. Selecting a `Chip` never resizes it. Every notification count
 (`IconBadge`, `AppBar.Action badge`, `BottomNav` items, `QuickActions`, `MenuButton badge`)
 is the same 18-point `CountBadge`, capped at `99+`. `MenuButton` presets `active`/`inactive`/`new`
-render `Badge` success/warning/accent.
+render `Badge` success/warning/accent. Pills read 12/16 by default; `textVariant` takes any
+typography variant when a screen needs another size.
+
+Group titles (`MenuSection`, `ListGroup`, `FormViewV2.Content.Group`, `QuickActions`) are one
+uppercase caption in secondary ink, announced as a header; `SectionHeader variant="group"` draws
+it, the other variants keep the section heading. Group footers are a tertiary caption.
+
+`Navigation.SearchBar` (and `ListViewV2.Header.Search`) types at 17 (`bodyReadable`), the size of
+the native iOS search field; `textVariant="body"` matches the other fields on dense screens.
 
 `CopyableText` presents short values as tap-to-copy text with a familiar copy icon,
 pending spinner and transient checkmark without layout shift. `selectable` preserves native
@@ -173,15 +187,17 @@ feedback without NativeWind interop on React Native `Pressable` (contract-tested
 | `Display.ListItem`          | Slot props: `leading`, `title`, `subtitle`, `value`, `trailing`, `chevron`                             | Settings, menus, detail rows. **The default row.**                 |
 | `ListItem variant="mobile"` | Same slots; wraps text, stacks the value at large font, pressed background                             | Mobile-first screens and `ListGroup` sections                      |
 | `ListViewV2.Content.Row`    | Compound children: `Avatar`, `Content`, `Title`, `Subtitle`, `Footer`, `Actions`                       | Custom list rows with footer or inline actions                     |
-| `Navigation.RowItem`        | `IRowItem` (`rowTitle`, `rowSubtitle`), title typography                                               | The default row `ListViewV2` draws without a renderer              |
+| `Navigation.RowItem`        | `IRowItem` (`rowTitle`, `rowSubtitle`), drawn exactly like `Content.Row`                               | The default row `ListViewV2` draws without a renderer              |
 | `Display.KeyValue`          | `label` + `value`, row or stacked, `copyable`                                                          | Read-only facts of a record                                        |
 | `Display.SwipeableRow`      | Wrapper with left/right actions and `visibleActions`                                                   | Any row above that also needs swipe actions                        |
 | `Display.MenuButton`        | Settings row: icon component, label, description, `value`, `badge`, `toggle`, `loading`, swipe actions | Settings and menu screens, usually inside `Navigation.MenuSection` |
 
-`RowItem` uses the `title` typography and `py-2.5`, unlike `ListItem`; folding it into `ListItem`
-needs a visual decision (pending, see the plan). The same applies to `MenuButton` (its own badge
-presets and divider) and to `Navigation.MenuSection` versus `Display.ListGroup` (bordered card with
-shadow and an uppercase caption title, versus an inset card with a `SectionHeader`).
+Data rows (`Content.Row`, `RowItem`) title in `body` semibold; settings rows (`ListItem`,
+`MenuButton`) label in `body` regular; secondary text is `bodySmall` secondary everywhere. Rows
+divide with `border-b border-border-default`, and navigational rows end in the same native
+chevron (`next`, 10 points, tertiary). `Navigation.MenuSection` versus `Display.ListGroup`
+(bordered card with shadow and an uppercase caption title, versus an inset card with a
+`SectionHeader`) is still a visual decision (see the plan).
 
 Screen readers: an actionable row is **one** button that reads label, detail, value and badge. A
 `MenuButton` with `toggle` leaves the row transparent so the named `Switch` is reachable.

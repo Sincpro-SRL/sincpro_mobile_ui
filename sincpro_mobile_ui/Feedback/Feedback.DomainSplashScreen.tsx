@@ -2,6 +2,7 @@ import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface"
 import Pattern from "@sincpro/mobile-ui/Display/Display.Pattern";
 import Progress from "@sincpro/mobile-ui/Feedback/Feedback.Progress";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { ON_DARK_SURFACE } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -137,7 +138,8 @@ function DomainSplashScreen({
                 <View className="w-full items-center gap-5">
                   <Typography.Text
                     bold
-                    style={{ color: "#FFFFFF", fontSize: 24, letterSpacing: 0.5 }}
+                    style={{ color: ON_DARK_SURFACE.ink, letterSpacing: 0.5 }}
+                    variant="h3"
                   >
                     {`Cargando ${domainName}`}
                   </Typography.Text>
@@ -146,7 +148,7 @@ function DomainSplashScreen({
                     accessibilityLabel={`Cargando ${domainName}`}
                     indeterminate
                     indicatorStyle={{ backgroundColor: theme.primary }}
-                    style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
+                    style={{ backgroundColor: ON_DARK_SURFACE.glass }}
                   />
                 </View>
               </View>

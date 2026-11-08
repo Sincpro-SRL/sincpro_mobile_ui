@@ -1,29 +1,14 @@
+import { useTheme } from "@sincpro/mobile-ui/theme/useTheme";
 import type { ActivityIndicatorProps } from "react-native";
 import { ActivityIndicator as RNActivityIndicator } from "react-native";
 
-/**
- * ============================================================================
- * THEMED ACTIVITY INDICATOR
- * ============================================================================
- *
- * Wrapper de ActivityIndicator que usa color primary.
- * NOTA: Como no podemos usar hooks, usa el color hardcoded de Distribution.
- * Para cambiar color, pasar prop color directamente.
- *
- * USO:
- * ```tsx
- * <ThemedActivityIndicator />
- * <ThemedActivityIndicator size="large" color="#8B5CF6" />
- * ```
- */
-
 interface ThemedActivityIndicatorProps extends Omit<ActivityIndicatorProps, "color"> {
+  /** Defaults to the theme `primary`. */
   color?: string;
 }
 
-export function ThemedActivityIndicator({
-  color = "#0075FF",
-  ...props
-}: ThemedActivityIndicatorProps) {
-  return <RNActivityIndicator color={color} {...props} />;
+/** ActivityIndicator in the theme `primary` unless a color is given. */
+export function ThemedActivityIndicator({ color, ...props }: ThemedActivityIndicatorProps) {
+  const theme = useTheme();
+  return <RNActivityIndicator color={color ?? theme.primary} {...props} />;
 }

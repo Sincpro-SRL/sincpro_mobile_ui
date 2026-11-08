@@ -1,3 +1,5 @@
+import Card from "@sincpro/mobile-ui/Display/Display.Card";
+import { GroupTitle } from "@sincpro/mobile-ui/Display/group-title";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { ReactNode } from "react";
@@ -27,27 +29,12 @@ export function MenuSection({ title, footer, children }: MenuSectionProps) {
   return (
     <View style={{ marginHorizontal: 16, marginBottom: 20 }}>
       {title ? (
-        <Typography.Text
-          semibold
-          style={{ color: theme.text.secondary, marginBottom: 6, paddingHorizontal: 4 }}
-          variant="caption"
-        >
-          {title.toUpperCase()}
-        </Typography.Text>
+        <GroupTitle style={{ marginBottom: 6, paddingHorizontal: 4 }}>{title}</GroupTitle>
       ) : null}
 
-      <View
-        style={{
-          backgroundColor: theme.bg.card,
-          borderRadius: 14,
-          borderWidth: 1,
-          borderColor: theme.border.default,
-          overflow: "hidden",
-          ...theme.shadow.sm,
-        }}
-      >
+      <Card className="overflow-hidden" elevation="sm" padding="none">
         {children}
-      </View>
+      </Card>
 
       {footer ? (
         <Typography.Text

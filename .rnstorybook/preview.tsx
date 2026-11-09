@@ -1,4 +1,5 @@
 import { ConfirmationProvider, OverlayHost } from "@sincpro/mobile-ui/Dialog";
+import { registerDocumentRenderers } from "@sincpro/mobile-ui/Display/document-renderer";
 import KeyboardToolbarHost from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
 import {
   DEFAULT_DARK_THEME,
@@ -16,7 +17,10 @@ import { Appearance, Pressable, StyleSheet, Text, useColorScheme, View } from "r
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { type Edge, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { storybookPdfRenderer } from "./pdf-renderer";
 import { SystemBars, useCanvasStatusBar } from "./SystemBars";
+
+registerDocumentRenderers({ "application/pdf": storybookPdfRenderer });
 
 const THEMES = {
   light: DEFAULT_THEME,

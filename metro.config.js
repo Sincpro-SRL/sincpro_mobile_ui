@@ -4,6 +4,7 @@ const { withNativeWind } = require("nativewind/metro");
 const { withStorybook } = require("@storybook/react-native/metro/withStorybook");
 
 const config = getDefaultConfig(__dirname);
+config.resolver.assetExts.push("pdf");
 
 const withNW = withNativeWind(config, {
   input: "./sincpro_mobile_ui/theme/globals.css",

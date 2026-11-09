@@ -20,6 +20,7 @@ const forbiddenNativeComponents = new Set([
   "ImageBackground",
 ]);
 const fullscreenModals = new Set([
+  "Display/Display.DocumentViewer.tsx",
   "Display/Display.StoryViewer.tsx",
   "widgets/PromoModal.tsx",
 ]);

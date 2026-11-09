@@ -3,7 +3,6 @@ import "@shopify/flash-list/jestSetup";
 import type { PickerItemProps, PickerProps } from "@expo/ui";
 import type { DateTimePickerProps } from "@expo/ui/community/datetime-picker";
 import type { MenuComponentProps } from "@expo/ui/community/menu";
-import type { SegmentedControlProps } from "@expo/ui/community/segmented-control";
 import type { SliderProps } from "@expo/ui/community/slider";
 import { afterEach, expect, jest, test } from "@jest/globals";
 import { Actions } from "@sincpro/mobile-ui/Actions";
@@ -125,14 +124,6 @@ jest.mock("@expo/ui/community/slider", () => {
   return {
     __esModule: true,
     default: (props: SliderProps) => mockReact.createElement(View, props),
-  };
-});
-jest.mock("@expo/ui/community/segmented-control", () => {
-  const mockReact = jest.requireActual<typeof import("react")>("react");
-  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
-  return {
-    __esModule: true,
-    default: (props: SegmentedControlProps) => mockReact.createElement(View, props),
   };
 });
 jest.mock("@expo/ui/community/menu", () => {
@@ -675,40 +666,26 @@ test("native slider preserves tokens, ranges, steps and read-only state", async 
   expect(change).toHaveBeenCalledTimes(1);
 });
 
-test("native segments map indexes to values and keep disabled options natively disabled", async () => {
+test("segments look the same on Android and iOS: no platform control is rendered", async () => {
   const change = jest.fn();
-  const { rerender } = await render(
-    <SegmentedControl
-      onChange={change}
-      options={[
-        { label: "Lista", value: "list" },
-        { label: "Mapa", value: "map" },
-      ]}
-      testID="view"
-      value="list"
-    />,
-  );
-  expect(screen.getByTestId("view-segments-0").props.values).toEqual(["Lista", "Mapa"]);
-  await fireEvent(screen.getByTestId("view-segments-0"), "change", {
-    nativeEvent: { selectedSegmentIndex: 1, value: "Mapa" },
-  });
-  expect(change).toHaveBeenCalledWith("map");
-  await rerender(
-    <SegmentedControl
-      onChange={change}
-      options={[
-        { label: "Lista", value: "list" },
-        { label: "Mapa", value: "map", disabled: true },
-      ]}
-      testID="view"
-      value="list"
-    />,
-  );
-  expect(screen.getByTestId("view-segments-1").props.enabled).toBe(false);
-  await fireEvent(screen.getByTestId("view-segments-1"), "change", {
-    nativeEvent: { selectedSegmentIndex: 0, value: "Mapa" },
-  });
-  expect(change).toHaveBeenCalledTimes(1);
+  for (const os of ["ios", "android"] as const) {
+    jest.replaceProperty(Platform, "OS", os);
+    await render(
+      <SegmentedControl
+        onChange={change}
+        options={[
+          { label: "Lista", value: "list" },
+          { label: "Mapa", value: "map" },
+        ]}
+        testID={`view-${os}`}
+        value="list"
+      />,
+    );
+    expect(screen.getAllByRole("tab", { name: /Lista|Mapa/ }).length).toBeGreaterThanOrEqual(2);
+    await fireEvent.press(screen.getByTestId(`view-${os}-map`));
+  }
+  expect(change).toHaveBeenNthCalledWith(1, "map");
+  expect(change).toHaveBeenNthCalledWith(2, "map");
 });
 
 test("native menu preserves action indexes, separators, disabled flags and Android icons", async () => {

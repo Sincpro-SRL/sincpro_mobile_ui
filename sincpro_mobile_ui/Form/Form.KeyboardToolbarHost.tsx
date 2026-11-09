@@ -73,23 +73,21 @@ export function useKeyboardToolbarInset(): number {
 
 export interface KeyboardToolbarHostProps {
   doneLabel?: string;
-  /** iOS convention: an accessory bar with previous / next / done. */
-  ios?: boolean;
-  /** Android convention is the IME action key; the bar is opt-in. */
-  android?: boolean;
+  /** Previous / next / done above the keyboard, the same on Android and iOS. */
+  enabled?: boolean;
 }
 
 /**
  * The only keyboard toolbar of the app. Mount it once inside KeyboardProvider.
  * Each KeyboardForm and each sheet is a group, so previous / next stay inside it.
+ * The web has no on-screen keyboard to dock it to.
  */
 export default function KeyboardToolbarHost({
   doneLabel = "Listo",
-  ios = true,
-  android = false,
+  enabled: requested = true,
 }: KeyboardToolbarHostProps) {
   const theme = useTheme();
-  const enabled = Platform.OS === "ios" ? ios : Platform.OS === "android" ? android : false;
+  const enabled = requested && Platform.OS !== "web";
 
   const { height: windowHeight } = useWindowDimensions();
   const frame = useRef<ViewInstance>(null);

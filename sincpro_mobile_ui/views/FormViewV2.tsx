@@ -3,6 +3,7 @@ import { ErrorBoundary, Feedback } from "@sincpro/mobile-ui/Feedback";
 import KeyboardForm, {
   type KeyboardFormProps,
 } from "@sincpro/mobile-ui/Form/Form.KeyboardForm";
+import { useKeyboardToolbarInset } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
 import { useBottomInset } from "@sincpro/mobile-ui/layouts/BottomInset";
 import Container from "@sincpro/mobile-ui/layouts/Container";
 import type { SafeAreaEdge } from "@sincpro/mobile-ui/layouts/edges";
@@ -383,6 +384,7 @@ function Footer({ children }: { children: ReactNode }) {
   const frame = React.useRef<ViewInstance>(null);
   const { height: windowHeight } = useWindowDimensions();
   const [bottomGap, setBottomGap] = React.useState(0);
+  const toolbarInset = useKeyboardToolbarInset();
 
   React.useEffect(() => () => setHeight(0), [setHeight]);
 
@@ -399,7 +401,7 @@ function Footer({ children }: { children: ReactNode }) {
       }}
       ref={frame}
     >
-      <KeyboardStickyView offset={{ closed: 0, opened: bottomGap }}>
+      <KeyboardStickyView offset={{ closed: 0, opened: bottomGap - toolbarInset }}>
         <View
           className="bg-bg-card px-4 py-3 border-t border-border-light"
           onLayout={(event) => setHeight(event.nativeEvent.layout.height)}

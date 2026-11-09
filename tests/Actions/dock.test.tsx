@@ -1,5 +1,6 @@
 import { expect, jest, test } from "@jest/globals";
 import Dock from "@sincpro/mobile-ui/Actions/Actions.Dock";
+import KeyboardToolbarHost from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { type ReactNode, useState } from "react";
@@ -15,6 +16,7 @@ jest.mock("react-native-keyboard-controller", () => {
   return {
     KeyboardStickyView: (props: { children?: ReactNode }) =>
       mockReact.createElement(View, props),
+    KeyboardToolbar: () => null,
   };
 });
 jest.mock("@expo/ui/community/bottom-sheet", () => {
@@ -227,4 +229,16 @@ test("native layout owns sheet height and keyboard while collapsed docks own the
     24,
   );
   expect(screen.getByTestId("dock").props.enabled).toBe(true);
+});
+
+test("the fixed dock rises above the keyboard toolbar so its primary action stays visible", async () => {
+  await render(
+    <>
+      <Dock primaryAction={<Text>Confirmar</Text>} testID="checkout-dock">
+        <Text>Opciones adicionales</Text>
+      </Dock>
+      <KeyboardToolbarHost />
+    </>,
+  );
+  expect(screen.getByTestId("checkout-dock").props.offset).toEqual({ opened: 16 - 42 });
 });

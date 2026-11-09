@@ -115,7 +115,7 @@ El consumidor decide cuándo y cómo adoptarlos:
 `@expo/ui` es el motor oficial de controles y sheets. NativeWind conserva la
 presentación de marca; los controles nativos reciben tintes y modifiers públicos.
 
-- **Nativo (`@expo/ui`)** — date/time picker, slider, selección, menú, segmented control
+- **Nativo (`@expo/ui`)** — date/time picker, slider, selección y menú
   y una sola Sheet sobre `community/bottom-sheet`. No se conserva gorhom, otra Sheet
   propia ni el picker/slider de react-native-community.
 - **Marca (NativeWind+tokens)** — para la _capa visual de identidad_, que DEBE verse igual en iOS/Android: `Button`, `Card`/`ProductCard`/`MediaCard`, `Badge`/`Chip`/`Tag`, `Typography`, `AppBar`/headers, listas, feedback. Acá lo nativo fragmentaría el look y tiraría los tokens.

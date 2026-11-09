@@ -189,11 +189,6 @@ jest.mock("@expo/ui/community/slider", () => ({
   default: (props) => mockReact.createElement(View, props),
 }));
 
-jest.mock("@expo/ui/community/segmented-control", () => ({
-  __esModule: true,
-  default: (props) => mockReact.createElement(View, props),
-}));
-
 jest.mock("@expo/ui/community/menu", () => ({
   __esModule: true,
   default: ({ children, ...rest }) => mockReact.createElement(View, rest, children),

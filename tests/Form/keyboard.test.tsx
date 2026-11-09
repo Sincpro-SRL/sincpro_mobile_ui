@@ -29,39 +29,45 @@ function onPlatform(os: "ios" | "android") {
   jest.replaceProperty(Platform, "OS", os);
 }
 
-test("iOS mounts one library toolbar and every form reserves its height", async () => {
-  onPlatform("ios");
-  await render(
-    <>
-      <KeyboardForm testID="form-scroll">
-        <Input label="Nombre" value="" />
-      </KeyboardForm>
-      <KeyboardToolbarHost />
-    </>,
-  );
-  expect(screen.getAllByTestId("keyboard-toolbar")).toHaveLength(1);
-  expect(mockToolbarProps.current?.doneText).toBe("Listo");
-  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(42 + 24);
-  expect(screen.getByTestId("form-scroll").props.keyboardShouldPersistTaps).toBe("handled");
-});
+test.each(["ios", "android"] as const)(
+  "%s mounts one library toolbar and every form reserves its height",
+  async (os) => {
+    onPlatform(os);
+    await render(
+      <>
+        <KeyboardForm testID="form-scroll">
+          <Input label="Nombre" value="" />
+        </KeyboardForm>
+        <KeyboardToolbarHost />
+      </>,
+    );
+    expect(screen.getAllByTestId("keyboard-toolbar")).toHaveLength(1);
+    expect(mockToolbarProps.current?.doneText).toBe("Listo");
+    expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(42 + 24);
+    expect(screen.getByTestId("form-scroll").props.keyboardShouldPersistTaps).toBe("handled");
+  },
+);
 
-test("Android follows the IME action key: no toolbar and no reserved height", async () => {
-  onPlatform("android");
-  await render(
-    <>
-      <KeyboardForm testID="form-scroll">
-        <Input label="Nombre" value="" />
-      </KeyboardForm>
-      <KeyboardToolbarHost />
-    </>,
-  );
-  expect(screen.queryByTestId("keyboard-toolbar")).toBeNull();
-  expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(24);
-});
+test.each(["ios", "android"] as const)(
+  "%s hides the toolbar and its reserved height when it is disabled",
+  async (os) => {
+    onPlatform(os);
+    await render(
+      <>
+        <KeyboardForm testID="form-scroll">
+          <Input label="Nombre" value="" />
+        </KeyboardForm>
+        <KeyboardToolbarHost enabled={false} />
+      </>,
+    );
+    expect(screen.queryByTestId("keyboard-toolbar")).toBeNull();
+    expect(screen.getByTestId("form-scroll").props.bottomOffset).toBe(24);
+  },
+);
 
-test("Android can opt in to the toolbar", async () => {
+test("the done label is configurable", async () => {
   onPlatform("android");
-  await render(<KeyboardToolbarHost android doneLabel="Terminar" />);
+  await render(<KeyboardToolbarHost doneLabel="Terminar" />);
   expect(screen.getByTestId("keyboard-toolbar")).toBeTruthy();
   expect(mockToolbarProps.current?.doneText).toBe("Terminar");
 });

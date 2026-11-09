@@ -1,5 +1,5 @@
-import NativeSegmentedControl from "@expo/ui/community/segmented-control";
-import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
+import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type StyleProp, View, type ViewStyle } from "react-native";
 
@@ -21,6 +21,7 @@ export type SegmentedControlProps<T extends string> = {
   testID?: string;
 };
 
+/** Drawn with tokens, not the platform control, so it looks the same on Android and iOS. */
 function SegmentedControl<T extends string>({
   options,
   value,
@@ -33,13 +34,6 @@ function SegmentedControl<T extends string>({
   testID,
 }: SegmentedControlProps<T>) {
   const theme = useTheme();
-  const groups: { disabled: boolean; options: SegmentedOption<T>[] }[] = [];
-  for (const option of options) {
-    const blocked = disabled || readOnly || !!option.disabled;
-    const group = groups.at(-1);
-    if (group?.disabled === blocked) group.options.push(option);
-    else groups.push({ disabled: blocked, options: [option] });
-  }
 
   return (
     <View className={className} style={style} testID={testID}>
@@ -48,25 +42,55 @@ function SegmentedControl<T extends string>({
           {accessibilityLabel}
         </Typography.Text>
       ) : null}
-      <View style={{ flexDirection: "row", gap: 4, minHeight: 48 }}>
-        {groups.map((group, groupIndex) => (
-          <View key={group.options[0].value} style={{ flex: group.options.length }}>
-            <NativeSegmentedControl
-              accessibilityLabel={accessibilityLabel}
-              appearance={relativeLuminance(theme.bg.card) < 0.179 ? "dark" : "light"}
-              enabled={!group.disabled}
-              onChange={({ nativeEvent }) => {
-                const option = group.options[nativeEvent.selectedSegmentIndex];
-                if (option && !group.disabled) onChange(option.value);
+      <View
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="tablist"
+        style={{
+          flexDirection: "row",
+          gap: 4,
+          padding: 4,
+          borderRadius: 14,
+          backgroundColor: theme.bg.muted,
+        }}
+      >
+        {options.map((option) => {
+          const selected = option.value === value;
+          const blocked = disabled || readOnly || !!option.disabled;
+          return (
+            <Pressable
+              accessibilityLabel={option.label}
+              accessibilityRole="tab"
+              accessibilityState={{ selected, disabled: blocked }}
+              disabled={blocked}
+              hitSlop={0}
+              key={option.value}
+              onPress={() => {
+                if (!selected) onChange(option.value);
               }}
-              selectedIndex={group.options.findIndex((option) => option.value === value)}
-              style={{ minHeight: 48 }}
-              testID={testID ? `${testID}-segments-${groupIndex}` : undefined}
-              tintColor={theme.primary}
-              values={group.options.map((option) => option.label)}
-            />
-          </View>
-        ))}
+              style={{
+                flex: 1,
+                minHeight: 48,
+                minWidth: 48,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 10,
+                ...(selected ? { backgroundColor: theme.bg.card, ...theme.shadow.sm } : null),
+              }}
+              testID={testID ? `${testID}-${option.value}` : undefined}
+            >
+              <Typography.Text
+                align="center"
+                semibold={selected}
+                style={{ color: selected ? theme.text.primary : theme.text.secondary }}
+                variant="bodySmall"
+              >
+                {option.label}
+              </Typography.Text>
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );

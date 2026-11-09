@@ -1,5 +1,6 @@
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { useKeyboardToolbarInset } from "@sincpro/mobile-ui/Form/Form.KeyboardToolbarHost";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
@@ -47,6 +48,7 @@ function Dock({
   const safeAreaBottom = safeAreaBottomProp ?? placement === "fixed";
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const toolbarInset = useKeyboardToolbarInset();
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const expanded = controlledExpanded ?? internalExpanded;
   const requestExpanded = (next: boolean) => {
@@ -98,7 +100,7 @@ function Dock({
     <>
       <KeyboardStickyView
         enabled={placement === "fixed" && !expanded}
-        offset={{ opened: safeAreaBottom ? insets.bottom : 0 }}
+        offset={{ opened: (safeAreaBottom ? insets.bottom : 0) - toolbarInset }}
         style={
           placement === "fixed"
             ? { position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 20 }

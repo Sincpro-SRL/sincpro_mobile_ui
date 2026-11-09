@@ -83,7 +83,7 @@ function DestinationSegmentsDemo() {
 }
 
 export const DestinationSegments: Story = {
-  name: "Segmented — native destinations",
+  name: "Segmented — destinations",
   render: () => <DestinationSegmentsDemo />,
 };
 
@@ -109,7 +109,7 @@ function DisplayModeSegmentsDemo() {
 }
 
 export const DisplayModeSegments: Story = {
-  name: "Segmented — native display modes",
+  name: "Segmented — display modes",
   render: () => <DisplayModeSegmentsDemo />,
 };
 

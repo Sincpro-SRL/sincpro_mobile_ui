@@ -301,9 +301,9 @@ consumer-controlled. No automatic live announcements on every progress update.
 
 `AppBar` (+`Action`, variants default/large/center), `BottomNav` (+ center FAB), `SearchBar` (pill), `Search` (compound field, filter chips, advanced filter sheet, history and suggestions), `CollapsingHeader`, `FloatingBar`, `Menu` (kebab + separators), `SegmentedControl`, `Tabs`, `Steps`, `RowItem`, `MenuButton` (settings/menu row — `Display.MenuButton`).
 
-`SegmentedControl` wraps labels at 14 points with 48-point minimum targets by default.
-The old single-line 12-point mode was removed. Group/per-option disabled state, accessible
-names/hints, `style`, `optionStyle` and `labelTextProps` support local composition.
+`SegmentedControl` is drawn with theme tokens, so it looks and behaves the same on Android and
+iOS. Options are tabs with a 48-point minimum target and labels that wrap instead of truncating;
+the control and each option can be disabled, and `readOnly` blocks changes.
 Options remain host-controlled and keep selected tab semantics.
 
 `SearchBar` uses readable 17-point text and 48-point input/clear
@@ -389,7 +389,8 @@ persistence and backend adapters. No relational model explorer or JSON editor is
 Story: `Patterns/Collections/Query configuration`.
 
 `Form.KeyboardForm` combines an aware scroll, scoped native input group and named
-previous/next/dismiss toolbar. `Form.KeyboardToolbar` is separately composable.
+previous/next/dismiss toolbar. `Form.KeyboardToolbarHost` shows that toolbar on Android and iOS
+alike; `enabled={false}` turns it off on both. `Form.KeyboardToolbar` is separately composable.
 Requires a root KeyboardProvider and a runtime with keyboard-controller included.
 Existing `FormViewV2.Content`, `AuthFormView` and `AuthContainer` opt in with
 `keyboardToolbar`; existing defaults are preserved. Avoid nesting vertical scrolls.

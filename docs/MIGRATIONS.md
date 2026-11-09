@@ -17,9 +17,13 @@ Detalle con ejemplos en [`MIGRATION-V4.md`](./MIGRATION-V4.md). Resumen:
   Una sheet cerrada no monta nada. Toast se dibuja en la capa superior del host. Ya no se usa
   `@expo/ui/community/bottom-sheet`.
 - **Teclado:** `Form.KeyboardToolbar` se reemplaza por `Form.KeyboardToolbarHost`, montado una
-  vez (iOS encendido, Android apagado por defecto). `KeyboardForm` tiene API propia (sin
+  vez, igual en Android e iOS (encendido por defecto; `enabled={false}` lo apaga en las dos;
+  ya no hay `ios`/`android`). `KeyboardForm` tiene API propia (sin
   `toolbar`, `toolbarProps`, `ref` ni props de keyboard-controller). Se eliminan
   `keyboardToolbar`/`toolbarProps` de FormViewV2, AuthContainer y AuthFormView.
+- **SegmentedControl:** se dibuja con tokens y se ve igual en Android e iOS; ya no usa
+  `@expo/ui/community/segmented-control`. La API (`options`, `value`, `onChange`, `disabled`,
+  `readOnly`, `accessibilityLabel`, `style`, `className`, `testID`) no cambia.
 - **Íconos:**
   - `Display.Icon` no lanza error: un nombre desconocido muestra `info` y avisa en dev.
   - Íconos propios con `registerIcons()` y `CustomIconRegistry` (module augmentation).

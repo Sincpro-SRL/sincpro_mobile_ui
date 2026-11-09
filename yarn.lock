@@ -8270,6 +8270,11 @@ react-native-keyboard-controller@1.22.7:
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
 
+react-native-pdf-thumbnail@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-pdf-thumbnail/-/react-native-pdf-thumbnail-2.0.0.tgz#03d978222659086f5f4c980263269355e8d6fb39"
+  integrity sha512-Dyri8daUPSPXST2dir83EsL2Sta6eeI9A1iWMIx82SRu0aFcPHbRImzYc/b7CEuA50I4iqfnysgxtANBeITZwA==
+
 react-native-reanimated@4.7.1:
   version "4.7.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-4.7.1.tgz#22a4e95241fe54a5cb05bed4d30b63af4d79a4f7"

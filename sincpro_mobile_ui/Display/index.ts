@@ -15,6 +15,8 @@ import CountRecords from "@sincpro/mobile-ui/Display/Display.CountRecords";
 import DataTable from "@sincpro/mobile-ui/Display/Display.DataTable";
 import Date from "@sincpro/mobile-ui/Display/Display.Date";
 import Divider from "@sincpro/mobile-ui/Display/Display.Divider";
+import DocumentPreview from "@sincpro/mobile-ui/Display/Display.DocumentPreview";
+import DocumentViewer from "@sincpro/mobile-ui/Display/Display.DocumentViewer";
 import ExpoImage from "@sincpro/mobile-ui/Display/Display.ExpoImage";
 import GradientSurface from "@sincpro/mobile-ui/Display/Display.GradientSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
@@ -62,6 +64,8 @@ export const Display = {
   Tag,
   Image: DisplayImage,
   ExpoImage,
+  DocumentPreview,
+  DocumentViewer,
   MediaCard,
   MediaEmbed,
   Story,
@@ -109,6 +113,8 @@ export type {
   CarouselProps,
 } from "@sincpro/mobile-ui/Display/Display.Carousel";
 export type { CircleButtonProps } from "@sincpro/mobile-ui/Display/Display.CircleButton";
+export type { DocumentPreviewProps } from "@sincpro/mobile-ui/Display/Display.DocumentPreview";
+export type { DocumentViewerProps } from "@sincpro/mobile-ui/Display/Display.DocumentViewer";
 export type { IconProps } from "@sincpro/mobile-ui/Display/Display.Icon";
 export type { ListGroupProps } from "@sincpro/mobile-ui/Display/Display.ListGroup";
 export type { ListItemProps } from "@sincpro/mobile-ui/Display/Display.ListItem";
@@ -122,6 +128,13 @@ export {
   type StatusMap,
   type StatusTone,
 } from "@sincpro/mobile-ui/Display/Display.StatusBadge";
+export {
+  type DocumentRenderer,
+  type DocumentRenderRequest,
+  type DocumentRenderResult,
+  registerDocumentRenderers,
+  resetDocumentRenderers,
+} from "@sincpro/mobile-ui/Display/document-renderer";
 export { ICON_FONT_FAMILY, ICON_FONTS } from "@sincpro/mobile-ui/Display/icon-font";
 export {
   type BuiltInIconName,
@@ -133,5 +146,11 @@ export {
   type CustomIconRenderer,
   registerIcons,
 } from "@sincpro/mobile-ui/Display/icon-registry";
+export {
+  documentBase64,
+  documentMimeType,
+  type DocumentPage,
+  type DocumentSource,
+} from "@sincpro/mobile-ui/utils/document";
 
 export default Display;

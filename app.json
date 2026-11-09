@@ -14,6 +14,9 @@
     "ios": {
       "bundleIdentifier": "bo.com.sincpro.mobileui.storybook"
     },
-    "plugins": ["expo-font"]
+    "plugins": [
+      "expo-font",
+      "expo-asset"
+    ]
   }
 }

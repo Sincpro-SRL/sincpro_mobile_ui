@@ -1,5 +1,5 @@
 import { expect, jest, test } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import { MobileRecords } from "../../.rnstorybook/stories/Records.Actions.stories";
 import { MobileSelection } from "../../.rnstorybook/stories/Forms.Selection.stories";
@@ -43,7 +43,8 @@ test("filter drafts do not change the list until Apply and dismiss discards them
 test("selection is communicated after choosing a mobile-sheet option", async () => {
   await render(<MobileSelection />);
   await fireEvent.press(screen.getByRole("button", { name: "Canal de aviso: Seleccionar…" }));
-  await fireEvent(screen.getByTestId("native-picker"), "valueChange", "0");
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
-  expect(screen.getByText("Canal elegido: Correo electrónico")).toBeTruthy();
+  await fireEvent.press(screen.getByRole("radio", { name: "Correo electrónico" }));
+  await waitFor(() =>
+    expect(screen.getByText("Canal elegido: Correo electrónico")).toBeTruthy(),
+  );
 });

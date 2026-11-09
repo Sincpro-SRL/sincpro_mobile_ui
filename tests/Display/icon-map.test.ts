@@ -108,7 +108,7 @@ test("the semantic catalog is complete and each entry has exactly SF and Materia
 });
 
 test("navigation sources expose an iOS symbol and an Android material name", () => {
-  assert.deepEqual(ICON_MAP.home, { sf: "house.fill", md: "home" });
+  assert.deepEqual(ICON_MAP.home, { sf: "house", md: "home" });
   assert.deepEqual(ICON_MAP.settings, { sf: "gearshape", md: "settings" });
   assert.deepEqual(ICON_MAP.profile, { sf: "person", md: "person" });
   assert.deepEqual(ICON_MAP.back, { sf: "chevron.left", md: "arrow_back" });

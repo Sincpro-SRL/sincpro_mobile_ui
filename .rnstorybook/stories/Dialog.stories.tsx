@@ -76,6 +76,7 @@ function EditValueDemo() {
       <Typography.Text>Nombre: {name}</Typography.Text>
       <Actions.Button onPress={() => setVisible(true)} title="Editar nombre" />
       <Dialog.EditValue
+        keyboardType="default"
         onClose={() => setVisible(false)}
         onConfirm={async (next) => {
           await new Promise((resolve) => setTimeout(resolve, 400));

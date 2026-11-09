@@ -1,7 +1,13 @@
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
-import { useLayoutEffect, useSyncExternalStore } from "react";
-import { Platform, StyleSheet } from "react-native";
+import { useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  Platform,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type ViewInstance,
+} from "react-native";
 import { KeyboardToolbar, type KeyboardToolbarProps } from "react-native-keyboard-controller";
 
 type ToolbarButtonComponent = NonNullable<KeyboardToolbarProps["button"]>;
@@ -85,6 +91,14 @@ export default function KeyboardToolbarHost({
   const theme = useTheme();
   const enabled = Platform.OS === "ios" ? ios : Platform.OS === "android" ? android : false;
 
+  const { height: windowHeight } = useWindowDimensions();
+  const frame = useRef<ViewInstance>(null);
+  const [gap, setGap] = useState(0);
+  const measureGap = () =>
+    frame.current?.measureInWindow((_x, top, _width, height) =>
+      setGap(Math.max(0, windowHeight - top - height)),
+    );
+
   useLayoutEffect(() => {
     publish(enabled ? TOOLBAR_HEIGHT : 0);
     return () => publish(0);
@@ -98,11 +112,22 @@ export default function KeyboardToolbarHost({
     ripple: theme.bg.muted,
   };
   return (
-    <KeyboardToolbar
-      button={ToolbarButton}
-      doneText={doneLabel}
-      theme={{ light: colors, dark: colors }}
-    />
+    // The toolbar sits on the keyboard measured from its container's bottom. A host that
+    // does not reach the bottom of the screen (tabs, a layout) would leave it floating that
+    // gap above the keyboard, so the gap is measured and given back.
+    <View
+      onLayout={measureGap}
+      pointerEvents="box-none"
+      ref={frame}
+      style={StyleSheet.absoluteFill}
+    >
+      <KeyboardToolbar
+        button={ToolbarButton}
+        doneText={doneLabel}
+        offset={{ opened: gap }}
+        theme={{ light: colors, dark: colors }}
+      />
+    </View>
   );
 }
 

@@ -64,4 +64,16 @@ describe("theme/active", () => {
     const v2 = (active.getThemeVersion as () => number)();
     assert.equal(v2 - v0, 2);
   });
+
+  it("getThemeSnapshot is a new object per change; the static theme keeps its identity", async () => {
+    const { active, define } = await loadModules();
+    const set = active.setActiveTheme as (t: unknown) => void;
+    const ref = active.getActiveTheme();
+    const before = active.getThemeSnapshot();
+    assert.equal(active.getThemeSnapshot(), before, "stable while nothing changes");
+    set((define.defineTheme as (t: unknown) => unknown)({ name: "next" }));
+    assert.notEqual(active.getThemeSnapshot(), before);
+    assert.equal(active.getActiveTheme(), ref);
+    assert.equal((active.getThemeSnapshot() as { name: string }).name, "next");
+  });
 });

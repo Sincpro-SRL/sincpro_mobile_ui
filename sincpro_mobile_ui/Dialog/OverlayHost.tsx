@@ -61,9 +61,23 @@ export interface OverlayPortalProps {
   onBack?: () => boolean;
 }
 
+let warnedMissingHost = false;
+
+/** Overlays without a host render in place, clipped by their container: say so once. */
+function warnMissingHost() {
+  if (warnedMissingHost || !__DEV__ || process.env.NODE_ENV === "test") return;
+  warnedMissingHost = true;
+  console.warn(
+    "[mobile-ui] A Sheet or dialog opened without <OverlayHost>: it renders in place, " +
+      "clipped by its container. Mount <OverlayHost> once at the app root " +
+      "(the @sincpro/mobile AppShell does it).",
+  );
+}
+
 /**
  * Sends its children to the OverlayHost. Without a host (tests, isolated
- * stories) it renders in place so the content stays reachable.
+ * stories) it renders in place so the content stays reachable, and warns once in
+ * development, because an app without the host draws every overlay clipped.
  *
  * Content rendered in the host sees the providers above the host, not the
  * screen-level providers around the portal. Pass what it needs as props.
@@ -92,6 +106,15 @@ export function OverlayPortal({ children, layer = "sheet", onBack }: OverlayPort
     if (!hosted) return;
     return () => overlayStore.remove(key);
   }, [hosted, key]);
+
+  useEffect(() => {
+    if (hosted) return;
+    // The host registers after its children commit; check after that first pass.
+    const timer = setTimeout(() => {
+      if (!overlayStore.hasHost()) warnMissingHost();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [hosted]);
 
   return hosted ? null : children;
 }

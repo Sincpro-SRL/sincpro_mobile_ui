@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardController } from "react-native-keyboard-controller";
 
 type FieldState = "error" | "focused" | "default";
 
@@ -103,6 +104,8 @@ function FormInput({
   numberOfLines = 1,
   onFocus,
   onBlur,
+  onSubmitEditing,
+  submitBehavior,
   className,
   ref,
   ...props
@@ -124,11 +127,17 @@ function FormInput({
   };
 
   const toggle = () => setRevealed((value) => !value);
+  // "Next" on the keyboard moves to the next field on Android and iOS alike, with the
+  // keyboard kept open. Android has no toolbar by convention, so without this a form whose
+  // screen did not wire refs could not move past its first field there.
+  const advances = props.returnKeyType === "next" && !multiline && !onSubmitEditing;
   const shared = {
     accessibilityHint: error || tooltip,
     accessibilityLabel: label,
     onBlur: handleBlur,
     onFocus: handleFocus,
+    onSubmitEditing: advances ? () => KeyboardController.setFocusTo("next") : onSubmitEditing,
+    submitBehavior: advances ? ("submit" as const) : submitBehavior,
     placeholderTextColor: theme.text.tertiary,
     ref,
     secureTextEntry: secure && !revealed,

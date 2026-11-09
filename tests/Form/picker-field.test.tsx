@@ -34,7 +34,7 @@ test("local options are filtered without accents and choosing one closes the she
   expect(screen.getByText("José Páez Núñez", hidden)).toBeTruthy();
   expect(screen.getByText("Comercial Núñez", hidden)).toBeTruthy();
   expect(screen.queryByText("Ana Rojas", hidden)).toBeNull();
-  await fireEvent.press(screen.getByRole("button", { name: "Comercial Núñez", ...hidden }));
+  await fireEvent.press(screen.getByRole("radio", { name: "Comercial Núñez", ...hidden }));
   expect(change).toHaveBeenCalledWith(3, CUSTOMERS[2]);
 });
 

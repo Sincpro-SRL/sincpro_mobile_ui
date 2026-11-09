@@ -2,6 +2,7 @@ import { expect, jest, test } from "@jest/globals";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import { overlayStore } from "@sincpro/mobile-ui/Dialog/overlay.store";
 import { OverlayHost } from "@sincpro/mobile-ui/Dialog/OverlayHost";
+import { sheetGeometry } from "@sincpro/mobile-ui/Dialog/SheetSurface";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { BackHandler, Dimensions, StyleSheet, Text } from "react-native";
 
@@ -157,4 +158,44 @@ test("the footer rises by the resting offset so it stays on screen at the lower 
     { translateY: number },
   ];
   expect(translateY).toBeCloseTo(-height * 0.4);
+});
+
+test("scroll content gets the hidden part of the panel as room at its end", async () => {
+  await render(
+    <Sheet onClose={jest.fn()} snapPoints={["50%", "90%"]} title="Opciones" visible>
+      <Text>Última opción</Text>
+    </Sheet>,
+  );
+  const { height } = Dimensions.get("window");
+  let scroll: ReturnType<typeof screen.getByText> | null = screen.getByText("Última opción");
+  while (scroll && !scroll.props.contentContainerStyle) scroll = scroll.parent;
+  // Resting at 50% of a 90% panel leaves 40% below the screen; the last row can reach view.
+  expect(
+    StyleSheet.flatten(scroll?.props.contentContainerStyle).paddingBottom,
+  ).toBeCloseTo(16 + height * 0.4);
+});
+
+test("an overlay without a host warns once in development, never in tests", async () => {
+  const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+  await render(
+    <Sheet onClose={jest.fn()} title="Filtros" visible>
+      <Text>Contenido</Text>
+    </Sheet>,
+  );
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  });
+  expect(warn).not.toHaveBeenCalledWith(expect.stringContaining("OverlayHost"));
+  warn.mockRestore();
+});
+
+test("the panel stays below the status bar even when the host is shorter than the window", () => {
+  // iPhone: 874 tall window, 62 top inset, host ending 50 above the bottom (tab or storybook bar).
+  const host = 824;
+  const inset = 62;
+  const { panelHeight, restOffset } = sheetGeometry(["60%", "90%"], host, inset);
+  expect(host - panelHeight).toBeGreaterThanOrEqual(inset);
+  // Sizing against the window instead (874) put the panel top at 38, under the island.
+  expect(host - sheetGeometry(["60%", "90%"], 874, inset).panelHeight).toBeLessThan(inset);
+  expect(restOffset).toBeCloseTo(host * 0.9 - host * 0.6);
 });

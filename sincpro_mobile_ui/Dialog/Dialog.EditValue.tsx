@@ -2,7 +2,7 @@ import { FlashList } from "@shopify/flash-list";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import { DialogActions } from "@sincpro/mobile-ui/Dialog/dialog-actions";
 import type { SnapPoint } from "@sincpro/mobile-ui/Dialog/SheetSurface";
-import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
+import { ChoiceRow } from "@sincpro/mobile-ui/Form/choice-row";
 import { fontFamilies, useTheme } from "@sincpro/mobile-ui/theme";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
@@ -135,27 +135,15 @@ function EditValueEditor({
           keyboardShouldPersistTaps="handled"
           keyExtractor={(option) => option.key}
           renderItem={({ item }) => (
-            <Pressable
-              accessibilityLabel={item.label}
-              accessibilityRole="radio"
-              accessibilityState={{
-                disabled: blocked || !!item.disabled,
-                selected: item.value === draft,
-              }}
-              className="border-b border-border-light py-3"
-              disabled={blocked || item.disabled}
+            <ChoiceRow
+              disabled={blocked || !!item.disabled}
+              label={item.label}
+              look="list"
               onPress={() => {
                 if (!item.disabled) updateDraft(item.value);
               }}
-              style={{ minWidth: 48, minHeight: 48 }}
-            >
-              <Typography.Text
-                className={item.disabled ? "text-text-disabled" : "text-text-primary"}
-                semibold={item.value === draft}
-              >
-                {item.label}
-              </Typography.Text>
-            </Pressable>
+              selected={item.value === draft}
+            />
           )}
         />
       </View>

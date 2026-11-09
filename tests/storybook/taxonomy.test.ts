@@ -18,3 +18,14 @@ it("stories use the documented responsibility tiers and do not create an UX catc
     );
   }
 });
+
+it("the canvas status bar follows the story theme", () => {
+  // Without the provider useCanvasStatusBar was a no-op: the dark theme kept dark icons
+  // over a dark page on Android and iOS, and `statusBarStyle` parameters did nothing.
+  const preview = readFileSync(resolve(".rnstorybook/preview.tsx"), "utf8");
+  assert.ok(
+    preview.indexOf("<SystemBars>") >= 0 &&
+      preview.indexOf("<SystemBars>") < preview.indexOf("<ThemeFrame"),
+    "SystemBars must wrap the ThemeFrame that sets the canvas override",
+  );
+});

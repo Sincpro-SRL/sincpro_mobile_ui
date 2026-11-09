@@ -3,9 +3,13 @@ import type { AndroidSymbol, SFSymbol } from "expo-symbols";
 
 export type IconDefinition = Readonly<{ sf: SFSymbol; md: AndroidSymbol }>;
 
+// Android and web draw from Material Symbols 400, an outline-only font. SF Symbols use the
+// outline variant too, so an icon looks the same on both platforms. Only glyphs that are
+// solid in Material as well (play, pause) or whose fill is the meaning against an empty pair
+// (rating / rating-empty, bookmark / bookmark-empty) use `.fill`.
 export const ICON_MAP = {
   add: { sf: "plus", md: "add" },
-  "add-circle": { sf: "plus.circle.fill", md: "add_circle" },
+  "add-circle": { sf: "plus.circle", md: "add_circle" },
   archive: { sf: "archivebox", md: "archive" },
   back: { sf: "chevron.left", md: "arrow_back" },
   bicycle: { sf: "bicycle", md: "directions_bike" },
@@ -25,24 +29,24 @@ export const ICON_MAP = {
   "dark-mode": { sf: "moon", md: "dark_mode" },
   database: { sf: "externaldrive", md: "database" },
   delete: { sf: "trash", md: "delete" },
-  dismiss: { sf: "xmark.circle.fill", md: "cancel" },
+  dismiss: { sf: "xmark.circle", md: "cancel" },
   document: { sf: "doc.text", md: "description" },
   down: { sf: "arrow.down", md: "arrow_downward" },
   download: { sf: "arrow.down.to.line", md: "download" },
   "download-cloud": { sf: "icloud.and.arrow.down", md: "cloud_download" },
   edit: { sf: "pencil", md: "edit" },
   empty: { sf: "tray", md: "inbox" },
-  error: { sf: "exclamationmark.circle.fill", md: "error" },
+  error: { sf: "exclamationmark.circle", md: "error" },
   expand: { sf: "chevron.down", md: "expand_more" },
   filter: { sf: "slider.horizontal.3", md: "tune" },
   folder: { sf: "folder", md: "folder" },
   grid: { sf: "square.grid.2x2", md: "grid_view" },
   help: { sf: "questionmark.circle", md: "help" },
   hidden: { sf: "eye.slash", md: "visibility_off" },
-  home: { sf: "house.fill", md: "home" },
+  home: { sf: "house", md: "home" },
   image: { sf: "photo", md: "image" },
   inbox: { sf: "tray", md: "inbox" },
-  info: { sf: "info.circle.fill", md: "info" },
+  info: { sf: "info.circle", md: "info" },
   link: { sf: "link", md: "link" },
   list: { sf: "list.bullet", md: "list" },
   location: { sf: "mappin", md: "location_on" },
@@ -54,7 +58,7 @@ export const ICON_MAP = {
   menu: { sf: "line.3.horizontal", md: "menu" },
   more: { sf: "ellipsis", md: "more_horiz" },
   "more-vertical": { sf: "ellipsis", md: "more_vert" },
-  mute: { sf: "speaker.slash.fill", md: "volume_off" },
+  mute: { sf: "speaker.slash", md: "volume_off" },
   next: { sf: "chevron.right", md: "chevron_right" },
   notifications: { sf: "bell", md: "notifications" },
   package: { sf: "shippingbox", md: "inventory_2" },
@@ -75,8 +79,8 @@ export const ICON_MAP = {
   server: { sf: "server.rack", md: "dns" },
   settings: { sf: "gearshape", md: "settings" },
   share: { sf: "square.and.arrow.up", md: "share" },
-  stop: { sf: "hand.raised.fill", md: "front_hand" },
-  success: { sf: "checkmark.circle.fill", md: "check_circle" },
+  stop: { sf: "hand.raised", md: "front_hand" },
+  success: { sf: "checkmark.circle", md: "check_circle" },
   sync: { sf: "arrow.triangle.2.circlepath", md: "sync" },
   time: { sf: "clock", md: "schedule" },
   unlink: { sf: "link", md: "link_off" },
@@ -84,9 +88,9 @@ export const ICON_MAP = {
   upload: { sf: "arrow.up.to.line", md: "upload" },
   "upload-cloud": { sf: "icloud.and.arrow.up", md: "cloud_upload" },
   visibility: { sf: "eye", md: "visibility" },
-  volume: { sf: "speaker.wave.2.fill", md: "volume_up" },
+  volume: { sf: "speaker.wave.2", md: "volume_up" },
   wallet: { sf: "wallet.bifold", md: "wallet" },
-  warning: { sf: "exclamationmark.triangle.fill", md: "warning" },
+  warning: { sf: "exclamationmark.triangle", md: "warning" },
   wifi: { sf: "wifi", md: "wifi" },
 } as const satisfies Record<string, IconDefinition>;
 

@@ -169,6 +169,12 @@
 - **Causa:** la clase nombra un token que el preset no define (`bg-border-divider`, `border-brand-accent`).
 - **Fix:** usar los tokens del preset. Un contrato de `tests/sdk58` falla si una clase de color nombra un token inexistente.
 
+### Un color del tema queda en el modo anterior tras cambiar a oscuro
+
+- **Síntoma:** al pasar de claro a oscuro (o al revés) en caliente, la barra de estado, la tinta de un `CountBadge` o las variables del `AppShell` siguen con el tema anterior hasta que se remonta la pantalla.
+- **Causa:** React Compiler memoiza sobre el objeto que devuelve `useTheme()` (`$[n] !== theme`). Hasta mobile UI 3.1, `setActiveTheme` mutaba ese objeto en su lugar: la referencia nunca cambiaba y el valor cacheado tampoco.
+- **Fix:** `useTheme()` devuelve un objeto nuevo por cada cambio (`getThemeSnapshot`). El `theme` estático sigue mutando en su lugar para el código fuera de React. Para variables de NativeWind, usar `useThemeVars()` en vez de `vars(themeToVars(theme))`. Un store externo debe devolver un objeto nuevo por cambio, nunca el mismo singleton mutado.
+
 ## Lint / tooling
 
 ### ESLint marca `import/export` falso en barrels solo-tipos (rojo en VSCode)

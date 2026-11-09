@@ -68,3 +68,26 @@ test("typed text uses the DS body face in both looks, without a line height", as
     await unmount();
   }
 });
+
+test("next on the keyboard moves to the next field unless the screen handles it", async () => {
+  const { KeyboardController } = jest.requireMock<
+    typeof import("react-native-keyboard-controller")
+  >("react-native-keyboard-controller");
+  const setFocusTo = jest.mocked(KeyboardController.setFocusTo);
+  setFocusTo.mockClear();
+  const { rerender } = await render(
+    <Input label="Nombre" look="outline" returnKeyType="next" value="" />,
+  );
+  const field = screen.getByLabelText("Nombre");
+  expect(field.props.submitBehavior).toBe("submit");
+  await fireEvent(field, "submitEditing");
+  expect(setFocusTo).toHaveBeenCalledWith("next");
+
+  const own = jest.fn();
+  await rerender(
+    <Input label="Nombre" look="outline" onSubmitEditing={own} returnKeyType="next" value="" />,
+  );
+  await fireEvent(screen.getByLabelText("Nombre"), "submitEditing");
+  expect(own).toHaveBeenCalledTimes(1);
+  expect(setFocusTo).toHaveBeenCalledTimes(1);
+});

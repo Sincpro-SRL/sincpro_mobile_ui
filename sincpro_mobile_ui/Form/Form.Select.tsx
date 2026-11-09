@@ -1,14 +1,13 @@
-import { Host, Picker } from "@expo/ui";
-import { Actions } from "@sincpro/mobile-ui/Actions";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { ChoiceRow } from "@sincpro/mobile-ui/Form/choice-row";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
-import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
+import { useTheme } from "@sincpro/mobile-ui/theme";
 import { cn } from "@sincpro/mobile-ui/theme/tw";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { attempt, errorMessage } from "@sincpro/mobile-ui/utils/async";
 import { useRef, useState } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 export type SelectOption<T extends string | number> = {
   label: string;
@@ -23,6 +22,7 @@ export type SelectProps<T extends string | number> = {
   label?: string;
   placeholder?: string;
   title?: string;
+  /** Kept for compatibility: a row applies its option on tap, on Android and iOS alike. */
   confirmLabel?: string;
   disabled?: boolean;
   readOnly?: boolean;
@@ -43,35 +43,20 @@ function SelectOptions<T extends string | number>({
   blocked: boolean;
   onSelect: (value: T) => void;
 }) {
-  const theme = useTheme();
   if (!options.length) {
     return <Typography.Text>No hay opciones disponibles.</Typography.Text>;
   }
   return (
     <View className="gap-2">
-      {options.map((option, index) => {
-        const selected = option.value === value;
-        return (
-          <Pressable
-            accessibilityLabel={option.label}
-            accessibilityRole="radio"
-            accessibilityState={{ disabled: blocked, selected }}
-            className={cn(
-              "flex-row items-center gap-3 rounded-lg border px-3",
-              selected ? "border-primary bg-primary/10" : "border-border-default",
-            )}
-            disabled={blocked}
-            key={`${index}:${String(option.value)}`}
-            onPress={() => onSelect(option.value)}
-            style={{ minHeight: 48 }}
-          >
-            <Typography.Text className="flex-1 text-text-primary">
-              {option.label}
-            </Typography.Text>
-            {selected ? <Icon color={theme.primary} name="check" size={18} /> : null}
-          </Pressable>
-        );
-      })}
+      {options.map((option, index) => (
+        <ChoiceRow
+          disabled={blocked}
+          key={`${index}:${String(option.value)}`}
+          label={option.label}
+          onPress={() => onSelect(option.value)}
+          selected={option.value === value}
+        />
+      ))}
     </View>
   );
 }
@@ -84,7 +69,6 @@ function Select<T extends string | number>({
   label,
   placeholder = "Seleccionar…",
   title,
-  confirmLabel = "Aplicar",
   disabled = false,
   readOnly = false,
   loading = false,
@@ -93,7 +77,6 @@ function Select<T extends string | number>({
   testID,
 }: SelectProps<T>) {
   const theme = useTheme();
-  const appearance = relativeLuminance(theme.bg.card) < 0.179 ? "dark" : "light";
   const saving = useRef(false);
   const [open, setOpen] = useState(false);
   const [draftValue, setDraftValue] = useState<T | null>(null);
@@ -102,7 +85,6 @@ function Select<T extends string | number>({
   const selected = options.find((option) => option.value === value);
   const draftIndex = options.findIndex((option) => option.value === draftValue);
   const blocked = disabled || readOnly || loading || pending;
-  const android = Platform.OS === "android";
   const close = () => {
     if (saving.current) return;
     setOpen(false);
@@ -169,59 +151,24 @@ function Select<T extends string | number>({
           {error}
         </Typography.Text>
       ) : null}
+      {/* One selection on both platforms: a list that shows each option whole (a wheel
+          truncates long labels) and applies it on tap. */}
       <Sheet
         dismissible={!pending}
-        footer={
-          android ? undefined : (
-            <Actions.Button
-              disabled={blocked || draftIndex < 0}
-              loading={pending}
-              onPress={() => void commit(draftValue)}
-              title={confirmLabel}
-            />
-          )
-        }
         onClose={close}
         title={title ?? label ?? "Seleccionar"}
         visible={open}
       >
-        {open && android ? (
+        {open ? (
           <SelectOptions
             blocked={blocked}
-            onSelect={(next) => void commit(next)}
+            onSelect={(next) => {
+              setDraftValue(next);
+              void commit(next);
+            }}
             options={options}
-            value={value}
+            value={draftValue ?? value}
           />
-        ) : null}
-        {open && !android ? (
-          <Host
-            colorScheme={appearance}
-            matchContents={{ vertical: true }}
-            seedColor={theme.primary}
-            style={{ minHeight: 48 }}
-          >
-            <Picker<string>
-              appearance="wheel"
-              enabled={!blocked && options.length > 0}
-              onValueChange={(index) => {
-                if (blocked || saving.current) return;
-                setDraftValue(
-                  options.find((_, itemIndex) => String(itemIndex) === index)?.value ?? null,
-                );
-                setFailure(undefined);
-              }}
-              selectedValue={draftIndex < 0 ? "" : String(draftIndex)}
-              testID={testID ? `${testID}-picker` : undefined}
-            >
-              <Picker.Item label={placeholder} value="" />
-              {options.map((option, index) => (
-                <Picker.Item key={String(index)} label={option.label} value={String(index)} />
-              ))}
-            </Picker>
-          </Host>
-        ) : null}
-        {open && !android && !options.length ? (
-          <Typography.Text>No hay opciones disponibles.</Typography.Text>
         ) : null}
         {draftValue !== null && draftIndex < 0 ? (
           <Typography.Text accessibilityRole="alert" className="text-danger">

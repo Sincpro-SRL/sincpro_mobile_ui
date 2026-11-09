@@ -1,6 +1,7 @@
 import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Actions } from "@sincpro/mobile-ui/Actions";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
+import type { SnapPoint } from "@sincpro/mobile-ui/Dialog/SheetSurface";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { relativeLuminance, useTheme } from "@sincpro/mobile-ui/theme";
@@ -67,6 +68,8 @@ function withClockTime(base: Date, time: Date): Date {
   );
   return next;
 }
+
+const CALENDAR_SNAP_POINTS: SnapPoint[] = ["90%"];
 
 function DatePicker({
   value,
@@ -245,6 +248,9 @@ function DatePicker({
             />
           }
           onClose={close}
+          // The inline calendar (~380 points) plus header and footer does not fit the 60%
+          // detent of smaller iPhones: it opens tall, whole, with no scrolling.
+          snapPoints={mode === "date" ? CALENDAR_SNAP_POINTS : undefined}
           title={label ?? (mode === "time" ? "Seleccionar hora" : "Seleccionar fecha")}
           visible={open}
         >

@@ -64,6 +64,8 @@ const OrderRow = memo(function OrderRow({
 
 /** 500 rows with icon, money and badge; opening one uses the single screen sheet. */
 export const LargeList: Story = {
+  // No header here: the frame reserves the status bar edge.
+  parameters: { ownsTopInset: false },
   render: function LargeList() {
     const [selected, setSelected] = useState<Order | null>(null);
     const [open, setOpen] = useState(false);

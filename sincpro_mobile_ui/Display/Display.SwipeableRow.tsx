@@ -1,6 +1,7 @@
 import type { IconName } from "@sincpro/mobile-ui/Display";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
 import { useTheme } from "@sincpro/mobile-ui/theme";
+import { resolveOnColor } from "@sincpro/mobile-ui/theme/contrast";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
@@ -34,33 +35,35 @@ function ActionButtons({
   const theme = useTheme();
   return (
     <View style={{ flexDirection: "row" }}>
-      {actions.map((action, index) => (
-        <TouchableOpacity
-          accessibilityLabel={action.label ?? "Acción"}
-          accessibilityRole="button"
-          activeOpacity={0.8}
-          key={index}
-          onPress={() => {
-            onDone();
-            action.onPress();
-          }}
-          style={{
-            backgroundColor: action.color ?? theme.danger,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 20,
-          }}
-        >
-          {action.icon ? (
-            <Icon color={theme.text.inverse} name={action.icon} size={20} />
-          ) : null}
-          {action.label ? (
-            <Typography.Text className="text-text-inverse mt-1">
-              {action.label}
-            </Typography.Text>
-          ) : null}
-        </TouchableOpacity>
-      ))}
+      {actions.map((action, index) => {
+        // The ink follows the fill: a custom color in the dark theme kept dark ink (4.2:1).
+        const ink = action.color ? resolveOnColor(action.color) : theme.text.onDanger;
+        return (
+          <TouchableOpacity
+            accessibilityLabel={action.label ?? "Acción"}
+            accessibilityRole="button"
+            activeOpacity={0.8}
+            key={index}
+            onPress={() => {
+              onDone();
+              action.onPress();
+            }}
+            style={{
+              backgroundColor: action.color ?? theme.danger,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: 20,
+            }}
+          >
+            {action.icon ? <Icon color={ink} name={action.icon} size={20} /> : null}
+            {action.label ? (
+              <Typography.Text className="mt-1" style={{ color: ink }}>
+                {action.label}
+              </Typography.Text>
+            ) : null}
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }

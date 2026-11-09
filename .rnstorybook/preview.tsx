@@ -16,7 +16,7 @@ import { Appearance, Pressable, StyleSheet, Text, useColorScheme, View } from "r
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { type Edge, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useCanvasStatusBar } from "./SystemBars";
+import { SystemBars, useCanvasStatusBar } from "./SystemBars";
 
 const THEMES = {
   light: DEFAULT_THEME,
@@ -176,16 +176,18 @@ function ThemeFrame({
 const preview: Preview = {
   decorators: [
     (Story, context) => (
-      <ThemeFrame
-        ownsScroll={context.parameters.ownsScroll === true}
-        ownsTopInset={context.parameters.ownsTopInset === true}
-        screen={context.parameters.layout === "fullscreen"}
-        statusBarStyle={context.parameters.statusBarStyle}
-      >
-        <ConfirmationProvider>
-          <Story />
-        </ConfirmationProvider>
-      </ThemeFrame>
+      <SystemBars>
+        <ThemeFrame
+          ownsScroll={context.parameters.ownsScroll === true}
+          ownsTopInset={context.parameters.ownsTopInset === true}
+          screen={context.parameters.layout === "fullscreen"}
+          statusBarStyle={context.parameters.statusBarStyle}
+        >
+          <ConfirmationProvider>
+            <Story />
+          </ConfirmationProvider>
+        </ThemeFrame>
+      </SystemBars>
     ),
   ],
   parameters: {

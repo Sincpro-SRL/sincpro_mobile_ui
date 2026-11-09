@@ -242,6 +242,17 @@ test("Typography.Text never asks for a size or weight by className", () => {
   }
 });
 
+test("icons keep one style on Android and iOS: outline, except solid or paired glyphs", async () => {
+  // Android draws from an outline-only Material Symbols font; a filled SF Symbol would make
+  // the same icon look different on iOS.
+  const { ICON_MAP } = await import(path.join(sourceRoot, "Display", "icon-map.ts"));
+  const filledOnPurpose = new Set(["play", "pause", "rating", "bookmark"]);
+  for (const [name, icon] of Object.entries(ICON_MAP as Record<string, { sf: string }>)) {
+    if (filledOnPurpose.has(name)) continue;
+    assert(!icon.sf.endsWith(".fill"), `${name}: use the outline SF Symbol (${icon.sf})`);
+  }
+});
+
 test("SDK58 package has bounded peers, required Expo UI and no bundled React copies", () => {
   const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   for (const [name, range] of Object.entries(manifest.peerDependencies)) {

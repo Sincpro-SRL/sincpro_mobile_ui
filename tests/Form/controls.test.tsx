@@ -93,11 +93,10 @@ test("select announces the selected value and its expanded state", async () => {
   expect(
     screen.getByRole("button", { name: "Estado: Pendiente" }).props.accessibilityState,
   ).toEqual({ disabled: false, expanded: true, busy: false });
-  expect(screen.getByTestId("native-picker").props.enabled).toBe(true);
-  expect(screen.getByTestId("native-picker").props.selectedValue).toBe("0");
-  await fireEvent(screen.getByTestId("native-picker"), "valueChange", "1", 1);
-  expect(onChange).not.toHaveBeenCalled();
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
+  expect(
+    screen.getByRole("radio", { name: "Pendiente" }).props.accessibilityState,
+  ).toMatchObject({ checked: true, selected: true });
+  await fireEvent.press(screen.getByRole("radio", { name: "En curso" }));
   await waitFor(() => expect(onChange).toHaveBeenCalledWith("active"));
   expect(onChange).toHaveBeenCalledWith("active");
 });

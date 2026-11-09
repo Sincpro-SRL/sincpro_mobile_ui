@@ -1,6 +1,7 @@
 import { FlashList } from "@shopify/flash-list";
 import Sheet from "@sincpro/mobile-ui/Dialog/Dialog.Sheet";
 import Icon from "@sincpro/mobile-ui/Display/Display.Icon";
+import { ChoiceRow } from "@sincpro/mobile-ui/Form/choice-row";
 import { inputTextStyle } from "@sincpro/mobile-ui/Form/input-text";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { useTheme } from "@sincpro/mobile-ui/theme";
@@ -128,29 +129,17 @@ function PickerField<T extends string | number>({
 
   const renderOption = useCallback(
     ({ item }: { item: PickerOption<T> }) => {
-      const selected = item.value === value;
       return (
-        <Pressable
-          accessibilityLabel={item.label}
-          accessibilityRole="button"
-          accessibilityState={{ selected }}
-          className="flex-row items-center gap-3 border-b border-border-light py-3"
+        <ChoiceRow
+          description={item.description}
+          label={item.label}
+          look="list"
           onPress={() => choose(item)}
-          style={{ minHeight: 48 }}
-        >
-          <View style={{ flex: 1 }}>
-            <Typography.Text semibold={selected}>{item.label}</Typography.Text>
-            {item.description ? (
-              <Typography.Text className="text-text-tertiary" variant="caption">
-                {item.description}
-              </Typography.Text>
-            ) : null}
-          </View>
-          {selected ? <Icon color={theme.text.accent} name="check" size={18} /> : null}
-        </Pressable>
+          selected={item.value === value}
+        />
       );
     },
-    [choose, theme.text.accent, value],
+    [choose, value],
   );
 
   return (

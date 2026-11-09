@@ -1,8 +1,22 @@
 import { useTheme } from "@sincpro/mobile-ui/theme";
 import { SCRIM } from "@sincpro/mobile-ui/theme/on-dark-surface";
 import { useReducedMotion } from "@sincpro/mobile-ui/utils/useReducedMotion";
-import { type ReactNode, useEffect, useEffectEvent } from "react";
-import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+} from "react";
+import {
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type ViewInstance,
+} from "react-native";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import {
   KeyboardToolbar,
@@ -24,10 +38,45 @@ const MIN_CONTENT_ABOVE_KEYBOARD = 240;
 
 export type SnapPoint = string | number;
 
+const RestingOffsetContext = createContext(0);
+
+/** The part of the sheet panel below the screen at rest (0 outside a sheet). */
+export function useSheetRestingOffset(): number {
+  return useContext(RestingOffsetContext);
+}
+
 export function resolveSnapPoint(point: SnapPoint, windowHeight: number): number {
   if (typeof point === "number") return point;
   const percent = Number.parseFloat(point);
   return Number.isFinite(percent) ? (windowHeight * percent) / 100 : windowHeight * 0.6;
+}
+
+/**
+ * Panel geometry for a host of `height` whose top `topInset` points are covered (status
+ * bar, notch). The panel is as tall as the highest snap point and never reaches into the
+ * inset; it rests pushed down `restOffset` so only the lowest snap point shows.
+ */
+export function sheetGeometry(snapPoints: SnapPoint[], height: number, topInset: number) {
+  const ceiling = height - topInset - 8;
+  const snaps = snapPoints
+    .map((point) => Math.min(resolveSnapPoint(point, height), ceiling))
+    .sort((a, b) => a - b);
+  const panelHeight = snaps[snaps.length - 1] ?? height * 0.6;
+  const offsets = snaps.map((snap) => panelHeight - snap).sort((a, b) => b - a);
+  return { ceiling, panelHeight, offsets, restOffset: offsets[0] ?? 0 };
+}
+
+/**
+ * How much of the panel sits below the screen while it rests at its lowest snap point.
+ * Scroll content needs this much extra room at its end, or its last rows stay off screen
+ * until the sheet is dragged up.
+ */
+export function restingOffset(
+  snapPoints: SnapPoint[],
+  height: number,
+  topInset: number,
+): number {
+  return sheetGeometry(snapPoints, height, topInset).restOffset;
 }
 
 export interface SheetSurfaceProps {
@@ -68,13 +117,23 @@ export function SheetSurface({
   const reducedMotion = useReducedMotion();
   const keyboard = useReanimatedKeyboardAnimation();
 
-  const ceiling = windowHeight - insets.top - 8;
-  const snaps = snapPoints
-    .map((point) => Math.min(resolveSnapPoint(point, windowHeight), ceiling))
-    .sort((a, b) => a - b);
-  const panelHeight = snaps[snaps.length - 1] ?? windowHeight * 0.6;
-  const offsets = snaps.map((snap) => panelHeight - snap).sort((a, b) => b - a);
-  const restOffset = offsets[0] ?? 0;
+  // Size against the host, not the window: a host shorter than the screen (a tab
+  // layout, the storybook bar) would push a window-sized panel over the status bar.
+  // Only the part of the top inset the host covers still has to be left free.
+  const frame = useRef<ViewInstance>(null);
+  const [host, setHost] = useState<{ top: number; height: number } | null>(null);
+  const available = host?.height ?? windowHeight;
+  const topInset = Math.max(0, insets.top - (host?.top ?? 0));
+  const measureHost = () =>
+    frame.current?.measureInWindow((_x, top, _width, height) => {
+      if (height > 0) setHost({ top, height });
+    });
+
+  const { ceiling, panelHeight, offsets, restOffset } = sheetGeometry(
+    snapPoints,
+    available,
+    topInset,
+  );
   const hiddenOffset = panelHeight + insets.bottom;
   const duration = reducedMotion ? 0 : DURATION_MS;
 
@@ -161,7 +220,12 @@ export function SheetSurface({
   }));
 
   return (
-    <View pointerEvents={visible ? "box-none" : "none"} style={StyleSheet.absoluteFill}>
+    <View
+      onLayout={measureHost}
+      pointerEvents={visible ? "box-none" : "none"}
+      ref={frame}
+      style={StyleSheet.absoluteFill}
+    >
       <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}>
         <Pressable
           accessibilityLabel={dismissible ? "Cerrar" : undefined}
@@ -185,10 +249,21 @@ export function SheetSurface({
             {header}
           </View>
         </GestureDetector>
-        <KeyboardToolbar.Group style={styles.content}>{children}</KeyboardToolbar.Group>
+        <KeyboardToolbar.Group style={styles.content}>
+          <RestingOffsetContext value={restOffset}>{children}</RestingOffsetContext>
+        </KeyboardToolbar.Group>
         {footer ? (
           <Animated.View style={[{ backgroundColor: theme.bg.card }, footerStyle]}>
             {footer}
+            {/* Covers the strip under the risen footer (the bottom safe area), where the
+                content behind it would otherwise show. The panel clips it. */}
+            <View
+              pointerEvents="none"
+              style={[
+                styles.footerSkirt,
+                { backgroundColor: theme.bg.card, height: available },
+              ]}
+            />
           </Animated.View>
         ) : null}
       </Animated.View>
@@ -208,6 +283,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   content: { flex: 1, minHeight: 0 },
+  footerSkirt: { position: "absolute", left: 0, right: 0, top: "100%" },
   handleArea: { paddingTop: 8 },
   handle: { alignSelf: "center", width: 36, height: 4, borderRadius: 2, marginBottom: 8 },
 });

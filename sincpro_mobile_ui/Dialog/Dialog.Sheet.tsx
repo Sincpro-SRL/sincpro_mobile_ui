@@ -1,5 +1,9 @@
 import { OverlayPortal } from "@sincpro/mobile-ui/Dialog/OverlayHost";
-import { SheetSurface, type SnapPoint } from "@sincpro/mobile-ui/Dialog/SheetSurface";
+import {
+  SheetSurface,
+  type SnapPoint,
+  useSheetRestingOffset,
+} from "@sincpro/mobile-ui/Dialog/SheetSurface";
 import Pressable from "@sincpro/mobile-ui/primitives/Pressable";
 import { Typography } from "@sincpro/mobile-ui/Typography";
 import { type ReactNode, useState } from "react";
@@ -19,6 +23,21 @@ export type SheetProps = {
   dismissible?: boolean;
   testID?: string;
 };
+
+/** Scroll content gets the hidden part of a resting panel as room at its end. */
+function SheetScroll({ children }: { children: ReactNode }) {
+  const restingOffset = useSheetRestingOffset();
+  return (
+    <ScrollView
+      contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 + restingOffset }}
+      keyboardDismissMode="on-drag"
+      keyboardShouldPersistTaps="handled"
+      style={{ flex: 1, minHeight: 0 }}
+    >
+      {children}
+    </ScrollView>
+  );
+}
 
 const SNAP_POINTS: SnapPoint[] = ["60%", "90%"];
 
@@ -104,14 +123,7 @@ function Sheet({
         visible={visible}
       >
         {scrollable ? (
-          <ScrollView
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
-            keyboardDismissMode="on-drag"
-            keyboardShouldPersistTaps="handled"
-            style={{ flex: 1, minHeight: 0 }}
-          >
-            {children}
-          </ScrollView>
+          <SheetScroll>{children}</SheetScroll>
         ) : (
           <View style={{ flex: 1, minHeight: 0, paddingHorizontal: 16 }}>{children}</View>
         )}

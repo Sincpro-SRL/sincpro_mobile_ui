@@ -3,6 +3,9 @@ import type { ThemeTokens } from "@sincpro/mobile-ui/theme/types";
 import { validateTheme } from "@sincpro/mobile-ui/theme/validate";
 
 const activeTheme: ThemeTokens = { ...DEFAULT_THEME };
+// A new object per change: the static `theme` keeps its identity, but a component compiled
+// with React Compiler memoizes on the object `useTheme()` returns and must see it change.
+let snapshot: ThemeTokens = { ...activeTheme };
 const listeners = new Set<() => void>();
 let version = 0;
 
@@ -25,12 +28,18 @@ export function setActiveTheme(tokens: ThemeTokens): void {
     }
   }
   Object.assign(activeTheme as object, tokens);
+  snapshot = { ...activeTheme };
   version += 1;
   listeners.forEach((listener) => listener());
 }
 
 export function getActiveTheme(): ThemeTokens {
   return activeTheme;
+}
+
+/** The active theme as one object per change, for React readers (`useTheme`). */
+export function getThemeSnapshot(): ThemeTokens {
+  return snapshot;
 }
 
 export function subscribeTheme(listener: () => void): () => void {

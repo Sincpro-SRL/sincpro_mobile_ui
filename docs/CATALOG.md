@@ -72,6 +72,14 @@ See [migration and adoption order](MOBILE_UX_MIGRATION.md).
 `Input` (`look`: `card` | `outline`; `secure`), `Select`, `Switch`, `Checkbox`, `RadioButton`, `Dropdown`, `MonetaryInput`, `QuantitySelector`, `FractionalQuantityInput`, `PinInput`, `Slider`, `DatePicker` (Expo native picker), `SearchHistory` (recent searches), `Controlled*` (react-hook-form).
 Action filters live in `Actions`, search in `Navigation`.
 
+Single choice looks and behaves the same on Android and iOS. `Select`, `RadioButton`,
+`PickerField` and the options of `Dialog.EditValue` render one `ChoiceRow`: the DS radio mark,
+a 48-point target, the whole label (it wraps, never truncates) and `radio` semantics. Few
+options use the bordered `card` rows (`Select`, `RadioButton`); long or searchable lists use
+`list` rows with dividers (`PickerField`, `EditValue`). `Select` applies an option on tap.
+`DatePicker` keeps each platform's native calendar: the Material dialog on Android, and on iOS
+a sheet that opens the inline calendar whole (one 90% detent; the time wheel uses 60/90).
+
 Every field shares one box and one label: 48 points tall (the `outline` access-form look is 44),
 `rounded-lg`, `border-input`, card surface without shadow, and a `bodySmall` semibold label
 (`outline` keeps its `bodyLarge` label). Typed text uses the `body` face of the configured

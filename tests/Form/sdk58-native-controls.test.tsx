@@ -152,7 +152,7 @@ function render(component: ReactElement) {
   return renderComponent(component, { wrapper: ConfirmationProvider });
 }
 
-test("select keeps numeric originals, commits only on Apply and cancels without changes", async () => {
+test("select applies the tapped numeric original and closing changes nothing", async () => {
   const change = jest.fn<(value: number) => void>();
   await render(
     <Select
@@ -167,19 +167,37 @@ test("select keeps numeric originals, commits only on Apply and cancels without 
     />,
   );
   await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Diez" }));
-  await fireEvent(screen.getByTestId("quantity-picker"), "valueChange", "1", 1);
-  expect(change).not.toHaveBeenCalled();
+  expect(screen.getByRole("radio", { name: "Diez" }).props.accessibilityState).toMatchObject({
+    selected: true,
+  });
   await fireEvent.press(screen.getByRole("button", { name: "Cerrar" }));
   expect(change).not.toHaveBeenCalled();
   await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Diez" }));
-  expect(screen.getByTestId("quantity-picker").props.selectedValue).toBe("0");
-  await fireEvent(screen.getByTestId("quantity-picker"), "valueChange", "1", 1);
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
+  await fireEvent.press(screen.getByRole("radio", { name: "Veinte" }));
   await waitFor(() => expect(change).toHaveBeenCalledWith(20));
   expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
-test("select failure retains its draft and read-only and empty controls cannot commit", async () => {
+test("select is the same list on Android and iOS: every option is readable whole", async () => {
+  const long = "Notificación en el teléfono para avisos importantes y recordatorios";
+  for (const os of ["ios", "android"] as const) {
+    jest.replaceProperty(Platform, "OS", os);
+    const { unmount } = await render(
+      <Select
+        label="Canal"
+        onChange={jest.fn<(value: string) => void>()}
+        options={[{ label: long, value: "push" }]}
+        value={null}
+      />,
+    );
+    await fireEvent.press(screen.getByRole("button", { name: "Canal: Seleccionar…" }));
+    expect(screen.getByRole("radio", { name: long })).toBeTruthy();
+    expect(screen.queryByTestId("native-picker")).toBeNull();
+    await unmount();
+  }
+});
+
+test("select failure keeps the sheet and the choice; read-only and empty cannot commit", async () => {
   const change = jest
     .fn<() => Promise<void>>()
     .mockRejectedValueOnce(new Error("Sin conexión"))
@@ -192,58 +210,22 @@ test("select failure retains its draft and read-only and empty controls cannot c
   };
   const { rerender } = await render(<Select {...props} />);
   await fireEvent.press(screen.getByRole("button", { name: "Estado: Seleccionar…" }));
-  await fireEvent(screen.getByTestId("native-picker"), "valueChange", "0", 0);
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
+  await fireEvent.press(screen.getByRole("radio", { name: "Activo" }));
   await waitFor(() => expect(screen.getByText("Sin conexión")).toBeTruthy());
-  expect(screen.getByTestId("native-picker").props.selectedValue).toBe("0");
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
+  expect(screen.getByRole("radio", { name: "Activo" }).props.accessibilityState).toMatchObject({
+    selected: true,
+  });
+  await fireEvent.press(screen.getByRole("radio", { name: "Activo" }));
   await waitFor(() => expect(change).toHaveBeenCalledTimes(2));
   await rerender(<Select {...props} readOnly />);
   await fireEvent.press(screen.getByRole("button", { name: "Estado: Seleccionar…" }));
   expect(screen.queryByTestId("native-sheet")).toBeNull();
   await rerender(<Select {...props} options={[]} />);
   await fireEvent.press(screen.getByRole("button", { name: "Estado: Seleccionar…" }));
-  expect(screen.getByTestId("native-picker").props.enabled).toBe(false);
-  expect(
-    screen.getByRole("button", { name: "Aplicar" }).props.accessibilityState.disabled,
-  ).toBe(true);
+  expect(screen.getByText("No hay opciones disponibles.")).toBeTruthy();
 });
 
-test("native picker follows the active dark theme and keeps its draft when options reorder", async () => {
-  const previous = getActiveTheme();
-  await act(() => setActiveTheme(DEFAULT_DARK_THEME));
-  try {
-    const change = jest.fn<(value: number) => void>();
-    const options = [
-      { label: "Uno", value: 1 },
-      { label: "Dos", value: 2 },
-    ];
-    const { rerender } = await render(
-      <Select label="Cantidad" onChange={change} options={options} value={1} />,
-    );
-    await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Uno" }));
-    expect(screen.getByTestId("picker-host").props.seedColor).toBe(
-      DEFAULT_DARK_THEME.primary,
-    );
-    expect(screen.getByTestId("picker-host").props.colorScheme).toBe("dark");
-    await fireEvent(screen.getByTestId("native-picker"), "valueChange", "1");
-    await rerender(
-      <Select
-        label="Cantidad"
-        onChange={change}
-        options={[options[1], options[0]]}
-        value={1}
-      />,
-    );
-    expect(screen.getByTestId("native-picker").props.selectedValue).toBe("0");
-    await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
-    await waitFor(() => expect(change).toHaveBeenCalledWith(2));
-  } finally {
-    await act(() => setActiveTheme(previous));
-  }
-});
-
-test("native picker ignores queued changes while its selected draft is being saved", async () => {
+test("select ignores other taps while the chosen option is being saved", async () => {
   let release: () => void = () => {};
   const task = new Promise<void>((resolve) => {
     release = resolve;
@@ -257,22 +239,19 @@ test("native picker ignores queued changes while its selected draft is being sav
         { label: "Diez", value: 10 },
         { label: "Veinte", value: 20 },
       ]}
-      testID="quantity"
       value={10}
     />,
   );
   await fireEvent.press(screen.getByRole("button", { name: "Cantidad: Diez" }));
-  await fireEvent(screen.getByTestId("quantity-picker"), "valueChange", "1", 1);
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
-  expect(screen.getByTestId("quantity-picker").props.enabled).toBe(false);
-  await fireEvent(screen.getByTestId("quantity-picker"), "valueChange", "0", 0);
-  expect(screen.getByTestId("quantity-picker").props.selectedValue).toBe("1");
+  await fireEvent.press(screen.getByRole("radio", { name: "Veinte" }));
+  await fireEvent.press(screen.getByRole("radio", { name: "Diez" }));
+  expect(change).toHaveBeenCalledTimes(1);
   expect(change).toHaveBeenCalledWith(20);
   await act(async () => release());
   expect(screen.queryByTestId("native-sheet")).toBeNull();
 });
 
-test("ControlledDropdown is a real react-hook-form native selection field", async () => {
+test("ControlledDropdown is a real react-hook-form selection field", async () => {
   function Form() {
     const { control, watch } = useForm({ defaultValues: { status: "pending" } });
     return (
@@ -292,8 +271,7 @@ test("ControlledDropdown is a real react-hook-form native selection field", asyn
   }
   await render(<Form />);
   await fireEvent.press(screen.getByRole("button", { name: "Estado: Pendiente" }));
-  await fireEvent(screen.getByTestId("native-picker"), "valueChange", "1", 1);
-  await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
+  await fireEvent.press(screen.getByRole("radio", { name: "Activo" }));
   await waitFor(() => expect(screen.getByTestId("form-value").props.children).toBe("active"));
 });
 
@@ -646,6 +624,30 @@ test("date-only bounds compare calendar days rather than rejecting a boundary da
   await fireEvent(screen.getByTestId("delivery-date-picker"), "valueChange", {}, date);
   await fireEvent.press(screen.getByRole("button", { name: "Aplicar" }));
   await waitFor(() => expect(change).toHaveBeenCalledWith(date));
+});
+
+test("the iOS calendar opens whole at one tall detent; the time wheel keeps the default", async () => {
+  jest.replaceProperty(Platform, "OS", "ios");
+  const { unmount } = await render(
+    <DatePicker
+      label="Entrega"
+      onChange={jest.fn<(value: Date) => void>()}
+      value={new Date(2026, 0, 2)}
+    />,
+  );
+  await fireEvent.press(screen.getByRole("button", { name: "Entrega" }));
+  expect(screen.getByTestId("native-sheet").props.snapPoints).toEqual(["90%"]);
+  await unmount();
+  await render(
+    <DatePicker
+      label="Hora"
+      mode="time"
+      onChange={jest.fn<(value: Date) => void>()}
+      value={new Date(2026, 0, 2)}
+    />,
+  );
+  await fireEvent.press(screen.getByRole("button", { name: "Hora" }));
+  expect(screen.getByTestId("native-sheet").props.snapPoints).toEqual(["60%", "90%"]);
 });
 
 test("native slider preserves tokens, ranges, steps and read-only state", async () => {

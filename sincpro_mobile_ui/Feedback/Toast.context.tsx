@@ -26,6 +26,7 @@ import Animated, {
   FadeOutUp,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { scheduleOnRN } from "react-native-worklets";
 
 export type ToastVariant = "info" | "success" | "warning" | "danger" | "loading";
 
@@ -282,12 +283,15 @@ function ToastItem({
   const variant = entry.variant ?? "info";
   const showClose = entry.dismissible ?? true;
   const dismiss = () => onHide(entry.id);
+  // The worklets plugin moves this callback to the UI thread. Calling `dismiss` there is a
+  // fatal error in release builds (the app closed on a swipe), so it hops back to JS.
   const pan = usePanGesture({
     activeOffsetY: [-12, 12],
     failOffsetX: [-24, 24],
     onDeactivate: ({ canceled, translationY, velocityY }) => {
+      "worklet";
       if (!canceled && (Math.abs(translationY) >= 48 || Math.abs(velocityY) >= 800)) {
-        dismiss();
+        scheduleOnRN(dismiss);
       }
     },
   });

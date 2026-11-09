@@ -194,6 +194,29 @@ test("swiping the toast up or down dismisses it", async () => {
   expect(screen.queryByText("Desliza para cerrar")).toBeNull();
 });
 
+test("a swipe closes the toast from the JS thread, never from the gesture's UI thread", async () => {
+  const worklets = jest.requireMock("react-native-worklets") as {
+    scheduleOnRN: (fn: () => void) => void;
+  };
+  const scheduleOnRN = jest.spyOn(worklets, "scheduleOnRN");
+  const gestureMock = jest.requireMock("react-native-gesture-handler") as {
+    __mockConfig: { current?: PanGestureConfig };
+  };
+  await renderWithToastProvider(<ToastSwipeControls />);
+
+  await fireEvent.press(screen.getByRole("button", { name: "Mostrar swipe" }));
+  await act(async () =>
+    gestureMock.__mockConfig.current?.onDeactivate?.({
+      canceled: false,
+      translationY: 4,
+      velocityY: 1200,
+    }),
+  );
+
+  expect(scheduleOnRN).toHaveBeenCalledTimes(1);
+  expect(screen.queryByText("Desliza para cerrar")).toBeNull();
+});
+
 test("toast transitions follow live reduced motion and root native customization", async () => {
   await render(
     <Toast.Root onAccessibilityEscape={jest.fn()} style={{ borderRadius: 30 }} testID="toast">

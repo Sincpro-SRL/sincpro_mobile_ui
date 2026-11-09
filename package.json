@@ -1,6 +1,6 @@
 {
   "name": "@sincpro/mobile-ui",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Sincpro Mobile design system: generic, presentational React Native components (no domain logic)",
   "main": "expo/AppEntry.js",
   "types": "./dist/index.d.ts",

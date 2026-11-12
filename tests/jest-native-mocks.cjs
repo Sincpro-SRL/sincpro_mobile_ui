@@ -6,6 +6,8 @@ jest.mock("react-native-gesture-handler", () => {
   const overrides = {
     GestureDetector: ({ children }) => children,
     usePanGesture: (config) => config,
+    useTapGesture: (config) => config,
+    useCompetingGestures: (...gestures) => gestures,
   };
   return new Proxy(actual, {
     get: (target, property) =>

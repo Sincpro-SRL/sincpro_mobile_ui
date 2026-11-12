@@ -234,6 +234,39 @@ All amounts go through `utils/monetary` `formatTwoDecimals`: one shared formatte
 half-up rounding (`Big`). Dates go through `utils/intl` `dateTimeFormat`, which shares one
 `Intl.DateTimeFormat` per locale and options. Never build an `Intl` formatter inside a render.
 
+### Charts (`…/Charts`)
+
+`import { Charts } from "@sincpro/mobile-ui/Charts"`. Charts are outside the root barrel and
+every category barrel, so an app that shows no chart never bundles them. They draw with
+`react-native-svg`, which the design system already requires: no extra dependency.
+
+| Need                                              | Use                       |
+| ------------------------------------------------- | ------------------------- |
+| One number that matters                           | `Display.Stat` / StatCard |
+| Magnitudes per category (sales per month)         | `Charts.Bar`              |
+| Several series per category, or parts per bar     | `Charts.Bar stacked`      |
+| Change over time (daily collections)              | `Charts.Line` (`area`)    |
+| Parts of one whole (sales per channel), ≤ 6 parts | `Charts.Donut`            |
+
+Data is engine-neutral: `series: { name, data: { key, value }[], color? }[]` for bars and
+lines, `data: { key, value }[]` for the donut. `null` is a missing value: a line breaks
+there, a bar is not drawn. Every chart takes `label` (its accessible name), `formatValue`,
+`onSelect(key | null)`, `loading` (keeps the previous chart dimmed) and `emptyLabel`.
+
+- **Reading values.** A tap or a horizontal drag selects the nearest category; a vertical
+  drag keeps scrolling. The readout above the plot shows the selected (or latest) values.
+  Screen readers hear every value in the label and step through categories as an
+  adjustable control. A value never lives only in a color.
+- **Color.** A validated eight-slot palette (`CHART_SERIES_LIGHT` / `CHART_SERIES_DARK`)
+  follows the theme's surface. A brand sets its own with `theme.chart.series`, after
+  checking color blindness and contrast against `bg.card`. Pass `color` on a series when
+  series come and go, so each keeps its color. No dual axes: two measures of different
+  scale are two charts.
+- **Renderers.** The charts compute the geometry (SVG paths), selection and accessibility; a
+  renderer only paints. `registerChartRenderers({ line: SkiaLineRenderer })` swaps one at
+  startup (for very long series), `null` restores the built-in one. The renderer props
+  (`BarRendererProps`, `LineRendererProps`, `DonutRendererProps`) are the contract.
+
 ### Commerce (`Display`)
 
 `Display.Image` uses Expo Image and its original icon-only fallback. Expo callbacks,

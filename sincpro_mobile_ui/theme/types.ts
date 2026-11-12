@@ -152,6 +152,15 @@ export interface ThemeTokens {
     size: number;
     source?: ImageSourcePropType;
   };
+
+  /**
+   * Categorical palette for `@sincpro/mobile-ui/Charts`, in slot order. Without it, charts use
+   * the validated default for the theme's light or dark surface. Validate a brand palette for
+   * color blindness and contrast against `bg.card` before setting it.
+   */
+  chart?: {
+    series: readonly string[];
+  };
 }
 
 export type PatternMode = "light-pattern" | "dark-pattern" | "dark-full";

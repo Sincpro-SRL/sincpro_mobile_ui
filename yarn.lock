@@ -4927,10 +4927,10 @@ expo-system-ui@~58.0.7:
     "@react-native/normalize-colors" "0.88.1"
     debug "^4.3.2"
 
-expo@~58.0.24:
-  version "58.0.24"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-58.0.24.tgz#8e08ae8030ab09ccb1a2942b2fc62c8db7c8c31a"
-  integrity sha512-EPgijeqjnK+eaoA9VzJvvodmKBxEcfNlRBxyZr5s1dmvjgF13p3HfEr6eRjsTtnXdz/GlKn2uffTM1uHZeaSVQ==
+expo@~58.0.25:
+  version "58.0.25"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-58.0.25.tgz#617a7c19c307d3e82993176f399fe5db43612a44"
+  integrity sha512-Ih7pQYPS+2ZFS5APNtgOUp2AK/M+zfILK9Z5/wh6PoLn6XF3dh+nlcvugotytVzf8jX5/NBMcB7xJT+97oaNvw==
   dependencies:
     "@babel/runtime" "^7.20.0"
     "@expo/cli" "^58.1.20"

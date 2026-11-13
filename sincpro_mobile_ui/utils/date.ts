@@ -4,8 +4,9 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { getLocales } from "expo-localization";
 
-const DEFAULT_TIMEZONE = "America/Costa_Rica";
-const DEFAULT_LOCALE = "es-CR";
+/** Sincpro works from Bolivia: what a date shows when no zone is given. */
+const DEFAULT_TIMEZONE = "America/La_Paz";
+const DEFAULT_LOCALE = "es-BO";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -67,7 +68,7 @@ export function parseInstant(input: string | Date): Date | null {
  * ```
  *
  * @param input      Date (ISO string, 'YYYY-MM-DD', or Date instance)
- * @param timezone   IANA timezone (e.g. 'America/Costa_Rica', 'Asia/Tokyo'). Falls back to Costa Rica if null/undefined
+ * @param timezone   IANA timezone (e.g. 'America/Costa_Rica', 'Asia/Tokyo'). Falls back to Bolivia's (America/La_Paz) if null/undefined
  * @param options    Optional: forced locale and/or flag to show the time
  * @returns          Localized string, or "Error de formateo" if it can't be processed
  */
@@ -79,7 +80,7 @@ export function formatDate(
   // Use the default timezone when none is provided
   const effectiveTimezone = timezone || DEFAULT_TIMEZONE;
 
-  const fallbackLocale = DEFAULT_LOCALE.split("-")[0]; // "es" from "es-CR"
+  const fallbackLocale = DEFAULT_LOCALE.split("-")[0]; // "es" from "es-BO"
   const deviceLocale = getLocales()?.[0]?.languageTag ?? fallbackLocale;
   const usedLocale = options?.locale ?? deviceLocale;
 
@@ -116,12 +117,12 @@ export function formatDate(
 }
 
 /**
- * Formats a date using the default timezone automatically (Costa Rica).
+ * Formats a date in the default timezone, Bolivia's (America/La_Paz).
  * Useful when the user's timezone isn't available.
  *
  * @param input      Date (ISO string, 'YYYY-MM-DD', or Date instance)
  * @param options    Optional: forced locale and/or flag to show the time
- * @returns          Localized string in the Costa Rica timezone
+ * @returns          Localized string in Bolivia's timezone
  */
 export function formatDateWithDefaultTimezone(
   input: string | Date,
@@ -134,7 +135,7 @@ export function formatDateWithDefaultTimezone(
  * Returns the current date as YYYY-MM-DD in the given timezone.
  * Useful to build scheduling dates that respect the user's timezone.
  *
- * @param timezone IANA timezone. Falls back to Costa Rica if null/undefined
+ * @param timezone IANA timezone. Falls back to Bolivia's (America/La_Paz) if null/undefined
  * @returns Current date as YYYY-MM-DD in the given timezone
  */
 export function getCurrentDateInTimezone(timezone?: string | null): string {
@@ -151,7 +152,7 @@ export function getCurrentDateInTimezone(timezone?: string | null): string {
  * Returns the current date-time as an ISO string in the given timezone.
  * Useful for timestamps that need to reflect the user's timezone.
  *
- * @param timezone IANA timezone. Falls back to Costa Rica if null/undefined
+ * @param timezone IANA timezone. Falls back to Bolivia's (America/La_Paz) if null/undefined
  * @returns Current date-time as an ISO string in the given timezone
  */
 export function getCurrentDateTimeInTimezone(timezone?: string | null): string {

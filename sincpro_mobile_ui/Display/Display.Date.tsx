@@ -72,7 +72,7 @@ function DateField({
   relative = false,
 }: DateFieldProps) {
   const theme = useTheme();
-  const locale = "es-CR";
+  const locale = "es-BO";
 
   const absolute =
     !value || relative

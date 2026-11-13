@@ -140,16 +140,33 @@ describe("utils/date", () => {
 
   it("falls back to the default timezone when given null/undefined", async () => {
     const { formatDate } = await loadDateUtils();
-    const a = formatDate!("2025-09-02", null, { locale: "es-CR" });
-    const b = formatDate!("2025-09-02", undefined, { locale: "es-CR" });
+    const a = formatDate!("2025-09-02", null, { locale: "es-BO" });
+    const b = formatDate!("2025-09-02", undefined, { locale: "es-BO" });
     assert.equal(a, b);
+  });
+
+  it("the default timezone is Bolivia's: 1 a. m. in La Paz is still yesterday in Costa Rica", async () => {
+    const { formatDate } = await loadDateUtils();
+    const instant = "2025-09-03T05:00:00Z";
+    const shown = formatDate!(instant, null, { locale: "es-BO", showTime: false });
+    assert.match(shown, /^3 de septiembre/);
+    assert.equal(shown, formatDate!(instant, "America/La_Paz", { locale: "es-BO", showTime: false }));
+    assert.match(
+      formatDate!(instant, "America/Costa_Rica", { locale: "es-BO", showTime: false }),
+      /^2 de septiembre/,
+    );
   });
 
   it("formatDateWithDefaultTimezone delegates to formatDate with the default", async () => {
     const { formatDate, formatDateWithDefaultTimezone } = await loadDateUtils();
-    const a = formatDateWithDefaultTimezone!("2025-09-02", { locale: "es-CR" });
-    const b = formatDate!("2025-09-02", "America/Costa_Rica", { locale: "es-CR" });
+    const a = formatDateWithDefaultTimezone!("2025-09-03T05:00:00Z", { locale: "es-BO" });
+    const b = formatDate!("2025-09-03T05:00:00Z", "America/La_Paz", { locale: "es-BO" });
     assert.equal(a, b);
+  });
+
+  it("today without a zone is today in La Paz", async () => {
+    const { getCurrentDateInTimezone } = await loadDateUtils();
+    assert.equal(getCurrentDateInTimezone!(null), getCurrentDateInTimezone!("America/La_Paz"));
   });
 
   it("getCurrentDateInTimezone returns YYYY-MM-DD", async () => {
